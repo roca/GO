@@ -3,8 +3,10 @@ package main
 import (
 	"fmt"
 	"github.com/nf/string"
+	"os"
 )
 
 func main() {
-	fmt.Println(string.Reverse("Hello, new gopher!"))
+	args := os.Args
+	fmt.Println(string.Reverse(args[1]))
 }
