@@ -1,8 +1,8 @@
 package main
 
 import (
+	"../string"
 	"fmt"
-	"github.com/nf/string"
 	"os"
 )
 
