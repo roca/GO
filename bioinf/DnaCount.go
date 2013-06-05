@@ -1,7 +1,7 @@
 package main
 
 import (
-	"../nf/string"
+	//"../nf/string"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -9,13 +9,15 @@ import (
 
 func CToGoString(c []byte) string {
 	n := -1
+	char := ""
 	for i, b := range c {
 		if b == 0 {
 			break
 		}
 		n = i
+		char := char + fmt.Sprintf("%c", n)
 	}
-	return string(c[:n+1])
+	return char
 }
 
 func main() {
@@ -33,7 +35,5 @@ func main() {
 		panic(err)
 	}
 
-	sequence := CToGoString(b[:])
-
-	fmt.Println(string.Reverse(sequence))
+	fmt.Println(CToGoString(b))
 }
