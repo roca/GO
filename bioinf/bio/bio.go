@@ -1,7 +1,33 @@
 // bio project bio.go
 package bio
 
-import "fmt"
+import (
+	"fmt"
+	"io/ioutil"
+	"strings"
+)
+
+func CountBaseOccurences(sequence, base string) int {
+	return strings.Count(strings.ToUpper(sequence), strings.ToUpper(base))
+}
+
+func SequenceFromRosalindFile(filePath string) string {
+
+	// read whole the file
+	b, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		panic(err)
+	}
+
+	// write whole the body
+	err = ioutil.WriteFile("output.txt", b, 0644)
+	if err != nil {
+		panic(err)
+	}
+
+	return BytesToString(b, "")
+
+}
 
 func BytesToString(c []byte, acc string) string {
 

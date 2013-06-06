@@ -3,24 +3,18 @@ package main
 import (
 	"./bio"
 	"fmt"
-	"io/ioutil"
 	"os"
 )
 
 func main() {
 	args := os.Args
 
-	// read whole the file
-	b, err := ioutil.ReadFile(args[1])
-	if err != nil {
-		panic(err)
-	}
+	sequence := bio.SequenceFromRosalindFile(args[1])
 
-	// write whole the body
-	err = ioutil.WriteFile("output.txt", b, 0644)
-	if err != nil {
-		panic(err)
-	}
+	as := bio.CountBaseOccurences(sequence, "A")
+	cs := bio.CountBaseOccurences(sequence, "C")
+	gs := bio.CountBaseOccurences(sequence, "G")
+	ts := bio.CountBaseOccurences(sequence, "T")
 
-	fmt.Println(bio.BytesToString(b, ""))
+	fmt.Printf("%d %d %d %d\n", as, cs, gs, ts)
 }
