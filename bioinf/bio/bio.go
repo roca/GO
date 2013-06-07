@@ -11,6 +11,31 @@ func CountBaseOccurences(sequence, base string) int {
 	return strings.Count(strings.ToUpper(sequence), strings.ToUpper(base))
 }
 
+func Transcribe(sequence string) string {
+
+	transcriptionMap := map[string]string{"t": "u", "T": "U"}
+
+	transcribedSequence := sequence
+	for key, value := range transcriptionMap {
+		transcribedSequence = strings.Replace(transcribedSequence, key, value, -1)
+	}
+	return transcribedSequence
+
+}
+
+func reverseComplement(sequence string) string {
+
+	complementMap := map[string]string{"A": "T", "C": "G"}
+
+	reverseComplemented := ""
+	for b := range strings.Split(sequence, "") {
+		fmt.Printf("%c", b)
+		reverseComplemented = complementMap[b]
+	}
+	return reverseComplemented
+
+}
+
 func SequenceFromRosalindFile(filePath string) string {
 
 	// read whole the file

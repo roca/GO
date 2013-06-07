@@ -46,3 +46,79 @@ func TestCountingDNANucleotides(t *testing.T) {
 	}
 
 }
+
+/*
+
+Problem
+
+An RNA string is a string formed from the alphabet containing 'A', 'C', 'G', and 'U'.
+
+Given a DNA string t corresponding to a coding strand, its transcribed RNA string u is formed by replacing all occurrences of 'T' in t with 'U' in u.
+
+Given: A DNA string t having length at most 1000 nt.
+
+Return: The transcribed RNA string of t.
+
+Sample Dataset
+
+GATGGAACTTGACTACGTAAATT
+Sample Output
+
+GAUGGAACUUGACUACGUAAAUU
+*/
+func TestTranscribingDNAintoRNA(t *testing.T) {
+	var tests = []struct {
+		s, want string
+	}{
+		{"GATGGAACTTGACTACGTAAATT", "GAUGGAACUUGACUACGUAAAUU"},
+	}
+	for _, c := range tests {
+
+		sequence := c.s
+
+		got := Transcribe(sequence)
+		if got != c.want {
+			t.Errorf("Transcribe(%q) == %q, want %q", c.s, got, c.want)
+		}
+
+	}
+
+}
+
+/*
+
+Problem
+
+In DNA strings, symbols 'A' and 'T' are complements of each other, as are 'C' and 'G'.
+
+The reverse complement of a DNA string s is the string sc formed by reversing the symbols of s, then taking the complement of each symbol (e.g., the reverse complement of "GTCA" is "TGAC").
+
+Given: A DNA string s of length at most 1000 bp.
+
+Return: The reverse complement sc of s.
+
+Sample Dataset
+
+AAAACCCGGT
+Sample Output
+
+ACCGGGTTTT
+*/
+func TestComplementingaStrandofDNA(t *testing.T) {
+	var tests = []struct {
+		s, want string
+	}{
+		{"AAAACCCGGT", "ACCGGGTTTT"},
+	}
+	for _, c := range tests {
+
+		sequence := c.s
+
+		got := reverseComplement(sequence)
+		if got != c.want {
+			t.Errorf("reverseComplement(%q) == %q, want %q", c.s, got, c.want)
+		}
+
+	}
+
+}
