@@ -25,12 +25,13 @@ func Transcribe(sequence string) string {
 
 func reverseComplement(sequence string) string {
 
-	complementMap := map[string]string{"A": "T", "C": "G"}
+	complementMap := map[string]string{"A": "T", "C": "G", "T": "A", "G": "C"}
 
 	reverseComplemented := ""
-	for b := range strings.Split(sequence, "") {
-		fmt.Printf("%c", b)
-		reverseComplemented = complementMap[b]
+	bs := []rune(sequence)
+	for i := 0; i < len(bs); i++ {
+		reverseComplemented = complementMap[string(bs[i])] + reverseComplemented
+
 	}
 	return reverseComplemented
 
