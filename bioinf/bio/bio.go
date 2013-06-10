@@ -4,6 +4,7 @@ package bio
 import (
 	"fmt"
 	"io/ioutil"
+	"regexp"
 	"strings"
 )
 
@@ -35,6 +36,35 @@ func reverseComplement(sequence string) string {
 	}
 	return reverseComplemented
 
+}
+
+func RegSplit(text string, delimeter string) []string {
+	reg := regexp.MustCompile(delimeter)
+	indexes := reg.FindAllStringIndex(text, -1)
+	laststart := 0
+	result := make([]string, len(indexes)+1)
+	for i, element := range indexes {
+		result[i] = text[laststart:element[0]]
+		laststart = element[1]
+	}
+	result[len(indexes)] = text[laststart:len(text)]
+	return result
+}
+
+func FastaHeaders(text string) []string {
+	reg := regexp.MustCompile(">.\n")
+	return reg.FindAllString(text, -1)
+}
+
+type FastSequence struct {
+	header, sequence string
+}
+
+func FastaSequences(text string, delimeter string) []FastSequence {
+
+	sequences := make([]FastSequence, 1)
+
+	return sequences
 }
 
 func SequenceFromRosalindFile(filePath string) string {
