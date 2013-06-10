@@ -74,3 +74,13 @@ func Reverse(s string) string {
 	}
 	return string(b)
 }
+
+func Fibonacci(n int, k int) int {
+	fib := 0
+	if n == 1 || n == 0 {
+		fib = 1
+	} else {
+		fib = Fibonacci(n-1, k) + (k * Fibonacci(n-2, k))
+	}
+	return fib
+}
