@@ -58,19 +58,33 @@ func FastaHeaders(text string) []string {
 
 type FastSequence struct {
 	Header, Sequence string
+	GCContent        float64
 }
 
 func FastaSequences(text string) []FastSequence {
 	headers := FastaHeaders(text)
 	sequences := regSplit(text, ">.*\n")
 
-	fastas := make([]FastSequence, len(headers),cap(headers))
-	for i , header := range headers {
-		fastas[i].Header = header
-		fastas[i].Sequence = sequences[i+1]
+	fastas := make([]FastSequence, len(headers), cap(headers))
+	for i, header := range headers {
+		fastas[i].Header = strings.Replace(header, ">", "", -1)
+		fastas[i].Sequence = strings.Replace(sequences[i+1], "\n", "", -1)
+		cs := float64(CountBaseOccurences(strings.ToUpper(fastas[i].Sequence), "C"))
+		gs := float64(CountBaseOccurences(strings.ToUpper(fastas[i].Sequence), "G"))
+		fastas[i].GCContent = ((cs + gs) / float64(len(fastas[i].Sequence))) * 100.0
+
 	}
 
 	return fastas
+}
+func MaxGCContent(fastas []FastSequence) FastSequence {
+	var maxFasta FastSequence
+	for _, fasta := range fastas {
+		if fasta.GCContent > maxFasta.GCContent {
+			maxFasta = fasta
+		}
+	}
+	return maxFasta
 }
 
 func SequenceFromRosalindFile(filePath string) string {
