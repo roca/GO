@@ -65,8 +65,8 @@ func FastaSequences(text string) []FastSequence {
 	sequences := regSplit(text, ">.*\n")
 
 	fastas := make([]FastSequence, len(headers),cap(headers))
-	for i := 0; i < len(headers); i++ {
-		fastas[i].Header = headers[i]
+	for i , header := range headers {
+		fastas[i].Header = header
 		fastas[i].Sequence = sequences[i+1]
 	}
 
