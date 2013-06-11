@@ -38,7 +38,7 @@ func reverseComplement(sequence string) string {
 
 }
 
-func RegSplit(text string, delimeter string) []string {
+func regSplit(text string, delimeter string) []string {
 	reg := regexp.MustCompile(delimeter)
 	indexes := reg.FindAllStringIndex(text, -1)
 	laststart := 0
@@ -52,19 +52,25 @@ func RegSplit(text string, delimeter string) []string {
 }
 
 func FastaHeaders(text string) []string {
-	reg := regexp.MustCompile(">.\n")
+	reg := regexp.MustCompile(">.*\n")
 	return reg.FindAllString(text, -1)
 }
 
 type FastSequence struct {
-	header, sequence string
+	Header, Sequence string
 }
 
-func FastaSequences(text string, delimeter string) []FastSequence {
+func FastaSequences(text string) []FastSequence {
+	headers := FastaHeaders(text)
+	sequences := regSplit(text, ">.*\n")
 
-	sequences := make([]FastSequence, 1)
+	fastas := make([]FastSequence, len(headers))
+	for i := 0; i < len(headers); i++ {
+		fastas[i].Header = headers[i]
+		fastas[i].Sequence = sequences[i+1]
+	}
 
-	return sequences
+	return fastas
 }
 
 func SequenceFromRosalindFile(filePath string) string {
