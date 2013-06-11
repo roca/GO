@@ -16,10 +16,11 @@ func main() {
 	var fastas []bio.FastSequence = bio.FastaSequences(data)
 
 	for _, fasta := range fastas {
-		cs := bio.CountBaseOccurences(strings.ToUpper(fasta.Sequence), "C")
-		gs := bio.CountBaseOccurences(strings.ToUpper(fasta.Sequence), "G")
+		cs := float64(bio.CountBaseOccurences(strings.ToUpper(fasta.Sequence), "C"))
+		gs := float64(bio.CountBaseOccurences(strings.ToUpper(fasta.Sequence), "G"))
 		gcCount := cs + gs
-		fmt.Printf("%s %d\n", fasta.Header, gcCount*100.0/len(fasta.Sequence))
+		length := len(fasta.Sequence)
+		fmt.Printf("%s %4.4g %d %4.10g\n", fasta, gcCount, length, (gcCount/float64(length))*100.0)
 	}
 
 }
