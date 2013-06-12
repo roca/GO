@@ -134,3 +134,13 @@ func Fibonacci(n int, k int) int {
 	}
 	return fib
 }
+
+func HammingDistance(sequence1, sequence2 string) int {
+	distance := 0
+	for i := range sequence1 {
+		if sequence1[i] != sequence2[i] {
+			distance++
+		}
+	}
+	return distance
+}

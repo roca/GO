@@ -230,3 +230,42 @@ func TestComputingGCContent(t *testing.T) {
 	}
 
 }
+
+/*
+Problem
+
+
+Figure 2. The Hamming distance between these two strings is 7. Mismatched symbols are colored red.
+Given two strings s and t of equal length, the Hamming distance between s and t, denoted dH(s,t), is the number of corresponding symbols that differ in s and t. See Figure 2.
+
+Given: Two DNA strings s and t of equal length (not exceeding 1 kbp).
+
+Return: The Hamming distance dH(s,t).
+
+Sample Dataset
+
+GAGCCTACTAACGGGAT
+CATCGTAATGACGGCCT
+Sample Output
+
+7
+*/
+func TestHammingDistance(t *testing.T) {
+	var tests = []struct {
+		s    string
+		want int
+	}{
+		{"GAGCCTACTAACGGGAT\nCATCGTAATGACGGCCT", 7},
+	}
+	for _, c := range tests {
+
+		sequence1 := strings.Split(c.s, "\n")[0]
+		sequence2 := strings.Split(c.s, "\n")[1]
+		got := HammingDistance(sequence1, sequence2)
+		if got != c.want {
+			t.Errorf("HammingDistance(%q) == %q, want %q", c.s, got, c.want)
+		}
+
+	}
+
+}

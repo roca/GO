@@ -4,6 +4,7 @@ import (
 	"./bio"
 	"fmt"
 	"os"
+	"strings"
 	//"strconv"
 )
 
@@ -12,8 +13,9 @@ func main() {
 
 	data := bio.SequenceFromRosalindFile(args[1])
 
-	var fastas []bio.FastSequence = bio.FastaSequences(data)
-	var maxFasta = bio.MaxGCContent(fastas)
-	fmt.Printf("%s%4.6g\n", maxFasta.Header, maxFasta.GCContent)
+	sequence1 := strings.Split(data, "\n")[0]
+	sequence2 := strings.Split(data, "\n")[1]
+	got := bio.HammingDistance(sequence1, sequence2)
+	fmt.Printf("%d\n", got)
 
 }
