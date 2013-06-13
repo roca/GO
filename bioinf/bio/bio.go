@@ -141,7 +141,7 @@ func HammingDistance(sequence1, sequence2 string) int {
 	} else if sequence1[0] != sequence2[0] {
 		return 1 + HammingDistance(sequence1[1:], sequence2[1:])
 	} else {
-		return 0 + HammingDistance(sequence1[1:], sequence2[1:])
+		return HammingDistance(sequence1[1:], sequence2[1:])
 	}
 
 }
