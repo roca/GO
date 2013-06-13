@@ -263,7 +263,7 @@ func TestHammingDistance(t *testing.T) {
 		sequence2 := strings.Split(c.s, "\n")[1]
 		got := HammingDistance(sequence1, sequence2)
 		if got != c.want {
-			t.Errorf("HammingDistance(%q) == %q, want %q", c.s, got, c.want)
+			t.Errorf("HammingDistance(%q) == %d, want %d", c.s, got, c.want)
 		}
 
 	}

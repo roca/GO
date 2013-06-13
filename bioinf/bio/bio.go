@@ -136,11 +136,12 @@ func Fibonacci(n int, k int) int {
 }
 
 func HammingDistance(sequence1, sequence2 string) int {
-	distance := 0
-	for i := range sequence1 {
-		if sequence1[i] != sequence2[i] {
-			distance++
-		}
+	if len(sequence1) == 0 {
+		return 0
+	} else if sequence1[0] != sequence2[0] {
+		return 1 + HammingDistance(sequence1[1:], sequence2[1:])
+	} else {
+		return 0 + HammingDistance(sequence1[1:], sequence2[1:])
 	}
-	return distance
+
 }
