@@ -145,3 +145,23 @@ func HammingDistance(sequence1, sequence2 string) int {
 	}
 
 }
+
+/*
+	def chanceOfDominantPhenotype(dominant:Int, mixed:Int, recessive:Int):BigDecimal = {
+		val total = Double.box(dominant + mixed + recessive)
+		val side1 = dominant/total
+		val side2 = (mixed/total)*(1/2d)*(1 + (dominant/(total-1)) + (1/2d)*((mixed-1)/(total-1)))
+		val side3 = (recessive/total)*(dominant/(total-1)) + (recessive/total)*(mixed/(total-1))*(1/2d)
+		BigDecimal.apply(side1 + side2 + side3).setScale(5, RoundingMode.HALF_UP)
+	}
+*/
+func ChanceOfDominantPhenotype(dominant int, mixed int, recessive int) float64 {
+	domnt := float64(dominant)
+	mix := float64(mixed)
+	recssv := float64(recessive)
+	total := domnt + mix + recssv
+	side1 := domnt / total
+	side2 := (mix / total) * (.5) * (1.0 + (domnt / (total - 1.0)) + (.5)*((mix-1.0)/(total-1.0)))
+	side3 := (recssv/total)*(domnt/(total-1.0)) + (recssv/total)*(mix/(total-1.0))*(.5)
+	return (side1 + side2 + side3)
+}
