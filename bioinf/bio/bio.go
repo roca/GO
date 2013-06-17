@@ -176,76 +176,76 @@ UGA Stop   CGA R      AGA R      GGA G
 UGG W      CGG R      AGG R      GGG G
 */
 
-type Codon struct {
-	Dna, Protein string
+type tRNA struct {
+	Codon, Protein string
 }
 
-func codonsMap() map[string]Codon {
-	codons := make(map[string]Codon)
-	codons["UUU"] = Codon{"UUU", "F"}
-	codons["CUU"] = Codon{"CUU", "L"}
-	codons["AUU"] = Codon{"AUU", "I"}
-	codons["GUU"] = Codon{"GUU", "V"}
-	codons["UUC"] = Codon{"UUC", "F"}
-	codons["CUC"] = Codon{"CUC", "L"}
-	codons["AUC"] = Codon{"AUC", "I"}
-	codons["GUC"] = Codon{"GUC", "V"}
-	codons["UUA"] = Codon{"UUA", "L"}
-	codons["CUA"] = Codon{"CUA", "L"}
-	codons["AUA"] = Codon{"AUA", "I"}
-	codons["GUA"] = Codon{"GUA", "V"}
-	codons["UUG"] = Codon{"UUG", "L"}
-	codons["CUG"] = Codon{"CUG", "L"}
-	codons["AUG"] = Codon{"AUG", "M"}
-	codons["GUG"] = Codon{"GUG", "V"}
-	codons["UCU"] = Codon{"UCU", "S"}
-	codons["CCU"] = Codon{"CCU", "P"}
-	codons["ACU"] = Codon{"ACU", "T"}
-	codons["GCU"] = Codon{"GCU", "A"}
-	codons["UCC"] = Codon{"UCC", "S"}
-	codons["CCC"] = Codon{"CCC", "P"}
-	codons["ACC"] = Codon{"ACC", "T"}
-	codons["GCC"] = Codon{"GCC", "A"}
-	codons["UCA"] = Codon{"UCA", "S"}
-	codons["CCA"] = Codon{"CCA", "P"}
-	codons["ACA"] = Codon{"ACA", "T"}
-	codons["GCA"] = Codon{"GCA", "A"}
-	codons["UCG"] = Codon{"UCG", "S"}
-	codons["CCG"] = Codon{"CCG", "P"}
-	codons["ACG"] = Codon{"ACG", "T"}
-	codons["GCG"] = Codon{"GCG", "A"}
-	codons["UAU"] = Codon{"UAU", "Y"}
-	codons["CAU"] = Codon{"CAU", "H"}
-	codons["AAU"] = Codon{"AAU", "N"}
-	codons["GAU"] = Codon{"GAU", "D"}
-	codons["UAC"] = Codon{"UAC", "Y"}
-	codons["CAC"] = Codon{"CAC", "H"}
-	codons["AAC"] = Codon{"AAC", "N"}
-	codons["GAC"] = Codon{"GAC", "D"}
-	codons["UAA"] = Codon{"UAA", "Stop"}
-	codons["CAA"] = Codon{"CAA", "Q"}
-	codons["AAA"] = Codon{"AAA", "K"}
-	codons["GAA"] = Codon{"GAA", "E"}
-	codons["UAG"] = Codon{"UAG", "Stop"}
-	codons["CAG"] = Codon{"CAG", "Q"}
-	codons["AAG"] = Codon{"AAG", "K"}
-	codons["GAG"] = Codon{"GAG", "E"}
-	codons["UGU"] = Codon{"UGU", "C"}
-	codons["CGU"] = Codon{"CGU", "R"}
-	codons["AGU"] = Codon{"AGU", "S"}
-	codons["GGU"] = Codon{"GGU", "G"}
-	codons["UGC"] = Codon{"UGC", "C"}
-	codons["CGC"] = Codon{"CGC", "R"}
-	codons["AGC"] = Codon{"AGC", "S"}
-	codons["GGC"] = Codon{"GGC", "G"}
-	codons["UGA"] = Codon{"UGA", "Stop"}
-	codons["CGA"] = Codon{"CGA", "R"}
-	codons["AGA"] = Codon{"AGA", "R"}
-	codons["GGA"] = Codon{"GGA", "G"}
-	codons["UGG"] = Codon{"UGG", "W"}
-	codons["CGG"] = Codon{"CGG", "R"}
-	codons["AGG"] = Codon{"AGG", "R"}
-	codons["GGG"] = Codon{"GGG", "G"}
+func codonsMap() map[string]tRNA {
+	codons := make(map[string]tRNA)
+	codons["UUU"] = tRNA{"UUU", "F"}
+	codons["CUU"] = tRNA{"CUU", "L"}
+	codons["AUU"] = tRNA{"AUU", "I"}
+	codons["GUU"] = tRNA{"GUU", "V"}
+	codons["UUC"] = tRNA{"UUC", "F"}
+	codons["CUC"] = tRNA{"CUC", "L"}
+	codons["AUC"] = tRNA{"AUC", "I"}
+	codons["GUC"] = tRNA{"GUC", "V"}
+	codons["UUA"] = tRNA{"UUA", "L"}
+	codons["CUA"] = tRNA{"CUA", "L"}
+	codons["AUA"] = tRNA{"AUA", "I"}
+	codons["GUA"] = tRNA{"GUA", "V"}
+	codons["UUG"] = tRNA{"UUG", "L"}
+	codons["CUG"] = tRNA{"CUG", "L"}
+	codons["AUG"] = tRNA{"AUG", "M"}
+	codons["GUG"] = tRNA{"GUG", "V"}
+	codons["UCU"] = tRNA{"UCU", "S"}
+	codons["CCU"] = tRNA{"CCU", "P"}
+	codons["ACU"] = tRNA{"ACU", "T"}
+	codons["GCU"] = tRNA{"GCU", "A"}
+	codons["UCC"] = tRNA{"UCC", "S"}
+	codons["CCC"] = tRNA{"CCC", "P"}
+	codons["ACC"] = tRNA{"ACC", "T"}
+	codons["GCC"] = tRNA{"GCC", "A"}
+	codons["UCA"] = tRNA{"UCA", "S"}
+	codons["CCA"] = tRNA{"CCA", "P"}
+	codons["ACA"] = tRNA{"ACA", "T"}
+	codons["GCA"] = tRNA{"GCA", "A"}
+	codons["UCG"] = tRNA{"UCG", "S"}
+	codons["CCG"] = tRNA{"CCG", "P"}
+	codons["ACG"] = tRNA{"ACG", "T"}
+	codons["GCG"] = tRNA{"GCG", "A"}
+	codons["UAU"] = tRNA{"UAU", "Y"}
+	codons["CAU"] = tRNA{"CAU", "H"}
+	codons["AAU"] = tRNA{"AAU", "N"}
+	codons["GAU"] = tRNA{"GAU", "D"}
+	codons["UAC"] = tRNA{"UAC", "Y"}
+	codons["CAC"] = tRNA{"CAC", "H"}
+	codons["AAC"] = tRNA{"AAC", "N"}
+	codons["GAC"] = tRNA{"GAC", "D"}
+	codons["UAA"] = tRNA{"UAA", "Stop"}
+	codons["CAA"] = tRNA{"CAA", "Q"}
+	codons["AAA"] = tRNA{"AAA", "K"}
+	codons["GAA"] = tRNA{"GAA", "E"}
+	codons["UAG"] = tRNA{"UAG", "Stop"}
+	codons["CAG"] = tRNA{"CAG", "Q"}
+	codons["AAG"] = tRNA{"AAG", "K"}
+	codons["GAG"] = tRNA{"GAG", "E"}
+	codons["UGU"] = tRNA{"UGU", "C"}
+	codons["CGU"] = tRNA{"CGU", "R"}
+	codons["AGU"] = tRNA{"AGU", "S"}
+	codons["GGU"] = tRNA{"GGU", "G"}
+	codons["UGC"] = tRNA{"UGC", "C"}
+	codons["CGC"] = tRNA{"CGC", "R"}
+	codons["AGC"] = tRNA{"AGC", "S"}
+	codons["GGC"] = tRNA{"GGC", "G"}
+	codons["UGA"] = tRNA{"UGA", "Stop"}
+	codons["CGA"] = tRNA{"CGA", "R"}
+	codons["AGA"] = tRNA{"AGA", "R"}
+	codons["GGA"] = tRNA{"GGA", "G"}
+	codons["UGG"] = tRNA{"UGG", "W"}
+	codons["CGG"] = tRNA{"CGG", "R"}
+	codons["AGG"] = tRNA{"AGG", "R"}
+	codons["GGG"] = tRNA{"GGG", "G"}
 
 	return codons
 
