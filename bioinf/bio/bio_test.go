@@ -118,9 +118,9 @@ func TestComplementingaStrandofDNA(t *testing.T) {
 
 		sequence := c.s
 
-		got := reverseComplement(sequence)
+		got := ReverseComplement(sequence)
 		if got != c.want {
-			t.Errorf("reverseComplement(%q) == %q, want %q", c.s, got, c.want)
+			t.Errorf("ReverseComplement(%q) == %q, want %q", c.s, got, c.want)
 		}
 
 	}
@@ -330,6 +330,44 @@ func TestMendelFirstLaw(t *testing.T) {
 		got := fmt.Sprintf("%1.5g", ChanceOfDominantPhenotype(k, m, n))
 		if got != c.want {
 			t.Errorf("ChanceOfDominantPhenotype(%q) == %q, want %q", c.s, got, c.want)
+		}
+
+	}
+
+}
+
+/*
+Problem
+
+The 20 commonly occurring amino acids are abbreviated by using 20 letters from the English alphabet (all letters except for B, J, O, U, X, and Z). Protein strings are constructed from these 20 symbols. Henceforth, the term genetic string will incorporate protein strings along with DNA strings and RNA strings.
+
+The RNA codon table dictates the details regarding the encoding of specific codons into the amino acid alphabet.
+
+Given: An RNA string s corresponding to a strand of mRNA (of length at most 10 kbp).
+
+Return: The protein string encoded by s.
+
+Sample Dataset
+
+AUGGCCAUGGCGCCCAGAACUGAGAUCAAUAGUACCCGUAUUAACGGGUGA
+Sample Output
+
+MAMAPRTEINSTRING
+*/
+
+func TestTranslatingRNAintoProtein(t *testing.T) {
+	var tests = []struct {
+		s, want string
+	}{
+		{"AUGGCCAUGGCGCCCAGAACUGAGAUCAAUAGUACCCGUAUUAACGGGUGA", "MAMAPRTEINSTRING"},
+	}
+	for _, c := range tests {
+
+		sequence := c.s
+
+		got := RNAtoPROTEIN(sequence)
+		if got != c.want {
+			t.Errorf("reverseComplement(%q) == %q, want %q", c.s, got, c.want)
 		}
 
 	}

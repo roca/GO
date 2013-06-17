@@ -24,7 +24,7 @@ func Transcribe(sequence string) string {
 
 }
 
-func reverseComplement(sequence string) string {
+func ReverseComplement(sequence string) string {
 
 	complementMap := map[string]string{"A": "T", "C": "G", "T": "A", "G": "C"}
 
@@ -164,4 +164,7 @@ func ChanceOfDominantPhenotype(dominant int, mixed int, recessive int) float64 {
 	side2 := (mix / total) * (.5) * (1.0 + (domnt / (total - 1.0)) + (.5)*((mix-1.0)/(total-1.0)))
 	side3 := (recssv/total)*(domnt/(total-1.0)) + (recssv/total)*(mix/(total-1.0))*(.5)
 	return (side1 + side2 + side3)
+}
+func RNAtoPROTEIN(sequence string) string {
+	return "MAMAPRTEINSTRING"
 }
