@@ -146,15 +146,6 @@ func HammingDistance(sequence1, sequence2 string) int {
 
 }
 
-/*
-	def chanceOfDominantPhenotype(dominant:Int, mixed:Int, recessive:Int):BigDecimal = {
-		val total = Double.box(dominant + mixed + recessive)
-		val side1 = dominant/total
-		val side2 = (mixed/total)*(1/2d)*(1 + (dominant/(total-1)) + (1/2d)*((mixed-1)/(total-1)))
-		val side3 = (recessive/total)*(dominant/(total-1)) + (recessive/total)*(mixed/(total-1))*(1/2d)
-		BigDecimal.apply(side1 + side2 + side3).setScale(5, RoundingMode.HALF_UP)
-	}
-*/
 func ChanceOfDominantPhenotype(dominant int, mixed int, recessive int) float64 {
 	domnt := float64(dominant)
 	mix := float64(mixed)
@@ -165,6 +156,108 @@ func ChanceOfDominantPhenotype(dominant int, mixed int, recessive int) float64 {
 	side3 := (recssv/total)*(domnt/(total-1.0)) + (recssv/total)*(mix/(total-1.0))*(.5)
 	return (side1 + side2 + side3)
 }
+
+/*
+UUU F      CUU L      AUU I      GUU V
+UUC F      CUC L      AUC I      GUC V
+UUA L      CUA L      AUA I      GUA V
+UUG L      CUG L      AUG M      GUG V
+UCU S      CCU P      ACU T      GCU A
+UCC S      CCC P      ACC T      GCC A
+UCA S      CCA P      ACA T      GCA A
+UCG S      CCG P      ACG T      GCG A
+UAU Y      CAU H      AAU N      GAU D
+UAC Y      CAC H      AAC N      GAC D
+UAA Stop   CAA Q      AAA K      GAA E
+UAG Stop   CAG Q      AAG K      GAG E
+UGU C      CGU R      AGU S      GGU G
+UGC C      CGC R      AGC S      GGC G
+UGA Stop   CGA R      AGA R      GGA G
+UGG W      CGG R      AGG R      GGG G
+*/
+
+type Codon struct {
+	Dna, Protein string
+}
+
+func codonsMap() map[string]Codon {
+	codons := make(map[string]Codon)
+	codons["UUU"] = Codon{"UUU", "F"}
+	codons["CUU"] = Codon{"CUU", "L"}
+	codons["AUU"] = Codon{"AUU", "I"}
+	codons["GUU"] = Codon{"GUU", "V"}
+	codons["UUC"] = Codon{"UUC", "F"}
+	codons["CUC"] = Codon{"CUC", "L"}
+	codons["AUC"] = Codon{"AUC", "I"}
+	codons["GUC"] = Codon{"GUC", "V"}
+	codons["UUA"] = Codon{"UUA", "L"}
+	codons["CUA"] = Codon{"CUA", "L"}
+	codons["AUA"] = Codon{"AUA", "I"}
+	codons["GUA"] = Codon{"GUA", "V"}
+	codons["UUG"] = Codon{"UUG", "L"}
+	codons["CUG"] = Codon{"CUG", "L"}
+	codons["AUG"] = Codon{"AUG", "M"}
+	codons["GUG"] = Codon{"GUG", "V"}
+	codons["UCU"] = Codon{"UCU", "S"}
+	codons["CCU"] = Codon{"CCU", "P"}
+	codons["ACU"] = Codon{"ACU", "T"}
+	codons["GCU"] = Codon{"GCU", "A"}
+	codons["UCC"] = Codon{"UCC", "S"}
+	codons["CCC"] = Codon{"CCC", "P"}
+	codons["ACC"] = Codon{"ACC", "T"}
+	codons["GCC"] = Codon{"GCC", "A"}
+	codons["UCA"] = Codon{"UCA", "S"}
+	codons["CCA"] = Codon{"CCA", "P"}
+	codons["ACA"] = Codon{"ACA", "T"}
+	codons["GCA"] = Codon{"GCA", "A"}
+	codons["UCG"] = Codon{"UCG", "S"}
+	codons["CCG"] = Codon{"CCG", "P"}
+	codons["ACG"] = Codon{"ACG", "T"}
+	codons["GCG"] = Codon{"GCG", "A"}
+	codons["UAU"] = Codon{"UAU", "Y"}
+	codons["CAU"] = Codon{"CAU", "H"}
+	codons["AAU"] = Codon{"AAU", "N"}
+	codons["GAU"] = Codon{"GAU", "D"}
+	codons["UAC"] = Codon{"UAC", "Y"}
+	codons["CAC"] = Codon{"CAC", "H"}
+	codons["AAC"] = Codon{"AAC", "N"}
+	codons["GAC"] = Codon{"GAC", "D"}
+	codons["UAA"] = Codon{"UAA", "Stop"}
+	codons["CAA"] = Codon{"CAA", "Q"}
+	codons["AAA"] = Codon{"AAA", "K"}
+	codons["GAA"] = Codon{"GAA", "E"}
+	codons["UAG"] = Codon{"UAG", "Stop"}
+	codons["CAG"] = Codon{"CAG", "Q"}
+	codons["AAG"] = Codon{"AAG", "K"}
+	codons["GAG"] = Codon{"GAG", "E"}
+	codons["UGU"] = Codon{"UGU", "C"}
+	codons["CGU"] = Codon{"CGU", "R"}
+	codons["AGU"] = Codon{"AGU", "S"}
+	codons["GGU"] = Codon{"GGU", "G"}
+	codons["UGC"] = Codon{"UGC", "C"}
+	codons["CGC"] = Codon{"CGC", "R"}
+	codons["AGC"] = Codon{"AGC", "S"}
+	codons["GGC"] = Codon{"GGC", "G"}
+	codons["UGA"] = Codon{"UGA", "Stop"}
+	codons["CGA"] = Codon{"CGA", "R"}
+	codons["AGA"] = Codon{"AGA", "R"}
+	codons["GGA"] = Codon{"GGA", "G"}
+	codons["UGG"] = Codon{"UGG", "W"}
+	codons["CGG"] = Codon{"CGG", "R"}
+	codons["AGG"] = Codon{"AGG", "R"}
+	codons["GGG"] = Codon{"GGG", "G"}
+
+	return codons
+
+}
 func RNAtoPROTEIN(sequence string) string {
-	return "MAMAPRTEINSTRING"
+
+	codons := codonsMap()
+
+	if len(sequence) == 0 || codons[sequence[0:3]].Protein == "Stop" {
+		return ""
+	} else {
+		return codons[sequence[0:3]].Protein + RNAtoPROTEIN(sequence[3:])
+	}
+
 }

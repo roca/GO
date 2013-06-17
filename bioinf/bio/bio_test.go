@@ -367,7 +367,7 @@ func TestTranslatingRNAintoProtein(t *testing.T) {
 
 		got := RNAtoPROTEIN(sequence)
 		if got != c.want {
-			t.Errorf("reverseComplement(%q) == %q, want %q", c.s, got, c.want)
+			t.Errorf("RNAtoPROTEIN(%q) == %q, want %q", c.s, got, c.want)
 		}
 
 	}
