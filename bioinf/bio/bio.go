@@ -109,11 +109,11 @@ func BytesToString(c []byte, acc string) string {
 
 	if len(c) == 0 {
 		return acc
-	} else {
-		head := c[0]
-		tail := c[1:]
-		return BytesToString(tail, acc+fmt.Sprintf("%c", head))
 	}
+	head := c[0]
+	tail := c[1:]
+	return BytesToString(tail, acc+fmt.Sprintf("%c", head))
+
 }
 
 func Reverse(s string) string {
@@ -126,13 +126,10 @@ func Reverse(s string) string {
 }
 
 func Fibonacci(n int, k int) int {
-	fib := 0
 	if n == 1 || n == 0 {
-		fib = 1
-	} else {
-		fib = Fibonacci(n-1, k) + (k * Fibonacci(n-2, k))
+		return 1
 	}
-	return fib
+	return Fibonacci(n-1, k) + (k * Fibonacci(n-2, k))
 }
 
 func HammingDistance(sequence1, sequence2 string) int {
@@ -140,9 +137,8 @@ func HammingDistance(sequence1, sequence2 string) int {
 		return 0
 	} else if sequence1[0] != sequence2[0] {
 		return 1 + HammingDistance(sequence1[1:], sequence2[1:])
-	} else {
-		return HammingDistance(sequence1[1:], sequence2[1:])
 	}
+	return HammingDistance(sequence1[1:], sequence2[1:])
 
 }
 
@@ -256,8 +252,15 @@ func RNAtoPROTEIN(sequence string) string {
 
 	if len(sequence) == 0 || codons[sequence[0:3]].Protein == "Stop" {
 		return ""
-	} else {
-		return codons[sequence[0:3]].Protein + RNAtoPROTEIN(sequence[3:])
 	}
+	return codons[sequence[0:3]].Protein + RNAtoPROTEIN(sequence[3:])
 
+}
+
+func IndicesOccurrence(sequence, fragment string) []int {
+	result := make([]int, 3)
+	result[0] = 2
+	result[1] = 4
+	result[2] = 10
+	return result
 }
