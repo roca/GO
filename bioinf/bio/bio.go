@@ -257,10 +257,24 @@ func RNAtoPROTEIN(sequence string) string {
 
 }
 
-func IndicesOccurrence(sequence, fragment string) []int {
-	result := make([]int, 3)
-	result[0] = 2
-	result[1] = 4
-	result[2] = 10
-	return result
+func Motifs(sequence, fragment string) []int {
+
+	occurrences := func(sequence, fragment string, acc []int) []int { return make([]int, 1) }
+
+	occurrences = func(sequence, fragment string, acc []int) []int {
+		regexpString := fragment
+		re := regexp.MustCompile(regexpString)
+		found := re.FindStringIndex(sequence)
+
+		if len(found) == 0 {
+			return acc
+		}
+
+		newSequence := strings.Replace(sequence, fragment, "."+fragment[1:], 1)
+		return occurrences(newSequence, fragment, append(acc, found[0]))
+
+	}
+
+	return occurrences(sequence, fragment, make([]int, 0))
+
 }

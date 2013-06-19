@@ -397,7 +397,7 @@ Sample Output
 2 4 10
 */
 
-func TestCombingThroughtheHaystack(t *testing.T) {
+func TestFindingaMotifinDNA(t *testing.T) {
 	var tests = []struct {
 		s1, s2, want string
 	}{
@@ -408,17 +408,17 @@ func TestCombingThroughtheHaystack(t *testing.T) {
 		sequence := c.s1
 		fragment := c.s2
 
-		indices := IndicesOccurrence(sequence, fragment)
+		indices := Motifs(sequence, fragment)
 		got := ""
 		for i, value := range indices {
-			got = got + fmt.Sprintf("%d", value)
+			got = got + fmt.Sprintf("%d", value+1)
 			if i < len(indices)-1 {
 				got = got + " "
 			}
 		}
 
 		if got != c.want {
-			t.Errorf("IndicesOccurrence(%q,%q) == %q, want %q", c.s1, c.s2, got, c.want)
+			t.Errorf("Motifs(%q,%q) == %q, want %q", c.s1, c.s2, got, c.want)
 		}
 
 	}
