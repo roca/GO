@@ -278,3 +278,11 @@ func Motifs(sequence, fragment string) []int {
 	return occurrences(sequence, fragment, make([]int, 0))
 
 }
+
+func boardColumn(board [][]char, columnIndex int) (column []char) {
+	column = make([]char, 0)
+	for _, row := range board {
+		column = append(column, row[columnIndex])
+	}
+	return
+}
