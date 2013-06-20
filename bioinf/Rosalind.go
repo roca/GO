@@ -11,11 +11,47 @@ import (
 func main() {
 	args := os.Args
 
-	data := bio.SequenceFromRosalindFile(args[1])
+	rosalindId := args[1]
+	filePath := args[2]
+	got := ""
+
+	switch rosalindId {
+	case "PROT":
+		got = PROT(filePath)
+	case "SUBS":
+		got = SUBS(filePath)
+	}
+
+	fmt.Printf("%s\n", got)
+
+}
+
+func PROT(filePath string) string {
+
+	data := bio.SequenceFromRosalindFile(filePath)
 
 	sequence := strings.Replace(data, "\n", "", -1)
 
-	got := bio.RNAtoPROTEIN(sequence)
-	fmt.Printf("%s\n", got)
+	return bio.RNAtoPROTEIN(sequence)
+
+}
+
+func SUBS(filePath string) string {
+
+	data := strings.Split(bio.SequenceFromRosalindFile(filePath), "\n")
+
+	sequence := strings.Join(data[:len(data)-2], "")
+	fragment := data[len(data)-2]
+
+	indices := bio.Motifs(sequence, fragment)
+	got := ""
+	for i, value := range indices {
+		got = got + fmt.Sprintf("%d", value+1)
+		if i < len(indices)-1 {
+			got = got + " "
+		}
+	}
+
+	return got
 
 }
