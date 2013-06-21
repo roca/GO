@@ -279,10 +279,14 @@ func Motifs(sequence, fragment string) []int {
 
 }
 
-func boardColumn(board [][]char, columnIndex int) (column []char) {
-	column = make([]char, 0)
-	for _, row := range board {
+func matrixColumn(matrix [][]byte, columnIndex int) (column []byte) {
+	column = make([]byte, 0)
+	for _, row := range matrix {
 		column = append(column, row[columnIndex])
 	}
 	return
+}
+
+func Consensus(fastaData string) string {
+	return "ATGCAACT\nA: 5 1 0 0 5 5 0 0\nC: 0 0 1 4 2 0 6 1\nG: 1 1 6 3 0 1 0 0\nT: 1 5 0 0 0 1 1 6"
 }

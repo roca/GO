@@ -20,6 +20,8 @@ func main() {
 		got = PROT(filePath)
 	case "SUBS":
 		got = SUBS(filePath)
+	case "CONS":
+		got = CONS(filePath)
 	}
 
 	fmt.Printf("%s\n", got)
@@ -54,4 +56,11 @@ func SUBS(filePath string) string {
 
 	return got
 
+}
+
+func CONS(filePath string) string {
+
+	fastaData := bio.SequenceFromRosalindFile(filePath)
+	got := bio.Consensus(fastaData)
+	return got
 }
