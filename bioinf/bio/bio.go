@@ -288,5 +288,13 @@ func matrixColumn(matrix [][]byte, columnIndex int) (column []byte) {
 }
 
 func Consensus(fastaData string) string {
+	fastas := FastaSequences(fastaData)
+	//matrix := make([][]rune, len(fastas[0].Sequence))
+	for i, fasta := range fastas {
+		for j, base := range fasta.Sequence {
+			fmt.Printf("(%d,%d) : %c\n", i, j, base)
+		}
+
+	}
 	return "ATGCAACT\nA: 5 1 0 0 5 5 0 0\nC: 0 0 1 4 2 0 6 1\nG: 1 1 6 3 0 1 0 0\nT: 1 5 0 0 0 1 1 6"
 }
