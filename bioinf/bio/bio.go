@@ -289,14 +289,13 @@ func matrixColumn(matrix [][]rune, columnIndex int) (column []rune) {
 
 func Consensus(fastaData string) string {
 	fastas := FastaSequences(fastaData)
-	size := len(fastas[0].Sequence)
-	matrix := make([][]rune, size)
-	for k := 0; k < size; k++ {
-		matrix[k] = make([]rune, size)
+	rows := len(fastas)
+	matrix := make([][]rune, rows)
+	for k, fasta := range fastas {
+		matrix[k] = []rune(fasta.Sequence)
 	}
 	for i, fasta := range fastas {
-		for j, base := range fasta.Sequence {
-			matrix[i][j] = base
+		for j, _ := range fasta.Sequence {
 			fmt.Printf("(%d,%d) : %c\n", i, j, matrix[i][j])
 		}
 
