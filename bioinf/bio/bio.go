@@ -279,21 +279,29 @@ func Motifs(sequence, fragment string) []int {
 
 }
 
-func matrixColumn(matrix [][]rune, columnIndex int) (column []rune) {
-	column = make([]rune, 0)
+func matrixColumn(matrix [][]rune, columnIndex int) []rune {
+	column := make([]rune, 0)
 	for _, row := range matrix {
 		column = append(column, row[columnIndex])
 	}
-	return
+	return column
 }
 
-func Consensus(fastaData string) string {
-	fastas := FastaSequences(fastaData)
+func matrixFromFastas(fastas []FastSequence) [][]rune {
 	rows := len(fastas)
 	matrix := make([][]rune, rows)
 	for k, fasta := range fastas {
 		matrix[k] = []rune(fasta.Sequence)
 	}
+
+	return matrix
+}
+
+func Consensus(fastaData string) string {
+
+	fastas := FastaSequences(fastaData)
+	matrix := matrixFromFastas(fastas)
+
 	for i, fasta := range fastas {
 		for j, _ := range fasta.Sequence {
 			fmt.Printf("(%d,%d) : %c\n", i, j, matrix[i][j])
