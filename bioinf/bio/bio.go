@@ -303,12 +303,17 @@ func Consensus(fastaData string) string {
 	matrix := matrixFromFastas(fastas)
 	column := make([]rune, 0)
 	bases := []string{"A", "C", "G", "T"}
+	consensuMatrix := make([][]int, 4)
 
-	for _, base := range bases {
+	for r, base := range bases {
 		fmt.Printf("%s:  ", base)
+		consensuMatrix[r] = make([]int, len(fastas[0].Sequence))
 		for k, _ := range fastas[0].Sequence {
+
 			column = matrixColumn(matrix, k)
-			fmt.Printf("%d ", CountBaseOccurences(string(column), base))
+			consensuMatrix[r][k] = CountBaseOccurences(string(column), base)
+			fmt.Printf("%d ", consensuMatrix[r][k])
+
 		}
 		fmt.Printf("\n")
 	}
