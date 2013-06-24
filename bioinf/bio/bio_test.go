@@ -480,7 +480,7 @@ func TestFindingaMostLikelyCommonAncestor(t *testing.T) {
 		s, want string
 	}{
 		{">Rosalind_1\nATCCAGCT\n>Rosalind_2\nGGGCAACT\n>Rosalind_3\nATGGATCT\n>Rosalind_4\nAAGCAACC\n>Rosalind_5\nTTGGAACT\n>Rosalind_6\nATGCCATT\n>Rosalind_7\nATGGCACT",
-			"ATGCAACT\nA: 5 1 0 0 5 5 0 0\nC: 0 0 1 4 2 0 6 1\nG: 1 1 6 3 0 1 0 0\nT: 1 5 0 0 0 1 1 6"},
+			"ATGCAACT\nA: 5 1 0 0 5 5 0 0\nC: 0 0 1 4 2 0 6 1\nG: 1 1 6 3 0 1 0 0\nT: 1 5 0 0 0 1 1 6\n"},
 	}
 	for _, c := range tests {
 
@@ -489,7 +489,7 @@ func TestFindingaMostLikelyCommonAncestor(t *testing.T) {
 		got := Consensus(fastaData)
 
 		if got != c.want {
-			t.Errorf("Consensus(%q,%q) == %q, want %q", c.s, got, c.want)
+			t.Errorf("Consensus(%q) ==\n        %q,\nwant %q", c.s, got, c.want)
 		}
 
 	}

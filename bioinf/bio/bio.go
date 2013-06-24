@@ -304,19 +304,34 @@ func Consensus(fastaData string) string {
 	column := make([]rune, 0)
 	bases := []string{"A", "C", "G", "T"}
 	consensuMatrix := make([][]int, 4)
+	answerText := ""
 
 	for r, base := range bases {
-		fmt.Printf("%s:  ", base)
+		answerText = answerText + fmt.Sprintf("%s: ", base)
 		consensuMatrix[r] = make([]int, len(fastas[0].Sequence))
+
 		for k, _ := range fastas[0].Sequence {
 
 			column = matrixColumn(matrix, k)
 			consensuMatrix[r][k] = CountBaseOccurences(string(column), base)
-			fmt.Printf("%d ", consensuMatrix[r][k])
+			answerText = answerText + fmt.Sprintf("%d ", consensuMatrix[r][k])
 
 		}
-		fmt.Printf("\n")
+		answerText = strings.TrimSpace(answerText) + fmt.Sprintf("\n")
 	}
 
-	return "ATGCAACT\nA: 5 1 0 0 5 5 0 0\nC: 0 0 1 4 2 0 6 1\nG: 1 1 6 3 0 1 0 0\nT: 1 5 0 0 0 1 1 6"
+	consensuMap := make([]string, len(fastas[0].Sequence))
+	for k, _ := range fastas[0].Sequence {
+		maxCount := 0
+		maxBase := ""
+		for r, base := range bases {
+			if consensuMatrix[r][k] >= maxCount {
+				maxCount = consensuMatrix[r][k]
+				maxBase = base
+			}
+		}
+		consensuMap[k] = maxBase
+	}
+
+	return fmt.Sprintf("%s\n%s", strings.Join(consensuMap, ""), answerText)
 }
