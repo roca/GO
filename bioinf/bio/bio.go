@@ -4,6 +4,7 @@ package bio
 import (
 	"fmt"
 	"io/ioutil"
+	"math"
 	"regexp"
 	"strings"
 )
@@ -125,11 +126,24 @@ func Reverse(s string) string {
 	return string(b)
 }
 
-func Fibonacci(n int, k int) int {
+func Fibonacci(n, k int) int {
 	if n == 1 || n == 0 {
 		return 1
 	}
 	return Fibonacci(n-1, k) + (k * Fibonacci(n-2, k))
+}
+
+func Fibonaccid(n, k int) int {
+
+	var z float64
+	if n >= k {
+		y := float64(n - k)
+		x := float64(2)
+		z = math.Pow(x, y)
+	}
+	rabbits := Fibonacci(n, 1)
+
+	return rabbits - int(z)
 }
 
 func HammingDistance(sequence1, sequence2 string) int {

@@ -4,7 +4,7 @@ import (
 	"./bio"
 	"fmt"
 	"os"
-	//"strconv"
+	"strconv"
 	"strings"
 )
 
@@ -22,6 +22,8 @@ func main() {
 		got = SUBS(filePath)
 	case "CONS":
 		got = CONS(filePath)
+	case "FIBD":
+		got = FIBD(filePath)
 	}
 
 	fmt.Printf("%s\n", got)
@@ -63,4 +65,30 @@ func CONS(filePath string) string {
 	fastaData := bio.SequenceFromRosalindFile(filePath)
 	got := bio.Consensus(fastaData)
 	return got
+}
+
+func FIBD(filePath string) string {
+
+	data := bio.SequenceFromRosalindFile(filePath)
+
+	inputs := strings.Split(strings.Replace(data, "\n", "", -1), " ")
+
+	n, err := strconv.Atoi(inputs[0])
+	if err != nil {
+		// handle error
+		fmt.Println(err)
+		os.Exit(2)
+	}
+
+	k, err := strconv.Atoi(inputs[1])
+	if err != nil {
+		// handle error
+		fmt.Println(err)
+		os.Exit(2)
+	}
+
+	got := fmt.Sprintf("%d\n", bio.Fibonaccid(n-1, k))
+
+	return got
+
 }
