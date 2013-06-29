@@ -133,6 +133,28 @@ func Fibonacci(n, k int) int {
 	return Fibonacci(n-1, k) + (k * Fibonacci(n-2, k))
 }
 
+func Factorial(n int) int {
+	loop := func(acc, n int) int { return 0 }
+	loop = func(acc, n int) int {
+		if n == 0 {
+			return acc
+		}
+		return loop(acc*n, n-1)
+	}
+	return loop(1, n)
+}
+
+func abs(x int) int {
+	if x < 0 {
+		return -x
+	}
+	return x
+}
+
+func Pascal(c, r int) int {
+	return Factorial(r) / (Factorial(c) * Factorial(abs(r-c)))
+}
+
 func Fibonaccid(n, k int) int {
 
 	var z float64
@@ -141,9 +163,9 @@ func Fibonaccid(n, k int) int {
 		x := float64(2)
 		z = math.Pow(x, y)
 	}
-	rabbits := Fibonacci(n, 1)
+	rabbits := Fibonacci(n, 1) - int(z)
 
-	return rabbits - int(z)
+	return rabbits
 }
 
 func HammingDistance(sequence1, sequence2 string) int {
