@@ -172,7 +172,7 @@ func TestRabbitsandRecurrenceRelations(t *testing.T) {
 			os.Exit(2)
 		}
 
-		got := fmt.Sprintf("%d", Fibonacci(n-1, k))
+		got := fmt.Sprintf("%g", Fibonacci2(float64(n), float64(k)))
 		if got != c.want {
 			t.Errorf("Fibonacci(%q) == %q, want %q", c.s, got, c.want)
 		}
@@ -540,7 +540,7 @@ func TestWabbitSeason(t *testing.T) {
 			os.Exit(2)
 		}
 
-		got := fmt.Sprintf("%d", Fibonaccid(n-1, k))
+		got := fmt.Sprintf("%g", Fibonacci2(float64(n), float64(k)))
 		if got != c.want {
 			t.Errorf("Fibonaccid(%q) == %q, want %q", c.s, got, c.want)
 		}

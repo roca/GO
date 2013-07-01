@@ -133,9 +133,25 @@ func Fibonacci(n, k int) int {
 	return Fibonacci(n-1, k) + (k * Fibonacci(n-2, k))
 }
 
-func Factorial(n int) int {
-	loop := func(acc, n int) int { return 0 }
-	loop = func(acc, n int) int {
+func Fibonacci2(n, k float64) float64 {
+	f := func(c, r, acc float64) float64 { return 0 }
+	f = func(c, r, acc float64) float64 {
+	        if (r - c) < 0 {
+			return acc 
+		}
+		return f(c+1, r - 1, acc + Pascal(c,r)) 
+	}
+	if n < 2 {return 1}
+	fib := 1.0
+	for i := 0.0; i < n; i++ {
+	  fib += f(0, i-1, 0)
+	}
+	return fib
+}
+
+func Factorial(n float64) float64 {
+	loop := func(acc, n float64) float64 { return 0 }
+	loop = func(acc, n float64) float64 {
 		if n == 0 {
 			return acc
 		}
@@ -144,18 +160,21 @@ func Factorial(n int) int {
 	return loop(1, n)
 }
 
-func abs(x int) int {
+func abs(x float64) float64 {
 	if x < 0 {
 		return -x
 	}
 	return x
 }
 
-func Pascal(c, r int) int {
+func Pascal(c, r float64) float64 {
+        if c == 0 || r == 0{ return 1}
+        if (r-c) == 0 { return 1}
+        if r < 2 { return 1}
 	return Factorial(r) / (Factorial(c) * Factorial(abs(r-c)))
 }
 
-func Fibonaccid(n, k int) int {
+func Fibonaccid(n, k int) float64 {
 
 	var z float64
 	if n >= k {
@@ -163,7 +182,7 @@ func Fibonaccid(n, k int) int {
 		x := float64(2)
 		z = math.Pow(x, y)
 	}
-	rabbits := Fibonacci(n, 1) - int(z)
+	rabbits := Fibonacci2(float64(n), 1.0) - z
 
 	return rabbits
 }
