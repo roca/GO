@@ -126,27 +126,20 @@ func Reverse(s string) string {
 	return string(b)
 }
 
-func Fibonacci(n, k int) int {
+func Fibonacci_old(n, k int) int {
 	if n == 1 || n == 0 {
 		return 1
 	}
 	return Fibonacci(n-1, k) + (k * Fibonacci(n-2, k))
 }
 
-func Fibonacci2(n, k float64) float64 {
-	f := func(c, r, acc float64) float64 { return 0 }
-	f = func(c, r, acc float64) float64 {
-	        if (r - c) < 0 {
-			return acc 
-		}
-		return f(c+1, r - 1, acc + Pascal(c,r)) 
+//Fibonacci Iterative
+func Fibonacci(n, k int) int {
+	var a, b int = 1, 1
+	for i := 2; i < n; i++ {
+		a, b = b, k*a+b
 	}
-	if n < 2 {return 1}
-	fib := 1.0
-	for i := 0.0; i < n; i++ {
-	  fib += f(0, i-1, 0)
-	}
-	return fib
+	return b
 }
 
 func Factorial(n float64) float64 {
@@ -168,21 +161,27 @@ func abs(x float64) float64 {
 }
 
 func Pascal(c, r float64) float64 {
-        if c == 0 || r == 0{ return 1}
-        if (r-c) == 0 { return 1}
-        if r < 2 { return 1}
+	if c == 0 || r == 0 {
+		return 1
+	}
+	if (r - c) == 0 {
+		return 1
+	}
+	if r < 2 {
+		return 1
+	}
 	return Factorial(r) / (Factorial(c) * Factorial(abs(r-c)))
 }
 
-func Fibonaccid(n, k int) float64 {
+func Fibonaccid(n, k int) int {
 
 	var z float64
 	if n >= k {
-		y := float64(n - k)
+		y := float64(n - k -1)
 		x := float64(2)
 		z = math.Pow(x, y)
 	}
-	rabbits := Fibonacci2(float64(n), 1.0) - z
+	rabbits := Fibonacci(n, 1) - int(z)
 
 	return rabbits
 }
