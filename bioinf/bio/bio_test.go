@@ -10,7 +10,7 @@ import (
 )
 
 /*
-Problem
+Problem DNA
 
 A string is simply an ordered collection of symbols selected from some alphabet and formed into a word; the length of a string is the number of symbols that it contains.
 
@@ -28,7 +28,7 @@ Sample Output
 20 12 17 21
 */
 
-func TestCountingDNANucleotides(t *testing.T) {
+func TestDNA(t *testing.T) {
 	var tests = []struct {
 		s, want string
 	}{
@@ -53,7 +53,7 @@ func TestCountingDNANucleotides(t *testing.T) {
 
 /*
 
-Problem
+Problem RNA
 
 An RNA string is a string formed from the alphabet containing 'A', 'C', 'G', and 'U'.
 
@@ -70,7 +70,7 @@ Sample Output
 
 GAUGGAACUUGACUACGUAAAUU
 */
-func TestTranscribingDNAintoRNA(t *testing.T) {
+func TestRNA(t *testing.T) {
 	var tests = []struct {
 		s, want string
 	}{
@@ -91,7 +91,7 @@ func TestTranscribingDNAintoRNA(t *testing.T) {
 
 /*
 
-Problem
+Problem REVC
 
 In DNA strings, symbols 'A' and 'T' are complements of each other, as are 'C' and 'G'.
 
@@ -108,7 +108,7 @@ Sample Output
 
 ACCGGGTTTT
 */
-func TestComplementingaStrandofDNA(t *testing.T) {
+func TestREVC(t *testing.T) {
 	var tests = []struct {
 		s, want string
 	}{
@@ -129,7 +129,7 @@ func TestComplementingaStrandofDNA(t *testing.T) {
 
 /*
 
-Problem
+Problem FIB
 
 A sequence is an ordered collection of objects (usually numbers), which are allowed to repeat. Sequences can be finite or infinite. Two examples are the finite sequence (π,−2√,0,π) and the infinite sequence of odd numbers (1,3,5,7,9,…). We use the notation an to represent the n-th term of a sequence.
 
@@ -148,7 +148,7 @@ Sample Output
 
 19
 */
-func TestRabbitsandRecurrenceRelations(t *testing.T) {
+func TestFIB(t *testing.T) {
 	var tests = []struct {
 		s, want string
 	}{
@@ -183,7 +183,7 @@ func TestRabbitsandRecurrenceRelations(t *testing.T) {
 
 /*
 
-Problem
+Problem GC
 
 The GC-content of a DNA string is given by the percentage of symbols in the string that are 'C' or 'G'. For example, the GC-content of "AGCTATAG" is 37.5%. Note that the reverse complement of any DNA string has the same GC-content.
 
@@ -211,7 +211,7 @@ Sample Output
 Rosalind_0808
 60.919540
 */
-func TestComputingGCContent(t *testing.T) {
+func TestGC(t *testing.T) {
 	var tests = []struct {
 		s    string
 		want float64
@@ -232,7 +232,7 @@ func TestComputingGCContent(t *testing.T) {
 }
 
 /*
-Problem
+Problem HAMM
 
 
 Figure 2. The Hamming distance between these two strings is 7. Mismatched symbols are colored red.
@@ -250,7 +250,7 @@ Sample Output
 
 7
 */
-func TestHammingDistance(t *testing.T) {
+func TestHAMM(t *testing.T) {
 	var tests = []struct {
 		s    string
 		want int
@@ -272,7 +272,7 @@ func TestHammingDistance(t *testing.T) {
 
 /*
 
-Problem
+Problem IPRB
 
 
 Figure 2. The probability of any outcome (leaf) in a probability tree diagram is given by the product of probabilities from the start of the tree to the outcome. For example, the probability that X is blue and Y is blue is equal to (2/5)(1/4), or 1/10.
@@ -296,7 +296,7 @@ Sample Output
 0.78333
 
 */
-func TestMendelFirstLaw(t *testing.T) {
+func TestIPRB(t *testing.T) {
 	var tests = []struct {
 		s, want string
 	}{
@@ -337,7 +337,7 @@ func TestMendelFirstLaw(t *testing.T) {
 }
 
 /*
-Problem
+Problem PROT
 
 The 20 commonly occurring amino acids are abbreviated by using 20 letters from the English alphabet (all letters except for B, J, O, U, X, and Z). Protein strings are constructed from these 20 symbols. Henceforth, the term genetic string will incorporate protein strings along with DNA strings and RNA strings.
 
@@ -355,7 +355,7 @@ Sample Output
 MAMAPRTEINSTRING
 */
 
-func TestTranslatingRNAintoProtein(t *testing.T) {
+func TestPROT(t *testing.T) {
 	var tests = []struct {
 		s, want string
 	}{
@@ -374,7 +374,8 @@ func TestTranslatingRNAintoProtein(t *testing.T) {
 
 }
 
-/* Problem
+/*
+Problem SUBS
 
 Given two strings s and t, t is a substring of s if t is contained as a contiguous collection of symbols in s (as a result, t must be no longer than s).
 
@@ -397,7 +398,7 @@ Sample Output
 2 4 10
 */
 
-func TestFindingaMotifinDNA(t *testing.T) {
+func TestSUBS(t *testing.T) {
 	var tests = []struct {
 		s1, s2, want string
 	}{
@@ -427,7 +428,7 @@ func TestFindingaMotifinDNA(t *testing.T) {
 
 /*
 
-Problem
+Problem CONS
 
 A matrix is a rectangular table of values divided into rows and columns. An m×n matrix has m rows and n columns. Given a matrix A, we write Ai,j to indicate the value found at the intersection of row i and column j.
 
@@ -475,7 +476,7 @@ C: 0 0 1 4 2 0 6 1
 G: 1 1 6 3 0 1 0 0
 T: 1 5 0 0 0 1 1 6
 */
-func TestFindingaMostLikelyCommonAncestor(t *testing.T) {
+func TestCONS(t *testing.T) {
 	var tests = []struct {
 		s, want string
 	}{
@@ -497,7 +498,7 @@ func TestFindingaMostLikelyCommonAncestor(t *testing.T) {
 }
 
 /*
-Problem
+Problem FIBD
 
 
 Figure 4. A figure illustrating the propagation of Fibonacci's rabbits if they die after three months.
@@ -516,7 +517,7 @@ Sample Output
 
 4
 */
-func TestWabbitSeason(t *testing.T) {
+func TestFIBD(t *testing.T) {
 	var tests = []struct {
 		s, want string
 	}{
