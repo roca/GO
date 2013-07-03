@@ -52,42 +52,64 @@
 //	fmt.Println(Cbrt(-2))
 //}
 
+//package main
+
+//import (
+//	"fmt"
+//	"net/http"
+//)
+
+//type Hello struct{}
+
+//type String string
+
+//type Struct struct {
+//	Greeting string
+//	Punct    string
+//	Who      string
+//}
+
+//func (s String) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+
+//	fmt.Fprint(w, s)
+//}
+
+//func (s *Struct) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+//	message := fmt.Sprintf("%s%s%s", s.Greeting, s.Punct, s.Who)
+//	fmt.Fprint(w, message)
+//}
+
+//func (h Hello) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+
+//	fmt.Fprint(w, "Hello!")
+//}
+
+//func main() {
+//	var h Hello
+//	http.Handle("/string", String("I'm a frayed knot."))
+//	http.Handle("/struct", &Struct{"Hello", ":", "Gophers!"})
+//	http.Handle("/", h)
+//	http.ListenAndServe("localhost:4000", nil)
+//}
+
+// Excericize #58
+//
+
 package main
 
 import (
-	"fmt"
-	"net/http"
+	"code.google.com/p/go-tour/pic"
+	"image"
+	"image/color"
 )
 
-type Hello struct{}
+type Image struct{}
 
-type String string
-
-type Struct struct {
-	Greeting string
-	Punct    string
-	Who      string
-}
-
-func (s String) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-
-	fmt.Fprint(w, s)
-}
-
-func (s *Struct) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	message := fmt.Sprintf("%s%s%s", s.Greeting, s.Punct, s.Who)
-	fmt.Fprint(w, message)
-}
-
-func (h Hello) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-
-	fmt.Fprint(w, "Hello!")
-}
+func (I *Image) ColorModel() color.Model { return color.RGBAModel }
+func (I *Image) Bounds() image.Rectangle { return image.Rect(0, 0, 40, 40) }
+func (I *Image) At(x, y int) color.Color { return color.RGBA{uint8(x), uint8(y), 255, 255} }
 
 func main() {
-	var h Hello
-	http.Handle("/string", String("I'm a frayed knot."))
-	http.Handle("/struct", &Struct{"Hello", ":", "Gophers!"})
-	http.Handle("/", h)
-	http.ListenAndServe("localhost:4000", nil)
+	m := &Image{}
+	pic.ShowImage(m)
 }
