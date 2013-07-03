@@ -4,7 +4,7 @@ package bio
 import (
 	"fmt"
 	"io/ioutil"
-	"math"
+	//"math"
 	"regexp"
 	"strings"
 )
@@ -175,15 +175,14 @@ func Pascal(c, r float64) float64 {
 
 func Fibonaccid(n, k int) int {
 
-	var z float64
-	if n >= k {
-		y := float64(n - k -1)
-		x := float64(2)
-		z = math.Pow(x, y)
-	}
-	rabbits := Fibonacci(n, 1) - int(z)
 
-	return rabbits
+	var a, b int = 1, 1
+	
+	for i := 2; i < n; i++ {
+	        if i >= k { a -= 1}
+		a, b = b, a+b
+	}
+	return b
 }
 
 func HammingDistance(sequence1, sequence2 string) int {
