@@ -1,4 +1,4 @@
-//package main
+package main
 
 //import (
 //	"fmt"
@@ -95,21 +95,23 @@
 // Excericize #58
 //
 
-package main
+//package main
 
-import (
-	"code.google.com/p/go-tour/pic"
-	"image"
-	"image/color"
-)
+//import (
+//	"code.google.com/p/go-tour/pic"
+//	"image"
+//	"image/color"
+//)
 
-type Image struct{}
+//type Image struct{}
 
-func (I *Image) ColorModel() color.Model { return color.RGBAModel }
-func (I *Image) Bounds() image.Rectangle { return image.Rect(0, 0, 40, 40) }
-func (I *Image) At(x, y int) color.Color { return color.RGBA{uint8(x), uint8(y), 255, 255} }
+//func (I *Image) ColorModel() color.Model { return color.RGBAModel }
+//func (I *Image) Bounds() image.Rectangle { return image.Rect(0, 0, 40, 40) }
+//func (I *Image) At(x, y int) color.Color { return color.RGBA{uint8(x), uint8(y), 255, 255} }
 
-func main() {
-	m := &Image{}
-	pic.ShowImage(m)
-}
+//func main() {
+//	m := &Image{}
+//	pic.ShowImage(m)
+//}
+
+
