@@ -541,9 +541,9 @@ func TestFIBD(t *testing.T) {
 			os.Exit(2)
 		}
 
-		got := fmt.Sprintf("%d", Fibonaccid(n, k))
+		got := fmt.Sprintf("%g", Fibonaccid(float64(n), float64(k)))
 		if got != c.want {
-			t.Errorf("Fibonacci(%q) == %q, want %q", c.s, got, c.want)
+			t.Errorf("Fibonacci(%q) == %2.0q, want %2.0q", c.s, got, c.want)
 		}
 
 	}

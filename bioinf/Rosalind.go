@@ -1,7 +1,7 @@
 package main
 
 import (
-	"./bio"
+	"svn/go/trunk/bioinf/bio"
 	"fmt"
 	"os"
 	"strconv"

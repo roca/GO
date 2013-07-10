@@ -173,13 +173,14 @@ func Pascal(c, r float64) float64 {
 	return Factorial(r) / (Factorial(c) * Factorial(abs(r-c)))
 }
 
-func Fibonaccid(n, k int) int {
+func Fibonaccid(n, k float64) float64 {
 
+	var a, b float64 = 1, 1
 
-	var a, b int = 1, 1
-	
-	for i := 2; i < n; i++ {
-	        if i >= k { a -= 1}
+	for i := float64(2); i < n; i++ {
+		if i >= k {
+			a -= 1
+		}
 		a, b = b, a+b
 	}
 	return b
