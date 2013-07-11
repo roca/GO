@@ -2,13 +2,18 @@ package main
 
 import (
 	"fmt"
-	//"os"
+	"os"
 	"time"
 )
 
 func main() {
 
-	boring("boring!")
+	args := os.Args
+
+	go boring(args[1])
+	fmt.Println("I'm listening.")
+	time.Sleep(2 * time.Second)
+	fmt.Println("You're boring: I'm leaving.")
 }
 
 func boring(msg string) {
