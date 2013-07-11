@@ -20,7 +20,7 @@ type Clone struct {
 
 func main() {
 
-	db, err := sql.Open("postgres", "user=developer password=developer dbname=nimbus host=hogwarts port=5432 sslmode=disable")
+	db, err := sql.Open("postgres", "user=developer password=developer dbname=abacus_dev host=husky port=5432 sslmode=disable")
 	if err != nil {
 		fmt.Println("Error")
 		panic(err)
@@ -34,7 +34,7 @@ func main() {
 }
 
 func QueryRows(db *sql.DB) {
-	rows, err := db.Query("SELECT name,seq FROM abacus.clones")
+	rows, err := db.Query("SELECT name,seq FROM clones")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -62,7 +62,7 @@ func QueryRows2(db *sql.DB) {
 	orm = beedb.New(db, "pg")
 	beedb.OnDebug = true
 
-	err := orm.SetTable("abacus.clones").FindAll(&allclones)
+	err := orm.FindAll(&allclones)
 	if err != nil {
 		panic(err)
 	}
