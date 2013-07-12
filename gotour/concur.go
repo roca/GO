@@ -13,22 +13,14 @@ type Message struct {
 
 func main() {
 
-	msg1 := Message{"joe", false}
-	msg2 := Message{"ann", false}
-
-	c := fanIn(msg1, msg2)
+	c := fanIn(boring("Joe"), boring("Ann"))
 	for i := 0; i < 10; i++ {
-		msg1 := <-c
-		fmt.Println(msg1.str)
-		msg2 := <-c
-		fmt.Println(msg2.str)
-		msg1.wait <- true
-		msg2.wait <- true
+		fmt.Println(<-c)
 	}
 	fmt.Println("You're boring: I'm leaving.")
 }
 
-func fanIn(input1, input2 Message) <-chan string {
+func fanIn(input1, input2 <-chan string) <-chan string {
 	c := make(chan string)
 	go func() {
 		for {
