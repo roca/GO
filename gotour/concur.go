@@ -13,15 +13,22 @@ type Message struct {
 
 func main() {
 
-	c := fanIn(boring("Joe"), boring("Ann"))
-	for i := 0; i < 10; i++ {
-		fmt.Println(<-c)
+	waitForIt := make(chan bool)
+
+	c := fanIn(boring(Message{"Joe", waitForIt}), boring(Message{"Ann", waitForIt}))
+	for i := 0; i < 5; i++ {
+		msg1 := <-c
+		fmt.Println(msg1.str)
+		msg2 := <-c
+		fmt.Println(msg2.str)
+		msg1.wait <- true
+		msg2.wait <- true
 	}
 	fmt.Println("You're boring: I'm leaving.")
 }
 
-func fanIn(input1, input2 <-chan string) <-chan string {
-	c := make(chan string)
+func fanIn(input1, input2 <-chan Message) <-chan Message {
+	c := make(chan Message)
 	go func() {
 		for {
 			c <- <-input1
@@ -35,12 +42,14 @@ func fanIn(input1, input2 <-chan string) <-chan string {
 	return c
 }
 
-func boring(msg string) <-chan string {
-	c := make(chan string)
+func boring(msg Message) <-chan Message {
+	c := make(chan Message)
+	waitForIt := msg.wait
 	go func() {
 		for i := 0; ; i++ {
-			c <- fmt.Sprintf("%s %d", msg, i)
+			c <- Message{fmt.Sprintf("%s: %d", msg.str, i), waitForIt}
 			time.Sleep(time.Duration(rand.Intn(1e3)) * time.Millisecond)
+			<-waitForIt
 		}
 	}()
 	return c
