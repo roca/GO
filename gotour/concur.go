@@ -31,14 +31,13 @@ func fanIn(input1, input2 <-chan Message) <-chan Message {
 	c := make(chan Message)
 	go func() {
 		for {
-			c <- <-input1
+			select {
+			 case msg1 := <-input1: c <- msg1
+			 case msg2 := <-input2: c <- msg2
+			}
 		}
 	}()
-	go func() {
-		for {
-			c <- <-input2
-		}
-	}()
+	
 	return c
 }
 
