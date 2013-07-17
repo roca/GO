@@ -13,6 +13,11 @@ type Message struct {
 
 func main() {
 
+	whisper()
+}
+
+func concur() {
+
 	waitForIt := make(chan bool)
 
 	c := fanIn(boring(Message{"Joe", waitForIt}), boring(Message{"Ann", waitForIt}))
@@ -32,12 +37,14 @@ func fanIn(input1, input2 <-chan Message) <-chan Message {
 	go func() {
 		for {
 			select {
-			 case msg1 := <-input1: c <- msg1
-			 case msg2 := <-input2: c <- msg2
+			case msg1 := <-input1:
+				c <- msg1
+			case msg2 := <-input2:
+				c <- msg2
 			}
 		}
 	}()
-	
+
 	return c
 }
 
