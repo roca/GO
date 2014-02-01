@@ -4,30 +4,26 @@ import "fmt"
 
 type Salutation struct {
 	name     string
-	greeting *string
+	greeting string
 }
 
-const (
-	PI       = 3.14
-	Language = "Go"
-)
+func Greet(salutation Salutation) {
+	message, alternate := CreateMessage(salutation.name, salutation.greeting, "yo")
 
-const (
-	A = iota
-	B
-	C
-)
+	fmt.Println(message)
+	fmt.Println(alternate)
+
+}
+
+func CreateMessage(name string, greeting ...string) (message string, alternate string) {
+	fmt.Println(len(greeting))
+	message, alternate = greeting[1]+" "+name, "HEY! "+name
+	return
+}
 
 func main() {
 
-	var message Salutation
-	message.name = "Hello Go World"
-	message.greeting = &message.name
-	*message.greeting = "hi"
+	var s = Salutation{"Bob", "Hello"}
 
-	fmt.Println(message.name, *message.greeting)
-
-	fmt.Println(A, B, C)
-	fmt.Println(PI)
-	fmt.Println(Language)
+	Greet(s)
 }
