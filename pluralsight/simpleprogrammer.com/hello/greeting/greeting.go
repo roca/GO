@@ -36,7 +36,7 @@ func GetPrefix(name string) (prefix string) {
 
 func TypeSwitchTest(x interface{}) {
 
-	switch t := x.(type) {
+	switch t := x; x.(type) {
 	case int:
 		fmt.Println("int")
 	case string:
