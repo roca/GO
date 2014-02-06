@@ -9,25 +9,16 @@ type Salutation struct {
 
 type Printer func(string)
 
-func Greet(salutation Salutation, do Printer, isFormal bool, times int) {
-	message, alternate := CreateMessage(salutation.Name, salutation.Greeting)
-	i := 0
-	for {
-		if i >= times {
-			break
-		}
+func Greet(salutation []Salutation, do Printer, isFormal bool, times int) {
 
-		if i%2 == 0 {
-			i++
-			continue
-		}
-		if prefix := GetPrefix(salutation.Name); isFormal {
+	for _, s := range salutation {
+		message, alternate := CreateMessage(s.Name, s.Greeting)
+
+		if prefix := GetPrefix(s.Name); isFormal {
 			do(prefix + message)
 		} else {
 			do(alternate)
 		}
-
-		i++
 	}
 
 }

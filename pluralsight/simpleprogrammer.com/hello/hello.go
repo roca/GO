@@ -6,7 +6,11 @@ import (
 
 func main() {
 
-	var s = greeting.Salutation{"Bob", "Hello"}
+	slice := []greeting.Salutation{
+		{"Bob", "Hello"},
+		{"Joe", "Hi"},
+		{"Mary", "What is up?"},
+	}
 
-	greeting.Greet(s, greeting.CreatePrintFunction("?"), true, 4)
+	greeting.Greet(slice, greeting.CreatePrintFunction("?"), true, 6)
 }
