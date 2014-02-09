@@ -7,11 +7,29 @@ type Salutation struct {
 	Greeting string
 }
 
+type Renamable interface {
+	Rename(newName string)
+}
+
+func (salutaion *Salutation) Rename(newName string) {
+	salutaion.Name = newName
+}
+
+func (salutaion *Salutation) Write(p []byte) (n int, err error) {
+	s := string(p)
+	salutaion.Rename(s)
+	n = len(s)
+	err = nil
+	return
+}
+
+type Salutations []Salutation
+
 type Printer func(string)
 
-func Greet(salutation []Salutation, do Printer, isFormal bool, times int) {
+func (salutations Salutations) Greet(do Printer, isFormal bool, times int) {
 
-	for _, s := range salutation {
+	for _, s := range salutations {
 		message, alternate := CreateMessage(s.Name, s.Greeting)
 
 		if prefix := GetPrefix(s.Name); isFormal {
