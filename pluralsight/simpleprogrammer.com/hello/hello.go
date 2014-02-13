@@ -19,15 +19,28 @@ func main() {
 
 	fmt.Fprintf(&salutaions[0], "The count is %d", 10)
 
-	done := make(chan bool, 2)
+	c := make(chan greeting.Salutation)
+	c2 := make(chan greeting.Salutation)
+	go salutaions.ChannelGreeter(c)
+	go salutaions.ChannelGreeter(c2)
 
-	go func() {
-		salutaions.Greet(greeting.CreatePrintFunction("<C>"), true, 6)
-		done <- true
-		done <- true
-		fmt.Println("Done")
-	}()
-	salutaions.Greet(greeting.CreatePrintFunction("?"), true, 6)
-	<-done
+	for {
+		select {
+		case s, ok := <-c:
+			if ok {
+
+				fmt.Println(s, ":1")
+			} else {
+				return
+			}
+
+		case s, ok := <-c2:
+			if ok {
+				fmt.Println(s, ":2")
+			} else {
+				return
+			}
+		}
+	}
 
 }
