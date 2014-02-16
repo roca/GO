@@ -1,8 +1,8 @@
 package main
 
 import (
-	"./greeting"
 	"fmt"
+	"github.com/GOCODE/pluralsight/simpleprogrammer.com/hello/greeting"
 )
 
 func RenameToFrog(r greeting.Renamable) {
