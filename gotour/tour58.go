@@ -18,11 +18,10 @@ func precision(x, y float64) float64 {
 
 }
 
-func Sqrt(x float64) float64 {
+func Sqrt(x float64) (float64, error) {
 
 	if x < 0 {
-		fmt.Println(ErrNegativeSqrt(x))
-		return 0
+		return 0, ErrNegativeSqrt(x)
 	}
 
 	z := float64(1)
@@ -38,10 +37,22 @@ func Sqrt(x float64) float64 {
 		//fmt.Println("iterartion ", i, " : ", z)
 	}
 
-	return z
+	return z, nil
 }
 
 func main() {
-	fmt.Println(Sqrt(2))
-	fmt.Println(Sqrt(-2))
+
+	answer, err := Sqrt(2)
+	if err == nil {
+		fmt.Println(answer)
+	} else {
+		fmt.Println(err)
+	}
+
+	answer, err = Sqrt(-2)
+	if err == nil {
+		fmt.Println(answer)
+	} else {
+		fmt.Println(err)
+	}
 }
