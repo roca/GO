@@ -9,7 +9,7 @@ import (
 type ErrNegativeSqrt float64
 
 func (e ErrNegativeSqrt) Error() string {
-	return "cannot Sqrt negative number: "
+	return fmt.Sprintf("cannot Sqrt negative number: %4.2f", e)
 }
 
 func precision(x, y float64) float64 {
@@ -19,11 +19,12 @@ func precision(x, y float64) float64 {
 }
 
 func Sqrt(x float64) float64 {
-	var e ErrNegativeSqrt
-	e = x
+
 	if x < 0 {
-		return e
+		fmt.Println(ErrNegativeSqrt(x))
+		return 0
 	}
+
 	z := float64(1)
 	i := 0
 
