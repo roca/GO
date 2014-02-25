@@ -1,44 +1,34 @@
+// tour 60
 package main
 
 import (
-	"io"
-	//"os"
-	//"strings"
+	"fmt"
+	"net/http"
 )
 
-type rot13Reader struct {
-	r io.Reader
+type String string
+
+type Struct struct {
+	Greeting string
+	Punct    string
+	Who      string
 }
 
-func rot13(b byte) byte {
-	var a, z byte
-	switch {
-	case 'a' <= b && b <= 'z':
-		a, z = 'a', 'z'
-	case 'A' <= b && b <= 'Z':
-		a, z = 'A', 'Z'
-	default:
-		return b
-	}
-	return (b-a+13)%(z-a+1) + a
+func (s Struct) ServeHTTP(
+	w http.ResponseWriter,
+	r *http.Request) {
+	fmt.Fprint(w, s.Greeting, s.Punct, s.Who)
 }
 
-func (rdr *rot13Reader) Read(b []byte) (n int, err error) {
-
-	n, err = rdr.r.Read(b)
-
-	for i, _ := range b {
-		b[i] = rot13(b[i])
-
-	}
-
-	return n, err
-
+func (s String) ServeHTTP(
+	w http.ResponseWriter,
+	r *http.Request) {
+	fmt.Fprint(w, s)
 }
 
-//func main() {
-//	s := strings.NewReader(
-//		"Lbh penpxrq gur pbqr!")
-//	r := rot13Reader{s}
-//	io.Copy(os.Stdout, &r)
-//}
+func main() {
+	// your http.Handle calls here
+	http.Handle("/string", String("I'm a frayed knot."))
+	http.Handle("/struct", &Struct{"Hello", ":", "Gophers!"})
+	http.ListenAndServe("localhost:4000", nil)
+}
