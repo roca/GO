@@ -29,6 +29,7 @@ func Same(t1, t2 *tree.Tree) bool {
 	for {
 		n1, ok1 := <-chana
 		n2, ok2 := <-chanb
+		fmt.Println("values: ", n1, n2)
 		if n1 != n2 || ok1 != ok2 {
 			return false
 		}
