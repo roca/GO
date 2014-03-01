@@ -5,19 +5,33 @@ import "code.google.com/p/go-tour/tree"
 import "fmt"
 
 func Walk(t *tree.Tree, ch chan int) {
-	var walker func(t *tree.Tree)
-	walker = func(t *tree.Tree) {
-		if t.Left != nil {
-			walker(t.Left)
+	defer close(ch) // <- closes the channel when this function returns
+	var walk func(t *tree.Tree)
+	walk = func(t *tree.Tree) {
+		if t == nil {
+			return
 		}
+		walk(t.Left)
 		ch <- t.Value
-		if t.Right != nil {
-			walker(t.Right)
-		}
+		walk(t.Right)
 	}
-	walker(t)
-	close(ch)
+	walk(t)
 }
+
+//func Walk(t *tree.Tree, ch chan int) {
+//	var walk func(t *tree.Tree)
+//	walk = func(t *tree.Tree) {
+//		if t.Left != nil {
+//			walk(t.Left)
+//		}
+//		ch <- t.Value
+//		if t.Right != nil {
+//			walk(t.Right)
+//		}
+//	}
+//	walk(t)
+//	close(ch)
+//}
 
 func Same(t1, t2 *tree.Tree) bool {
 	chana := make(chan int)
