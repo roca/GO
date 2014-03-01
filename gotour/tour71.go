@@ -100,4 +100,6 @@ func main() {
 	}
 
 	fmt.Println("Are they the same ?", Same(&t1, &t2))
+	fmt.Println("Are they the same ?", Same(tree.New(1), tree.New(1)))
+	fmt.Println("Are they the same ?", Same(tree.New(1), tree.New(2)))
 }
