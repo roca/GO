@@ -1,9 +1,11 @@
-// tour73
+// tour73_before
 package main
 
 import (
 	"fmt"
 )
+
+var results = map[string]string{}
 
 type Fetcher interface {
 	// Fetch returns the body of URL and
@@ -13,49 +15,36 @@ type Fetcher interface {
 
 // Crawl uses fetcher to recursively crawl
 // pages starting with url, to a maximum of depth.
-func Crawl(url string, depth int, fetcher Fetcher, ch chan map[string]string) {
-
+func Crawl(url string, depth int, fetcher Fetcher) map[string]string {
 	// TODO: Fetch URLs in parallel.
 	// TODO: Don't fetch the same URL twice.
 	// This implementation doesn't do either:
 
-	results_map := <-ch
-
 	if depth <= 0 {
-		ch <- results_map
-		return
+		return results
 	}
 	body, urls, err := fetcher.Fetch(url)
 	if err != nil {
-
-		results_map[url] = fmt.Sprintln(err)
-		ch <- results_map
-		return
+		results[url] = fmt.Sprintln(err)
+		//fmt.Println(err)
+		return results
 	}
-
-	results_map[url] = body
-	ch <- results_map
+	results[url] = body
+	//fmt.Printf("found: %s %q\n", url, body)
 	for _, u := range urls {
-		go Crawl(u, depth-1, fetcher, ch)
+		Crawl(u, depth-1, fetcher)
 	}
 
-	return
+	return results
 }
 
 func main() {
-
-	x := map[string]string{}
-
-	ch := make(chan map[string]string, 1)
-	ch <- x
-
-	Crawl("http://golang.org/", 4, fetcher, ch)
-
-	results := <-ch
+	results := Crawl("http://golang.org/", 4, fetcher)
 
 	for key, value := range results {
 		fmt.Printf("found: %s %q\n", key, value)
 	}
+
 }
 
 // fakeFetcher is Fetcher that returns canned results.
