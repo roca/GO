@@ -5,8 +5,6 @@ import (
 	"fmt"
 )
 
-var results = map[string]string{}
-
 type Fetcher interface {
 	// Fetch returns the body of URL and
 	// a slice of URLs found on that page.
@@ -15,36 +13,27 @@ type Fetcher interface {
 
 // Crawl uses fetcher to recursively crawl
 // pages starting with url, to a maximum of depth.
-func Crawl(url string, depth int, fetcher Fetcher) map[string]string {
+func Crawl(url string, depth int, fetcher Fetcher) {
 	// TODO: Fetch URLs in parallel.
 	// TODO: Don't fetch the same URL twice.
 	// This implementation doesn't do either:
-
 	if depth <= 0 {
-		return results
+		return
 	}
 	body, urls, err := fetcher.Fetch(url)
 	if err != nil {
-		results[url] = fmt.Sprintln(err)
-		//fmt.Println(err)
-		return results
+		fmt.Println(err)
+		return
 	}
-	results[url] = body
-	//fmt.Printf("found: %s %q\n", url, body)
+	fmt.Printf("found: %s %q\n", url, body)
 	for _, u := range urls {
 		Crawl(u, depth-1, fetcher)
 	}
-
-	return results
+	return
 }
 
 func main() {
-	results := Crawl("http://golang.org/", 4, fetcher)
-
-	for key, value := range results {
-		fmt.Printf("found: %s %q\n", key, value)
-	}
-
+	Crawl("http://golang.org/", 4, fetcher)
 }
 
 // fakeFetcher is Fetcher that returns canned results.

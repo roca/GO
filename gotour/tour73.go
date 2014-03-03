@@ -18,26 +18,31 @@ func Crawl(url string, depth int, fetcher Fetcher, ch chan map[string]string) {
 	// TODO: Fetch URLs in parallel.
 	// TODO: Don't fetch the same URL twice.
 	// This implementation doesn't do either:
-
 	results_map := <-ch
 
-	if depth <= 0 {
-		ch <- results_map
-		return
-	}
-	body, urls, err := fetcher.Fetch(url)
-	if err != nil {
-
-		results_map[url] = fmt.Sprintln(err)
+	if _, present := results_map[url]; depth <= 0 || present {
 		ch <- results_map
 		return
 	}
 
-	results_map[url] = body
-	ch <- results_map
-	for _, u := range urls {
-		go Crawl(u, depth-1, fetcher, ch)
+	var routine = func() {
+		body, urls, err := fetcher.Fetch(url)
+		if err != nil {
+
+			results_map[fmt.Sprint(err)] = ""
+			ch <- results_map
+			return
+		}
+
+		results_map["found: "+url] = body
+		ch <- results_map
+
+		for _, u := range urls {
+			Crawl(u, depth-1, fetcher, ch)
+		}
 	}
+
+	go routine()
 
 	return
 }
@@ -54,7 +59,7 @@ func main() {
 	results := <-ch
 
 	for key, value := range results {
-		fmt.Printf("found: %s %q\n", key, value)
+		fmt.Println(key, value)
 	}
 }
 
