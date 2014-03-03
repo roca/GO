@@ -3,6 +3,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 )
 
 type Fetcher interface {
@@ -49,6 +50,10 @@ func Crawl(url string, depth int, fetcher Fetcher, ch chan map[string]string) {
 
 func main() {
 
+	t1 := time.Now()
+
+	fmt.Printf("Go launched at %s\n", t1)
+
 	x := map[string]string{}
 
 	ch := make(chan map[string]string, 1)
@@ -61,6 +66,10 @@ func main() {
 	for key, value := range results {
 		fmt.Println(key, value)
 	}
+
+	t2 := time.Now()
+
+	fmt.Printf("The call took %v to run.\n", t2.Sub(t1))
 }
 
 // fakeFetcher is Fetcher that returns canned results.

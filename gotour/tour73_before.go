@@ -3,6 +3,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 )
 
 type Fetcher interface {
@@ -33,7 +34,12 @@ func Crawl(url string, depth int, fetcher Fetcher) {
 }
 
 func main() {
+	t1 := time.Now()
 	Crawl("http://golang.org/", 4, fetcher)
+	t2 := time.Now()
+
+	fmt.Printf("The call took %v to run.\n", t2.Sub(t1))
+
 }
 
 // fakeFetcher is Fetcher that returns canned results.
