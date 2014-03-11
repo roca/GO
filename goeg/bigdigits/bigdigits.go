@@ -18,18 +18,22 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"path/filepath"
+	//"path/filepath"
 	"strings"
 )
 
 func main() {
 	var bar = flag.Bool("bar", false, "bar flag")
+	var b = flag.Bool("b", false, "bar flag")
+
+	var help = flag.Bool("help", false, "help flag")
+	var h = flag.Bool("h", false, "help flag")
 
 	flag.Parse()
-	//fmt.Println("ip has value ", *bar)
 
-	if len(os.Args) == 1 {
-		fmt.Printf("usage: %s <whole-number>\n", filepath.Base(os.Args[0]))
+	if (len(os.Args) == 1) || *help || *h {
+		fmt.Println("usage: bigdigits [-b|--bar] <whole-number>")
+		fmt.Println("-b --bar draw an underbar and an overbar")
 		os.Exit(1)
 	}
 
@@ -52,14 +56,14 @@ func main() {
 		}
 	}
 
-	if *bar {
+	if *bar || *b {
 		fmt.Println(strings.Repeat("*", maxRowLength))
 	}
 	for _, value := range lines {
 		fmt.Println(value)
 	}
 
-	if *bar {
+	if *bar || *b {
 		fmt.Println(strings.Repeat("*", maxRowLength))
 	}
 
