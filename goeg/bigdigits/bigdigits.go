@@ -23,12 +23,17 @@ import (
 )
 
 func main() {
+	var bar = flag.Bool("bar", false, "bar flag")
+
+	flag.Parse()
+	//fmt.Println("ip has value ", *bar)
+
 	if len(os.Args) == 1 {
 		fmt.Printf("usage: %s <whole-number>\n", filepath.Base(os.Args[0]))
 		os.Exit(1)
 	}
 
-	stringOfDigits := os.Args[1]
+	stringOfDigits := os.Args[len(os.Args)-1]
 	lines := map[int]string{}
 	maxRowLength := 0
 	for row := range bigDigits[0] {
@@ -47,11 +52,16 @@ func main() {
 		}
 	}
 
-	fmt.Println(strings.Repeat("*", maxRowLength))
+	if *bar {
+		fmt.Println(strings.Repeat("*", maxRowLength))
+	}
 	for _, value := range lines {
 		fmt.Println(value)
 	}
-	fmt.Println(strings.Repeat("*", maxRowLength))
+
+	if *bar {
+		fmt.Println(strings.Repeat("*", maxRowLength))
+	}
 
 }
 
