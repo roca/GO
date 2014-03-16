@@ -42,6 +42,7 @@ type statistics struct {
 	mean    float64
 	median  float64
 	sd      float64
+	mode    []float64
 }
 
 func main() {
@@ -93,7 +94,8 @@ func formatStats(stats statistics) string {
 <tr><td>Mean</td><td>%f</td></tr>
 <tr><td>Median</td><td>%f</td></tr>
 <tr><td>Standard Deviation</td><td>%f</td></tr>
-</table>`, stats.numbers, len(stats.numbers), stats.mean, stats.median, stats.sd)
+<tr><td>Mode</td><td>%f</td></tr>
+</table>`, stats.numbers, len(stats.numbers), stats.mean, stats.median, stats.sd, stats.mode)
 }
 
 func getStats(numbers []float64) (stats statistics) {
@@ -102,6 +104,8 @@ func getStats(numbers []float64) (stats statistics) {
 	stats.mean = sum(numbers) / float64(len(numbers))
 	stats.median = median(numbers)
 	stats.sd = sd(numbers)
+	m, _ := mode(numbers)
+	stats.mode = m
 	return stats
 }
 
@@ -134,5 +138,34 @@ func sd(numbers []float64) float64 {
 	}
 
 	return math.Sqrt(sum(mappings) / (floatN - 1))
+
+}
+
+func mode(numbers []float64) ([]float64, bool) {
+	occurences := map[float64]int{}
+	maxOccurence := 0
+	numbersWithMaxOccurrence := make([]float64, 0)
+
+	for _, x := range numbers {
+		for _, y := range numbers {
+			if x == y {
+				occurences[x]++
+				if occurences[x] >= maxOccurence {
+					maxOccurence = occurences[x]
+				}
+			}
+		}
+	}
+	if maxOccurence == 1 {
+		return numbersWithMaxOccurrence, false
+	}
+
+	for k, v := range occurences {
+		if v == maxOccurence {
+			numbersWithMaxOccurrence = append(numbersWithMaxOccurrence, k)
+		}
+	}
+
+	return numbersWithMaxOccurrence, true
 
 }
