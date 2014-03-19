@@ -16,9 +16,9 @@ package main
 import (
 	"fmt"
 	"log"
-	"math"
+	//"math"
 	"net/http"
-	"sort"
+	//"sort"
 	"strconv"
 	"strings"
 )
@@ -59,8 +59,8 @@ func homePage(writer http.ResponseWriter, request *http.Request) {
 		fmt.Fprintf(writer, anError, err)
 	} else {
 		if numbers, message, ok := processRequest(request); ok {
-			stats := getStats(numbers)
-			fmt.Fprint(writer, formatStats(stats))
+			stats := solve(numbers)
+			fmt.Fprint(writer, formatSolutions(stats))
 		} else if message != "" {
 			fmt.Fprintf(writer, anError, message)
 		}
@@ -98,21 +98,15 @@ func formatStats(stats statistics) string {
 </table>`, stats.numbers, len(stats.numbers), stats.mean, stats.median, stats.sd, stats.mode)
 }
 
-func getStats(numbers []float64) (stats statistics) {
-	stats.numbers = numbers
-	sort.Float64s(stats.numbers)
-	stats.mean = sum(numbers) / float64(len(numbers))
-	stats.median = median(numbers)
-	stats.sd = sd(numbers)
-	m, _ := mode(numbers)
-	stats.mode = m
-	return stats
-}
-
-func formatQuestion(stats statistics) string {
-}
-func solve(stats statistics) string {
+func solve(numbers []float64) complex128 {
+	return complex128(1)
 
 }
-func formatSolutions(stats statistics) string {
+
+func formatQuestion(answer complex128) string {
+	return ""
+}
+
+func formatSolutions(answer complex128) string {
+	return ""
 }
