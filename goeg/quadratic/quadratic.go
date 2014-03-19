@@ -62,12 +62,18 @@ func homePage(writer http.ResponseWriter, request *http.Request) {
 	if err != nil {
 		fmt.Fprintf(writer, anError, err)
 	} else {
-		if numbers, message, ok := processRequest(request); ok {
-			stats := solve(numbers)
-			fmt.Fprint(writer, formatSolutions(stats))
-		} else if message != "" {
-			fmt.Fprintf(writer, anError, message)
-		}
+
+		fmt.Fprintf(writer, request.FormValue("numberA"))
+		fmt.Fprintf(writer, request.FormValue("numberB"))
+		fmt.Fprintf(writer, request.FormValue("numberC"))
+		/*
+			if numbers, message, ok := processRequest(request); ok {
+				stats := solve(numbers)
+				fmt.Fprint(writer, formatSolutions(stats))
+			} else if message != "" {
+				fmt.Fprintf(writer, anError, message)
+			}
+		*/
 	}
 	fmt.Fprint(writer, pageBottom)
 }
