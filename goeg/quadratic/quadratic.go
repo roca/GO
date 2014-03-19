@@ -25,13 +25,17 @@ import (
 
 const (
 	pageTop = `<!DOCTYPE HTML><html><head>
-<style>.error{color:#FF0000;}</style></head><title>Statistics</title>
-<body><h3>Statistics</h3>
-<p>Computes basic statistics for a given list of numbers</p>`
+<style>.error{color:#FF0000;}</style></head><title>Quadratic</title>
+<body><h3>Quadratic Equation Solver</h3>
+<p>Solves equations of the for ax<sup>2</sup> + bx + c </p>`
 	form = `<form action="/" method="POST">
-<label for="numbers">Numbers (comma or space-separated):</label><br />
-<input type="text" name="numbers" size="30"><br />
+	<p>
+<input type="text" name="numberA" size="10"> x<sup>2</sup> + 
+<input type="text" name="numberB" size="10"> x +
+<input type="text" name="numberC" size="10"> -> 
 <input type="submit" value="Calculate">
+</p>
+
 </form>`
 	pageBottom = `</body></html>`
 	anError    = `<p class="error">%s</p>`
