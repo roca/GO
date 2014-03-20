@@ -63,25 +63,31 @@ func homePage(writer http.ResponseWriter, request *http.Request) {
 		fmt.Fprintf(writer, anError, err)
 	} else {
 
-		fmt.Fprintf(writer, request.FormValue("numberA"))
-		fmt.Fprintf(writer, request.FormValue("numberB"))
-		fmt.Fprintf(writer, request.FormValue("numberC"))
-		/*
-			if numbers, message, ok := processRequest(request); ok {
-				stats := solve(numbers)
-				fmt.Fprint(writer, formatSolutions(stats))
-			} else if message != "" {
-				fmt.Fprintf(writer, anError, message)
+		if numbers, message, ok := processRequest(request); ok {
+
+			for _, number := range numbers {
+				fmt.Fprintf(writer, strconv.FormatFloat(number, 'f', 4, 64)+", ")
 			}
-		*/
+
+			//stats := solve(numbers)
+			//fmt.Fprint(writer, formatSolutions(stats))
+		} else if message != "" {
+			fmt.Fprintf(writer, anError, message)
+		}
+
 	}
 	fmt.Fprint(writer, pageBottom)
 }
 
 func processRequest(request *http.Request) ([]float64, string, bool) {
 	var numbers []float64
-	if slice, found := request.Form["numbers"]; found && len(slice) > 0 {
-		text := strings.Replace(slice[0], ",", " ", -1)
+	var textFields []string
+
+	textFields = append(textFields, request.FormValue("numberA"))
+	textFields = append(textFields, request.FormValue("numberB"))
+	textFields = append(textFields, request.FormValue("numberC"))
+
+	for _, text := range textFields {
 		for _, field := range strings.Fields(text) {
 			if x, err := strconv.ParseFloat(field, 64); err != nil {
 				return numbers, "'" + field + "' is invalid", false
