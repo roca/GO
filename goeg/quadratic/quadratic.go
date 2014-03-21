@@ -16,7 +16,7 @@ package main
 import (
 	"fmt"
 	"log"
-	//"math"
+	"math/cmplx"
 	"net/http"
 	//"sort"
 	"strconv"
@@ -65,11 +65,9 @@ func homePage(writer http.ResponseWriter, request *http.Request) {
 
 		if numbers, message, ok := processRequest(request); ok {
 
-			for _, number := range numbers {
-				fmt.Fprintf(writer, strconv.FormatFloat(number, 'f', 4, 64)+", ")
-			}
-
-			//stats := solve(numbers)
+			x1, x2 := solve(numbers)
+			fmt.Fprintf(writer, strconv.FormatFloat(real(x1), 'f', 4, 64)+", ")
+			fmt.Fprintf(writer, strconv.FormatFloat(real(x2), 'f', 4, 64)+", ")
 			//fmt.Fprint(writer, formatSolutions(stats))
 		} else if message != "" {
 			fmt.Fprintf(writer, anError, message)
@@ -114,8 +112,20 @@ func formatStats(stats statistics) string {
 </table>`, stats.numbers, len(stats.numbers), stats.mean, stats.median, stats.sd, stats.mode)
 }
 
-func solve(numbers []float64) complex128 {
-	return complex128(1)
+func solve(numbers []float64) (complex128, complex128) {
+
+	var a, b, c complex128
+
+	a = complex(numbers[0], 0)
+	b = complex(numbers[1], 0)
+	c = complex(numbers[2], 0)
+
+	sqrt := (cmplx.Sqrt((b * b) - (4 * a * c)))
+
+	x1 := (-b + sqrt) / (2 * a)
+	x2 := (-b - sqrt) / (2 * a)
+
+	return x1, x2
 
 }
 
