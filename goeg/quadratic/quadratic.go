@@ -66,9 +66,7 @@ func homePage(writer http.ResponseWriter, request *http.Request) {
 		if numbers, message, ok := processRequest(request); ok {
 
 			x1, x2 := solve(numbers)
-			fmt.Fprintf(writer, strconv.FormatFloat(real(x1), 'f', 4, 64)+", ")
-			fmt.Fprintf(writer, strconv.FormatFloat(real(x2), 'f', 4, 64)+", ")
-			//fmt.Fprint(writer, formatSolutions(stats))
+			fmt.Fprint(writer, formatSolutions(numbers, x1, x2))
 		} else if message != "" {
 			fmt.Fprintf(writer, anError, message)
 		}
@@ -86,6 +84,9 @@ func processRequest(request *http.Request) ([]float64, string, bool) {
 	textFields = append(textFields, request.FormValue("numberC"))
 
 	for _, text := range textFields {
+		if text == "" {
+			text = "0"
+		}
 		for _, field := range strings.Fields(text) {
 			if x, err := strconv.ParseFloat(field, 64); err != nil {
 				return numbers, "'" + field + "' is invalid", false
@@ -94,22 +95,10 @@ func processRequest(request *http.Request) ([]float64, string, bool) {
 			}
 		}
 	}
-	if len(numbers) == 0 {
-		return numbers, "", false // no data first time form is shown
+	if len(numbers) != 3 {
+		return numbers, "You need top input all three values even if it's zero", false // no data first time form is shown
 	}
 	return numbers, "", true
-}
-
-func formatStats(stats statistics) string {
-	return fmt.Sprintf(`<table border="1">
-<tr><th colspan="2">Results</th></tr>
-<tr><td>Numbers</td><td>%v</td></tr>
-<tr><td>Count</td><td>%d</td></tr>
-<tr><td>Mean</td><td>%f</td></tr>
-<tr><td>Median</td><td>%f</td></tr>
-<tr><td>Standard Deviation</td><td>%f</td></tr>
-<tr><td>Mode</td><td>%f</td></tr>
-</table>`, stats.numbers, len(stats.numbers), stats.mean, stats.median, stats.sd, stats.mode)
 }
 
 func solve(numbers []float64) (complex128, complex128) {
@@ -133,6 +122,9 @@ func formatQuestion(answer complex128) string {
 	return ""
 }
 
-func formatSolutions(answer complex128) string {
-	return ""
+func formatSolutions(numbers []float64, x1 complex128, x2 complex128) string {
+	answer := fmt.Sprintf("%10.2fX<sup>2</sup> + %10.2fX + %10.2f", numbers[0], numbers[1], numbers[2])
+	answer += fmt.Sprintln("<br/>")
+	answer += fmt.Sprintf(`Answer: x=(%10.2f + %10.2f<strong>i</strong>) or x=(%10.2f + %10.2f<strong>i</strong>)`, real(x1), imag(x1), real(x2), imag(x2))
+	return answer
 }
