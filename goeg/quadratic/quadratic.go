@@ -16,6 +16,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"math"
 	"math/cmplx"
 	"net/http"
 	//"sort"
@@ -123,8 +124,18 @@ func formatQuestion(answer complex128) string {
 }
 
 func formatSolutions(numbers []float64, x1 complex128, x2 complex128) string {
+
+	solutions1 := fmt.Sprintf("(%10.2f + %10.2f<strong>i</strong>)", real(x1), imag(x1))
+	solutions2 := fmt.Sprintf("(%10.2f + %10.2f<strong>i</strong>)", real(x2), imag(x2))
+
 	answer := fmt.Sprintf("%10.2fX<sup>2</sup> + %10.2fX + %10.2f", numbers[0], numbers[1], numbers[2])
 	answer += fmt.Sprintln("<br/>")
-	answer += fmt.Sprintf(`Answer: x=(%10.2f + %10.2f<strong>i</strong>) or x=(%10.2f + %10.2f<strong>i</strong>)`, real(x1), imag(x1), real(x2), imag(x2))
+	if math.Abs(real(x1)) == math.Abs(real(x2)) && math.Abs(imag(x1)) == math.Abs(imag(x2)) {
+		answer += fmt.Sprintf(`Answer: x= +-%s`, solutions1)
+
+	} else {
+		answer += fmt.Sprintf(`Answer: x=%s or x=%s`, solutions1, solutions2)
+
+	}
 	return answer
 }
