@@ -64,7 +64,7 @@ func homePage(writer http.ResponseWriter, request *http.Request) {
 		fmt.Fprintf(writer, anError, err)
 	} else {
 
-		if numbers, message, ok := processRequest(request); ok {
+		if numbers, message, ok := processRequest(request); ok && len(numbers) == 3 {
 
 			x1, x2 := solve(numbers)
 			fmt.Fprint(writer, formatSolutions(numbers, x1, x2))
@@ -96,8 +96,8 @@ func processRequest(request *http.Request) ([]float64, string, bool) {
 			}
 		}
 	}
-	if len(numbers) != 3 {
-		return numbers, "You need top input all three values even if it's zero", false // no data first time form is shown
+	if len(numbers) != 3 || strings.Join(textFields, "") == "" {
+		return numbers, "", false // no data first time form is shown
 	}
 	return numbers, "", true
 }
