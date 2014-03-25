@@ -139,3 +139,19 @@ func formatSolutions(numbers []float64, x1 complex128, x2 complex128) string {
 	}
 	return answer
 }
+
+// EqualFloat() returns true if x and y are approximately equal to the
+// given limit. Pass a limit of -1 to get the greatest accuracy the machine
+// can manage.
+func EqualFloat(x, y, limit float64) bool {
+    if limit <= 0.0 {
+        limit = math.SmallestNonzeroFloat64
+    }
+    return math.Abs(x-y) <=
+        (limit * math.Min(math.Abs(x), math.Abs(y)))
+}
+
+func EqualComplex(x, y complex128) bool {
+    return EqualFloat(real(x), real(y), -1) &&
+        EqualFloat(imag(x), imag(y), -1)
+}
