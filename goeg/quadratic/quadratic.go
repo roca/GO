@@ -125,17 +125,55 @@ func formatQuestion(answer complex128) string {
 
 func formatSolutions(numbers []float64, x1 complex128, x2 complex128) string {
 
-	solutions1 := fmt.Sprintf("(%10.2f + %10.2f<strong>i</strong>)", real(x1), imag(x1))
-	solutions2 := fmt.Sprintf("(%10.2f + %10.2f<strong>i</strong>)", real(x2), imag(x2))
+	solutions1 := ""
+	if !EqualFloat(real(x1), 0.0, 4) {
+		solutions1 += fmt.Sprintf("%+10.2f", real(x1))
+	}
+	if !EqualFloat(imag(x1), 0.0, 4) {
+		solutions1 += fmt.Sprintf("%+10.2f<strong>i</strong>", imag(x1))
+	}
 
-	answer := fmt.Sprintf("%10.2fX<sup>2</sup> + %10.2fX + %10.2f", numbers[0], numbers[1], numbers[2])
+	solutions2 := ""
+	if !EqualFloat(real(x2), 0.0, 4) {
+		solutions2 += fmt.Sprintf("%+10.2f", real(x2))
+	}
+	if !EqualFloat(imag(x2), 0.0, 4) {
+		solutions2 += fmt.Sprintf("%+10.2f<strong>i</strong>", imag(x2))
+	}
+
+	answer := ""
+	if !EqualFloat(numbers[0], 0.0, 4) {
+		answer += fmt.Sprintf("%10.2fX<sup>2</sup>", numbers[0])
+	}
+	if !EqualFloat(numbers[1], 0.0, 4) {
+		answer += fmt.Sprintf("%+10.2fX", numbers[1])
+	}
+	if !EqualFloat(numbers[2], 0.0, 4) {
+		answer += fmt.Sprintf("%+10.2f", numbers[2])
+	}
 	answer += fmt.Sprintln("<br/>")
 	if math.Abs(real(x1)) == math.Abs(real(x2)) && math.Abs(imag(x1)) == math.Abs(imag(x2)) {
-		answer += fmt.Sprintf(`Answer: x= +-%s`, solutions1)
+		answer += fmt.Sprintf(`Answer: x= %s`, solutions1)
 
 	} else {
 		answer += fmt.Sprintf(`Answer: x=%s or x=%s`, solutions1, solutions2)
 
 	}
 	return answer
+}
+
+// EqualFloat() returns true if x and y are approximately equal to the
+// given limit. Pass a limit of -1 to get the greatest accuracy the machine
+// can manage.
+func EqualFloat(x, y, limit float64) bool {
+	if limit <= 0.0 {
+		limit = math.SmallestNonzeroFloat64
+	}
+	return math.Abs(x-y) <=
+		(limit * math.Min(math.Abs(x), math.Abs(y)))
+}
+
+func EqualComplex(x, y complex128) bool {
+	return EqualFloat(real(x), real(y), -1) &&
+		EqualFloat(imag(x), imag(y), -1)
 }
