@@ -10,11 +10,11 @@ import (
 
 type Command string
 
-type Executable interface {
-	execute(done chan bool)
+type Runner interface {
+	run(done chan bool)
 }
 
-func (command *Command) execute(done chan bool) {
+func (command *Command) run(done chan bool) {
 	//fmt.Println("--------------------------------Working on command: ", *command)
 
 	out, err := exec.Command(string(*command)).Output()
@@ -42,7 +42,7 @@ func main() {
 	defer func() { close(done) }()
 
 	for i := range commands {
-		go commands[i].execute(done)
+		go commands[i].run(done)
 	}
 
 	all_done := len(commands)
