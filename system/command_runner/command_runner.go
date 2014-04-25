@@ -3,6 +3,8 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"os/exec"
 	"time"
 )
 
@@ -13,19 +15,28 @@ type Executable interface {
 }
 
 func (command *Command) execute(done chan bool) {
-	//fmt.Println("Working on command: ", *command)
-	time.Sleep(5000 * time.Millisecond)
-	fmt.Println("Done with ", *command)
+	//fmt.Println("--------------------------------Working on command: ", *command)
+
+	out, err := exec.Command(string(*command)).Output()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("Output from %s is\n%s\n", *command, out)
+
+	//time.Sleep(5000 * time.Millisecond)
+	//fmt.Println("--------------------------------Done with ", *command)
 	done <- true
 }
 
 func main() {
 
-	commands := make([]Command, 10000)
+	commands := []Command{"ls", "date", "pwd"}
 
-	for i := range commands {
-		commands[i] = Command(fmt.Sprintf("command %d", i))
-	}
+	//commands := make([]Command, 10000)
+
+	//for i := range commands {
+	//	commands[i] = Command(fmt.Sprintf("command %d", i))
+	//}
 
 	done := make(chan bool)
 	defer func() { close(done) }()
