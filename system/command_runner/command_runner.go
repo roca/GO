@@ -13,24 +13,42 @@ type Executable interface {
 }
 
 func (command *Command) execute(done chan bool) {
-	fmt.Println("Working on command: ", *command)
-	time.Sleep(3000 * time.Millisecond)
-	fmt.Println("Done with command!", *command)
+	//fmt.Println("Working on command: ", *command)
+	time.Sleep(5000 * time.Millisecond)
+	fmt.Println("Done with ", *command)
 	done <- true
 }
 
 func main() {
 
-	var a_command Command
-	a_command = "test"
-	fmt.Println("Hello World!")
-	done := make(chan bool)
-	go a_command.execute(done)
+	commands := make([]Command, 10000)
 
-	for {
+	for i := range commands {
+		commands[i] = Command(fmt.Sprintf("command %d", i))
+	}
+
+	done := make(chan bool)
+	defer func() { close(done) }()
+
+	for i := range commands {
+		go commands[i].execute(done)
+	}
+
+	all_done := len(commands)
+	doneCount := 0
+	timeout := time.After(6 * time.Second)
+
+	for doneCount != all_done {
+
 		select {
 		case <-done:
-			break
+			doneCount++
+		case <-timeout:
+			fmt.Println("timed out!")
+			doneCount = all_done
 		}
+
 	}
+
+	fmt.Println("all done !")
 }
