@@ -34,7 +34,7 @@ func (command *Command) run(done chan bool) {
 
 	fmt.Printf("Output from '%s' is\n%s\n", command.Path, out)
 
-	//time.Sleep(5000 * time.Millisecond)
+	time.Sleep(5000 * time.Millisecond)
 	//fmt.Println("--------------------------------Done with ", *command)
 	done <- true
 }
