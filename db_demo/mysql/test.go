@@ -4,23 +4,25 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/astaxie/beedb"
-	_ "github.com/bmizerany/pq"
+	_ "github.com/ziutek/mymysql/godrv"
 	"log"
 	"time"
 )
 
-type Clone struct {
+type Command struct {
 	Id   int `beedb:"PK"`
-	Name string
-	Seq  string
+	Path string
+	Dir  string
 	//Regions   []int
 	CreatedAt time.Time
 	CreatedBy string
+	UpdatedAt time.Time
+	UpdatedBy string
 }
 
 func main() {
 
-	db, err := sql.Open("postgres", "user=developer password=developer dbname=abacus_dev host=husky port=5432 sslmode=disable")
+	db, err := sql.Open("mymysql", "commandlogs_dev/commander/cody")
 	if err != nil {
 		fmt.Println("Error")
 		panic(err)
@@ -34,17 +36,17 @@ func main() {
 }
 
 func QueryRows(db *sql.DB) {
-	rows, err := db.Query("SELECT name,seq FROM clones")
+	rows, err := db.Query("SELECT path,dir FROM commands")
 	if err != nil {
 		log.Fatal(err)
 	}
 	for rows.Next() {
-		var name, seq string
-		if err := rows.Scan(&name, &seq); err != nil {
+		var path, dir string
+		if err := rows.Scan(&path, &dir); err != nil {
 			log.Fatal(err)
 		}
 
-		fmt.Printf("%s %s\n", name, seq)
+		fmt.Printf("%s %s\n", path, dir)
 	}
 	if err := rows.Err(); err != nil {
 		log.Fatal(err)
@@ -55,19 +57,19 @@ func QueryRows2(db *sql.DB) {
 
 	var orm beedb.Model
 
-	var allclones []Clone
+	var allCommands []Command
 
 	beedb.PluralizeTableNames = true
 
 	orm = beedb.New(db, "pg")
 	beedb.OnDebug = true
 
-	err := orm.FindAll(&allclones)
+	err := orm.FindAll(&allCommands)
 	if err != nil {
 		panic(err)
 	}
 
-	for i, clone := range allclones {
-		fmt.Printf("row %d : %s %s\n", i, clone.Name, clone.Seq)
+	for i, command := range allCommands {
+		fmt.Printf("row %d : %s %s\n", i, command.Path, command.Dir)
 	}
 }
