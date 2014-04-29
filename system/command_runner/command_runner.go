@@ -2,7 +2,10 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
+	//"github.com/astaxie/beedb"
+	_ "github.com/ziutek/mymysql/godrv"
 	"log"
 	"os/exec"
 	"time"
@@ -21,7 +24,7 @@ func (command *Command) run(done chan bool) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("Output from %s is\n%s\n", *command, out)
+	fmt.Printf("Output from '%s' is\n%s\n", *command, out)
 
 	//time.Sleep(5000 * time.Millisecond)
 	//fmt.Println("--------------------------------Done with ", *command)
@@ -30,7 +33,17 @@ func (command *Command) run(done chan bool) {
 
 func main() {
 
-	commands := []Command{"ls", "date", "pwd"}
+	db, err := sql.Open("mymysql", "commandlogs_dev/commander/cody")
+	if err != nil {
+		fmt.Println("Error")
+		panic(err)
+	}
+	conn_err := db.Ping()
+	if conn_err != nil {
+		panic(conn_err)
+	}
+
+	commands := queryCommands(db)
 
 	//commands := make([]Command, 10000)
 
@@ -62,4 +75,27 @@ func main() {
 	}
 
 	fmt.Println("all done !")
+}
+
+func queryCommands(db *sql.DB) []Command {
+	commands := []Command{}
+	rows, err := db.Query("SELECT path FROM commands")
+	if err != nil {
+		log.Fatal(err)
+	}
+	for rows.Next() {
+		var path string
+		if err := rows.Scan(&path); err != nil {
+			log.Fatal(err)
+		}
+		commands = append(commands, Command(path))
+		//fmt.Printf("%s\n", path)
+
+	}
+	if err := rows.Err(); err != nil {
+		log.Fatal(err)
+	}
+
+	return commands
+
 }

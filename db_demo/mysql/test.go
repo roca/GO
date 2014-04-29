@@ -32,7 +32,7 @@ func main() {
 		panic(conn_err)
 	}
 
-	QueryRows2(db)
+	QueryRows(db)
 }
 
 func QueryRows(db *sql.DB) {
