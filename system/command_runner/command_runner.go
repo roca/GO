@@ -11,7 +11,11 @@ import (
 	"time"
 )
 
-type Command string
+type Command struct {
+	Id   int
+	Path string
+	Dir  string
+}
 
 type Runner interface {
 	run(done chan bool)
@@ -20,11 +24,15 @@ type Runner interface {
 func (command *Command) run(done chan bool) {
 	//fmt.Println("--------------------------------Working on command: ", *command)
 
-	out, err := exec.Command(string(*command)).Output()
+	cmd := exec.Command(command.Path)
+	cmd.Dir = command.Dir
+
+	out, err := cmd.Output()
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("Output from '%s' is\n%s\n", *command, out)
+
+	fmt.Printf("Output from '%s' is\n%s\n", command.Path, out)
 
 	//time.Sleep(5000 * time.Millisecond)
 	//fmt.Println("--------------------------------Done with ", *command)
@@ -79,16 +87,17 @@ func main() {
 
 func queryCommands(db *sql.DB) []Command {
 	commands := []Command{}
-	rows, err := db.Query("SELECT path FROM commands")
+	rows, err := db.Query("SELECT id,path,dir FROM commands")
 	if err != nil {
 		log.Fatal(err)
 	}
 	for rows.Next() {
-		var path string
-		if err := rows.Scan(&path); err != nil {
+		var id int
+		var path, dir string
+		if err := rows.Scan(&id, &path, &dir); err != nil {
 			log.Fatal(err)
 		}
-		commands = append(commands, Command(path))
+		commands = append(commands, Command{id, path, dir})
 		//fmt.Printf("%s\n", path)
 
 	}
