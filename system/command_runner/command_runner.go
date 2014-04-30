@@ -2,10 +2,13 @@
 package main
 
 import (
+	//"crypto/tls"
+	//"crypto/x509"
 	"database/sql"
 	"fmt"
 	//"github.com/astaxie/beedb"
-	_ "github.com/ziutek/mymysql/godrv"
+	_ "github.com/go-sql-driver/mysql"
+	//"io/ioutil"
 	"log"
 	"os/exec"
 	"time"
@@ -41,7 +44,29 @@ func (command *Command) run(done chan bool) {
 
 func main() {
 
-	db, err := sql.Open("mymysql", "commandlogs_dev/commander/cody")
+	//rootCertPool := x509.NewCertPool()
+	//pem, err := ioutil.ReadFile("/etc/ssl/tarritdb01p/regeneronCA.cert")
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
+	//if ok := rootCertPool.AppendCertsFromPEM(pem); !ok {
+	//	log.Fatal("Failed to append PEM.")
+	//}
+	//clientCert := make([]tls.Certificate, 0, 1)
+	//certs, err := tls.LoadX509KeyPair("/etc/ssl/tarritdb01p/tarritdb01p.cer", "/etc/ssl/tarritdb01p/tarritdb01p.key")
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
+
+	//clientCert = append(clientCert, certs)
+	//mysql.RegisterTLSConfig("custom", &tls.Config{
+	//	RootCAs:      rootCertPool,
+	//	Certificates: clientCert,
+	//})
+
+	//db, err := sql.Open("mysql", "commander:cody@tcp(tarritdb01t:3306)/commandlogs_dev?charset=utf8&tls=custom")
+
+	db, err := sql.Open("mysql", "commander:cody@tcp(localhost:3306)/commandlogs_dev?charset=utf8")
 	if err != nil {
 		fmt.Println("Error")
 		panic(err)
