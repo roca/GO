@@ -12,7 +12,7 @@ func main() {
 
 	led := gobotGPIO.NewLed(beaglebone)
 	led.Name = "led"
-	led.Pin = "P9_12"
+	led.Pin = "P8_10"
 
 	work := func() {
 		gobot.Every("1s", func() { led.Toggle() })
