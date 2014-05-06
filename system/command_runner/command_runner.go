@@ -26,6 +26,14 @@ type Command struct {
 	Async int
 }
 
+type Groups []*Group
+
+func (s Groups) Len() int      { return len(s) }
+func (s Groups) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
+type ById struct{ Groups }
+func (s ById) Less(i, j int) bool { return s.Groups[i].Id < s.Groups[j].Id }
+
+
 type Runner interface {
 	run(done chan bool)
 }
@@ -39,11 +47,12 @@ func (command *Command) run(done chan bool) {
 	cmd.Dir = command.Dir
 
 	out, err := cmd.Output()
+	fmt.Printf("Output from '%s' is\n%s\n", command.Path, out)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("Output from '%s' is\n%s\n", command.Path, out)
+	//fmt.Printf("Output from '%s' is\n%s\n", command.Path, out)
 
 	//time.Sleep(5000 * time.Millisecond)
 	//fmt.Println("--------------------------------Done with ", *command)
@@ -57,6 +66,7 @@ func main() {
 	for _, group := range groups {
 		commands := queryCommands(db, group)
 		runCommands(commands)
+		fmt.Println("group ",group.Id)
 	}
 
 	fmt.Println("all done !")
@@ -131,7 +141,7 @@ func getDatabaseConnection(username, password string) *sql.DB {
 
 func queryGroups(db *sql.DB) []Group {
 	groups := []Group{}
-	rows, err := db.Query("SELECT distinct(group_id) FROM commands")
+	rows, err := db.Query("SELECT distinct(group_id) FROM commands order by group_id")
 	if err != nil {
 		log.Fatal(err)
 	}
