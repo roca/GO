@@ -18,13 +18,14 @@ package main
 
 import (
 	"database/sql"
+	"flag"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"log"
 	"os/exec"
 	"runtime"
 	"strings"
-	//"time"
+	"time"
 )
 
 var workers = runtime.NumCPU()
@@ -67,12 +68,16 @@ func (command Command) execute() []byte {
 func (job Job) Do() {
 
 	out := job.execute()
-
 	job.results <- Result{fmt.Sprintf("Output from '%s' is\n%s\n", job.path, out)}
 
 }
 
 func main() {
+
+	var async = flag.Bool("async", false, "async flag")
+
+	flag.Parse()
+
 	runtime.GOMAXPROCS(runtime.NumCPU()) // Use all the machine's cores
 	fmt.Println("The number of CPU on this server is", runtime.NumCPU())
 
@@ -80,11 +85,20 @@ func main() {
 
 	for i := range commands {
 		commands[i] = Command{i, "date", "", 1}
-		fmt.Printf(fmt.Sprintf("%d:Output from '%s' is\n%s\n", i, commands[i].path, commands[i].execute()))
-
 	}
 
-	//executeCommands(commands)
+	t0 := time.Now()
+	if *async {
+		executeCommands(commands)
+		t1 := time.Now()
+		fmt.Printf("The call took %v to run.\n", t1.Sub(t0))
+	} else {
+		for i := range commands {
+			fmt.Printf(fmt.Sprintf("%d:Output from '%s' is\n%s\n", i, commands[i].path, commands[i].execute()))
+		}
+		t1 := time.Now()
+		fmt.Printf("The call took %v to run.\n", t1.Sub(t0))
+	}
 
 	//db := getDatabaseConnection("commander", "cody")
 	//groups := queryForGroups(db)
@@ -93,51 +107,6 @@ func main() {
 	//	executeCommands(commands)
 	//	time.Sleep(5000 * time.Millisecond)
 	//}
-
-}
-
-func queryForGroups(db *sql.DB) []Group {
-	groups := []Group{}
-	rows, err := db.Query("SELECT distinct(group_id) FROM commands order by group_id")
-	if err != nil {
-		log.Fatal(err)
-	}
-	for rows.Next() {
-		var id int
-		if err := rows.Scan(&id); err != nil {
-			log.Fatal(err)
-		}
-		groups = append(groups, Group{id})
-	}
-	if err := rows.Err(); err != nil {
-		log.Fatal(err)
-	}
-
-	return groups
-
-}
-
-func queryForCommands(db *sql.DB, group Group) []Command {
-	commands := []Command{}
-	sql := fmt.Sprintf("SELECT id,path,dir,async FROM commands where group_id = %d", group.Id)
-	rows, err := db.Query(sql)
-	if err != nil {
-		log.Fatal(err)
-	}
-	for rows.Next() {
-		var id, async int
-		var path, dir string
-		if err := rows.Scan(&id, &path, &dir, &async); err != nil {
-			log.Fatal(err)
-		}
-		commands = append(commands, Command{id, path, dir, async})
-
-	}
-	if err := rows.Err(); err != nil {
-		log.Fatal(err)
-	}
-
-	return commands
 
 }
 
@@ -188,6 +157,51 @@ func minimum(x int, ys ...int) int {
 		}
 	}
 	return x
+}
+
+func queryForGroups(db *sql.DB) []Group {
+	groups := []Group{}
+	rows, err := db.Query("SELECT distinct(group_id) FROM commands order by group_id")
+	if err != nil {
+		log.Fatal(err)
+	}
+	for rows.Next() {
+		var id int
+		if err := rows.Scan(&id); err != nil {
+			log.Fatal(err)
+		}
+		groups = append(groups, Group{id})
+	}
+	if err := rows.Err(); err != nil {
+		log.Fatal(err)
+	}
+
+	return groups
+
+}
+
+func queryForCommands(db *sql.DB, group Group) []Command {
+	commands := []Command{}
+	sql := fmt.Sprintf("SELECT id,path,dir,async FROM commands where group_id = %d", group.Id)
+	rows, err := db.Query(sql)
+	if err != nil {
+		log.Fatal(err)
+	}
+	for rows.Next() {
+		var id, async int
+		var path, dir string
+		if err := rows.Scan(&id, &path, &dir, &async); err != nil {
+			log.Fatal(err)
+		}
+		commands = append(commands, Command{id, path, dir, async})
+
+	}
+	if err := rows.Err(); err != nil {
+		log.Fatal(err)
+	}
+
+	return commands
+
 }
 
 func getDatabaseConnection(username, password string) *sql.DB {
