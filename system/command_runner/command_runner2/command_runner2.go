@@ -24,7 +24,7 @@ import (
 	"os/exec"
 	"runtime"
 	"strings"
-	"time"
+	//"time"
 )
 
 var workers = runtime.NumCPU()
@@ -49,17 +49,24 @@ type Command struct {
 	async int
 }
 
-func (job Job) Do() {
-
-	command_arguments := strings.Split(job.path, " ")
+func (command Command) execute() []byte {
+	command_arguments := strings.Split(command.path, " ")
 
 	cmd := exec.Command(command_arguments[0], command_arguments[1:]...)
-	cmd.Dir = job.dir
+	cmd.Dir = command.dir
+	//time.Sleep(1000 * time.Millisecond)
 
 	out, err := cmd.Output()
 	if err != nil {
 		log.Fatal(err)
 	}
+	return out
+
+}
+
+func (job Job) Do() {
+
+	out := job.execute()
 
 	job.results <- Result{fmt.Sprintf("Output from '%s' is\n%s\n", job.path, out)}
 
@@ -69,13 +76,23 @@ func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU()) // Use all the machine's cores
 	fmt.Println("The number of CPU on this server is", runtime.NumCPU())
 
-	db := getDatabaseConnection("commander", "cody")
-	groups := queryForGroups(db)
-	for _, group := range groups {
-		commands := queryForCommands(db, group)
-		executeCommands(commands)
-		time.Sleep(5000 * time.Millisecond)
+	commands := make([]Command, 10000)
+
+	for i := range commands {
+		commands[i] = Command{i, "date", "", 1}
+		fmt.Printf(fmt.Sprintf("%d:Output from '%s' is\n%s\n", i, commands[i].path, commands[i].execute()))
+
 	}
+
+	//executeCommands(commands)
+
+	//db := getDatabaseConnection("commander", "cody")
+	//groups := queryForGroups(db)
+	//for _, group := range groups {
+	//	commands := queryForCommands(db, group)
+	//	executeCommands(commands)
+	//	time.Sleep(5000 * time.Millisecond)
+	//}
 
 }
 
