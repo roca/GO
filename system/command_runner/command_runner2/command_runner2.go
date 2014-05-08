@@ -123,8 +123,10 @@ func awaitCompletion(done <-chan struct{}, results chan Result) {
 }
 
 func processResults(results <-chan Result) {
+	i := 0
 	for result := range results {
-		fmt.Printf("%s\n", result.output)
+		i++
+		fmt.Printf("%d: %s\n", i,result.output)
 	}
 }
 
