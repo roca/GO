@@ -1,26 +1,28 @@
 package main
 
 import (
-	"fmt"
-	"os"
-	"path/filepath"
-	"time"
 	"flag"
+	"fmt"
+	"log"
+	"os"
+	"os/exec"
+	"path/filepath"
 	"regexp"
 	"strings"
+	"time"
 )
 
 func main() {
-    flag.String("h","help","File Watcher")
+	flag.String("h", "help", "File Watcher")
 	flag.Parse()
 	if len(os.Args) == 1 {
 		fmt.Printf(usage(filepath.Base(os.Args[0])))
 		os.Exit(1)
 	}
 	root_path := os.Args[1]
-	_,err := os.Stat(root_path)
+	_, err := os.Stat(root_path)
 	if err != nil {
-		fmt.Println(MyError{fmt.Sprintf("NonExisting file path : %s",root_path)})
+		fmt.Println(MyError{fmt.Sprintf("NonExisting file path : %s", root_path)})
 		fmt.Printf(usage(filepath.Base(os.Args[0])))
 		os.Exit(1)
 	}
@@ -28,27 +30,43 @@ func main() {
 }
 
 func usage(arg string) string {
-	return fmt.Sprintf("usage: %s <some_directory_base_path>\n",arg)
+	return fmt.Sprintf("usage: %s <some_directory_base_path>\n", arg)
 }
 
-
-
 func file_watcher(path string, info os.FileInfo, err error) error {
-	  sub_folders := strings.Split(path,"/")
-	  last_sub_folder := sub_folders[len(sub_folders)-1]
-	  matched, err := regexp.MatchString("\\d{6}\\_*", last_sub_folder)
-      if info.IsDir() && matched {
-	    _,rta_err := os.Stat(fmt.Sprintf("%s/RTAComplete.txt",path))
-	  	mod_time := info.ModTime()
-      	t0 := time.Now()
-      	hours_duration := t0.Sub(mod_time).Hours()
-//      	if rta_err == nil && hours_duration <= 1.0 {
-      	if rta_err == nil {
-	  		fmt.Printf("%50s\tduration in hours: %v\n",path, hours_duration)
-      	}
-	  	return filepath.SkipDir
-	  }
-	  return nil
+	sub_folders := strings.Split(path, "/")
+	last_sub_folder := sub_folders[len(sub_folders)-1]
+	matched, err := regexp.MatchString("\\d{6}\\_*", last_sub_folder)
+	if info.IsDir() && matched {
+		_, rta_err := os.Stat(fmt.Sprintf("%s/RTAComplete.txt", path))
+		mod_time := info.ModTime()
+		t0 := time.Now()
+		hours_duration := t0.Sub(mod_time).Hours()
+		//      	if rta_err == nil && hours_duration <= 1.0 {
+		if rta_err == nil {
+			fmt.Printf("%s\tduration in hours: %v\n", path, hours_duration)
+			flowcell_command := fmt.Sprintf("/cm/shared/apps/blackjack/bin/flowcell run=%s", path)
+			//go func() {
+			fmt.Printf("%s", exec_command(fmt.Sprintf("ls -l %s/RTAComplete.txt", path)))
+			fmt.Println(flowcell_command, "\n")
+			//}()
+		}
+		return filepath.SkipDir
+	}
+	return nil
+}
+
+func exec_command(command string) []byte {
+
+	command_arguments := strings.Split(command, " ")
+
+	cmd := exec.Command(command_arguments[0], command_arguments[1:]...)
+	out, err := cmd.Output()
+	if err != nil {
+		log.Fatal(err)
+	}
+	return out
+
 }
 
 // MyError is an error implementation that includes a time and message.
