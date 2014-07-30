@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"strings"
 	"time"
 )
@@ -37,6 +38,7 @@ func file_watcher(path string, info os.FileInfo, err error) error {
 	sub_folders := strings.Split(path, "/")
 	last_sub_folder := sub_folders[len(sub_folders)-1]
 	matched, err := regexp.MatchString("\\d{6}\\_*", last_sub_folder)
+	runtime.GOMAXPROCS(runtime.NumCPU())
 	if info.IsDir() && matched {
 		_, rta_err := os.Stat(fmt.Sprintf("%s/RTAComplete.txt", path))
 		mod_time := info.ModTime()
@@ -46,11 +48,11 @@ func file_watcher(path string, info os.FileInfo, err error) error {
 		if rta_err == nil {
 			fmt.Printf("%s\tduration in hours: %v\n", path, hours_duration)
 			flowcell_command := fmt.Sprintf("/cm/shared/apps/blackjack/bin/flowcell run=%s", path)
-			//go func() {
 			fmt.Printf("%s", exec_command(fmt.Sprintf("ls -l %s/RTAComplete.txt", path)))
 			fmt.Println(flowcell_command, "\n")
-			exec_command(flowcell_command)
-			//}()
+			go func() {
+				exec_command(flowcell_command)
+			}()
 		}
 		return filepath.SkipDir
 	}
