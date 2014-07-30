@@ -49,7 +49,7 @@ func file_watcher(path string, info os.FileInfo, err error) error {
 			//go func() {
 			fmt.Printf("%s", exec_command(fmt.Sprintf("ls -l %s/RTAComplete.txt", path)))
 			fmt.Println(flowcell_command, "\n")
-			//exec_command(flowcell_command)
+			exec_command(flowcell_command)
 			//}()
 		}
 		return filepath.SkipDir
