@@ -13,21 +13,47 @@ import (
 	"time"
 )
 
+var commands []string
+
 func main() {
+
+	runtime.GOMAXPROCS(runtime.NumCPU()) // Use all the machine's cores
+	fmt.Println("The number of CPUs on this server is", runtime.NumCPU())
+
 	flag.String("h", "help", "File Watcher")
+	var run = flag.Bool("run", false, "run flag")
+
 	flag.Parse()
 	if len(os.Args) == 1 {
 		fmt.Printf(usage(filepath.Base(os.Args[0])))
 		os.Exit(1)
 	}
-	root_path := os.Args[1]
+	root_path := os.Args[len(os.Args)-1]
 	_, err := os.Stat(root_path)
 	if err != nil {
 		fmt.Println(MyError{fmt.Sprintf("NonExisting file path : %s", root_path)})
 		fmt.Printf(usage(filepath.Base(os.Args[0])))
 		os.Exit(1)
 	}
+	fmt.Println("Folders found\n")
 	filepath.Walk(root_path, file_watcher)
+	done := make(chan struct{}, len(commands))
+	fmt.Println("-------------------------------------------\n")
+	for _, command := range commands {
+		go func() {
+			fmt.Println("executing: ", command)
+			if *run {
+				exec_command(command)
+			}
+			done <- struct{}{}
+		}()
+	}
+	for i := 0; i < len(commands); i++ {
+		<-done
+	}
+
+	fmt.Println("Done !")
+
 }
 
 func usage(arg string) string {
@@ -38,7 +64,7 @@ func file_watcher(path string, info os.FileInfo, err error) error {
 	sub_folders := strings.Split(path, "/")
 	last_sub_folder := sub_folders[len(sub_folders)-1]
 	matched, err := regexp.MatchString("\\d{6}\\_*", last_sub_folder)
-	runtime.GOMAXPROCS(runtime.NumCPU())
+
 	if info.IsDir() && matched {
 		_, rta_err := os.Stat(fmt.Sprintf("%s/RTAComplete.txt", path))
 		mod_time := info.ModTime()
@@ -46,13 +72,11 @@ func file_watcher(path string, info os.FileInfo, err error) error {
 		hours_duration := t0.Sub(mod_time).Hours()
 		//      	if rta_err == nil && hours_duration <= 1.0 {
 		if rta_err == nil {
-			fmt.Printf("%s\tduration in hours: %v\n", path, hours_duration)
+			fmt.Printf("%s\tfolder age in hours: %v\n", path, hours_duration)
 			flowcell_command := fmt.Sprintf("/cm/shared/apps/blackjack/bin/flowcell run=%s", path)
 			fmt.Printf("%s", exec_command(fmt.Sprintf("ls -l %s/RTAComplete.txt", path)))
-			fmt.Println(flowcell_command, "\n")
-			go func() {
-				exec_command(flowcell_command)
-			}()
+			//fmt.Println(flowcell_command, "\n")
+			commands = append(commands, flowcell_command)
 		}
 		return filepath.SkipDir
 	}
@@ -68,6 +92,7 @@ func exec_command(command string) []byte {
 	if err != nil {
 		log.Fatal("ERROR: ", err)
 	}
+
 	return out
 
 }
