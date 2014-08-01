@@ -15,7 +15,7 @@ package main
 
 import (
 	"fmt"
-	"log"
+	//"log"
 	"math"
 	"math/cmplx"
 	"net/http"
@@ -52,9 +52,9 @@ type statistics struct {
 
 func main() {
 	http.HandleFunc("/", homePage)
-	if err := http.ListenAndServe(":8081", nil); err != nil {
-		log.Fatal("failed to start server", err)
-	}
+	//if err := http.ListenAndServe(":8081", nil); err != nil {
+	//	log.Fatal("failed to start server", err)
+	//}
 }
 
 func homePage(writer http.ResponseWriter, request *http.Request) {
