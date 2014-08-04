@@ -15,11 +15,12 @@ package main
 
 import (
 	"fmt"
-	//"log"
+	"log"
 	"math"
 	"math/cmplx"
 	"net/http"
 	//"sort"
+	"net/http/cgi"
 	"strconv"
 	"strings"
 )
@@ -29,7 +30,7 @@ const (
 <style>.error{color:#FF0000;}</style></head><title>Quadratic</title>
 <body><h3>Quadratic Equation Solver</h3>
 <p>Solves equations of the for ax<sup>2</sup> + bx + c </p>`
-	form = `<form action="/" method="POST">
+	form = `<form action="/go-bin/quadratic.cgi" method="POST">
 	<p>
 <input type="text" name="numberA" size="10"> x<sup>2</sup> + 
 <input type="text" name="numberB" size="10"> x +
@@ -51,10 +52,10 @@ type statistics struct {
 }
 
 func main() {
-	http.HandleFunc("/", homePage)
-	//if err := http.ListenAndServe(":8081", nil); err != nil {
-	//	log.Fatal("failed to start server", err)
-	//}
+	http.HandleFunc("/go-bin/quadratic.cgi", homePage)
+	if err := cgi.Serve(http.HandlerFunc(homePage)); err != nil {
+		log.Fatal("failed to start server", err)
+	}
 }
 
 func homePage(writer http.ResponseWriter, request *http.Request) {
