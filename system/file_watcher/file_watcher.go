@@ -37,20 +37,21 @@ func main() {
 	}
 	fmt.Println("Folders found\n")
 	filepath.Walk(root_path, file_watcher)
-	done := make(chan struct{}, len(commands))
+	//done := make(chan bool, len(commands))
 	fmt.Println("-------------------------------------------\n")
 	for _, command := range commands {
-		go func() {
-			fmt.Println("executing: ", command)
-			if *run {
-				exec_command(command)
-			}
-			done <- struct{}{}
-		}()
+		//go func() {
+		fmt.Println("executing: ", command)
+		if *run {
+			out := fmt.Sprintf("%s\n", exec_command(command))
+			fmt.Println(out)
+		}
+		//done <- true
+		//}()
 	}
-	for i := 0; i < len(commands); i++ {
-		<-done
-	}
+	//for i := 0; i < len(commands); i++ {
+	//	<-done
+	//}
 
 	fmt.Println("Done !")
 
@@ -70,8 +71,8 @@ func file_watcher(path string, info os.FileInfo, err error) error {
 		mod_time := info.ModTime()
 		t0 := time.Now()
 		hours_duration := t0.Sub(mod_time).Hours()
-		//      	if rta_err == nil && hours_duration <= 1.0 {
-		if rta_err == nil {
+		if rta_err == nil && hours_duration <= 1.0 {
+			//if rta_err == nil {
 			fmt.Printf("%s\tfolder age in hours: %v\n", path, hours_duration)
 			flowcell_command := fmt.Sprintf("/cm/shared/apps/blackjack/bin/flowcell run=%s", path)
 			fmt.Printf("%s", exec_command(fmt.Sprintf("ls -l %s/RTAComplete.txt", path)))
@@ -91,6 +92,7 @@ func exec_command(command string) []byte {
 	out, err := cmd.Output()
 	if err != nil {
 		log.Fatal("ERROR: ", err)
+		log.Fatal(fmt.Sprintf("%s\n", out))
 	}
 
 	return out
