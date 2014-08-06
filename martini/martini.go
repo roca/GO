@@ -4,8 +4,9 @@ package main
 import (
 	"github.com/codegangsta/martini"
 	"github.com/russross/blackfriday"
+	//"log"
 	"net/http"
-	//"os"
+	//"net/http/cgi"
 )
 
 func main() {
@@ -17,7 +18,16 @@ func main() {
 		return blackfriday.MarkdownBasic([]byte(body))
 	})
 
-	//os.Setenv("PORT", "80")
+	m.Get("/go-bin/martini.cgi", func(r *http.Request) []byte {
 
-	//m.Run()
+		body := r.FormValue("body")
+		return blackfriday.MarkdownBasic([]byte(body))
+	})
+	m.Run()
+
+	//http.HandleFunc("/go-bin/quadratic.cgi", m.ServeHTTP)
+	//if err := cgi.Serve(http.HandlerFunc(m.ServeHTTP)); err != nil {
+	//	log.Fatal("failed to start server", err)
+	//}
+
 }

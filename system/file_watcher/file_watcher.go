@@ -41,6 +41,7 @@ func main() {
 	fmt.Println("-------------------------------------------\n")
 	for _, command := range commands {
 		//go func() {
+		//command_with_taskset := fmt.Sprintf("taskset -c %d %s", i, command)
 		fmt.Println("executing: ", command)
 		if *run {
 			out := fmt.Sprintf("%s\n", exec_command(command))
