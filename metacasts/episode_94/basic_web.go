@@ -35,5 +35,7 @@ func main() {
 
 	http.HandleFunc("/bar", barHandler)
 
+	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets"))))
+
 	http.ListenAndServe(":3000", nil)
 }
