@@ -4,7 +4,8 @@ package main
 import (
 	"fmt"
 	"html/template"
-	"io/ioutil"
+	//"io/ioutil"
+	"github.com/elazarl/go-bindata-assetfs"
 	"log"
 	"net/http"
 )
@@ -16,7 +17,8 @@ func (h *HomePageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func renderTemplate(tmplName string, w http.ResponseWriter) {
-	data, _ := ioutil.ReadFile(tmplName)
+	//data, _ := ioutil.ReadFile(tmplName)
+	data, _ := Asset(tmplName)
 	tmpl, err := template.New("Index").Parse(string(data))
 	if err != nil {
 
@@ -27,6 +29,9 @@ func renderTemplate(tmplName string, w http.ResponseWriter) {
 }
 
 func main() {
+
+	log.Println(AssetNames)
+
 	http.Handle("/", &HomePageHandler{})
 
 	barHandler := func(w http.ResponseWriter, r *http.Request) {
@@ -35,7 +40,8 @@ func main() {
 
 	http.HandleFunc("/bar", barHandler)
 
-	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets"))))
+	//http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets"))))
+	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(&assetfs.AssetFS{Asset, AssetDir, "assets"})))
 
 	http.ListenAndServe(":3000", nil)
 }
