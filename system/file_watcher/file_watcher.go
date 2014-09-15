@@ -22,6 +22,7 @@ func main() {
 
 	flag.String("h", "help", "File Watcher")
 	var run = flag.Bool("run", false, "run flag")
+	var ruby_env = flag.String("ruby_env", "production", "ruby_env flag")
 
 	flag.Parse()
 	if len(os.Args) == 1 {
@@ -39,12 +40,14 @@ func main() {
 	filepath.Walk(root_path, file_watcher)
 	//done := make(chan bool, len(commands))
 	fmt.Println("-------------------------------------------\n")
+
+	ruby_environment := fmt.Sprintf("ruby_env=%s", *ruby_env)
 	for _, command := range commands {
 		//go func() {
 		//command_with_taskset := fmt.Sprintf("taskset -c %d %s", i, command)
 		fmt.Println("executing: ", command)
 		if *run {
-			out := fmt.Sprintf("%s\n", exec_command(command))
+			out := fmt.Sprintf("%s\n", exec_command(command, ruby_environment))
 			fmt.Println(out)
 		}
 		//done <- true
@@ -85,13 +88,18 @@ func file_watcher(path string, info os.FileInfo, err error) error {
 	return nil
 }
 
-func exec_command(command string) []byte {
+func exec_command(command string, optionalParams ...string) []byte {
 
 	command_arguments := strings.Split(command, " ")
+
+	for _, options := range optionalParams {
+		command_arguments = append(command_arguments, options)
+	}
 
 	cmd := exec.Command(command_arguments[0], command_arguments[1:]...)
 	out, err := cmd.Output()
 	if err != nil {
+		log.Fatal(command_arguments)
 		log.Fatal("ERROR: ", err)
 		log.Fatal(fmt.Sprintf("%s\n", out))
 	}
