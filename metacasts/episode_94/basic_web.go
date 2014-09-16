@@ -31,7 +31,7 @@ func renderTemplate(tmplName string, w http.ResponseWriter) {
 func NewMux() *http.ServeMux {
 	mux := http.NewServeMux()
 	mux.Handle("/", &HomePageHandler{})
-	mux.Handle("/assets/", http.FileServer(&assetfs.AssetFS{Asset, AssetDir, "assets"}))
+	mux.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(&assetfs.AssetFS{Asset, AssetDir, "assets"})))
 
 	return mux
 }
