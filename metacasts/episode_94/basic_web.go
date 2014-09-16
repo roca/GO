@@ -2,7 +2,7 @@
 package main
 
 import (
-	"fmt"
+	//"fmt"
 	"html/template"
 	//"io/ioutil"
 	"github.com/elazarl/go-bindata-assetfs"
@@ -28,20 +28,17 @@ func renderTemplate(tmplName string, w http.ResponseWriter) {
 	tmpl.Execute(w, nil)
 }
 
+func NewMux() *http.ServeMux {
+	mux := http.NewServeMux()
+	mux.Handle("/", &HomePageHandler{})
+	mux.Handle("/assets/", http.FileServer(&assetfs.AssetFS{Asset, AssetDir, "assets"}))
+
+	return mux
+}
+
 func main() {
 
 	log.Println(AssetNames)
 
-	http.Handle("/", &HomePageHandler{})
-
-	barHandler := func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, "Hello Bar")
-	}
-
-	http.HandleFunc("/bar", barHandler)
-
-	//http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets"))))
-	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(&assetfs.AssetFS{Asset, AssetDir, "assets"})))
-
-	http.ListenAndServe(":3000", nil)
+	http.ListenAndServe(":3000", NewMux())
 }
