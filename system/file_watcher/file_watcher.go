@@ -71,8 +71,8 @@ func file_watcher(path string, info os.FileInfo, err error) error {
 	matched, err := regexp.MatchString("\\d{6}\\_*", last_sub_folder)
 
 	if info.IsDir() && matched {
-		_, rta_err := os.Stat(fmt.Sprintf("%s/RTAComplete.txt", path))
-		mod_time := info.ModTime()
+		file_info, rta_err := os.Stat(fmt.Sprintf("%s/RTAComplete.txt", path))
+		mod_time := file_info.ModTime()
 		t0 := time.Now()
 		hours_duration := t0.Sub(mod_time).Hours()
 		if rta_err == nil && hours_duration <= 1.0 {
