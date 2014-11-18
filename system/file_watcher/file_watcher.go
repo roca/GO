@@ -71,7 +71,7 @@ func file_watcher(path string, info os.FileInfo, err error) error {
 	matched, err := regexp.MatchString("\\d{6}\\_*", last_sub_folder)
 
 	if info.IsDir() && matched {
-		file_info, rta_err := os.Stat(fmt.Sprintf("%s/RTAComplete.txt", path))
+		file_info, rta_err := os.Stat(fmt.Sprintf("%s/CompletedJobInfo.xml", path))
 		mod_time := file_info.ModTime()
 		t0 := time.Now()
 		hours_duration := t0.Sub(mod_time).Hours()
@@ -79,7 +79,7 @@ func file_watcher(path string, info os.FileInfo, err error) error {
 			//if rta_err == nil {
 			fmt.Printf("%s\tfolder age in hours: %v\n", path, hours_duration)
 			flowcell_command := fmt.Sprintf("/cm/shared/apps/blackjack/bin/flowcell run=%s", path)
-			fmt.Printf("%s", exec_command(fmt.Sprintf("ls -l %s/RTAComplete.txt", path)))
+			fmt.Printf("%s", exec_command(fmt.Sprintf("ls -l %s/CompletedJobInfo.xml", path)))
 			//fmt.Println(flowcell_command, "\n")
 			commands = append(commands, flowcell_command)
 		}
