@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"gopkg.in/xmlpath.v1"
 	"log"
 	"os"
 	"os/exec"
@@ -70,7 +71,6 @@ func statTimes(name string) (atime, mtime, ctime time.Time, err error) {
 	mtime = fi.ModTime()
 	stat := fi.Sys().(*syscall.Stat_t)
 	atime = time.Unix(int64(stat.Atim.Sec), int64(stat.Atim.Nsec))
-	atime = time.Unix(int64(stat.Atim.Sec), int64(stat.Atim.Nsec))
 	ctime = time.Unix(int64(stat.Ctim.Sec), int64(stat.Ctim.Nsec))
 	return
 }
@@ -85,8 +85,32 @@ func file_watcher(path string, info os.FileInfo, err error) error {
 	matched, err := regexp.MatchString("\\d{6}\\_*", last_sub_folder)
 
 	if info.IsDir() && matched {
-		atime, mtime, ctime, err := statTimes(fmt.Sprintf("%s/CompletedJobInfo.xml", path))
 
+		info_xml_file_path := fmt.Sprintf("%s/CompletedJobInfo.xml", path)
+		xpath := xmlpath.MustCompile("/AnalysisJobInfo/Sheet/Header/ExperimentName")
+
+		info_xml_file, err := os.Open(info_xml_file_path)
+		if err != nil {
+			//fmt.Println(err)
+			return filepath.SkipDir
+		}
+
+		root, err := xmlpath.Parse(info_xml_file)
+		if err != nil {
+			//fmt.Println(err)
+			return filepath.SkipDir
+		}
+
+		is_blackjack_file := false
+		if value, ok := xpath.String(root); ok {
+			regex := regexp.MustCompile("^BST")
+
+			if regex.MatchString(value) {
+				is_blackjack_file = true
+			}
+		}
+
+		atime, mtime, ctime, err := statTimes(info_xml_file_path)
 		if err != nil {
 			fmt.Println(err)
 			return filepath.SkipDir
@@ -98,8 +122,8 @@ func file_watcher(path string, info os.FileInfo, err error) error {
 		ahours_duration := t0.Sub(atime).Hours()
 		chours_duration := t0.Sub(ctime).Hours()
 
-		if mhours_duration >= .25 && chours_duration <= 2.0 {
-			fmt.Printf("%s\tfile age in hours: a_age:%v  m_age:%v c_age:%v  \n", path, ahours_duration, mhours_duration, chours_duration)
+		if mhours_duration <= 1.0 && is_blackjack_file {
+			fmt.Printf("%s\tfile age in hours: a_age:%v  m_age:%v c_age:%v  blackjack_file:%v\n", path, ahours_duration, mhours_duration, chours_duration, is_blackjack_file)
 			flowcell_command := fmt.Sprintf("/cm/shared/apps/blackjack/bin/flowcell run=%s", path)
 			fmt.Printf("%s", exec_command(fmt.Sprintf("ls -l %s/CompletedJobInfo.xml", path)))
 			//fmt.Println(flowcell_command, "\n")
