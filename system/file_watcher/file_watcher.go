@@ -10,6 +10,7 @@ import (
 	"regexp"
 	"runtime"
 	"strings"
+	"syscall"
 	"time"
 )
 
@@ -61,6 +62,19 @@ func main() {
 
 }
 
+func statTimes(name string) (atime, mtime, ctime time.Time, err error) {
+	fi, err := os.Stat(name)
+	if err != nil {
+		return
+	}
+	mtime = fi.ModTime()
+	stat := fi.Sys().(*syscall.Stat_t)
+	atime = time.Unix(int64(stat.Atim.Sec), int64(stat.Atim.Nsec))
+	atime = time.Unix(int64(stat.Atim.Sec), int64(stat.Atim.Nsec))
+	ctime = time.Unix(int64(stat.Ctim.Sec), int64(stat.Ctim.Nsec))
+	return
+}
+
 func usage(arg string) string {
 	return fmt.Sprintf("usage: %s <some_directory_base_path>\n", arg)
 }
@@ -71,13 +85,21 @@ func file_watcher(path string, info os.FileInfo, err error) error {
 	matched, err := regexp.MatchString("\\d{6}\\_*", last_sub_folder)
 
 	if info.IsDir() && matched {
-		file_info, rta_err := os.Stat(fmt.Sprintf("%s/CompletedJobInfo.xml", path))
-		mod_time := file_info.ModTime()
+		atime, mtime, ctime, err := statTimes(fmt.Sprintf("%s/CompletedJobInfo.xml", path))
+
+		if err != nil {
+			fmt.Println(err)
+			return filepath.SkipDir
+		}
+
 		t0 := time.Now()
-		hours_duration := t0.Sub(mod_time).Hours()
-		if rta_err == nil && hours_duration <= 1.0 {
-			//if rta_err == nil {
-			fmt.Printf("%s\tfolder age in hours: %v\n", path, hours_duration)
+
+		mhours_duration := t0.Sub(mtime).Hours()
+		ahours_duration := t0.Sub(atime).Hours()
+		chours_duration := t0.Sub(ctime).Hours()
+
+		if mhours_duration >= .25 && chours_duration <= 2.0 {
+			fmt.Printf("%s\tfile age in hours: a_age:%v  m_age:%v c_age:%v  \n", path, ahours_duration, mhours_duration, chours_duration)
 			flowcell_command := fmt.Sprintf("/cm/shared/apps/blackjack/bin/flowcell run=%s", path)
 			fmt.Printf("%s", exec_command(fmt.Sprintf("ls -l %s/CompletedJobInfo.xml", path)))
 			//fmt.Println(flowcell_command, "\n")
