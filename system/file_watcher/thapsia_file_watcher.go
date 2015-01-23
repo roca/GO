@@ -101,12 +101,12 @@ func file_watcher(path string, info os.FileInfo, err error) error {
 			return filepath.SkipDir
 		}
 
-		is_blackjack_file := false
+		is_thapsia_file := false
 		if value, ok := xpath.String(root); ok {
 			regex := regexp.MustCompile("^BST")
 
 			if regex.MatchString(value) {
-				is_blackjack_file = true
+				is_thapsia_file = true
 			}
 		}
 
@@ -122,9 +122,9 @@ func file_watcher(path string, info os.FileInfo, err error) error {
 		ahours_duration := t0.Sub(atime).Hours()
 		chours_duration := t0.Sub(ctime).Hours()
 
-		if mhours_duration <= 1.0 && is_blackjack_file {
-			fmt.Printf("%s\tfile age in hours: a_age:%v  m_age:%v c_age:%v  blackjack_file:%v\n", path, ahours_duration, mhours_duration, chours_duration, is_blackjack_file)
-			flowcell_command := fmt.Sprintf("/cm/shared/apps/blackjack/bin/flowcell run=%s", path)
+		if mhours_duration <= 1.0 && is_thapsia_file {
+			fmt.Printf("%s\tfile age in hours: a_age:%v  m_age:%v c_age:%v  thapsia_file:%v\n", path, ahours_duration, mhours_duration, chours_duration, is_thapsia_file)
+			flowcell_command := fmt.Sprintf("/cm/shared/apps/thapsia/bin/flowcell run=%s", path)
 			fmt.Printf("%s", exec_command(fmt.Sprintf("ls -l %s/CompletedJobInfo.xml", path)))
 			//fmt.Println(flowcell_command, "\n")
 			commands = append(commands, flowcell_command)
