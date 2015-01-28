@@ -103,7 +103,7 @@ func file_watcher(path string, info os.FileInfo, err error) error {
 
 		is_thapsia_file := false
 		if value, ok := xpath.String(root); ok {
-			regex := regexp.MustCompile("^BST")
+			regex := regexp.MustCompile("^THAPSIA")
 
 			if regex.MatchString(value) {
 				is_thapsia_file = true
