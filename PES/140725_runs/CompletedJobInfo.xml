@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+<AnalysisJobInfo xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Version="0">
+  <AlignmentFolder>D:\Illumina\MiSeqAnalysis\141114_M03344_0003_000000000-AC8RF\Data\Intensities\BaseCalls\Alignment</AlignmentFolder>
+  <CompletionTime>2014-11-17T03:25:39.9798295-05:00</CompletionTime>
+  <RTARunInfo Version="2">
+    <Run Id="141114_M03344_0003_000000000-AC8RF" Number="3">
+      <Flowcell>000000000-AC8RF</Flowcell>
+      <Instrument>M03344</Instrument>
+      <Date>141114</Date>
+      <Reads>
+        <Read NumCycles="301" StartFromCycle="1" EndWithCycle="301" IsIndexedRead="N" />
+        <Read NumCycles="6" StartFromCycle="1" EndWithCycle="6" IsIndexedRead="Y" />
+        <Read NumCycles="6" StartFromCycle="1" EndWithCycle="6" IsIndexedRead="Y" />
+        <Read NumCycles="301" StartFromCycle="1" EndWithCycle="301" IsIndexedRead="N" />
+      </Reads>
+      <FlowcellLayout LaneCount="1" SurfaceCount="2" SwathCount="1" TileCount="19" />
+      <AlignToPhiX />
+    </Run>
+  </RTARunInfo>
+  <RunFolder>D:\Illumina\MiSeqAnalysis\141114_M03344_0003_000000000-AC8RF</RunFolder>
+  <Sheet>
+    <Type>MiSeq</Type>
+    <WorkflowType>GenerateFASTQ</WorkflowType>
+    <Header>
+      <Chemistry>Amplicon</Chemistry>
+      <Date />
+      <ExperimentName>BST_seq141103</ExperimentName>
+      <InvestigatorName>Meddy</InvestigatorName>
+    </Header>
+  </Sheet>
+  <StartTime>2014-11-17T03:04:49.0173595-05:00</StartTime>
+  <Workflow>
+    <WorkflowSettings>
+      <AdapterSequences>
+        <string>AGATCGGAAGAGCACACGTCTGAACTCCAGTCA</string>
+      </AdapterSequences>
+      <AdapterSequences2>
+        <string>AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT</string>
+      </AdapterSequences2>
+      <TrimFastq>false</TrimFastq>
+      <FastQInput>false</FastQInput>
+      <StitchReads>false</StitchReads>
+      <MaximumThreadCount>0</MaximumThreadCount>
+      <ReadTrimQualityScoreLevel>0</ReadTrimQualityScoreLevel>
+      <ReverseComplement>false</ReverseComplement>
+      <VarCallerSettings>
+        <Filters>
+          <FilterOutSingleProbePoolVariants>false</FilterOutSingleProbePoolVariants>
+          <FilterOutSingleStrandVariants>false</FilterOutSingleStrandVariants>
+          <IndelRepeatFilterCutoff>8</IndelRepeatFilterCutoff>
+          <MinQScore>0</MinQScore>
+          <MinimumCoverageDepthEmitCutoff>-1</MinimumCoverageDepthEmitCutoff>
+          <MinimumDepthCutoff>-1</MinimumDepthCutoff>
+          <MinimumGQCutoff>0</MinimumGQCutoff>
+          <MinimumGQXCutoff>0</MinimumGQXCutoff>
+          <MinimumMQCutoff>-1</MinimumMQCutoff>
+          <MinimumQDCutoff>0</MinimumQDCutoff>
+          <MinimumQualCutoff>-1</MinimumQualCutoff>
+          <MinimumQualityEmitCutoff>-1</MinimumQualityEmitCutoff>
+          <OnlyCallInROI>false</OnlyCallInROI>
+          <OnlyUseProperPairs>false</OnlyUseProperPairs>
+          <CallPhasedSNVs>false</CallPhasedSNVs>
+          <StrandBiasFilterCutoff>0</StrandBiasFilterCutoff>
+          <MaxSizePhasedSNV>100</MaxSizePhasedSNV>
+          <QualityModel>Poisson</QualityModel>
+          <VariantFrequencyEmitCutoff>0.1</VariantFrequencyEmitCutoff>
+          <VariantFrequencyFilterCutoff>0.2</VariantFrequencyFilterCutoff>
+          <FilterOffTargetVariants>false</FilterOffTargetVariants>
+        </Filters>
+        <Annotation>MARS</Annotation>
+        <SVAnnotation>None</SVAnnotation>
+        <AnnotationSource>refseq</AnnotationSource>
+        <AnnotateHGMD>false</AnnotateHGMD>
+        <OutputGenomeVcf>false</OutputGenomeVcf>
+        <GVcfBlockCompression>true</GVcfBlockCompression>
+      </VarCallerSettings>
+      <VariantCaller>None</VariantCaller>
+      <ComputePerTileStats>true</ComputePerTileStats>
+      <CompressBam>false</CompressBam>
+    </WorkflowSettings>
+    <Analysis>GenerateFASTQ</Analysis>
+    <WorkflowVersion>0.0.0.0</WorkflowVersion>
+  </Workflow>
+  <AnalysisSoftwareVersion>2.5.1.3</AnalysisSoftwareVersion>
+  <RTAOutputFolder>\\10.10.80.27\MiSeq\141114_M03344_0003_000000000-AC8RF</RTAOutputFolder>
+</AnalysisJobInfo>
