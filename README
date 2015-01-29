@@ -1,1 +1,8 @@
-This is the code that does the file system wathing for blackjack. It's not very generic yet. It kind of ugly but it demonstrates the use of GO!
+This is the code that does the file system wathing for blackjack. It's not very generic yet. It's kind of ugly but it demonstrates the use of GO!
+
+
+   The code inspects the miseq output child folders of a given parent directory path.
+
+   1. Which folders represent complete miseq runs
+   2. Determine the Experiment type of the run
+   3. Run the flowcell preprocessor if the run is complete and the experiment is the correct type
