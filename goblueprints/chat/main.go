@@ -27,10 +27,14 @@ func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	var addr = flag.String("addr", ":8080", "The addr of the application")
+	var tracing = flag.Bool("tracing", false, "Turn tracing [on|off] default is off")
+
 	flag.Parse() //parse the flags
 	r := newRoom()
-	r.tracer = trace.New(os.Stdout)
-	http.Handle("/", &templateHandler{filename: "chat.html"})
+	if *tracing == true {
+		r.tracer = trace.New(os.Stdout)
+	}
+	http.Handle("/", MustAuth(&templateHandler{filename: "chat.html"}))
 	http.Handle("/room", r)
 	//get the room going
 	go r.run()
