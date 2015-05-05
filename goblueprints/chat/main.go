@@ -10,6 +10,8 @@ import (
 	"text/template"
 
 	"github.com/GOCODE/goblueprints/trace"
+	"github.com/stretchr/gomniauth"
+	"github.com/stretchr/gomniauth/providers/google"
 )
 
 type templateHandler struct {
@@ -25,11 +27,18 @@ func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	t.templ.Execute(w, r)
 }
 
+/*
+
+*/
+
 func main() {
 	var addr = flag.String("addr", ":8080", "The addr of the application")
 	var tracing = flag.Bool("tracing", false, "Turn tracing [on|off] default is off")
 
 	flag.Parse() //parse the flags
+
+	gomniauth.SetSecurityKey(os.Getenv("GOOGLE_KEY"))
+	gomniauth.WithProviders(google.New(os.Getenv("GOOGLE_KEY"), os.Getenv("GOOGLE_SECRET"), "http://localhost:8080/auth/callback/google"))
 	r := newRoom()
 	if *tracing == true {
 		r.tracer = trace.New(os.Stdout)
