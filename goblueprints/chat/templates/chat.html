@@ -43,6 +43,11 @@
 						var messageDate = new Date(Date(msg.When))
 						messages.append(
 							$("<li>").append(
+								$("<img>").css({
+									width:50,
+									verticalAlign:"middle",
+									"border-radius": "50%"
+								}).attr("src",msg.AvatarURL),
 								$("<span>").text("[" + messageDate.getHours() + ":" + messageDate.getMinutes() + ":" + messageDate.getSeconds()+ "]"),
 								$("<strong>").text(msg.Name + ": "),
 								$("<span>").text(msg.Message)
