@@ -1,31 +1,6 @@
 package main
 
 import (
-<<<<<<< HEAD
-	"log"
-	"net/http"
-)
-
-func handler(w http.ResponseWriter, r *http.Request) {
-
-	w.Write([]byte(`
-			<html>
-				<head>
-					<title>Chat</title>
-				</head>
-				<body>
-					Let's char!
-				</body>
-			</html>
-		`))
-
-}
-
-func main() {
-	http.HandleFunc("/", handler)
-	//start the web server
-	if err := http.ListenAndServe(":8080", nil); err != nil {
-=======
 	"flag"
 	"log"
 	"net/http"
@@ -96,7 +71,6 @@ func main() {
 	//start the web server
 	log.Print("Starting web server on", *addr)
 	if err := http.ListenAndServe(*addr, nil); err != nil {
->>>>>>> master
 		log.Fatal("ListenAndServe:", err)
 	}
 }
