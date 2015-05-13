@@ -1,6 +1,9 @@
 package main
 
-import "testing"
+import (
+	"strings"
+	"testing"
+)
 
 func TestAuthAvatar(t *testing.T) {
 	var authAvatar AuthAvatar
@@ -19,5 +22,18 @@ func TestAuthAvatar(t *testing.T) {
 	}
 	if url != testUrl {
 		t.Error("AuthAvatar.GetAvatarURL should return correct URL")
+	}
+}
+
+func TestGravatarAvatar(t *testing.T) {
+	var gravatarAvatar GravatarAvatar
+	client := new(client)
+	client.userData = map[string]interface{}{"email": "MyEmailAddress@exmple.com"}
+	url, err := gravatarAvatar.GetAvatarURL(client)
+	if err != nil {
+		t.Error("GravatarAvatar.GetAvatarURL should not return an error")
+	}
+	if !strings.Contains(url, "www.gravatar.com") {
+		t.Errorf("GravatarAvatar.GetAvatarURL wrongly returned %s", url)
 	}
 }

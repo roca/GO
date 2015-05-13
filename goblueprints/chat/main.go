@@ -47,7 +47,7 @@ func main() {
 
 	gomniauth.SetSecurityKey(os.Getenv("GOOGLE_KEY"))
 	gomniauth.WithProviders(google.New(os.Getenv("GOOGLE_KEY"), os.Getenv("GOOGLE_SECRET"), "http://localhost:8080/auth/callback/google"))
-	r := newRoom(UseAuthAvatar)
+	r := newRoom(UseGravatar)
 	if *tracing == true {
 		r.tracer = trace.New(os.Stdout)
 	}
