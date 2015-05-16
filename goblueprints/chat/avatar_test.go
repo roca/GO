@@ -27,8 +27,12 @@ func TestAuthAvatar(t *testing.T) {
 
 func TestGravatarAvatar(t *testing.T) {
 	var gravatarAvatar GravatarAvatar
+
+	useridStr := "0bc83cb571cd1c50ba6f3e8a78ef1346"
+
 	client := new(client)
-	client.userData = map[string]interface{}{"email": "MyEmailAddress@exmple.com"}
+	client.userData = map[string]interface{}{"userid": useridStr}
+
 	url, err := gravatarAvatar.GetAvatarURL(client)
 	if err != nil {
 		t.Error("GravatarAvatar.GetAvatarURL should not return an error")
