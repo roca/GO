@@ -47,7 +47,7 @@ func main() {
 
 	gomniauth.SetSecurityKey(os.Getenv("GOOGLE_KEY"))
 	gomniauth.WithProviders(google.New(os.Getenv("GOOGLE_KEY"), os.Getenv("GOOGLE_SECRET"), "http://localhost:8080/auth/callback/google"))
-	r := newRoom(UseGravatar)
+	r := newRoom(UseFileSystemAvatar)
 	if *tracing == true {
 		r.tracer = trace.New(os.Stdout)
 	}
@@ -66,6 +66,7 @@ func main() {
 	})
 	http.Handle("/upload", &templateHandler{filename: "upload.html"})
 	http.HandleFunc("/uploader", uploaderHandler)
+	http.Handle("/avatars/", http.StripPrefix("/avatars/", http.FileServer(http.Dir("./avatars"))))
 	http.Handle("/room", r)
 	//get the room going
 	go r.run()
