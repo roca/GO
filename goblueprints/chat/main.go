@@ -15,6 +15,11 @@ import (
 	"github.com/stretchr/objx"
 )
 
+var avatars Avatar = TryAvatars{
+	UseFileSystemAvatar,
+	UseAuthAvatar,
+	UseGravatar}
+
 type templateHandler struct {
 	once     sync.Once
 	filename string
@@ -47,7 +52,7 @@ func main() {
 
 	gomniauth.SetSecurityKey(os.Getenv("GOOGLE_KEY"))
 	gomniauth.WithProviders(google.New(os.Getenv("GOOGLE_KEY"), os.Getenv("GOOGLE_SECRET"), "http://localhost:8080/auth/callback/google"))
-	r := newRoom(UseAuthAvatar)
+	r := newRoom()
 	if *tracing == true {
 		r.tracer = trace.New(os.Stdout)
 	}
@@ -64,6 +69,9 @@ func main() {
 		w.Header()["Location"] = []string{"/chat"}
 		w.WriteHeader(http.StatusTemporaryRedirect)
 	})
+	http.Handle("/upload", &templateHandler{filename: "upload.html"})
+	http.HandleFunc("/uploader", uploaderHandler)
+	http.Handle("/avatars/", http.StripPrefix("/avatars/", http.FileServer(http.Dir("./avatars"))))
 	http.Handle("/room", r)
 	//get the room going
 	go r.run()
