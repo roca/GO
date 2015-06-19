@@ -4,10 +4,38 @@
 // http://play.golang.org/p/ItPe2EEy9X
 
 // Declare a struct type to maintain information about a user (name, email and age).
+type user struct{
+	name string
+	email string
+	age int
+
+}
 // Create a value of this type, initalize with values and display each field.
+
 //
 // Declare and initialize an anonymous struct type with the same three fields. Display the value.
 package main
+
+import (
+	"fmt"
+)
+
+  bill := user{
+  	name: "William",
+  	email: "will@gmail.com",
+  	age: 55,
+  }
+
+  bill2 := struct{
+	name string
+	email string
+	age int
+
+}{
+  	name: "William",
+  	email: "will@gmail.com",
+  	age: 55,
+  }
 
 // Add imports.
 

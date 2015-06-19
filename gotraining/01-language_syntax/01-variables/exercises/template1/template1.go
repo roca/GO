@@ -1,7 +1,7 @@
 // All material is licensed under the GNU Free Documentation License
 // https://github.com/ArdanStudios/gotraining/blob/master/LICENSE
 
-// https://play.golang.org/p/1xUWjHMB3I
+// https://play.golang.org/p/d2M0Q3mRnd
 
 // Declare three variables that are initalized to their zero value and three
 // declared with a literal value. Declare variables of type string, int and
@@ -11,31 +11,34 @@
 // converting the literal value of Pi (3.14).
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
 
 // main is the entry point for the application.
 func main() {
 	// Declare variables that are set to their zero value.
-	var i int
-	var s string
+	var age int
+	var name string
+	var legal bool
 
 	// Display the value of those variables.
-	s = "Hello"
-	fmt.Printf("%s\n", s)
-	fmt.Printf("%d\n", i)
+	fmt.Println(age)
+	fmt.Println(name)
+	fmt.Println(legal)
 
 	// Declare variables and initalize.
-	x := "World"
-	z := 7.5
 	// Using the short variable declaration operator.
+	month := 10
+	dayOfWeek := "Tuesday"
+	happy := true
 
 	// Display the value of those variables.
-	fmt.Printf("%s\n", x)
+	fmt.Println(month)
+	fmt.Println(dayOfWeek)
+	fmt.Println(happy)
+
 	// Perform a type conversion.
-	g := int32(z)
-	fmt.Printf("%d\n", g)
+	pi := float32(3.14)
 
 	// Display the value of that variable.
+	fmt.Printf("%T [%v]\n", pi, pi)
 }

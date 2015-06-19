@@ -1,34 +1,17 @@
-// All material is licensed under the GNU Free Documentation License
-// https://github.com/ArdanStudios/gotraining/blob/master/LICENSE
+		return
+	}
+	defer file.Close()
 
-// http://play.golang.org/p/MxcJ581bt6
+	// Send the document to the file.
+	writers = append(writers, file)
 
-// Download any document from the web and display the content in
-// the terminal and write it to a file at the same time.
-package main
+	// MultiWriter(io.Writer...) returns a single writer which multiplexes its
+	// writes across all of the writers we pass in.
+	dest := io.MultiWriter(writers...)
 
-// Add imports.
-
-// main is the entry point for the application.
-func main() {
-	// Download the RSS feed for "http://www.goinggo.net/feeds/posts/default".
-	// Check for errors.
-
-	// Arrange for the response Body to be Closed using defer.
-
-	// Declare a slice of io.Writer interface values.
-
-	// Append stdout to the slice of writers.
-
-	// Open a file named "goinggo.rss" and check for errors.
-
-	// Close the file when the function returns.
-
-	// Append the file to the slice of writers.
-
-	// Create a MultiWriter interface value from the writers
-	// inside the slice of io.Writer values.
-
-	// Write the response to both the stdout and file using the
-	// MultiWriter. Check for errors.
+	// Write to dest the same way as before, copying from the Body.
+	_, err = io.Copy(dest, resp.Body)
+	if err != nil {
+		fmt.Println(err)
+	}
 }

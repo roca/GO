@@ -8,7 +8,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/ArdanStudios/gotraining/04-packaging_exporting/example4/animals"
+	"./animals"
 )
 
 // main is the entry point for the application.
@@ -17,10 +17,17 @@ func main() {
 	dog := animals.Dog{
 		Name:         "Chole",
 		BarkStrength: 10,
-		age:          5,
+		//age:          5,
+	}
+
+	cat := animals.Cat{
+		Name:        "FiFi",
+		PurStrength: 10,
+		Age:         5,
 	}
 
 	// ./example4.go:20: unknown animals.Dog field 'age' in struct literal
 
 	fmt.Printf("Dog: %#v\n", dog)
+	fmt.Printf("Cat: %#v\n", cat)
 }

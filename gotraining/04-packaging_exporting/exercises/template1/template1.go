@@ -10,7 +10,14 @@
 // Create a program that imports the toy package. Use the New function to create a
 // value of type toy. Then use the methods to set the counts and display the
 // field values of that toy value.
+
 package main
+
+import (
+	"fmt"
+
+	"github.com/GOCODE/gotraining/04-packaging_exporting/exercises/exercise1/toy"
+)
 
 // Add imports.
 
@@ -18,9 +25,16 @@ package main
 func main() {
 	// Use the New function from the toy package to create a value of
 	// type toy.
-
+	toy := toy.New("Bat", 28)
 	// Use the methods from the toy value to set some intialize
 	// values.
+	// Update the counts.
+	toy.UpdateOnHand(100)
+	toy.UpdateSold(2)
 
 	// Display each field separately from the toy value.
+	fmt.Println("Name", toy.Name)
+	fmt.Println("Weight", toy.Weight)
+	fmt.Println("OnHand", toy.OnHand())
+	fmt.Println("Sold", toy.Sold())
 }

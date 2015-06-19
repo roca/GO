@@ -9,6 +9,7 @@ package main
 
 import (
 	"fmt"
+	"runtime"
 	"sync"
 )
 
@@ -17,6 +18,9 @@ var wg sync.WaitGroup
 
 // main is the entry point for all Go programs.
 func main() {
+	fmt.Println("CPUS: ", runtime.NumCPU())
+	runtime.GOMAXPROCS(runtime.NumCPU())
+	//for {
 	// Add a count of two, one for each goroutine.
 	wg.Add(2)
 
@@ -33,6 +37,7 @@ func main() {
 	wg.Wait()
 
 	fmt.Println("\nTerminating Program")
+	//}
 }
 
 // lowercase displays the set of lowercase letters three times.
