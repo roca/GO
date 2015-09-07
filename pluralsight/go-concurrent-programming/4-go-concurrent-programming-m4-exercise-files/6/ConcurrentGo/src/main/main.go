@@ -10,16 +10,16 @@ import (
 
 func main() {
 	start := time.Now()
-	
+
 	extractChannel := make(chan *Order)
 	transformChannel := make(chan *Order)
 	doneChannel := make(chan bool)
-	
+
 	go extract(extractChannel)
 	go transform(extractChannel, transformChannel)
 	go load(transformChannel, doneChannel)
-	
-	<- doneChannel
+
+	<-doneChannel
 	fmt.Println(time.Since(start))
 }
 
@@ -34,7 +34,7 @@ type Order struct {
 	PartNumber     string
 	Quantity       int
 
-	UnitCost  float64 
+	UnitCost  float64
 	UnitPrice float64
 }
 
@@ -43,14 +43,14 @@ func extract(ch chan *Order) {
 	defer f.Close()
 	r := csv.NewReader(f)
 
-	for record, err := r.Read(); err == nil;record, err = r.Read() {
+	for record, err := r.Read(); err == nil; record, err = r.Read() {
 		order := new(Order)
 		order.CustomerNumber, _ = strconv.Atoi(record[0])
 		order.PartNumber = record[1]
 		order.Quantity, _ = strconv.Atoi(record[2])
 		ch <- order
 	}
-	
+
 	close(ch)
 }
 
@@ -81,11 +81,11 @@ func transform(extractChannel, transformChannel chan *Order) {
 			numMessages--
 		}(o)
 	}
-	
-	for ;numMessages > 0; {
+
+	for numMessages > 0 {
 		time.Sleep(1 * time.Millisecond)
 	}
-	
+
 	close(transformChannel)
 }
 
@@ -112,11 +112,12 @@ func load(transformChannel chan *Order, doneChannel chan bool) {
 			numMessages--
 		}(o)
 	}
-	for ;numMessages > 0; {
+	for numMessages > 0 {
 		time.Sleep(1 * time.Millisecond)
 	}
 	doneChannel <- true
 }
+
 /* 4.6.1 - Intitial ETL with synchronous processing
 package main
 
@@ -226,15 +227,15 @@ import (
 
 func main() {
 	start := time.Now()
-	
+
 	extractChannel := make(chan *Order)
 	transformChannel := make(chan *Order)
 	doneChannel := make(chan bool)
-	
+
 	go extract(extractChannel)
 	go transform(extractChannel, transformChannel)
 	go load(transformChannel, doneChannel)
-	
+
 	<- doneChannel
 	fmt.Println(time.Since(start))
 }
@@ -250,7 +251,7 @@ type Order struct {
 	PartNumber     string
 	Quantity       int
 
-	UnitCost  float64 
+	UnitCost  float64
 	UnitPrice float64
 }
 
@@ -266,7 +267,7 @@ func extract(ch chan *Order) {
 		order.Quantity, _ = strconv.Atoi(record[2])
 		ch <- order
 	}
-	
+
 	close(ch)
 }
 
@@ -291,7 +292,7 @@ func transform(extractChannel, transformChannel chan *Order) {
 		o.UnitPrice = productList[o.PartNumber].UnitPrice
 		transformChannel <- o
 	}
-	
+
 	close(transformChannel)
 }
 
@@ -312,9 +313,9 @@ func load(transformChannel chan *Order, doneChannel chan bool) {
 			o.UnitCost*float64(o.Quantity),
 			o.UnitPrice*float64(o.Quantity))
 	}
-	
+
 	doneChannel <- true
-	
+
 }
 */
 
@@ -331,15 +332,15 @@ import (
 
 func main() {
 	start := time.Now()
-	
+
 	extractChannel := make(chan *Order)
 	transformChannel := make(chan *Order)
 	doneChannel := make(chan bool)
-	
+
 	go extract(extractChannel)
 	go transform(extractChannel, transformChannel)
 	go load(transformChannel, doneChannel)
-	
+
 	<- doneChannel
 	fmt.Println(time.Since(start))
 }
@@ -355,7 +356,7 @@ type Order struct {
 	PartNumber     string
 	Quantity       int
 
-	UnitCost  float64 
+	UnitCost  float64
 	UnitPrice float64
 }
 
@@ -371,7 +372,7 @@ func extract(ch chan *Order) {
 		order.Quantity, _ = strconv.Atoi(record[2])
 		ch <- order
 	}
-	
+
 	close(ch)
 }
 
@@ -402,11 +403,11 @@ func transform(extractChannel, transformChannel chan *Order) {
 			numMessages--
 		}(o)
 	}
-	
+
 	for ;numMessages > 0; {
 		time.Sleep(1 * time.Millisecond)
 	}
-	
+
 	close(transformChannel)
 }
 
@@ -437,6 +438,6 @@ func load(transformChannel chan *Order, doneChannel chan bool) {
 		time.Sleep(1 * time.Millisecond)
 	}
 	doneChannel <- true
-	
+
 }
 */
