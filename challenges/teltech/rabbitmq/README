@@ -1,0 +1,22 @@
+The Challenge
+Using the language of your choice, you'll need to do the following.
+
+Connect to a RabbitMQ server
+User = challenge
+Pass = k64sMKmWEyg85VZs
+Host = rabbitmq-1.8696e293-bmoyles0117.node.tutum.io
+Port = 5672
+Virtual Host Is Blank / Default
+Declare a queue on Rabbit server using your github login as the queue name
+NOTE: Define the "auto-delete" param on the queue as true so that you do not get stale messages on reconnect
+Bind the queue to the "amq.topic" exchange
+Consume messages produced on your queue with the topic of "formula"
+Messages are JSON encoded and will contain the following
+uuid = A unique ID to produce a response with the solution embedded
+contestant_uuid = Your dynamic token at the top of the page when logged in to Github
+formula = A simple math formula for you to parse and solve
+solution = A null value that should be replaced with the solution
+Produce a message back onto the queue
+Exchange = amq.topic
+Topic = formula_solution
+Body = The original message with the solution field populated
