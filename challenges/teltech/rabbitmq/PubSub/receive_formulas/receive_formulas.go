@@ -15,7 +15,7 @@ func failOnError(err error, msg string) {
 }
 
 func main() {
-	conn, err := amqp.DialConfig("amqp://challenge:k64sMKmWEyg85VZs@rabbitmq-1.8696e293-bmoyles0117.node.tutum.io:5672", amqp.Config{Vhost: "/"})
+	conn, err := amqp.DialConfig("amqp://challenge:k64sMKmWEyg85VZs@rabbitmq-1.8696e293-bmoyles0117.node.tutum.io:5672", amqp.Config{Vhost: "Default"})
 	failOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
 
@@ -24,9 +24,9 @@ func main() {
 	defer ch.Close()
 
 	// err = ch.ExchangeDeclare(
-	// 	"amq.topic",   // name
+	// 	"amq",   // name
 	// 	"topic", // type
-	// 	true,    // durable
+	// 	false,   // durable
 	// 	false,   // auto-deleted
 	// 	false,   // internal
 	// 	false,   // no-wait
@@ -46,7 +46,7 @@ func main() {
 
 	err = ch.QueueBind(
 		q.Name,      // queue name
-		"",          // routing key
+		"formula.*", // routing key
 		"amq.topic", // exchange
 		false,
 		nil)
