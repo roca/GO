@@ -4,24 +4,32 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+	"text/template"
 )
 
-// func main() {
-// 	http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
-// 		w.Header().Add("Content Type", "text/html")
-// 		tmpl, err := template.New("test").Parse(doc)
-// 		if err == nil {
-// 			tmpl.Execute(w, nil)
-//
-// 		}
-// 	})
-// 	http.ListenAndServe(":8000", nil)
-// }
-
 func main() {
-	http.Handle("/", new(MyHandler))
+	http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
+		w.Header().Add("Content Type", "text/html")
+		templates := template.New("template")
+		templates.New("test").Parse(doc)
+		templates.New("header").Parse(header)
+		templates.New("footer").Parse(footer)
+
+		context := Context{
+			Fruit: [3]string{"Lemon", "Orange", "Apple"},
+			Title: "Fruits",
+		}
+		templates.Lookup("test").Execute(w, context)
+
+	})
+
 	http.ListenAndServe(":8000", nil)
 }
+
+// func main() {
+// 	http.Handle("/", new(MyHandler))
+// 	http.ListenAndServe(":8000", nil)
+// }
 
 type MyHandler struct {
 	http.Handler
@@ -53,11 +61,29 @@ func (this *MyHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 }
 
 const doc = `
+{{template "header" .Title}}
+		<body>
+		<h1> List of Fruit </h1>
+		<ul>
+		    {{range .Fruit}}
+				<li> {{.}} </li>
+				{{end}}
+		</ul>
+		</body>
+{{template "footer"}}
+`
+
+const header = `
 <!DOCTYPE html>
 <html>
-    <head><title>Example Title</title></head>
-		<body>
-		     <h1>Hello from template!</h1>
-		</body>
+    <head><title>{{.}}</title></head>
+`
+
+const footer = `
 </html>
 `
+
+type Context struct {
+	Fruit [3]string
+	Title string
+}
