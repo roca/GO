@@ -1,17 +1,19 @@
 package viewmodels
 
+import (
+
+)
+
 type Home struct {
-	Title  string
+	Title string
 	Active string
 }
 
 func GetHome() Home {
-
 	result := Home{
-		Title:  "Lemonade stand society",
+		Title: "Lemonade Stand Society",
 		Active: "home",
 	}
-
+	
 	return result
-
 }
