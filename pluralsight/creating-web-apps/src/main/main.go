@@ -1,12 +1,13 @@
 package main
 
 import (
+	"bufio"
 	"net/http"
 	"os"
-	"text/template"
-	"bufio"
 	"strings"
-	"../viewmodels"
+	"text/template"
+
+	"github.com/GOCODE/pluralsight/creating-web-apps/src/viewmodels"
 )
 
 func main() {
@@ -17,39 +18,39 @@ func main() {
 		requestedFile := req.URL.Path[1:]
 		template := templates.Lookup(requestedFile + ".html")
 
-		var context interface{} = nil
-		if requestedFile == "home" {
-			context = viewmodels.GetHome()
-		}
+		context := make(map[string]interface{})
+
+		context["home"] = viewmodels.GetHome()
+		context["categories"] = viewmodels.GetCategories()
 
 		if template != nil {
-			template.Execute(w, context)
+			template.Execute(w, context[requestedFile])
 		} else {
 			w.WriteHeader(404)
 		}
 	})
 
-	http.HandleFunc("/img/",serveResource)
-	http.HandleFunc("/css/",serveResource)
+	http.HandleFunc("/img/", serveResource)
+	http.HandleFunc("/css/", serveResource)
 
 	http.ListenAndServe(":8000", nil)
 }
-func serveResource(w http.ResponseWriter,req *http.Request) {
+func serveResource(w http.ResponseWriter, req *http.Request) {
 	path := "public" + req.URL.Path
 	var contentType string
-	if strings.HasSuffix(path,".css") {
+	if strings.HasSuffix(path, ".css") {
 		contentType = "text/css"
-	} else if strings.HasSuffix(path,".png") {
+	} else if strings.HasSuffix(path, ".png") {
 		contentType = "image.png"
-	} else   {
+	} else {
 		contentType = "text/plain"
 	}
 
-	f,err := os.Open(path)
+	f, err := os.Open(path)
 
 	if err == nil {
 		defer f.Close()
-		w.Header().Add("Content Type",contentType)
+		w.Header().Add("Content Type", contentType)
 		br := bufio.NewReader(f)
 		br.WriteTo(w)
 
