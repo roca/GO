@@ -15,6 +15,7 @@ type Category struct {
 	Title string
 	Description string
 	IsOrientRight bool
+	Id int
 }
 
 func GetCategories() Categories {
@@ -24,6 +25,7 @@ func GetCategories() Categories {
 	}
 	
 	juiceCategory := Category{
+		Id: 1,
  		ImageUrl: "lemon.png",
  		Title: "Juices and Mixes",
  		Description: `Explore our wide assortment of juices and mixes expected by
@@ -35,6 +37,7 @@ func GetCategories() Categories {
  	}
 	
 	supplyCategory := Category{
+		Id: 2,
  		ImageUrl: "kiwi.png",
  		Title: "Cups, Straws, and Other Supplies",
  		Description: `From paper cups to bio-degradable plastic to straws and
@@ -44,6 +47,7 @@ func GetCategories() Categories {
  	}
 	
 	advertiseCategory := Category{
+		Id: 3,
  		ImageUrl: "pineapple.png",
  		Title: "Signs and Advertising",
  		Description: `Sure, you could just wait for people to find your stand

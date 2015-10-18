@@ -4,7 +4,7 @@
 	{{else}}
 	    orient-left
 	{{end}}">
-	<a href="/products">
+	<a href="/categories/{{.Id}}">
 		{{if eq .IsOrientRight false }}
 			<div class="columns small-4">
 				<img src="/img/{{.ImageUrl}}" alt="{{.ImageUrl}}" />

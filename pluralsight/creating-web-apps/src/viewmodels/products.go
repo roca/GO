@@ -10,32 +10,54 @@ type Products struct {
 	Products []Product
 }
 
-func GetProducts() Products {
+func GetProducts(id int) Products {
 	var result Products
 	result.Active = "shop"
-	result.Title = "Lemonade Stand Society - Juice Shop"
-	
-	lemonJuice := MakeLemonJuiceProduct()
-	appleJuice := MakeAppleJuiceProduct()
-	watermelonJuice := MakeWatermelonJuiceProduct()
-	kiwiJuice := MakeKiwiJuiceProduct()
-	mangosteenJuice := MakeMangosteenJuiceProduct()
-	orangeJuice := MakeOrangeJuiceProduct()
-	pineappleJuice := MakePineappleJuiceProduct()
-	strawberryJuice := MakeStrawberryJuiceProduct()
-	
-	result.Products = []Product{
-		lemonJuice,
-		appleJuice,
-		watermelonJuice,
-		kiwiJuice,
-		mangosteenJuice,
-		orangeJuice,
-		pineappleJuice,
-		strawberryJuice,
+
+	var shopName  string
+	switch id {
+	case 1:
+		shopName = "Juice"
+	case 2:
+		shopName = "Supply"
+	case 3:
+		shopName = "Advertising"
+	}
+
+	result.Title = "Lemonade Stand Society - " + shopName + " Shop"
+
+	if id == 1 {
+		
+		result.Products = getProductList()
+
 	}
 	
 	return result
+}
+
+func getProductList() []Product{
+
+		lemonJuice := MakeLemonJuiceProduct()
+		appleJuice := MakeAppleJuiceProduct()
+		watermelonJuice := MakeWatermelonJuiceProduct()
+		kiwiJuice := MakeKiwiJuiceProduct()
+		mangosteenJuice := MakeMangosteenJuiceProduct()
+		orangeJuice := MakeOrangeJuiceProduct()
+		pineappleJuice := MakePineappleJuiceProduct()
+		strawberryJuice := MakeStrawberryJuiceProduct()
+		
+		products := []Product{
+			lemonJuice,
+			appleJuice,
+			watermelonJuice,
+			kiwiJuice,
+			mangosteenJuice,
+			orangeJuice,
+			pineappleJuice,
+			strawberryJuice,
+		}
+
+		return products
 }
 
 type ProductVM struct {
@@ -44,13 +66,22 @@ type ProductVM struct {
 	Product Product
 }
 
-func GetProduct() ProductVM {
+func GetProduct(id int) ProductVM {
 	var result ProductVM
+
+	productList := getProductList()
+	var product Product
+	for _,p := range productList {
+		if p.Id == id {
+			product = p
+			break;
+		}
+	}
 	
 	result.Active = "shop"
-	result.Title = "Lemonade Stand Society - Lemon Juice"
+	result.Title = "Lemonade Stand Society - " + product.Name
 	
-	result.Product = MakeLemonJuiceProduct()
+	result.Product = product
 	
 	return result
 }

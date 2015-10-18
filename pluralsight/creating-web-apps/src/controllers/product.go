@@ -11,27 +11,15 @@ import (
 )
 
 
-type categoriesController struct {
-	template *template.Template
-}
 
 
-func (this *categoriesController) get(w http.ResponseWriter, req *http.Request ) {
-
-	vm := viewmodels.GetCategories()
-
-	w.Header().Add("Content Type", "text/html")
-	this.template.Execute(w,vm)
-	
-}
-
-type categoryController struct {
+type productController struct {
 	template *template.Template
 }
 
 
 
-func (this *categoryController) get(w http.ResponseWriter, req *http.Request ) {
+func (this *productController) get(w http.ResponseWriter, req *http.Request ) {
 
      vars := mux.Vars(req)
 
@@ -40,7 +28,7 @@ func (this *categoryController) get(w http.ResponseWriter, req *http.Request ) {
      id,err := strconv.Atoi(idRaw)
 
     if err == nil {
-		vm := viewmodels.GetProducts(id)
+		vm := viewmodels.GetProduct(id)
 
 		w.Header().Add("Content Type", "text/html")
 		this.template.Execute(w,vm)
