@@ -6,6 +6,7 @@ import (
 	"text/template"
 
 	"github.com/GOCODE/pluralsight/creating-web-apps/src/viewmodels"
+	"github.com/GOCODE/pluralsight/creating-web-apps/src/controllers/util"
 )
 
 
@@ -19,6 +20,9 @@ func (this *homeController) get(w http.ResponseWriter, req *http.Request ) {
 	vm := viewmodels.GetHome()
 
 	w.Header().Add("Content Type", "text/html")
-	this.template.Execute(w,vm)
+	responseWriter := util.GetResponseWriter(w,req)
+	defer responseWriter.Close()
+	
+	this.template.Execute(responseWriter,vm)
 	
 }
