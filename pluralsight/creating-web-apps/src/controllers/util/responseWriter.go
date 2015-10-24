@@ -1,8 +1,8 @@
 package util
 
 import (
-	"compress/gzip"
 	"net/http"
+	"compress/gzip"
 	"strings"
 )
 
@@ -25,7 +25,7 @@ func (this gzipResponseWriter) Close() {
 }
 
 func (this gzipResponseWriter) Header() http.Header {
-	return http.ResponseWriter.Header()
+	return this.ResponseWriter.Header()
 }
 
 type closeableResponseWriter struct {
@@ -33,20 +33,18 @@ type closeableResponseWriter struct {
 }
 
 func (this closeableResponseWriter) Close() {
-
+	
 }
 
 func GetResponseWriter(w http.ResponseWriter, req *http.Request) CloseableResponseWriter {
-
 	if strings.Contains(req.Header.Get("Accept-Encoding"), "gzip") {
 		w.Header().Set("Content-Encoding", "gzip")
 		gRW := gzipResponseWriter{
 			ResponseWriter: w,
-			Writer:         gzip.NewWriter(w),
+			Writer: gzip.NewWriter(w),
 		}
 		return gRW
 	} else {
 		return closeableResponseWriter{ResponseWriter: w}
 	}
-
 }
