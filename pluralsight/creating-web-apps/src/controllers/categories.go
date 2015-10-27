@@ -8,6 +8,8 @@ import (
 	"github.com/GOCODE/pluralsight/creating-web-apps/src/viewmodels"
 	"github.com/GOCODE/pluralsight/creating-web-apps/src/controllers/util"
 	"github.com/gorilla/mux"
+	"github.com/GOCODE/pluralsight/creating-web-apps/src/models"
+	"github.com/GOCODE/pluralsight/creating-web-apps/src/converters"
 	"strconv"
 )
 
@@ -19,11 +21,20 @@ type categoriesController struct {
 
 func (this *categoriesController) get(w http.ResponseWriter, req *http.Request ) {
 
-	vm := viewmodels.GetCategories()
+	categories := models.GetCategories()
+	
+	categoriesVM := []viewmodels.Category{}
+	for _, category := range categories {
+		categoriesVM = append(categoriesVM, converters.ConvertCategoyToViewModel(category))
+	}
 
-    w.Header().Add("Content Type", "text/html")
+	vm := viewmodels.GetCategories()
+	vm.Categories = categoriesVM
+
+
 	responseWriter := util.GetResponseWriter(w,req)
 	defer responseWriter.Close()
+    responseWriter.Header().Add("Content Type", "text/html")
 	
 	this.template.Execute(responseWriter,vm)	
 }
@@ -45,9 +56,9 @@ func (this *categoryController) get(w http.ResponseWriter, req *http.Request ) {
     if err == nil {
 		vm := viewmodels.GetProducts(id)
 
-	w.Header().Add("Content Type", "text/html")
 	responseWriter := util.GetResponseWriter(w,req)
 	defer responseWriter.Close()
+    responseWriter.Header().Add("Content Type", "text/html")
 	
 	this.template.Execute(responseWriter,vm)
 	} else {
