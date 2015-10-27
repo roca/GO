@@ -5,12 +5,12 @@ import (
 )
 
 type Category struct {
-	imageUrl string
-	title string
-	description string
+	imageUrl      string
+	title         string
+	description   string
 	isOrientRight bool
-	id int
-	products []Product
+	id            int
+	products      []Product
 }
 
 func (this *Category) ImageUrl() string {
@@ -54,35 +54,35 @@ func (this *Category) SetProducts(value []Product) {
 func GetCategories() []Category {
 	result := []Category{
 		Category{
-	 		imageUrl: "lemon.png",
-	 		title: "Juices and Mixes",
-	 		description: `Explore our wide assortment of juices and mixes expected by
+			imageUrl: "lemon.png",
+			title:    "Juices and Mixes",
+			description: `Explore our wide assortment of juices and mixes expected by
 								today's lemonade stand clientelle. Now featuring a full line of
 								organic juices that are guaranteed to be obtained from trees that
 								have never been treated with pesticides or artificial
 								fertilizers.`,
 			isOrientRight: false,
-			id: 1,
-			products: GetJuiceProducts(),
-	 	}, Category{
-	 		imageUrl: "kiwi.png",
-	 		title: "Cups, Straws, and Other Supplies",
-	 		description: `From paper cups to bio-degradable plastic to straws and
+			id:            1,
+			products:      GetJuiceProducts(),
+		}, Category{
+			imageUrl: "kiwi.png",
+			title:    "Cups, Straws, and Other Supplies",
+			description: `From paper cups to bio-degradable plastic to straws and
 							napkins, LSS is your source for the sundries that keep your stand
 							running smoothly.`,
 			isOrientRight: true,
-			id: 2,
-	 	}, Category{
-	 		imageUrl: "pineapple.png",
-	 		title: "Signs and Advertising",
-	 		description: `Sure, you could just wait for people to find your stand
+			id:            2,
+		}, Category{
+			imageUrl: "pineapple.png",
+			title:    "Signs and Advertising",
+			description: `Sure, you could just wait for people to find your stand
 							along the side of the road, but if you want to take it to the next
 							level, our premium line of advertising supplies.`,
 			isOrientRight: false,
-			id: 3,
-	 	},		
+			id:            3,
+		},
 	}
-	
+
 	return result
 }
 
@@ -92,6 +92,6 @@ func GetCategoryById(id int) (Category, error) {
 			return category, nil
 		}
 	}
-	
+
 	return Category{}, errors.New("Category Not Found")
 }

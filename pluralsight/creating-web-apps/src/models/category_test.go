@@ -6,9 +6,9 @@ import (
 
 func Test_ReturnsNonEmptySlice(t *testing.T) {
 	categories := GetCategories()
-	
+
 	if len(categories) == 0 {
-		t.Log("Non empty slice returned")
+		t.Log("Empty slice returned")
 		t.Fail()
 	}
 }
