@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"errors"
+	"fmt"
 	"time"
 )
 
@@ -71,9 +72,8 @@ func GetMember(email string, password string) (Member, error) {
 	if err == nil {
 		defer db.Close()
 		pwd := sha256.Sum256([]byte(password))
-		row := db.QueryRow(`SELECT id, email, first_name
-			FROM PMUSER.MEMBER
-			WHERE email = $1 AND password = $2`, email, hex.EncodeToString(pwd[:]))
+		query := fmt.Sprintf("SELECT id, email, first_name FROM MEMBER WHERE email LIKE '%s' AND password LIKE '%s'", email, hex.EncodeToString(pwd[:]))
+		row := db.QueryRow(query)
 		result := Member{}
 		err = row.Scan(&result.id, &result.email, &result.firstName)
 		if err == nil {
@@ -95,10 +95,8 @@ func CreateSession(member Member) (Session, error) {
 	db, err := getDBConnection()
 	if err == nil {
 		defer db.Close()
-		err := db.QueryRow(`INSERT INTO WEB_SESSION
-			(member_id, session_id)
-			VALUES ($1, $2)
-			RETURNING id`, member.Id(), result.sessionId).Scan(&result.id)
+		query := fmt.Sprintf("INSERT INTO WEB_SESSION (member_id, session_id) VALUES (2, 'xxxxx') RETURNING id", member.Id(), result.sessionId)
+		err := db.QueryRow(query).Scan(&result.id)
 		if err == nil {
 			return result, nil
 		} else {
@@ -118,12 +116,12 @@ func GetMemberBySessionId(sessionId string) (Member, error) {
 			SELECT member.first_name
 			FROM web_session
 			JOIN member
-			  ON member.id = session.member_id
-			WHERE session.session_id = $1`, sessionId).Scan(&result.firstName)
+			  ON member.id = web_session.member_id
+			WHERE web_session.session_id = $1`, sessionId).Scan(&result.firstName)
 		if err == nil {
 			return result, nil
 		} else {
-			return Member{}, errors.New("Unable to get member for session")
+			return Member{}, errors.New("Unable to get member for web_session")
 		}
 	} else {
 		return result, errors.New("Unable to getdatabase connection")
