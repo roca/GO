@@ -95,12 +95,14 @@ func CreateSession(member Member) (Session, error) {
 	db, err := getDBConnection()
 	if err == nil {
 		defer db.Close()
-		query := fmt.Sprintf("INSERT INTO WEB_SESSION (member_id, session_id) VALUES (2, 'xxxxx') RETURNING id", member.Id(), result.sessionId)
-		err := db.QueryRow(query).Scan(&result.id)
+		query := fmt.Sprintf("INSERT INTO WEB_SESSION (MEMBER_ID, SESSION_ID) VALUES (%d, '%s')", member.Id(), result.sessionId)
+		id, err := db.Exec(query)
+		fmt.Println(id)
 		if err == nil {
+			//result.SetId(id) tring to get .Scan(&result.id)
 			return result, nil
 		} else {
-			return Session{}, errors.New("Unable to save session to database")
+			return Session{}, errors.New("Unable to save session to database: " + err.Error())
 		}
 	} else {
 		return result, errors.New("Unable to get database connection")
