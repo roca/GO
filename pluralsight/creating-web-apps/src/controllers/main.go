@@ -1,16 +1,14 @@
 package controllers
 
-
 import (
 	"bufio"
 	"net/http"
 	"os"
 	"strings"
 	"text/template"
+
 	"github.com/gorilla/mux"
-
 )
-
 
 func Register(templates *template.Template) {
 
@@ -19,38 +17,36 @@ func Register(templates *template.Template) {
 	hc := new(homeController)
 	hc.template = templates.Lookup("home.html")
 	hc.loginTemplate = templates.Lookup("login.html")
-	router.HandleFunc("/home",hc.get)
-	router.HandleFunc("/",hc.get)
-	router.HandleFunc("/login",hc.login)
-	
+	router.HandleFunc("/home", hc.get)
+	router.HandleFunc("/", hc.get)
+	router.HandleFunc("/login", hc.login)
 
 	cc := new(categoriesController)
 	cc.template = templates.Lookup("categories.html")
-	router.HandleFunc("/categories",cc.get)
+	router.HandleFunc("/categories", cc.get)
 
 	categoryController := new(categoryController)
 	categoryController.template = templates.Lookup("products.html")
-	router.HandleFunc("/categories/{id}",categoryController.get)
+	router.HandleFunc("/categories/{id}", categoryController.get)
 
 	productController := new(productController)
 	productController.template = templates.Lookup("product.html")
-	router.HandleFunc("/products/{id}",productController.get)
+	router.HandleFunc("/products/{id}", productController.get)
 
 	profileController := new(profileController)
 	profileController.template = templates.Lookup("profile.html")
-	router.HandleFunc("/profile",profileController.handle)
+	router.HandleFunc("/profile", profileController.handle)
 
 	standLocatorController := new(standLocatorController)
 	standLocatorController.template = templates.Lookup("stand_locator.html")
-	router.HandleFunc("/stand_locator",standLocatorController.get)
-	router.HandleFunc("/api/stand_locator",standLocatorController.apiSearch)
+	router.HandleFunc("/stand_locator", standLocatorController.get)
+	router.HandleFunc("/api/stand_locator", standLocatorController.apiSearch)
 
-	http.Handle("/",router)
+	http.Handle("/", router)
 
 	http.HandleFunc("/img/", serveResource)
 	http.HandleFunc("/css/", serveResource)
 }
-
 
 func serveResource(w http.ResponseWriter, req *http.Request) {
 	path := "public" + req.URL.Path
