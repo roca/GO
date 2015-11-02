@@ -72,8 +72,8 @@ func GetMember(email string, password string) (Member, error) {
 		defer db.Close()
 		pwd := sha256.Sum256([]byte(password))
 		row := db.QueryRow(`SELECT id, email, first_name
-			FROM Member
-			WHERE email = $1 AND password = $2`, email, hex.EncodeToString(pwd[:]))
+			FROM MEMBER
+			WHERE email LIKE $1 AND password LIKE $2`, email, hex.EncodeToString(pwd[:]))
 		result := Member{}
 		err = row.Scan(&result.id, &result.email, &result.firstName)
 		if err == nil {

@@ -8,7 +8,7 @@ import (
 )
 
 func getDBConnection() (*sql.DB, error) {
-	db, err := sql.Open("oci8", "user=pmuser password=pmuser sid=PDB1 host=192.168.59.103 port=1521")
+	db, err := sql.Open("oci8", "pmuser/pmuser@192.168.59.103:1521/PDB1")
 	if err != nil {
 		fmt.Println("Error")
 		panic(err)

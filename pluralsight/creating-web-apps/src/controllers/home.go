@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"text/template"
 
@@ -34,18 +35,28 @@ func (this *homeController) login(w http.ResponseWriter, req *http.Request) {
 
 	vm := viewmodels.GetLogin()
 
+	fmt.Println(req.Method)
+
 	if req.Method == "POST" {
 		email := req.FormValue("email")
 		password := req.FormValue("password")
 		member, err := models.GetMember(email, password)
 
+		fmt.Println(member)
+
 		if err == nil {
 			session, err := models.CreateSession(member)
 			if err == nil {
 				var cookie http.Cookie
-				cookie.Name = ""
+				cookie.Name = "sessionId"
 				cookie.Value = session.SessionId()
+				fmt.Println(cookie)
+				responseWriter.Header().Add("Set-Cookie", cookie.String())
+			} else {
+				fmt.Println(err.Error())
 			}
+		} else {
+			fmt.Println(err.Error())
 		}
 	}
 
