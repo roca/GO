@@ -38,6 +38,15 @@ func (this *homeController) login(w http.ResponseWriter, req *http.Request) {
 		email := req.FormValue("email")
 		password := req.FormValue("password")
 		member, err := models.GetMember(email, password)
+
+		if err == nil {
+			session, err := models.CreateSession(member)
+			if err == nil {
+				var cookie http.Cookie
+				cookie.Name = ""
+				cookie.Value = session.SessionId()
+			}
+		}
 	}
 
 	this.loginTemplate.Execute(responseWriter, vm)
