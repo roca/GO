@@ -30,6 +30,11 @@ func Test_CreateSession(t *testing.T) {
 			t.Fail()
 		}
 
+		if session.Id() == 0 {
+			t.Log("Could not get Session Id", session.Id())
+			t.Fail()
+		}
+
 	} else {
 		t.Log(err)
 		t.Fail()

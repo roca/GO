@@ -96,10 +96,11 @@ func CreateSession(member Member) (Session, error) {
 	if err == nil {
 		defer db.Close()
 		query := fmt.Sprintf("INSERT INTO WEB_SESSION (MEMBER_ID, SESSION_ID) VALUES (%d, '%s')", member.Id(), result.sessionId)
-		id, err := db.Exec(query)
-		fmt.Println(id)
+		record, err := db.Exec(query)
 		if err == nil {
-			//result.SetId(id) tring to get .Scan(&result.id)
+			id, _ := record.LastInsertId()
+			fmt.Println(id)
+			result.SetId(int(id)) //tring to get .Scan(&result.id)
 			return result, nil
 		} else {
 			return Session{}, errors.New("Unable to save session to database: " + err.Error())
