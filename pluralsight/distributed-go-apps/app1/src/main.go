@@ -8,7 +8,32 @@ import (
 )
 
 func main() {
-	server()
+	go client()
+	go server()
+
+	var a string
+	fmt.Scanln(&a)
+}
+
+func client() {
+	conn, ch, q := getQueue()
+	defer conn.Close()
+	defer ch.Close()
+
+	msgs, err := ch.Consume(
+		q.Name, //queue string,
+		"",     //consumer string,
+		true,   //autoAck bool,
+		false,  //exclusive bool,
+		false,  //noLocal bool,
+		false,  //noWait bool,
+		nil)    //args amqp.Table
+
+	failOnError(err, "Failed to register a consumer")
+	for msg := range msgs {
+		fmt.Printf("Recieved message with body: %s\n", msg.Body)
+	}
+
 }
 
 func server() {
