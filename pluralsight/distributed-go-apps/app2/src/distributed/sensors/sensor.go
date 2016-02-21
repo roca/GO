@@ -1,12 +1,20 @@
 package main
 
 import (
+	"bytes"
+	"encoding/gob"
 	"flag"
 	"log"
 	"math/rand"
 	"strconv"
 	"time"
+
+	"github.com/GOCODE/pluralsight/distributed-go-apps/app2/src/distributed/dto"
+	"github.com/GOCODE/pluralsight/distributed-go-apps/app2/src/distributed/qutils"
+	"github.com/streadway/amqp"
 )
+
+var url = "amqp://localhost:5672"
 
 var name = flag.String("name", "sensor", "name of the sensor")
 var freq = flag.Uint("freq", 5, "update frequency in cycles/sec")
@@ -22,12 +30,49 @@ var nom = (*max-*min)/2.0 + *min
 func main() {
 	flag.Parse()
 
+	conn, ch := qutils.GetChannel(url)
+	defer conn.Close()
+	defer ch.Close()
+
+	dataQueue := qutils.GetQueue(*name, ch)
+	sensorQueue := qutils.GetQueue(qutils.SensorListQueue, ch)
+
+	msg := amqp.Publishing{Body: []byte(*name)}
+	ch.Publish(
+		"",               //exchange string,
+		sensorQueue.Name, //key string,
+		false,            //mandatory bool,
+		false,            //immediate bool,
+		msg)              //msg amqp.Publishing)
+
 	dur, _ := time.ParseDuration(strconv.Itoa(1000/int(*freq)) + "ms")
 
 	signal := time.Tick(dur)
 
+	buf := new(bytes.Buffer)
+	enc := gob.NewEncoder(buf)
+
 	for range signal {
 		calcValue()
+		reading := dto.SensorMessage{
+			Name:      *name,
+			Value:     value,
+			Timestamp: time.Now(),
+		}
+		buf.Reset()
+		enc.Encode(reading)
+
+		msg := amqp.Publishing{
+			Body: buf.Bytes(),
+		}
+
+		ch.Publish(
+			"",             //exchange string,
+			dataQueue.Name, //key string,
+			false,          //mandatory bool,
+			false,          //immediate bool,
+			msg)            //msg amqp.Publishing)
+
 		log.Printf("Reading sent. Value: %v\n", value)
 	}
 }
