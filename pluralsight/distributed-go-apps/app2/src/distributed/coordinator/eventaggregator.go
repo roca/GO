@@ -2,22 +2,26 @@ package coordinator
 
 import "time"
 
+type EventRaiser interface {
+	AddListener(name string, f func(interface{}))
+}
+
 type EventAggregator struct {
-	listeners map[string][]func(EventData)
+	listeners map[string][]func(interface{})
 }
 
 func NewEventAggregator() *EventAggregator {
 	ea := EventAggregator{
-		listeners: make(map[string][]func(EventData)),
+		listeners: make(map[string][]func(interface{})),
 	}
 	return &ea
 }
 
-func (ea *EventAggregator) AddListener(name string, f func(EventData)) {
+func (ea *EventAggregator) AddListener(name string, f func(interface{})) {
 	ea.listeners[name] = append(ea.listeners[name], f)
 }
 
-func (ea *EventAggregator) PublishEvent(name string, eventData EventData) {
+func (ea *EventAggregator) PublishEvent(name string, eventData interface{}) {
 	if ea.listeners[name] != nil {
 		for _, r := range ea.listeners[name] {
 			r(eventData)

@@ -6,8 +6,12 @@ import (
 	"github.com/GOCODE/pluralsight/distributed-go-apps/app2/src/distributed/coordinator"
 )
 
+var dc *coordinator.DatabaseConsumer
+
 func main() {
-	ql := coordinator.NewQueueListener()
+	ea := coordinator.NewEventAggregator()
+	dc = coordinator.NewDatabaseComsumer(ea)
+	ql := coordinator.NewQueueListener(ea)
 	go ql.ListenForNewSource()
 
 	var a string
