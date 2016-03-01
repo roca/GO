@@ -11,6 +11,10 @@ const SensorDiscoveryExchange = "SensorDiscovery"
 const SensorListQueue = "SensorList"
 const PersistReadingsQueue = "PersistReadings"
 
+const WebappSourceExchange = "WebappSources"
+const WebappReadingsExchange = "WebappReading"
+const WebappDiscoveryQueue = "WebappDiscovery"
+
 func GetChannel(url string) (*amqp.Connection, *amqp.Channel) {
 	conn, err := amqp.Dial(url)
 	failOnError(err, "Failed to connect to message broker")
