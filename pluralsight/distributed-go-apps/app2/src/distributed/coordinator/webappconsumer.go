@@ -87,7 +87,7 @@ func (wc *WebappConsumer) SubscribeToDataEvent(eventName string) {
 	wc.sources = append(wc.sources, eventName)
 	wc.SendMessageSource(eventName)
 
-	wc.er.AddListener("", func(eventData interface{}) {
+	wc.er.AddListener("MessageReceived_"+eventName, func(eventData interface{}) {
 		ed := eventData.(EventData)
 		sm := dto.SensorMessage{
 			Name:      ed.Name,
