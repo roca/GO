@@ -103,7 +103,7 @@ func (ql *QueueListener) AddListener(msgs <-chan amqp.Delivery) {
 			Timestamp: sd.Timestamp,
 		}
 
-		ql.ea.PublishEvent("MessageRecieved_"+msg.RoutingKey, ed)
+		ql.ea.PublishEvent("MessageReceived_"+msg.RoutingKey, ed)
 
 		fmt.Printf("Recieved message: %v\n", sd)
 	}

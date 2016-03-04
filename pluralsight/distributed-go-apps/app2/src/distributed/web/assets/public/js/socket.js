@@ -14,7 +14,6 @@
         }
         break;
       case "reading":
-      console.log(msg.data);
         updateChart(msg.data);
         break;
     }
