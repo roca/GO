@@ -41,6 +41,7 @@ func main() {
 		if err != nil {
 			log.Printf("Failed to save reading from sensor %v. Error: %s", sd.Name, err.Error())
 		} else {
+			log.Printf("Saved reading from sensor %v", sd.Name)
 			msg.Ack(false)
 		}
 	}

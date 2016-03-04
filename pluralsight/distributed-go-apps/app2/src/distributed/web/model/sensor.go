@@ -11,7 +11,7 @@ type Sensor struct {
 func GetSensorByName(name string) (Sensor, error) {
 	q := `SELECT name, serial_no, unit_type, min_safe_value, max_safe_value
         FROM sensor
-        WHERE name - $1`
+        WHERE name = $1`
 
 	result := Sensor{}
 
