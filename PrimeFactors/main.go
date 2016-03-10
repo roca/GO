@@ -4,6 +4,7 @@ package main
 
 import (
 	"fmt"
+	"runtime"
 )
 
 // Generate numbers until the limit max.
@@ -45,6 +46,8 @@ func CalcPrimeFactors(number_to_factorize int) []int {
 }
 
 func main() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
+	fmt.Printf("runtime.NumCPU(): %v\n", runtime.NumCPU())
 	fmt.Println(CalcPrimeFactors(699))
 	fmt.Println(CalcPrimeFactors(1233))
 	fmt.Println(CalcPrimeFactors(9876))
