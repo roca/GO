@@ -1,0 +1,118 @@
+.home-view .logo {
+  width: 100%;
+  margin-top: 2em;
+  border: 0px; }
+
+.login-view {
+  height: 100%; }
+  .login-view .mblHeading {
+    margin-bottom: 3rem; }
+  .login-view label {
+    margin: 0 0.5rem; }
+  .login-view button[type=submit] {
+    position: absolute;
+    bottom: 2rem;
+    left: 10%; }
+
+.create-account-view {
+  height: 100%; }
+  .create-account-view .mblHeading {
+    margin-bottom: 2rem; }
+  .create-account-view label {
+    margin-left: 0.5rem; }
+  .create-account-view button[type=submit] {
+    position: absolute;
+    bottom: 2rem;
+    left: 10%; }
+
+html, body, .mblView {
+  height: 100%; }
+
+.mblBackground {
+  background-color: #e45e56; }
+
+h1, h2, h3 {
+  font-family: 'Lucida Sans';
+  color: #ccc;
+  margin: 0; }
+
+h2 {
+  font-size: 2.5rem; }
+
+.text-center {
+  text-align: center; }
+
+.float-right {
+  float: right; }
+
+.mblButton {
+  background-color: #666;
+  color: #eee;
+  background-image: inherit;
+  border-radius: 1rem;
+  border: 0;
+  width: 80%;
+  font-size: 2.5em;
+  height: 1.5em;
+  margin: 2rem auto;
+  display: block; }
+  .mblButton:hover {
+    background-color: #444; }
+
+footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%; }
+  footer > div {
+    width: 32%;
+    display: inline-block; }
+    footer > div .mblButton {
+      font-size: 0.7rem;
+      height: 2rem;
+      width: 90%;
+      margin: 1rem 5%;
+      display: inline;
+      line-height: 1rem;
+      border-radius: 0.3rem; }
+      footer > div .mblButton:hover {
+        background-color: #e25149; }
+
+a {
+  color: #ccc; }
+  a:hover {
+    color: #999; }
+
+.mblHeading, footer {
+  background-image: inherit;
+  background-color: #cb3931;
+  color: #ccc;
+  border: 0; }
+
+label {
+  color: #eee; }
+
+.mblTextBox {
+  width: 90%;
+  margin: 1rem 5%;
+  font-size: 1.7rem;
+  height: 2.5rem; }
+
+.mblColorDefault, footer .mblButton {
+  background-image: inherit;
+  background-color: #e45e56;
+  color: #eee;
+  border: 0; }
+
+.mblHeading .mblToolBarButtonArrow, .mblHeading .mblToolBarButtonBody {
+  border: 0; }
+
+.mblEdgeToEdgeList, .mblListItem.mblListItemSelected {
+  background-color: inherit;
+  background-image: inherit; }
+
+.mblListItem {
+  border: 0;
+  color: #eee; }
+
+.mblDomButtonArrow > div {
+  border-color: #eee; }
