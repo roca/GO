@@ -1,5 +1,10 @@
 {{define "content"}}
-  <div id="home" data-dojo-type="app/views/HomeView"></div>
+  <div id="home" data-dojo-type="app/views/HomeView"
+      data-dojo-props="
+          loginUrl:  '{{urlfor "AccountController.Login"}}',
+          createUrl: '{{urlfor "AccountController.Create"}}'
+      "
+  ></div>
   <script>
     require([
         "dojox/mobile/parser",

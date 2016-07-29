@@ -9,13 +9,23 @@ function(declare, _WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin,
   View, template) {
 
     var view = declare([_WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin], {
-      templateString: template
+      loginUrl:  null,
+      createUrl: null,
+      templateString: template,
+      onLogin: function() {
+        window.location = this.loginUrl;
+      }
     });
 
   return declare([View], {
     view: null,
+    loginUrl:  null,
+    createUrl: null,
     postCreate: function() {
-      this.view = new view();
+      this.view = new view({
+        loginUrl:  this.loginUrl,
+        createUrl: this.createUrl,
+      });
       this.containerNode.appendChild(this.view.domNode);
     }
   });
