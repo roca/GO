@@ -1,6 +1,11 @@
 package controllers
 
-import "github.com/astaxie/beego"
+import (
+	"fmt"
+
+	"github.com/GOCODE/pluralsight/beego/code/src/lastchance/models"
+	"github.com/astaxie/beego"
+)
 
 // AccountController is an unexported type
 type AccountController struct {
@@ -9,6 +14,11 @@ type AccountController struct {
 
 // Login is an unexported method
 func (c *AccountController) Login() {
+	if c.Ctx.Input.IsPost() {
+		var loginForm models.LoginForm
+		c.ParseForm(&loginForm)
+		fmt.Println(loginForm)
+	}
 	c.TplName = "login.tpl"
 }
 
