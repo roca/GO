@@ -5,14 +5,17 @@
       Logout
     </button>
   </header>
-  <form action="">
+  <form action=""
+          data-dojo-type="dijit/form/Form"
+          data-dojo-attach-point="form"
+          >
     <label for="from">From</label>
     <select data-dojo-type="dijit/form/DataList"
       data-dojo-props='id:"fromAccounts"'>
       <option selected>Checking ... 1234</option>
       <option>Savings ... 5555</option>
     </select>
-    <input type="text" data-dojo-type="dojox/mobile/ComboBox"
+    <input type="text" name="from" data-dojo-type="dojox/mobile/ComboBox"
       data-dojo-props='list:"fromAccounts"'>
 
     <label for="to">To</label>
@@ -21,11 +24,11 @@
       <option>Checking ... 1234</option>
       <option selected>Savings ... 5555</option>
     </select>
-    <input type="text" data-dojo-type="dojox/mobile/ComboBox"
+    <input type="text" name="to" data-dojo-type="dojox/mobile/ComboBox"
       data-dojo-props='list:"toAccounts"'>
 
     <label for="amount">Amount</label>
-    <input type="text" id="amount" data-dojo-type="dojox/mobile/TextBox">
+    <input type="text" name="amount" data-dojo-type="dojox/mobile/TextBox">
 
     <button type="submit" data-dojo-type="dojox/mobile/Button">
       Transfer
