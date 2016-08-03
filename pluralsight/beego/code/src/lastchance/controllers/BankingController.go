@@ -6,6 +6,7 @@ import (
 
 	"github.com/GOCODE/pluralsight/beego/code/src/lastchance/models"
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/validation"
 )
 
 // BankingController is an unexported type
@@ -31,5 +32,17 @@ func (c *BankingController) Transfer() {
 	json.Unmarshal(c.Ctx.Input.RequestBody, &transfer)
 	fmt.Println(transfer)
 
-	c.Ctx.WriteString("success")
+	valid := validation.Validation{}
+	isValid, _ := valid.Valid(&transfer)
+	fmt.Println(transfer)
+	fmt.Println(valid.ErrorMap())
+
+	var message string
+	if isValid {
+		message = "success"
+	} else {
+		message = "failure"
+	}
+
+	c.Ctx.WriteString(message)
 }
