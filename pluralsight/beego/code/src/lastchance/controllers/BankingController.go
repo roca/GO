@@ -9,17 +9,17 @@ import (
 	"github.com/astaxie/beego/validation"
 )
 
-// BankingController is an unexported type
+// BankingController ...
 type BankingController struct {
 	beego.Controller
 }
 
-// URLMapping is an unexported type
+// URLMapping ...
 func (c *BankingController) URLMapping() {
 	c.Mapping("ShowAccounts", c.ShowAccounts)
 }
 
-// ShowAccounts is an unexported type
+// ShowAccounts ...
 // @router /banking [get]
 func (c *BankingController) ShowAccounts() {
 	c.Data["accounts"] = []models.Account{
@@ -40,7 +40,7 @@ func (c *BankingController) ShowAccounts() {
 	c.TplName = "banking.tpl"
 }
 
-// Transfer is an unexported type
+// Transfer ...
 // @router /api/transfer [post]
 func (c *BankingController) Transfer() {
 	var transfer models.Transfer

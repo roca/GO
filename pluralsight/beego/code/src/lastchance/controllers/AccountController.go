@@ -7,12 +7,12 @@ import (
 	"github.com/astaxie/beego"
 )
 
-// AccountController is an unexported type
+// AccountController  ...
 type AccountController struct {
 	beego.Controller
 }
 
-// Login is an unexported method
+// Login  ...
 func (c *AccountController) Login() {
 	if c.Ctx.Input.IsPost() {
 		var loginForm models.LoginForm
@@ -22,7 +22,7 @@ func (c *AccountController) Login() {
 	c.TplName = "login.tpl"
 }
 
-// Create is an unexported method
+// Create  ...
 func (c *AccountController) Create() {
 	c.TplName = "createAccount.tpl"
 }

@@ -4,12 +4,12 @@ import (
 	"github.com/astaxie/beego"
 )
 
-// MainController is an unexported type
+// MainController  ...
 type MainController struct {
 	beego.Controller
 }
 
-// Get is an unexported method
+// Get  ...
 func (c *MainController) Get() {
 	c.TplName = "home.tpl"
 }
