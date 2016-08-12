@@ -6,6 +6,7 @@ import (
 
 	"github.com/GOCODE/pluralsight/beego/code/src/lastchance/models"
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/context"
 	"github.com/astaxie/beego/validation"
 )
 
@@ -64,4 +65,35 @@ func (c *BankingController) Transfer() {
 
 	c.Data["json"] = response
 	c.ServeJSON()
+}
+
+// ShowLifecycle ...
+// @router /lifecycle [get]
+func (c *BankingController) ShowLifecycle() {
+	fmt.Println("Action Execution")
+}
+
+// Init ...
+func (c *BankingController) Init(ctx *context.Context, controllerName string, actionName string, app interface{}) {
+	fmt.Printf("Initilaization: %s.%s\n", controllerName, actionName)
+	c.Controller.Init(ctx, controllerName, actionName, app)
+}
+
+// Prepare ...
+func (c *BankingController) Prepare() {
+	fmt.Println("Prepare controller")
+	c.Controller.Prepare()
+}
+
+// Render ...
+func (c *BankingController) Render() error {
+	fmt.Println("Render result")
+	c.Ctx.WriteString("result")
+	return nil
+}
+
+// Finish ...
+func (c *BankingController) Finish() {
+	fmt.Println("Finish controller")
+	c.Controller.Finish()
 }
