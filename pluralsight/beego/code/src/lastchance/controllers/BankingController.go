@@ -52,12 +52,16 @@ func (c *BankingController) Transfer() {
 	fmt.Println(transfer)
 	fmt.Println(valid.ErrorMap())
 
-	var message string
-	if isValid {
-		message = "success"
-	} else {
-		message = "failure"
+	response := models.TransferResponse{
+		Transfer: transfer,
 	}
 
-	c.Ctx.WriteString(message)
+	if isValid {
+		response.Status = "success"
+	} else {
+		response.Status = "failure"
+	}
+
+	c.Data["json"] = response
+	c.ServeJSON()
 }
