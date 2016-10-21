@@ -19,11 +19,20 @@ type Clock struct {
 } // Complete the type definition.  Pick a suitable data type.
 
 func New(hour, minute int) Clock {
+
 	return Clock{hour: hour, minute: minute}
 }
 
 func (c Clock) String() string {
-	return fmt.Sprintf("%v:%v", c.hour, c.minute)
+	hour := c.hour%24 + int(c.minute/60)
+
+	if hour < 0 {
+		hour += 24
+	} else {
+		hour -= 24
+	}
+
+	return fmt.Sprintf("%02d:%02d", hour, c.minute%60)
 }
 
 func (c Clock) Add(minutes int) Clock {
