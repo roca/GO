@@ -4,6 +4,8 @@
 // You can document general stuff about the package here if you like.
 package clock
 
+import "fmt"
+
 // The value of testVersion here must match `targetTestVersion` in the file
 // clock_test.go.
 const testVersion = 4
@@ -11,15 +13,22 @@ const testVersion = 4
 // Clock API as stub definitions.  No, it doesn't compile yet.
 // More details and hints are in clock_test.go.
 
-type Clock // Complete the type definition.  Pick a suitable data type.
+type Clock struct {
+	hour   int
+	minute int
+} // Complete the type definition.  Pick a suitable data type.
 
 func New(hour, minute int) Clock {
+	return Clock{hour: hour, minute: minute}
 }
 
-func (Clock) String() string {
+func (c Clock) String() string {
+	return fmt.Sprintf("%v:%v", c.hour, c.minute)
 }
 
-func (Clock) Add(minutes int) Clock {
+func (c Clock) Add(minutes int) Clock {
+	c.minute += minutes
+	return c
 }
 
 // Remember to delete all of the stub comments.
