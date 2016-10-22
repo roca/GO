@@ -4,7 +4,10 @@
 // You can document general stuff about the package here if you like.
 package clock
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 // The value of testVersion here must match `targetTestVersion` in the file
 // clock_test.go.
@@ -14,29 +17,28 @@ const testVersion = 4
 // More details and hints are in clock_test.go.
 
 type Clock struct {
-	hour   int
-	minute int
+	currentTime time.Time
 } // Complete the type definition.  Pick a suitable data type.
 
 func New(hour, minute int) Clock {
 
-	return Clock{hour: hour, minute: minute}
+	year, month, day := time.Now().Date()
+	midNight := time.Date(year, month, day, 0, 0, 0, 0, time.Now().Location())
+
+	c := Clock{currentTime: midNight}
+	c.currentTime = c.currentTime.Add(time.Duration(hour) * time.Hour)
+	c.currentTime = c.currentTime.Add(time.Duration(minute) * time.Minute)
+
+	return c
 }
 
 func (c Clock) String() string {
-	hour := c.hour%24 + int(c.minute/60)
 
-	if hour < 0 {
-		hour += 24
-	} else {
-		hour -= 24
-	}
-
-	return fmt.Sprintf("%02d:%02d", hour, c.minute%60)
+	return fmt.Sprintf("%02d:%02d", c.currentTime.Hour(), c.currentTime.Minute())
 }
 
 func (c Clock) Add(minutes int) Clock {
-	c.minute += minutes
+	c.currentTime = c.currentTime.Add(time.Duration(minutes) * time.Minute)
 	return c
 }
 
