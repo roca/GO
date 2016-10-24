@@ -22,13 +22,11 @@ type Clock struct {
 
 func New(hour, minute int) Clock {
 
-	year, month, day := time.Now().Date()
-	midNight := time.Date(year, month, day, 0, 0, 0, 0, time.Now().Location())
+	midNight := time.Date(0, 0, 0, 0, 0, 0, 0, time.UTC)
 
 	c := Clock{currentTime: midNight}
 	c.currentTime = c.currentTime.Add(time.Duration(hour) * time.Hour)
 	c.currentTime = c.currentTime.Add(time.Duration(minute) * time.Minute)
-
 	return c
 }
 
