@@ -27,6 +27,8 @@ func New(hour, minute int) Clock {
 	c := Clock{currentTime: midNight}
 	c.currentTime = c.currentTime.Add(time.Duration(hour) * time.Hour)
 	c.currentTime = c.currentTime.Add(time.Duration(minute) * time.Minute)
+
+	c.currentTime = time.Date(0, 0, 0, c.currentTime.Hour(), c.currentTime.Minute(), 0, 0, time.UTC)
 	return c
 }
 
