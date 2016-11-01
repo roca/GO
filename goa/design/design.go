@@ -26,3 +26,45 @@ var BottlePayLoad = Type("BottlePayLoad", func() {
 
 	Required("name", "vintage", "rating")
 })
+
+var BottleMedia = MediaType("application/vnd.gophercon.goa.bottle", func() {
+	TypeName("bottle")
+	Reference(BottlePayLoad)
+
+	Attributes(func() {
+		Attribute("ID", Integer, "Unique bottle ID")
+		Attribute("name")
+		Attribute("vintage")
+		Attribute("rating")
+		Required("ID", "name", "vintage", "rating")
+	})
+
+	View("default", func() {
+		Attribute("ID")
+		Attribute("name")
+		Attribute("vintage")
+		Attribute("rating")
+	})
+})
+
+var _ = Resource("bottle", func() {
+	Description("A wine bottle")
+	BasePath("/bottles")
+
+	Action("create", func() {
+		Description("Create a bottle")
+		Routing(POST("/"))
+		Payload(BottlePayLoad)
+		Response(Created)
+	})
+
+	Action("show", func() {
+		Description("HSow a bottle")
+		Routing(GET("/:id"))
+		Params(func() {
+			Param("id", Integer)
+		})
+		Response(OK, BottleMedia)
+	})
+
+})
