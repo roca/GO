@@ -32,6 +32,11 @@ func (c *BottleController) Show(ctx *app.ShowBottleContext) error {
 	// Put your logic here
 
 	// BottleController_Show: end_implement
-	res := &app.Bottle{}
+	res := &app.Bottle{
+		ID:      ctx.ID,
+		Name:    "Number 8",
+		Vintage: 2012,
+		Rating:  5,
+	}
 	return ctx.OK(res)
 }
