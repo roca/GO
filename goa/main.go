@@ -21,6 +21,8 @@ func main() {
 	// Mount "bottle" controller
 	c := NewBottleController(service)
 	app.MountBottleController(service, c)
+	cs := NewSwaggerController(service)
+	app.MountSwaggerController(service, cs)
 
 	// Start service
 	if err := service.ListenAndServe(":8080"); err != nil {

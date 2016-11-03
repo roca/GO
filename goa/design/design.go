@@ -68,3 +68,9 @@ var _ = Resource("bottle", func() {
 	})
 
 })
+
+var _ = Resource("swagger", func() {
+	Description("The API swagger specification")
+	Files("/swagger.json", "swagger/swagger.json")
+	Files("/swagger-ui/*filepath", "swagger-ui/")
+})
