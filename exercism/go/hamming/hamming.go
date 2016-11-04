@@ -7,6 +7,7 @@ import (
 
 const testVersion = 5
 
+// Distance performs hamming calulations
 func Distance(a, b string) (int, error) {
 	// your code here
 	aa := strings.Split(a, "")
@@ -18,8 +19,8 @@ func Distance(a, b string) (int, error) {
 
 	score := 0
 
-	for i, a_base := range aa {
-		if i < len(bb) && a_base != bb[i] {
+	for i, aBase := range aa {
+		if i < len(bb) && aBase != bb[i] {
 			score++
 		}
 	}
