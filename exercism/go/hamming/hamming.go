@@ -1,25 +1,19 @@
 package hamming
 
-import (
-	"errors"
-	"strings"
-)
+import "errors"
 
 const testVersion = 5
 
 // Distance performs hamming calulations
 func Distance(a, b string) (int, error) {
-	aa := strings.Split(a, "")
-	bb := strings.Split(b, "")
 
-	if len(aa) != len(bb) {
-		return 0, errors.New("Sequences have different lengths")
+	if len(a) != len(b) {
+		return 0, errors.New("The given sequences have different lengths")
 	}
 
 	score := 0
-
-	for i, aBase := range aa {
-		if i < len(bb) && aBase != bb[i] {
+	for i := 0; i < len(a); i++ {
+		if a[i] != b[i] {
 			score++
 		}
 	}
