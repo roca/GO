@@ -9,7 +9,6 @@ const testVersion = 5
 
 // Distance performs hamming calulations
 func Distance(a, b string) (int, error) {
-	// your code here
 	aa := strings.Split(a, "")
 	bb := strings.Split(b, "")
 
