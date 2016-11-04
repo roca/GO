@@ -1,7 +1,7 @@
 package hamming
 
 import (
-	"fmt"
+	"errors"
 	"strings"
 )
 
@@ -12,18 +12,18 @@ func Distance(a, b string) (int, error) {
 	aa := strings.Split(a, "")
 	bb := strings.Split(b, "")
 
+	if len(aa) != len(bb) {
+		return 0, errors.New("Sequences have different lengths")
+	}
+
 	score := 0
 
 	for i, a_base := range aa {
-		if a_base != bb[i] {
+		if i < len(bb) && a_base != bb[i] {
 			score++
 		}
-
 	}
 
-	//score = 0
-
-	fmt.Printf("score %d\n", score)
 	return score, nil
 
 }
