@@ -16,7 +16,7 @@ func Convert(n int) string {
 			phrase = phrase + "Pling"
 		} else if n%factor == 0 && factor == 5 {
 			phrase = phrase + "Plang"
-		} else if n%factor == 0 && factor == 5 {
+		} else if n%factor == 0 && factor == 7 {
 			phrase = phrase + "Plong"
 		}
 	}
@@ -24,7 +24,7 @@ func Convert(n int) string {
 	if len(aPhrase) == 1 {
 		phrase = aPhrase[0]
 	} else {
-		phrase = strings.Join(aPhrase[1:], "P")
+		phrase = fmt.Sprintf("P%s", strings.Join(aPhrase[1:], "P"))
 	}
 	return phrase
 }
