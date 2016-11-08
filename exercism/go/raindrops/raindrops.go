@@ -28,5 +28,3 @@ func Convert(n int) string {
 	}
 	return phrase
 }
-
-// The test program has a benchmark too.  How fast does your Convert convert?
