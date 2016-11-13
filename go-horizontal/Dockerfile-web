@@ -1,0 +1,9 @@
+FROM ubuntu:16.04
+RUN apt-get update && apt-get install -y --force-yes golang
+COPY src /src
+COPY web /web
+ENV GOPATH /
+ENV DATA_SERVICE_URL http://172.18.0:4000
+EXPOSE 3000
+RUN go install github.com/ps/web
+ENTRYPOINT ["./bin/web"]

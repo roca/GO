@@ -1,0 +1,8 @@
+FROM ubuntu:16.04
+RUN apt-get update && apt-get install -y --force-yes golang
+COPY src /src
+ENV GOPATH /
+EXPOSE 4000
+RUN go install github.com/ps/dataservice
+WORKDIR /
+ENTRYPOINT ["./bin/dataservice"]
