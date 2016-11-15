@@ -1,4 +1,6 @@
   505  docker network create psnet
+
+  docker network create --driver=bridge --subnet=172.19.0.0/16 psnet
   508  docker network inspect psnet
   510  docker build -f Dockerfile-dataservice -t ps/dataservice .
   512  docker run --name dataservice --ip=172.19.0.10 --net=psnet -P --rm -it ps/dataservice
