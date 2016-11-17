@@ -1,11 +1,19 @@
 package acronym
 
-import "regexp"
+import (
+	"regexp"
+	"strings"
+)
 
 const testVersion = 1
 
 func abbreviate(input string) string {
 	a := regexp.MustCompile(" +|-")
-	return ""
+	inputs := a.Split(input, -1)
+	abbreviation := ""
+	for _, word := range inputs {
+		abbreviation += strings.Split(strings.ToUpper(word), "")[0]
+	}
+	return abbreviation
 
 }
