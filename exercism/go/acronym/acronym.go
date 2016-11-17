@@ -9,16 +9,16 @@ import (
 
 const testVersion = 1
 
-func abbreviate(input string) string {
+func abbreviate(phrase string) string {
 	rgx := regexp.MustCompile(" +|-|:|,")
-	inputs := rgx.Split(input, -1)
+	words := rgx.Split(phrase, -1)
 	abbreviation := ""
-	for _, word := range inputs {
-		camelCaseWords := camelcase.Split(word)
-		if len(camelCaseWords) == 1 {
+	for _, word := range words {
+		camelCasedWords := camelcase.Split(word)
+		if len(camelCasedWords) == 1 {
 			abbreviation += strings.Split(strings.ToUpper(word), "")[0]
 		} else {
-			for _, word := range camelCaseWords {
+			for _, word := range camelCasedWords {
 				abbreviation += strings.Split(strings.ToUpper(word), "")[0]
 			}
 		}
