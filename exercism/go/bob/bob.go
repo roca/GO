@@ -14,9 +14,10 @@ func Hey(input string) string {
 
 	responses := []Responses{
 		{matcher: regexp.MustCompile(`\?$`), answer: "Sure."},
-		{matcher: regexp.MustCompile(`^[^[a-z]]*$`), answer: "Whoa, chill out!"},
-		{matcher: regexp.MustCompile(`^[^[a-z]]*$`), answer: "Fine. Be that way!"},
-		{matcher: regexp.MustCompile(`^[^[a-z]]*$`), answer: "Whatever."},
+		{matcher: regexp.MustCompile(`^[^(a-z)]*$`), answer: "Whoa, chill out!"},
+		{matcher: regexp.MustCompile(`^[^(a-z)]*\?$`), answer: "Whoa, chill out!"},
+		{matcher: regexp.MustCompile(`^[a-z]*\.$`), answer: "Fine. Be that way!"},
+		{matcher: regexp.MustCompile(`^\d+$`), answer: "Whatever."},
 	}
 
 	for _, response := range responses {
