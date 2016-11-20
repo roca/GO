@@ -1,0 +1,15 @@
+version: "2"
+ 
+networks:
+    psnet:
+        driver: bridge
+services:
+    dataservice:
+        container_name: ps/dataservice
+        build: 
+            context: .
+            dockerfile: ./Dockerfile-dataservice
+        ports:
+            - "4000:4000"
+        networks:
+            - psnet
