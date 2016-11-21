@@ -5,11 +5,21 @@ networks:
         driver: bridge
 services:
     dataservice:
-        container_name: ps/dataservice
+        container_name: dataservice
         build: 
             context: .
             dockerfile: ./Dockerfile-dataservice
         ports:
             - "4000:4000"
+        networks:
+            - psnet
+
+    web:
+        container_name: web
+        build: 
+            context: .
+            dockerfile: ./Dockerfile-web
+        ports:
+            - "3000:3000"
         networks:
             - psnet
