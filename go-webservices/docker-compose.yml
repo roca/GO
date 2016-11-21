@@ -1,0 +1,25 @@
+    # 1. Update config values (localhost --> mongo and localhost --> redis) in config.development.json
+    # 2. Set APP_ENV environment variable to proper value in Dockerfile-redis (default is "development")
+    #    export APP_ENV=development
+    # 3. Run docker-compose build
+    # 4. Run docker-compose up
+    # 5. Live long and prosper
+    
+version: "2"
+ 
+services:
+    devlopment:
+      container_name: devlopment
+      build: 
+        context: .
+        dockerfile: Dockerfile-devlopment
+      ports:
+        - "8080"
+      volumes:
+        - .:/var/www/devlopment
+        - $(GOPATH):/go
+      working_dir: /var/www/devlopment
+      networks:
+        - devlopment-network
+networks:
+    - devlopment-network:
