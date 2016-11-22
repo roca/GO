@@ -8,18 +8,30 @@
 version: "2"
  
 services:
-    devlopment:
-      container_name: devlopment
+    developmentt:
+      container_name: development
       build: 
         context: .
-        dockerfile: Dockerfile-devlopment
+        dockerfile: .docker/Dockerfile-development
       ports:
         - "8080"
       volumes:
-        - .:/var/www/devlopment
-        - $(GOPATH):/go
-      working_dir: /var/www/devlopment
+        - .:/var/www/development
+      working_dir: /var/www/development
       networks:
-        - devlopment-network
+        - development-network
+    redis:
+      container_name: redis
+      build: 
+        context: .
+        dockerfile: .docker/docker-redis.dockerfile
+      ports:
+        - "6379"
+      env_file:
+        - ./.docker/env/app.${APP_ENV}.env
+      networks:
+        - development-network
+        
 networks:
-    - devlopment-network:
+    development-network:
+      driver: bridge
