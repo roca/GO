@@ -26,7 +26,18 @@ services:
         context: .
         dockerfile: .docker/docker-redis.dockerfile
       ports:
-        - "6379"
+        - "6380:6379"
+      env_file:
+        - ./.docker/env/app.${APP_ENV}.env
+      networks:
+        - development-network
+    mysql:
+      container_name: mysql
+      build: 
+        context: .
+        dockerfile: .docker/docker-mysql.dockerfile
+      ports:
+        - "3307:3306"
       env_file:
         - ./.docker/env/app.${APP_ENV}.env
       networks:
