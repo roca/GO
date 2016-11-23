@@ -6,43 +6,46 @@
     # 5. Live long and prosper
     
 version: "2"
+
+
+networks:
+    go-network:
+      driver: bridge
  
 services:
-    developmentt:
+    development:
       container_name: development
       build: 
         context: .
-        dockerfile: .docker/Dockerfile-development
+        dockerfile: .docker/development.dockerfile
       ports:
-        - "8080"
+        - "3000:3000"
       volumes:
-        - .:/var/www/development
-      working_dir: /var/www/development
+        - .:/go/src/app
+      working_dir: /go/src/app
       networks:
-        - development-network
+        - go-network
     redis:
       container_name: redis
       build: 
         context: .
         dockerfile: .docker/docker-redis.dockerfile
       ports:
-        - "6380:6379"
+        - "6379:6379"
       env_file:
         - ./.docker/env/app.${APP_ENV}.env
       networks:
-        - development-network
+        - go-network
     mysql:
       container_name: mysql
       build: 
         context: .
         dockerfile: .docker/docker-mysql.dockerfile
       ports:
-        - "3307:3306"
+        - "3306:3306"
       env_file:
         - ./.docker/env/app.${APP_ENV}.env
       networks:
-        - development-network
+        - go-network
+  
         
-networks:
-    development-network:
-      driver: bridge

@@ -1,9 +1,6 @@
-FROM 		mysql/mysql-server:latest
+FROM 		mysql:latest
 
 MAINTAINER 	Romel Campbell
-
-#Change as appropriate for build
-ENV APP_ENV development
 
 EXPOSE      3306
 
