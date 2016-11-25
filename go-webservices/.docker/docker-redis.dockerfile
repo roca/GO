@@ -2,10 +2,7 @@ FROM 		redis:latest
 
 MAINTAINER 	Romel Campbell
 
-#Change as appropriate for build
-ENV APP_ENV development
-
-COPY ./.docker/config/redis.${APP_ENV}.conf /etc/redis.conf
+COPY ./db/redis/config/redis.conf /etc/redis.conf
 
 EXPOSE      6379
 

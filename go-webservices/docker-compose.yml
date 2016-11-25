@@ -33,7 +33,7 @@ services:
       ports:
         - "6379:6379"
       env_file:
-        - ./.docker/env/app.${APP_ENV}.env
+        - ./db/redis/config/env.conf
       networks:
         - go-network
     mysql:
@@ -43,8 +43,10 @@ services:
         dockerfile: .docker/docker-mysql.dockerfile
       ports:
         - "3306:3306"
+      volumes:
+        - /Users/romelcampbell/go/src/github.com/GOCODE/go-webservices/db/mysql/data:/var/lib/mysql:rw
       env_file:
-        - ./.docker/env/app.${APP_ENV}.env
+        - ./db/mysql/config/env.conf
       networks:
         - go-network
   
