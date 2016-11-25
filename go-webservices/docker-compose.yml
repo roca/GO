@@ -44,9 +44,11 @@ services:
       ports:
         - "3306:3306"
       volumes:
-        - /Users/romelcampbell/go/src/github.com/GOCODE/go-webservices/db/mysql/data:/var/lib/mysql:rw
+        - ./db/mysql/data:/var/lib/mysql:rw
+        - ./scripts:/scripts:rw
       env_file:
         - ./db/mysql/config/env.conf
+      command: "/scripts/mysql.sh"
       networks:
         - go-network
   
