@@ -15,7 +15,7 @@ type API struct {
 func main() {
 	http.HandleFunc("/api", func(w http.ResponseWriter, r *http.Request) {
 
-		message := API{"Hello World"}
+		message := API{"Hello world!"}
 
 		output, err := json.Marshal(message)
 
@@ -25,9 +25,8 @@ func main() {
 
 		fmt.Fprintf(w, string(output))
 
-		port := os.Getenv("PORT")
-
-		http.ListenAndServe(":"+port, nil)
-
 	})
+	port := os.Getenv("PORT")
+
+	http.ListenAndServe(":"+port, nil)
 }
