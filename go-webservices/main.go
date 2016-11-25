@@ -1,25 +1,33 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 )
 
-func handler(w http.ResponseWriter, r *http.Request) {
-	log.Println("Received Request: ", r.URL.Path)
-	fmt.Fprintf(w, "Hello World!")
+// API struct
+type API struct {
+	Message string "json:message"
 }
-func main() {
-	http.HandleFunc("/", handler)
 
-	port := os.Getenv("PORT")
-	if port == "" {
-		log.Fatal("PORT environment variable was not set")
-	}
-	err := http.ListenAndServe(":"+port, nil)
-	if err != nil {
-		log.Fatal("Could not listen: ", err)
-	}
+func main() {
+	http.HandleFunc("/api", func(w http.ResponseWriter, r *http.Request) {
+
+		message := API{"Hello World"}
+
+		output, err := json.Marshal(message)
+
+		if err != nil {
+			fmt.Println("Something went wrong!")
+		}
+
+		fmt.Fprintf(w, string(output))
+
+		port := os.Getenv("PORT")
+
+		http.ListenAndServe(":"+port, nil)
+
+	})
 }
