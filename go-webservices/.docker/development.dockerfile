@@ -8,6 +8,8 @@ WORKDIR /go/src/app
 COPY . /go/src/app
 # Download and install any required third party dependencies into the container.
 RUN go get github.com/codegangsta/gin
+RUN go get github.com/gorilla/mux
+RUN go get github.com/go-sql-driver/mysql
 RUN go-wrapper download
 RUN go-wrapper install
 # Set the PORT environment variable inside the container
