@@ -47,7 +47,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	password := os.Getenv("MYSQL_ROOT_PASSWORD")
 
-	db, err := sql.Open("mysql", "root:"+password+"@tcp(go-network:3306)/social_network")
+	db, err := sql.Open("mysql", "root:"+password+"@tcp(mysql:3306)/social_network")
 	if err != nil {
 		fmt.Println("Could not connect to the database")
 	}
@@ -83,15 +83,14 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(q)
 }
 
-//http://localhost:8080/api/user/create?user=nkozyra&first=Nathan&last=Kozyra&email=nathan@nathankozyra.com
+//http://192.168.99.100:3000/api/user/create?user=nkozyra&first=Nathan&last=Kozyra&email=nathan@nathankozyra.com
 
 func main() {
 	gorillaRoute := mux.NewRouter()
 	gorillaRoute.HandleFunc("/api/{user:[0-9]+}", Hello)
-	routes := mux.NewRouter()
-	routes.HandleFunc("/api/user/create", CreateUser).Methods("GET")
+	gorillaRoute.HandleFunc("/api/user/create", CreateUser).Methods("GET")
 
-	http.Handle("/", routes)
+	http.Handle("/", gorillaRoute)
 	port := os.Getenv("PORT")
 
 	http.ListenAndServe(":"+port, nil)

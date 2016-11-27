@@ -7,11 +7,6 @@
     
 version: "2"
 
-
-networks:
-    go-network:
-      driver: bridge
- 
 services:
     development:
       container_name: development
@@ -25,8 +20,6 @@ services:
       working_dir: /go/src/app
       env_file:
         - ./db/mysql/config/env.conf
-      networks:
-        - go-network
     redis:
       container_name: redis
       build: 
@@ -36,8 +29,6 @@ services:
         - "6379:6379"
       env_file:
         - ./db/redis/config/env.conf
-      networks:
-        - go-network
     mysql:
       container_name: mysql
       build: 
@@ -51,7 +42,4 @@ services:
       env_file:
         - ./db/mysql/config/env.conf
       command: "/scripts/mysql.sh"
-      networks:
-        - go-network
-  
         
