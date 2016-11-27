@@ -23,6 +23,8 @@ services:
       volumes:
         - .:/go/src/app
       working_dir: /go/src/app
+      env_file:
+        - ./db/mysql/config/env.conf
       networks:
         - go-network
     redis:
