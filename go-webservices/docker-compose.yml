@@ -16,8 +16,8 @@ services:
       ports:
         - "3000:3000"
       volumes:
-        - .:/go/src/app
-      working_dir: /go/src/app
+        - .:/go/src/github.com/GOCODE/go-webservices
+      working_dir: /go/src/github.com/GOCODE/go-webservices
       env_file:
         - ./db/mysql/config/env.conf
     redis:

@@ -10,32 +10,10 @@ import (
 
 	"log"
 
+	"github.com/GOCODE/go-webservices/handlers"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 )
-
-// API struct
-type API struct {
-	Message string "json:message"
-}
-
-func Hello(w http.ResponseWriter, r *http.Request) {
-
-	urlParams := mux.Vars(r)
-	name := urlParams["user"]
-
-	HelloMessage := "Hello, " + name
-	message := API{HelloMessage}
-
-	output, err := json.Marshal(message)
-
-	if err != nil {
-		fmt.Println("Something went wrong!")
-	}
-
-	fmt.Fprintf(w, string(output))
-
-}
 
 type User struct {
 	ID    int    "json:id"
@@ -125,7 +103,7 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	gorillaRoute := mux.NewRouter()
-	gorillaRoute.HandleFunc("/api/{user:[0-9]+}", Hello)
+	gorillaRoute.HandleFunc("/api/{user:[0-9]+}", handlers.Hello)
 	gorillaRoute.HandleFunc("/api/user/create", CreateUser).Methods("GET")
 	gorillaRoute.HandleFunc("/api/user/read/{id:[0-9]+}", GetUser).Methods("GET")
 
