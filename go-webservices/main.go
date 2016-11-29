@@ -8,6 +8,8 @@ import (
 
 	"database/sql"
 
+	"log"
+
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 )
@@ -84,11 +86,48 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 //http://192.168.99.100:3000/api/user/create?user=nkozyra&first=Nathan&last=Kozyra&email=nathan@nathankozyra.com
+func GetUser(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Pragma", "no-cache")
+
+	urlParams := mux.Vars(r)
+	id := urlParams["id"]
+	ReadUser := User{}
+
+	password := os.Getenv("MYSQL_ROOT_PASSWORD")
+
+	db, err := sql.Open("mysql", "root:"+password+"@tcp(mysql:3306)/social_network")
+	if err != nil {
+		fmt.Println("Could not connect to the database")
+	}
+
+	er := db.QueryRow("select * from users where user_id = ?", id).Scan(
+		&ReadUser.ID,
+		&ReadUser.Name,
+		&ReadUser.First,
+		&ReadUser.Last,
+		&ReadUser.Email,
+	)
+
+	switch {
+	case er == sql.ErrNoRows:
+		fmt.Fprintf(w, "No such user")
+	case er != nil:
+		log.Fatal(er)
+		fmt.Fprintf(w, "ERROR")
+	default:
+		output, _ := json.Marshal(ReadUser)
+		fmt.Fprintf(w, string(output))
+	}
+}
+
+//curl http://192.168.99.100:3000/api/user/read/111
 
 func main() {
 	gorillaRoute := mux.NewRouter()
 	gorillaRoute.HandleFunc("/api/{user:[0-9]+}", Hello)
 	gorillaRoute.HandleFunc("/api/user/create", CreateUser).Methods("GET")
+	gorillaRoute.HandleFunc("/api/user/read/{id:[0-9]+}", GetUser).Methods("GET")
 
 	http.Handle("/", gorillaRoute)
 	port := os.Getenv("PORT")
