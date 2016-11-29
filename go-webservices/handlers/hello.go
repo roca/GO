@@ -8,8 +8,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-
-
+// Hello API endpoint
 func Hello(w http.ResponseWriter, r *http.Request) {
 
 	urlParams := mux.Vars(r)

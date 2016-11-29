@@ -5,6 +5,7 @@ type API struct {
 	Message string "json:message"
 }
 
+// User struct
 type User struct {
 	ID    int    "json:id"
 	Name  string "json:username"

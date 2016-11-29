@@ -15,6 +15,7 @@ import (
 
 //curl http://192.168.99.100:3000/api/user/read/111
 
+// GetUser API endpoint
 func GetUser(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Pragma", "no-cache")
