@@ -8,10 +8,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// API struct
-type API struct {
-	Message string "json:message"
-}
+
 
 func Hello(w http.ResponseWriter, r *http.Request) {
 
