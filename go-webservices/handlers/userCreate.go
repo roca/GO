@@ -13,7 +13,7 @@ import (
 //http://192.168.99.100:3000/api/user/create?user=nkozyra&first=Nathan&last=Kozyra&email=nathan@nathankozyra.com
 
 // CreateUser API endpoint
-func CreateUser(w http.ResponseWriter, r *http.Request) {
+func UserCreate(w http.ResponseWriter, r *http.Request) {
 
 	password := os.Getenv("MYSQL_ROOT_PASSWORD")
 

@@ -12,8 +12,8 @@ import (
 func main() {
 	gorillaRoute := mux.NewRouter()
 	gorillaRoute.HandleFunc("/api/{user:[0-9]+}", handlers.Hello)
-	gorillaRoute.HandleFunc("/api/user/create", handlers.CreateUser).Methods("GET")
-	gorillaRoute.HandleFunc("/api/user/read/{id:[0-9]+}", handlers.GetUser).Methods("GET")
+	gorillaRoute.HandleFunc("/api/user", handlers.UserCreate).Methods("POST")
+	gorillaRoute.HandleFunc("/api/user", handlers.UserRetrieve).Methods("GET")
 
 	http.Handle("/", gorillaRoute)
 	port := os.Getenv("PORT")
