@@ -24,4 +24,4 @@ CREATE TABLE user_relationships (
     INDEX from_user_id_to_user_id_user_relationship_type (from_user_id, to_user_id, user_relationship_type)
     
     
-)
+);
