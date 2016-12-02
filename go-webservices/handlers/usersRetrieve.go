@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 
@@ -15,7 +16,15 @@ import (
 // GetUser API endpoint
 func UsersRetrieve(w http.ResponseWriter, r *http.Request) {
 
+	log.Println("starting retrieval")
+	start := 0
+	limit := 10
+
+	next := start + limit
+	link := fmt.Sprintf("<http://localhost:8080/api/users?start=%d; rel=\"next\"", next)
+
 	w.Header().Set("Pragma", "no-cache")
+	w.Header().Set("Link", link)
 
 	password := os.Getenv("MYSQL_ROOT_PASSWORD")
 
