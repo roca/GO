@@ -13,3 +13,7 @@ type User struct {
 	First string `json:first`
 	Last  string `json:last`
 }
+
+type Users struct {
+	Users []User `json:"users"`
+}
