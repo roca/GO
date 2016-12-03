@@ -17,3 +17,7 @@ type User struct {
 type Users struct {
 	Users []User `json:"users"`
 }
+
+type CreateResponse struct {
+	Error string `json:error`
+}

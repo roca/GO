@@ -10,7 +10,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-//http://192.168.99.100:3000/api/user/create?user=nkozyra&first=Nathan&last=Kozyra&email=nathan@nathankozyra.com
+//curl http://192.168.99.100:3000/api/users -data "name=nkozyra&first=Nathan&last=Kozyra&email=nathan@nathankozyra.com"
 
 // CreateUser API endpoint
 func UserCreate(w http.ResponseWriter, r *http.Request) {
@@ -35,6 +35,8 @@ func UserCreate(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Something went wrong")
 	}
 
+	Response := CreateResponse{}
+
 	sql := "INSERT INTO users set " +
 		"   user_nickname='" + NewUser.Name +
 		"', user_first='" + NewUser.First +
@@ -48,7 +50,10 @@ func UserCreate(w http.ResponseWriter, r *http.Request) {
 
 	q, err := stmtIns.Exec()
 	if err != nil {
-		fmt.Println(err)
+		Response.Error = err.Error()
 	}
+
 	fmt.Println(q)
+	createOutput, _ := json.Marshal(Response)
+	fmt.Fprintln(w, string(createOutput))
 }
