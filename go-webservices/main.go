@@ -12,6 +12,7 @@ import (
 func main() {
 	gorillaRoute := mux.NewRouter()
 	gorillaRoute.HandleFunc("/api/{user:[0-9]+}", handlers.Hello)
+	gorillaRoute.HandleFunc("/users", handlers.UserIndex).Methods("GET")
 	gorillaRoute.HandleFunc("/api/users", handlers.UserCreate).Methods("POST")
 	gorillaRoute.HandleFunc("/api/users", handlers.UsersRetrieve).Methods("GET")
 
