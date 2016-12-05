@@ -21,3 +21,9 @@ type Users struct {
 type CreateResponse struct {
 	Error string `json:error`
 }
+
+type Page struct {
+	Title string
+	Body  []byte
+}
+
