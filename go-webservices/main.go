@@ -21,6 +21,8 @@ func main() {
 	gorillaRoute.HandleFunc("/api/users", handlers.UserCreate).Methods("POST")
 	gorillaRoute.HandleFunc("/api/users", handlers.UsersRetrieve).Methods("GET")
 
+	http.Handle("/resources/", http.StripPrefix("/resources/", http.FileServer(http.Dir("resources"))))
+
 	http.Handle("/", gorillaRoute)
 	port := os.Getenv("PORT")
 
