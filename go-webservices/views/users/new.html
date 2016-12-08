@@ -64,15 +64,17 @@
 		postData.last 	= $('#createLast').val();
 
 		$.post(action,postData,function(data) {
+			console.log(data);
 			if (data.error) {
+				console.log(data.error);
 				$('.alert').html(data.error);
-				$('.alert').alert();
+				$('.alert').alert('open');
 			}
 		},'jsonp');
 	}
 
 	$(document).ready(function() {
-		//$('.alert').alert('close');
+		$('.alert').alert('close');
 
 	});
 	</script>
