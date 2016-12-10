@@ -65,6 +65,7 @@
 
 		$.post(action,postData,function(data) {
 			console.log(data);
+			alert('Got response');
 			if (data.error) {
 				console.log(data.error);
 				$('.alert').html(data.error);

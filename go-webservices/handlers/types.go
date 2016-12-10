@@ -19,11 +19,17 @@ type Users struct {
 }
 
 type CreateResponse struct {
-	Error string `json:error`
+	Error     string `json:error`
+	ErrorCode int    `json:code`
+}
+
+type ErrMsg struct {
+	ErrCode    int
+	StatusCode int
+	Msg        string
 }
 
 type Page struct {
 	Title string
 	Body  []byte
 }
-

@@ -50,7 +50,14 @@ func UserCreate(w http.ResponseWriter, r *http.Request) {
 
 	q, err := stmtIns.Exec()
 	if err != nil {
-		Response.Error = err.Error()
+		errorMessage, errorCode := dbErrorParse(err.Error())
+		fmt.Println(errorMessage)
+		em := ErrorMessages(errorCode)
+		Response.Error = em.Msg
+		Response.ErrorCode = em.ErrCode
+
+		http.Error(w, em.Msg, em.StatusCode)
+		fmt.Println(em.StatusCode)
 	}
 
 	fmt.Println(q)
