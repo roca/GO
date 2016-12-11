@@ -28,12 +28,12 @@ func UserCreate(w http.ResponseWriter, r *http.Request) {
 	NewUser.First = r.FormValue("first")
 	NewUser.Last = r.FormValue("last")
 
-	output, err := json.Marshal(NewUser)
-	fmt.Fprintf(w, string(output))
+	// output, err := json.Marshal(NewUser)
+	// fmt.Fprintf(w, string(output))
 
-	if err != nil {
-		fmt.Println("Something went wrong")
-	}
+	// if err != nil {
+	// 	fmt.Println("Something went wrong")
+	// }
 
 	Response := CreateResponse{}
 
@@ -56,7 +56,7 @@ func UserCreate(w http.ResponseWriter, r *http.Request) {
 		Response.Error = em.Msg
 		Response.ErrorCode = em.ErrCode
 
-		http.Error(w, em.Msg, em.StatusCode)
+		//http.Error(w, em.Msg, em.StatusCode)
 		fmt.Println(em.StatusCode)
 	}
 

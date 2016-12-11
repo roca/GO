@@ -65,18 +65,17 @@
 
 		$.post(action,postData,function(data) {
 			console.log(data);
-			alert('Got response');
-			if (data.error) {
-				console.log(data.error);
-				$('.alert').html(data.error);
-				$('.alert').alert('open');
+			//alert('Got response');
+			if (data.Error != "") {
+				console.log(data.Error);
+				$('#api-messages').html(data.Error);
+				$('#api-messages').alert();
 			}
-		},'jsonp');
+		},'json');
 	}
 
 	$(document).ready(function() {
-		$('.alert').alert('close');
-
+		$('#api-messages').alert('close');
 	});
 	</script>
 	</body>
