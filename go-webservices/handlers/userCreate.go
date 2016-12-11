@@ -7,6 +7,9 @@ import (
 	"net/http"
 	"os"
 
+	"encoding/base64"
+	"io/ioutil"
+
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -28,6 +31,15 @@ func UserCreate(w http.ResponseWriter, r *http.Request) {
 	NewUser.First = r.FormValue("first")
 	NewUser.Last = r.FormValue("last")
 
+	f, _, err := r.FormFile("image")
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
+	fileData, _ := ioutil.ReadAll(f)
+
+	fileString := base64.StdEncoding.EncodeToString(fileData)
+
 	// output, err := json.Marshal(NewUser)
 	// fmt.Fprintf(w, string(output))
 
@@ -41,7 +53,8 @@ func UserCreate(w http.ResponseWriter, r *http.Request) {
 		"   user_nickname='" + NewUser.Name +
 		"', user_first='" + NewUser.First +
 		"', user_last='" + NewUser.Last +
-		"', user_email='" + NewUser.Email + "'"
+		"', user_email='" + NewUser.Email +
+		"', user_image='" + fileString + "'"
 
 	stmtIns, err := db.Prepare(sql) // ? = placeholder
 	if err != nil {

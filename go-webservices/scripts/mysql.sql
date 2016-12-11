@@ -25,3 +25,5 @@ CREATE TABLE user_relationships (
     
     
 );
+
+ALTER TABLE `users` ADD COLUMN `user_image` MEDIUMBLOB NOT NULL AFTER `user_email`;
