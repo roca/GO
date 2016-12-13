@@ -10,60 +10,90 @@
 		<script src="/resources/script.js"></script>
 	</head>
 	<body>
-	<div class="container">
-		<div class="row">
-			<div class="col-12-lg">
+<div class="container">
 
-				<h1>API Interface</h1>
-				<ul class="nav nav-tabs" role="tablist">
-					<li class="active"><a href="#create" role="tab" data-toggle="tab">Create User</a></li>
-				</ul>
-				<div class="tab-content">
-					<div class="tab-pane active" id="create">
-					<div class="form-group">
-					<label for="createEmail">Email</label>
-					<input type="text" class="form-control" id="createEmail" placeholder="Enter email">
-					</div>
-					<div class="form-group">
-					<label for="createUsername">Username</label>
-					<input type="text" class="form-control" id="createUsername" placeholder="Enter username">
-					</div>
-					<div class="form-group">
-					<label for="createFirst">First Name</label>
-					<input type="text" class="form-control" id="createFirst" placeholder="First Name">
-					</div>
-					<div class="form-group">
-					<label for="createLast">Last Name</label>
-					<input type="text" class="form-control" id="createLast" placeholder="Last Name">
-					</div>
-					<div class="form-group">
-					<label for="createImage">Image</label>
-					<input type="file" class="form-control" name="image" id="createImage" placeholder="Image">
-					</div>
-					<button type="submit" onclick="userCreate();" class="btn btn-success">Create</button>
-					</div>
-				</div>
+	<div class="row">
+	<div class="col-12-lg">
+
+		<h1>API Interface</h1>
+		<div class="alert alert-warning" id="api-messages" role="alert">That email already exists!</div>
+
+		<ul class="nav nav-tabs" role="tablist">
+			<li class="active"><a href="#create" role="tab" data-toggle="tab">Create User</a></li>
+		</ul>
+
+
+		<div class="tab-content">
+			<div class="tab-pane active" id="create">
+			<form onsubmit="return false;">
+			<div class="form-group">
+			<label for="createEmail">Email</label>
+			<input type="text" class="form-control" name="email" id="createEmail" placeholder="Enter email">
 			</div>
+			<div class="form-group">
+			<label for="createUsername">Username</label>
+			<input type="text" class="form-control" name="user" id="createUsername" placeholder="Enter username">
+			</div>
+			<div class="form-group">
+			<label for="createFirst">First Name</label>
+			<input type="text" class="form-control" name="first" id="createFirst" placeholder="First Name">
+			</div>
+			<div class="form-group">
+			<label for="createLast">Last Name</label>
+			<input type="text" class="form-control" name="last" id="createLast" placeholder="Last Name">
+			</div>
+			<div class="form-group">
+			<label for="createLast">Image</label>
+			<input type="file" class="form-control" name="image" id="createImage" placeholder="Image">
+			</div>
+			<button type="submit" onclick="userCreate();" class="btn btn-success">Create</button>
+			</form>
+			</div>
+
 		</div>
+	</div>
+	</div>
+
 	</div>
 	<script>
 
 	function userCreate() {
-		action = "http://192.168.99.100:3000/api/users";
+		action = "http://localhost:8080/api/users";
 		postData = {};
 		postData.email 	= $('#createEmail').val();
 		postData.user 	= $('#createUsername').val();
 		postData.first 	= $('#createFirst').val();
 		postData.last 	= $('#createLast').val();
 
-		$.post(action,postData,function(data) {
-			console.log(data);
-			if (data.Error != "") {
-                var message = JSON.stringify(data);
-                alert(message);
-			}
-		},'json');
+		var formData = new FormData($('form')[0]);
+		$.ajax({
+
+				url: action,
+				type: 'POST',
+				xhr: function() {
+					var myXhr = $.ajaxSettings.xhr();
+					if(myXhr.upload){
+					}
+					return myXhr;
+				},
+				//Ajax events
+				beforeSend: function() {},
+				success: function() { alert ('yay'); },
+				error: function() {alert ('nay');},
+				// Form data
+				data: formData,
+				//Options to tell jQuery not to process data or worry about content-type.
+				cache: false,
+				contentType: false,
+				processData: false
+			});
+
 	}
+
+	$(document).ready(function() {
+		//$('.alert').alert('close');
+
+	});
 
 	
 	</script>
