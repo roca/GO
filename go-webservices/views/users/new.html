@@ -79,15 +79,18 @@
 				//Ajax events
 				beforeSend: function() {},
 				success: function(data) {
-					console.log(data);
-					if (data['Error'] != '') {
-                 		var message = JSON.stringify(data);
-                 		alert(data['Error']);
+					responseJSON = JSON.parse(data);
+					console.log(responseJSON);
+					if (responseJSON.Error != '') {
+                 		alert(responseJSON.Error);
 					} else {
-					 alert ('yay'); 
+					 	alert('yay'); 
 					}
 			    },
-				error: function() {alert ('nay');},
+				error: function(data) {
+					console.log(data);
+					alert('nope');
+				},
 				// Form data
 				data: formData,
 				//Options to tell jQuery not to process data or worry about content-type.
@@ -100,7 +103,6 @@
 
 	$(document).ready(function() {
 		//$('.alert').alert('close');
-
 	});
 
 	
