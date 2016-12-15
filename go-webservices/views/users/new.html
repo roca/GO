@@ -58,7 +58,7 @@
 	<script>
 
 	function userCreate() {
-		action = "http://localhost:8080/api/users";
+		action = "http://192.168.99.100:3000/api/users";
 		postData = {};
 		postData.email 	= $('#createEmail').val();
 		postData.user 	= $('#createUsername').val();
@@ -78,7 +78,15 @@
 				},
 				//Ajax events
 				beforeSend: function() {},
-				success: function() { alert ('yay'); },
+				success: function(data) {
+					console.log(data);
+					if (data.Error != undefined) {
+                 		var message = JSON.stringify(data);
+                 		alert(data.Error);
+					} else {
+					 alert ('yay'); 
+					}
+			    },
 				error: function() {alert ('nay');},
 				// Form data
 				data: formData,
