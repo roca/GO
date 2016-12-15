@@ -80,9 +80,9 @@
 				beforeSend: function() {},
 				success: function(data) {
 					console.log(data);
-					if (data.Error != undefined) {
+					if (data['Error'] != '') {
                  		var message = JSON.stringify(data);
-                 		alert(data.Error);
+                 		alert(data['Error']);
 					} else {
 					 alert ('yay'); 
 					}
