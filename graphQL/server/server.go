@@ -8,6 +8,10 @@ import (
 
 var Version int
 
+// type Query struct {
+// 	latestPost string
+// }
+
 var queryType = graphql.NewObject(graphql.ObjectConfig{
 	Name: "Query",
 	Fields: graphql.Fields{
