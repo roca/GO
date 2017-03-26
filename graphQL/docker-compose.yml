@@ -1,0 +1,13 @@
+version: "2"
+
+services:
+    development:
+      container_name: development
+      build: 
+        context: .
+        dockerfile: .docker/development.dockerfile
+      ports:
+        - "8080:8080"
+      volumes:
+        - .:/go/src/github.com/GOCODE/graphQL
+      working_dir: /go/src/github.com/GOCODE/graphQL
