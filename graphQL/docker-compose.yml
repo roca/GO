@@ -7,7 +7,7 @@ services:
         context: .
         dockerfile: .docker/development.dockerfile
       ports:
-        - "8080:8080"
+        - "3000:3000"
       volumes:
         - .:/go/src/github.com/GOCODE/graphQL
       working_dir: /go/src/github.com/GOCODE/graphQL
