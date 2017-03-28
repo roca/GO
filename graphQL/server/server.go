@@ -14,8 +14,8 @@ var queryType = graphql.NewObject(graphql.ObjectConfig{
 	Fields: graphql.Fields{
 		"latestPost": &graphql.Field{
 			Type: graphql.String,
-			Resolve: func(p types.ResolveParams) interface{} {
-				return "Hello World!"
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				return "Hello World!", nil
 			},
 		},
 	},
