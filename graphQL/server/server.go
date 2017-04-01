@@ -2,6 +2,7 @@ package server
 
 import (
 	"net/http"
+	"os"
 
 	"github.com/GOCODE/graphQL/handlers"
 	"github.com/gorilla/mux"
@@ -39,9 +40,16 @@ func Start() {
 	})
 
 	// serve a GraphQL endpoint at `/graphql`
+
 	http.Handle("/graphql", h)
 	http.Handle("/", gorillaRoute)
 
+	http.Handle("/resources/", http.StripPrefix("/resources/", http.FileServer(http.Dir("resources"))))
+
+	port := os.Getenv("PORT")
+
 	// and serve!
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":"+port, nil)
 }
+
+// curl -XPOST http://local.rit.aws.regeneron.com:8080/graphql -H 'Content-Type: application/graphql' -d 'query Root{ latestPost }'

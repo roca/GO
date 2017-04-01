@@ -9,7 +9,7 @@ import (
 func IndexPage(w http.ResponseWriter, r *http.Request) {
 	p, err := loadPage("index")
 	if err != nil {
-		p = &Page{Title: "index"}
+		p = &Page{Title: "GraphiQL"}
 	}
 	t, _ := template.ParseFiles("./views/index.html")
 	t.Execute(w, p)
