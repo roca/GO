@@ -1,6 +1,7 @@
 package server
 
 import (
+	"math/rand"
 	"net/http"
 	"os"
 
@@ -19,6 +20,12 @@ var queryType = graphql.NewObject(graphql.ObjectConfig{
 			Type: graphql.String,
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				return "Hello World!", nil
+			},
+		},
+		"randomNumber": &graphql.Field{
+			Type: graphql.Int,
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				return rand.Intn(100), nil
 			},
 		},
 	},
