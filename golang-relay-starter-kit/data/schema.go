@@ -1,6 +1,8 @@
 package data
 
 import (
+	"fmt"
+
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/relay"
 )
@@ -25,6 +27,9 @@ func init() {
 			"text": &graphql.Field{
 				Type: graphql.String,
 			},
+			"author": &graphql.Field{
+				Type: graphql.String,
+			},
 		},
 	})
 
@@ -34,7 +39,9 @@ func init() {
 			"latestPost": &graphql.Field{
 				Type: postType,
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-					return GetLatestPost(), nil
+					lastPost := GetLatestPost()
+					fmt.Println(lastPost)
+					return lastPost, nil
 				},
 			},
 		},
