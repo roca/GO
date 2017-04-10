@@ -8,12 +8,24 @@ import (
 )
 
 var postType *graphql.Object
+var authorType *graphql.Object
 var queryType *graphql.Object
 
 // Schema ...
 var Schema graphql.Schema
 
 func init() {
+
+	authorType = graphql.NewObject(graphql.ObjectConfig{
+		Name: "Author",
+		Fields: graphql.Fields{
+			"id": relay.GlobalIDField("Author", nil),
+			"name": &graphql.Field{
+				Type: graphql.String,
+			},
+		},
+	})
+
 	postType = graphql.NewObject(graphql.ObjectConfig{
 		Name: "Post",
 		Fields: graphql.Fields{
@@ -28,7 +40,11 @@ func init() {
 				Type: graphql.String,
 			},
 			"author": &graphql.Field{
-				Type: graphql.String,
+				Type: authorType,
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					fmt.Println(p.Source)
+					return p.Source, nil
+				},
 			},
 		},
 	})
@@ -40,7 +56,7 @@ func init() {
 				Type: postType,
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 					lastPost := GetLatestPost()
-					fmt.Println(lastPost)
+					//fmt.Println(lastPost)
 					return lastPost, nil
 				},
 			},

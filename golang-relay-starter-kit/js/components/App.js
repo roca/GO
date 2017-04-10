@@ -24,7 +24,9 @@ export default Relay.createContainer(App, {
       fragment on Post {
         id
         text
-        author
+        author {
+          name
+        }
       }
     `,
   },
