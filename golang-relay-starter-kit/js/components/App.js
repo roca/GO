@@ -9,7 +9,7 @@ class App extends React.Component {
       <div>
         {this.props.latestPost.id}
         <h1>{this.props.latestPost.text}</h1>
-        <h1>{this.props.latestPost.author}</h1>
+        <h1>{this.props.latestPost.author.name}</h1>
       </div>
     );
   }
@@ -25,6 +25,7 @@ export default Relay.createContainer(App, {
         id
         text
         author {
+          id
           name
         }
       }

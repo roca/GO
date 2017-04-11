@@ -54,12 +54,12 @@ func init() {
 			"author": &graphql.Field{
 				Type: authorType,
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-					fmt.Println(p.Source)
-					if post, ok := p.Source.(Post); ok {
+					fmt.Println(p.Source.(*Post))
+					if post, ok := p.Source.(*Post); ok {
 						fmt.Println(post.Author)
-						return post.Author, nil
+						return post, nil
 					}
-					return nil, nil
+					return Author{ID: "2", Name: "Ray Bradbury"}, nil
 				},
 			},
 		},

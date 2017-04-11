@@ -15,7 +15,7 @@ type Author struct {
 // Mock data
 var latestPost = &Post{
 	ID:     "1",
-	Text:   "Hello World",
+	Text:   "The Illustrated Man",
 	Author: Author{ID: "2", Name: "Ray Bradbury"},
 }
 
