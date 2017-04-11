@@ -26,6 +26,18 @@ func init() {
 		},
 	})
 
+	// Post Data model structs
+	type Post struct {
+		ID     string `json:"id"`
+		Text   string `json:"text"`
+		Author Author
+	}
+
+	type Author struct {
+		ID   string `json:"id"`
+		Name string `json:"name"`
+	}
+
 	postType = graphql.NewObject(graphql.ObjectConfig{
 		Name: "Post",
 		Fields: graphql.Fields{
@@ -43,7 +55,11 @@ func init() {
 				Type: authorType,
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 					fmt.Println(p.Source)
-					return p.Source, nil
+					if post, ok := p.Source.(Post); ok {
+						fmt.Println(post.Author)
+						return post.Author, nil
+					}
+					return nil, nil
 				},
 			},
 		},
