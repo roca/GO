@@ -10,6 +10,7 @@ class App extends React.Component {
         {this.props.latestPost.id}
         <h1>{this.props.latestPost.text}</h1>
         <h1>{this.props.latestPost.author.name}</h1>
+        <h1>Current Author: {this.props.currentAuthor.name}</h1>
       </div>
     );
   }
@@ -20,6 +21,12 @@ class App extends React.Component {
 // the GraphQL query fragments that fetch their data.
 export default Relay.createContainer(App, {
   fragments: {
+    currentAuthor: () => Relay.QL `
+          fragment on Author {
+            id
+            name
+          }
+    `,
     latestPost: () => Relay.QL`
       fragment on Post {
         id

@@ -60,6 +60,13 @@ func init() {
 					return lastPost, nil
 				},
 			},
+			"currentAuthor": &graphql.Field{
+				Type: authorType,
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					lastPost := GetLatestPost()
+					return lastPost.Author, nil
+				},
+			},
 		},
 	})
 
