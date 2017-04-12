@@ -7,9 +7,11 @@ class App extends React.Component {
     console.log(this.props.latestPost);
     return (
       <div>
-        {this.props.latestPost.id}
-        <h1>{this.props.latestPost.text}</h1>
-        <h1>{this.props.latestPost.author.name}</h1>
+        <div>
+          {this.props.latestPost.id} <br/>
+          <h1>{this.props.latestPost.text}</h1>
+          {this.props.latestPost.author.name}
+        </div>
         <h1>Current Author: {this.props.currentAuthor.name}</h1>
       </div>
     );

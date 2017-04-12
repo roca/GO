@@ -10,6 +10,11 @@ export default class extends Relay.Route {
         latestPost
       }
     `,
+    currentAuthor: () => Relay.QL `
+      query {
+        currentAuthor
+      }
+    `
   };
   static routeName = 'AppHomeRoute';
 }
