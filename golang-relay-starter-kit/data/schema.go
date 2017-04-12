@@ -1,8 +1,6 @@
 package data
 
 import (
-	"fmt"
-
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/relay"
 )
@@ -26,18 +24,6 @@ func init() {
 		},
 	})
 
-	// Post Data model structs
-	type Post struct {
-		ID     string `json:"id"`
-		Text   string `json:"text"`
-		Author Author
-	}
-
-	type Author struct {
-		ID   string `json:"id"`
-		Name string `json:"name"`
-	}
-
 	postType = graphql.NewObject(graphql.ObjectConfig{
 		Name: "Post",
 		Fields: graphql.Fields{
@@ -54,12 +40,10 @@ func init() {
 			"author": &graphql.Field{
 				Type: authorType,
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-					fmt.Println(p.Source.(*Post))
-					if post, ok := p.Source.(*Post); ok {
-						fmt.Println(post.Author)
-						return post, nil
+					if post, ok := p.Source.(*Post); ok == true {
+						return post.Author, nil
 					}
-					return Author{ID: "2", Name: "Ray Bradbury"}, nil
+					return nil, nil
 				},
 			},
 		},
