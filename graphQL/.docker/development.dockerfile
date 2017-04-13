@@ -11,6 +11,7 @@ RUN go get github.com/codegangsta/gin
 RUN go get github.com/graphql-go/graphql
 RUN go get github.com/graphql-go/handler
 RUN go get github.com/gorilla/mux
+RUN go get gopkg.in/mgo.v2
 RUN go-wrapper download
 RUN go-wrapper install
 # Set the PORT environment variable inside the container

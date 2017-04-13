@@ -1,9 +1,12 @@
 package server
 
 import (
+	"fmt"
 	"math/rand"
 	"net/http"
 	"os"
+
+	mgo "gopkg.in/mgo.v2"
 
 	"github.com/GOCODE/graphQL/handlers"
 	"github.com/gorilla/mux"
@@ -36,6 +39,20 @@ var Schema, _ = graphql.NewSchema(graphql.SchemaConfig{
 })
 
 func Start() {
+
+	session, err := mgo.Dial("ec2-52-91-31-26.compute-1.amazonaws.com")
+	if err != nil {
+		panic(err)
+	}
+	defer session.Close()
+
+	// Optional. Switch the session to a monotonic behavior.
+	session.SetMode(mgo.Monotonic, true)
+
+	db := session.DB("test").C("quotes")
+	count, _ := db.Count()
+	fmt.Printf("\n\nConnect to quotes collection you have %d record(s)\n\n", count)
+
 	gorillaRoute := mux.NewRouter()
 	gorillaRoute.HandleFunc("/graphiql", handlers.IndexPage).Methods("GET")
 
