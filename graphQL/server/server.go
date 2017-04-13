@@ -25,6 +25,14 @@ var queryType = graphql.NewObject(graphql.ObjectConfig{
 				return "Hello World!", nil
 			},
 		},
+		"quotesCount": &graphql.Field{
+			Type:        graphql.Int,
+			Description: " Count of the Quotes collection in the Mongo database",
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				count, _ := db_quotes_collection.Count()
+				return count, nil
+			},
+		},
 		"randomNumber": &graphql.Field{
 			Type: graphql.Int,
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
@@ -38,6 +46,8 @@ var Schema, _ = graphql.NewSchema(graphql.SchemaConfig{
 	Query: queryType,
 })
 
+var db_quotes_collection *mgo.Collection
+
 func Start() {
 
 	session, err := mgo.Dial("ec2-52-91-31-26.compute-1.amazonaws.com")
@@ -49,9 +59,9 @@ func Start() {
 	// Optional. Switch the session to a monotonic behavior.
 	session.SetMode(mgo.Monotonic, true)
 
-	db := session.DB("test").C("quotes")
-	count, _ := db.Count()
-	fmt.Printf("\n\nConnect to quotes collection you have %d record(s)\n\n", count)
+	db_quotes_collection = session.DB("test").C("quotes")
+	count, _ := db_quotes_collection.Count()
+	fmt.Printf("\n\nSuccessfUlly connected to quotes collection. You have %d record(s)\n\n", count)
 
 	gorillaRoute := mux.NewRouter()
 	gorillaRoute.HandleFunc("/graphiql", handlers.IndexPage).Methods("GET")
