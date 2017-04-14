@@ -1,7 +1,9 @@
 package server
 
 import (
+	"encoding/json"
 	"fmt"
+	"log"
 	"math/rand"
 	"net/http"
 	"os"
@@ -12,6 +14,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/handler"
+	"golang.org/x/net/context"
 )
 
 var Version int
@@ -29,7 +32,7 @@ var queryType = graphql.NewObject(graphql.ObjectConfig{
 			Type:        graphql.Int,
 			Description: " Count of the Quotes collection in the Mongo database",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				count, _ := db_quotes_collection.Count()
+				count := p.Context.Value("quotesCount").(QuotesCount).count
 				return count, nil
 			},
 		},
@@ -47,6 +50,28 @@ var Schema, _ = graphql.NewSchema(graphql.SchemaConfig{
 })
 
 var db_quotes_collection *mgo.Collection
+
+type QuotesCount struct {
+	count int `json:"count"`
+}
+
+func graphqlHandler(w http.ResponseWriter, r *http.Request) {
+
+	opts := handler.NewRequestOptions(r)
+
+	quotesCount := QuotesCount{3}
+
+	result := graphql.Do(graphql.Params{
+		Schema:        Schema,
+		RequestString: opts.Query,
+		Context:       context.WithValue(context.Background(), "quotesCount", quotesCount),
+	})
+	if len(result.Errors) > 0 {
+		log.Printf("wrong result, unexpected errors: %v", result.Errors)
+		return
+	}
+	json.NewEncoder(w).Encode(result)
+}
 
 func Start() {
 
@@ -68,14 +93,15 @@ func Start() {
 
 	// create a graphl-go HTTP handler with our previously defined schema
 	// and we also set it to return pretty JSON output
-	h := handler.New(&handler.Config{
-		Schema: &Schema,
-		Pretty: true,
-	})
+	// h := handler.New(&handler.Config{
+	// 	Schema: &Schema,
+	// 	Pretty: true,
+	// })
 
 	// serve a GraphQL endpoint at `/graphql`
 
-	http.Handle("/graphql", h)
+	//http.Handle("/graphql", h)
+	http.HandleFunc("/graphql", graphqlHandler)
 	http.Handle("/graphiql", gorillaRoute)
 
 	http.Handle("/resources/", http.StripPrefix("/resources/", http.FileServer(http.Dir("resources"))))
