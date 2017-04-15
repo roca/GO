@@ -9,6 +9,7 @@ COPY . /go/src/github.com/GOCODE/graphQL
 # Download and install any required third party dependencies into the container.
 RUN go get github.com/codegangsta/gin
 RUN go get github.com/graphql-go/graphql
+RUN go get github.com/graphql-go/relay
 RUN go get github.com/graphql-go/handler
 RUN go get github.com/gorilla/mux
 RUN go get gopkg.in/mgo.v2

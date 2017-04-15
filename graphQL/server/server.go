@@ -4,12 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"math/rand"
 	"net/http"
 	"os"
 
 	mgo "gopkg.in/mgo.v2"
 
+	"github.com/GOCODE/graphQL/data"
 	"github.com/GOCODE/graphQL/handlers"
 	"github.com/gorilla/mux"
 	"github.com/graphql-go/graphql"
@@ -19,50 +19,14 @@ import (
 
 var Version int
 
-var queryType = graphql.NewObject(graphql.ObjectConfig{
-	Name: "Query",
-	Fields: graphql.Fields{
-		"latestPost": &graphql.Field{
-			Type: graphql.String,
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				return "Hello World!", nil
-			},
-		},
-		"quotesCount": &graphql.Field{
-			Type:        graphql.Int,
-			Description: " Count of the Quotes collection in the Mongo database",
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				count, _ := p.Context.Value("dbCollections ").(DbCollections).quotes.Count()
-				return count, nil
-			},
-		},
-		"randomNumber": &graphql.Field{
-			Type: graphql.Int,
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				return rand.Intn(100), nil
-			},
-		},
-	},
-})
-
-var Schema, _ = graphql.NewSchema(graphql.SchemaConfig{
-	Query: queryType,
-})
-
-var dbQuotesCollection *mgo.Collection
-
-type DbCollections struct {
-	quotes *mgo.Collection `json:"records"`
-}
-
 func graphqlHandler(w http.ResponseWriter, r *http.Request) {
 
 	opts := handler.NewRequestOptions(r)
 
-	dbCollections := DbCollections{quotes: dbQuotesCollection}
+	dbCollections := data.Collections{data.QuotesCollection}
 
 	result := graphql.Do(graphql.Params{
-		Schema:        Schema,
+		Schema:        data.Schema,
 		RequestString: opts.Query,
 		Context:       context.WithValue(context.Background(), "dbCollections ", dbCollections),
 	})
@@ -84,8 +48,8 @@ func Start() {
 	// Optional. Switch the session to a monotonic behavior.
 	session.SetMode(mgo.Monotonic, true)
 
-	dbQuotesCollection = session.DB("test").C("quotes")
-	count, _ := dbQuotesCollection.Count()
+	data.QuotesCollection = session.DB("test").C("quotes")
+	count, _ := data.QuotesCollection.Count()
 	fmt.Printf("\n\nSuccessfUlly connected to quotes collection. You have %d record(s)\n\n", count)
 
 	gorillaRoute := mux.NewRouter()
