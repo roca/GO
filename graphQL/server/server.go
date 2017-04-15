@@ -32,7 +32,7 @@ var queryType = graphql.NewObject(graphql.ObjectConfig{
 			Type:        graphql.Int,
 			Description: " Count of the Quotes collection in the Mongo database",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				count := p.Context.Value("quotesCount").(QuotesCount).count
+				count, _ := p.Context.Value("dbCollections ").(DbCollections).quotes.Count()
 				return count, nil
 			},
 		},
@@ -49,22 +49,22 @@ var Schema, _ = graphql.NewSchema(graphql.SchemaConfig{
 	Query: queryType,
 })
 
-var db_quotes_collection *mgo.Collection
+var dbQuotesCollection *mgo.Collection
 
-type QuotesCount struct {
-	count int `json:"count"`
+type DbCollections struct {
+	quotes *mgo.Collection `json:"records"`
 }
 
 func graphqlHandler(w http.ResponseWriter, r *http.Request) {
 
 	opts := handler.NewRequestOptions(r)
 
-	quotesCount := QuotesCount{3}
+	dbCollections := DbCollections{quotes: dbQuotesCollection}
 
 	result := graphql.Do(graphql.Params{
 		Schema:        Schema,
 		RequestString: opts.Query,
-		Context:       context.WithValue(context.Background(), "quotesCount", quotesCount),
+		Context:       context.WithValue(context.Background(), "dbCollections ", dbCollections),
 	})
 	if len(result.Errors) > 0 {
 		log.Printf("wrong result, unexpected errors: %v", result.Errors)
@@ -84,8 +84,8 @@ func Start() {
 	// Optional. Switch the session to a monotonic behavior.
 	session.SetMode(mgo.Monotonic, true)
 
-	db_quotes_collection = session.DB("test").C("quotes")
-	count, _ := db_quotes_collection.Count()
+	dbQuotesCollection = session.DB("test").C("quotes")
+	count, _ := dbQuotesCollection.Count()
 	fmt.Printf("\n\nSuccessfUlly connected to quotes collection. You have %d record(s)\n\n", count)
 
 	gorillaRoute := mux.NewRouter()
