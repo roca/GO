@@ -11,3 +11,14 @@ services:
       volumes:
         - .:/go/src/github.com/GOCODE/graphQL
       working_dir: /go/src/github.com/GOCODE/graphQL
+    go-nginx:
+      container_name: go-nginx
+      build: 
+        context: .
+        dockerfile: .docker/docker-nginx.dockerfile
+      links:
+        - development:app
+      ports:
+        - "80:80"
+        - "443:443"
+ 
