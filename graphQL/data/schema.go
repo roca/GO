@@ -5,7 +5,6 @@ import (
 	"math/rand"
 
 	mgo "gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
 
 	"github.com/graphql-go/graphql"
 )
@@ -48,12 +47,12 @@ func init() {
 				Type:        graphql.NewList(QuotesLibraryType),
 				Description: "List of all Quotes",
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-					quote := Quote{}
-					err := p.Context.Value("dbCollections ").(Collections).Quotes.Find(bson.M{"author": "H. Jackson Brown"}).One(&quote)
+					quotes := QuoteList{}
+					err := p.Context.Value("dbCollections ").(Collections).Quotes.Find(nil).All(&quotes)
 					if err != nil {
 						log.Fatal(err)
 					}
-					return QuoteList{quote}, nil
+					return quotes, nil
 				},
 			},
 		},
