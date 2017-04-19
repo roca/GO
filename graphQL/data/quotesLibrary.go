@@ -1,9 +1,8 @@
 package data
 
 import (
+	"errors"
 	"fmt"
-
-	"gopkg.in/mgo.v2/bson"
 
 	"golang.org/x/net/context"
 
@@ -13,11 +12,11 @@ import (
 
 var quoteIDFetcher = func(obj interface{}, info graphql.ResolveInfo, ctx context.Context) (string, error) {
 	switch obj := obj.(type) {
-	case *bson.ObjectId:
-		fmt.Println(obj.String)
-		return fmt.Sprintf("%v", obj.String), nil
+	case (Quote):
+		fmt.Printf("ID: %v\n", obj.ID.Hex)
+		return fmt.Sprintf("%v", obj.ID.Hex), nil
 	}
-	return "", nil
+	return "", errors.New("Not a Quote")
 }
 
 var QuotesLibraryType = graphql.NewObject(graphql.ObjectConfig{

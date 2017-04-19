@@ -1,7 +1,6 @@
 package data
 
 import (
-	"fmt"
 	"log"
 	"math/rand"
 
@@ -53,7 +52,6 @@ func init() {
 					if err != nil {
 						log.Fatal(err)
 					}
-					fmt.Println(quotes)
 					return quotes, nil
 				},
 			},
