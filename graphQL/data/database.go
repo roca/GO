@@ -1,9 +1,11 @@
 package data
 
+import "gopkg.in/mgo.v2/bson"
+
 type Quote struct {
-	//ID     int    `json:"id"`
-	Text   string `json:"text"`
-	Author string `json:"author"`
+	ID     bson.ObjectId `bson:"_id,omitempty"`
+	Text   string        `json:"text"`
+	Author string        `json:"author"`
 }
 
 type QuoteList []Quote
