@@ -3,6 +3,7 @@ package data
 import (
 	"errors"
 	"fmt"
+	"log"
 
 	"golang.org/x/net/context"
 
@@ -19,11 +20,11 @@ var quoteIDFetcher = func(obj interface{}, info graphql.ResolveInfo, ctx context
 	return "", errors.New("Not a Quote")
 }
 
-var QuotesLibraryType = graphql.NewObject(graphql.ObjectConfig{
-	Name:        "QuotesLibrary",
-	Description: "List of all quotes in the Library",
+var QuoteType = graphql.NewObject(graphql.ObjectConfig{
+	Name:        "Quote",
+	Description: "A quote in the library",
 	Fields: graphql.Fields{
-		"id": relay.GlobalIDField("QuotesLibrary", quoteIDFetcher),
+		"id": relay.GlobalIDField("Quote", quoteIDFetcher),
 		// "id": &graphql.Field{
 		// 	Type: graphql.String,
 		// 	Resolve: func(p graphql.ResolveParams) (interface{}, error) {
@@ -35,6 +36,24 @@ var QuotesLibraryType = graphql.NewObject(graphql.ObjectConfig{
 		},
 		"author": &graphql.Field{
 			Type: graphql.String,
+		},
+	},
+})
+
+var QuotesLibraryType = graphql.NewObject(graphql.ObjectConfig{
+	Name: "QuotesLibrary",
+	Fields: graphql.Fields{
+		"allQuotes": &graphql.Field{
+			Type:        graphql.NewList(QuoteType),
+			Description: "A list of the quotes in the database",
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				quotes := QuoteList{}
+				err := p.Context.Value("dbCollections ").(Collections).Quotes.Find(nil).All(&quotes)
+				if err != nil {
+					log.Fatal(err)
+				}
+				return quotes, nil
+			},
 		},
 	},
 })

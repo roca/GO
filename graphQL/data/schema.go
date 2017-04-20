@@ -1,7 +1,6 @@
 package data
 
 import (
-	"log"
 	"math/rand"
 
 	mgo "gopkg.in/mgo.v2"
@@ -43,15 +42,11 @@ func init() {
 					return rand.Intn(100), nil
 				},
 			},
-			"quotes": &graphql.Field{
-				Type:        graphql.NewList(QuotesLibraryType),
-				Description: "List of all Quotes",
+			"quotesLibrary": &graphql.Field{
+				Type:        QuotesLibraryType,
+				Description: "The Quotes Library",
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 					quotes := QuoteList{}
-					err := p.Context.Value("dbCollections ").(Collections).Quotes.Find(nil).All(&quotes)
-					if err != nil {
-						log.Fatal(err)
-					}
 					return quotes, nil
 				},
 			},
