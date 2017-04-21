@@ -9,3 +9,7 @@ type Quote struct {
 }
 
 type QuoteList []Quote
+
+func GetQuoteByID(id string) interface{} {
+	return Quote{}
+}
