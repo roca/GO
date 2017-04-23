@@ -26,17 +26,17 @@ type Collections struct {
 	Quotes *mgo.Collection `json:"records"`
 }
 
-var NodeDefinitions *relay.NodeDefinitions
+var nodeDefinitions *relay.NodeDefinitions
 var QuoteNodeType *graphql.Object
 var QuotesLibraryNodeType *graphql.Object
 
 func init() {
 
-	NodeDefinitions = relay.NewNodeDefinitions(relay.NodeDefinitionsConfig{
+	nodeDefinitions = relay.NewNodeDefinitions(relay.NodeDefinitionsConfig{
 		IDFetcher: func(id string, info graphql.ResolveInfo, ctx context.Context) (interface{}, error) {
 			// resolve id from global id
 			resolvedID := relay.FromGlobalID(id)
-
+			fmt.Println(resolvedID.Type)
 			// based on id and its type, return the object
 			switch resolvedID.Type {
 			case "Quote":
@@ -52,10 +52,11 @@ func init() {
 		},
 		TypeResolve: func(p graphql.ResolveTypeParams) *graphql.Object {
 			// based on the type of the value, return GraphQLObjectType
+
 			fmt.Println(reflect.TypeOf(p.Value))
+			fmt.Println(p.Value)
 			switch p.Value.(type) {
 			case Quote:
-				fmt.Println(p.Value)
 				return QuoteNodeType
 			default:
 				return QuoteNodeType
@@ -76,11 +77,11 @@ func init() {
 			},
 		},
 		Interfaces: []*graphql.Interface{
-			NodeDefinitions.NodeInterface,
+			nodeDefinitions.NodeInterface,
 		},
 	})
 
-	quotesConnectionDefinition := relay.ConnectionDefinitions(relay.ConnectionConfig{
+	quoteConnectionDefinition := relay.ConnectionDefinitions(relay.ConnectionConfig{
 		Name:     "Quote",
 		NodeType: QuoteNodeType,
 	})
@@ -89,7 +90,7 @@ func init() {
 		Name: "QuotesLibrary",
 		Fields: graphql.Fields{
 			"allQuotes": &graphql.Field{
-				Type:        quotesConnectionDefinition.ConnectionType,
+				Type:        quoteConnectionDefinition.ConnectionType,
 				Description: "A list of the quotes in the database",
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 					quotes := QuoteList{}
@@ -134,7 +135,7 @@ func init() {
 					return quotes, nil
 				},
 			},
-			"node": NodeDefinitions.NodeField,
+			"node": nodeDefinitions.NodeField,
 		},
 	})
 
