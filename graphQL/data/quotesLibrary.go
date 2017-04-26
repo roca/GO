@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"reflect"
 
 	"golang.org/x/net/context"
 
@@ -12,6 +13,7 @@ import (
 )
 
 var quoteIDFetcher = func(obj interface{}, info graphql.ResolveInfo, ctx context.Context) (string, error) {
+	fmt.Printf("****quoteIDFetcher:  %v\n\n", reflect.TypeOf(obj))
 	switch obj := obj.(type) {
 	case (Quote):
 		fmt.Printf("ID: %v\n", obj.ID.Hex())
