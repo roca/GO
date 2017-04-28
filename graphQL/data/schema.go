@@ -91,14 +91,15 @@ func init() {
 		Fields: graphql.Fields{
 			"allQuotes": &graphql.Field{
 				Type:        quoteConnectionDefinition.ConnectionType,
+				Args:        relay.ConnectionArgs,
 				Description: "A list of the quotes in the database",
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-					quotes := QuoteList{}
-					err := p.Context.Value("dbCollections ").(Collections).Quotes.Find(nil).All(&quotes)
-					if err != nil {
-						log.Fatal(err)
+					args := relay.NewConnectionArguments(p.Args)
+					quotes := []interface{}{}
+					if quote, ok := p.Source.(*Quote); ok {
+						quotes = append(quotes, *quote)
 					}
-					return quotes, nil
+					return relay.ConnectionFromArray(quotes, args), nil
 				},
 			},
 		},
@@ -136,6 +137,13 @@ func init() {
 				},
 			},
 			"node": nodeDefinitions.NodeField,
+			// "quotes": &graphql.Field{
+			// 	Type: QuotesLibraryNodeType,
+			// 	Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+			// 		quotes := QuoteList{}
+			// 		return quotes, nil
+			// 	},
+			// },
 		},
 	})
 
