@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
-	"reflect"
 
 	"golang.org/x/net/context"
 
@@ -36,16 +35,16 @@ func init() {
 		IDFetcher: func(id string, info graphql.ResolveInfo, ctx context.Context) (interface{}, error) {
 			// resolve id from global id
 			resolvedID := relay.FromGlobalID(id)
-			fmt.Println(resolvedID.Type)
 			// based on id and its type, return the object
 			switch resolvedID.Type {
 			case "Quote":
+				fmt.Println(resolvedID.Type)
 				quote := Quote{}
 				err := ctx.Value("dbCollections ").(Collections).Quotes.FindId(bson.ObjectIdHex(resolvedID.ID)).One(&quote)
 				if err != nil {
 					log.Fatal(err)
 				}
-				return quote, nil
+				return nil, nil
 			default:
 				return nil, errors.New("Unknown node type")
 			}
@@ -53,8 +52,6 @@ func init() {
 		TypeResolve: func(p graphql.ResolveTypeParams) *graphql.Object {
 			// based on the type of the value, return GraphQLObjectType
 
-			fmt.Println(reflect.TypeOf(p.Value))
-			fmt.Println(p.Value)
 			switch p.Value.(type) {
 			case Quote:
 				return QuoteNodeType
@@ -102,6 +99,9 @@ func init() {
 					return relay.ConnectionFromArray(quotes, args), nil
 				},
 			},
+		},
+		Interfaces: []*graphql.Interface{
+			nodeDefinitions.NodeInterface,
 		},
 	})
 

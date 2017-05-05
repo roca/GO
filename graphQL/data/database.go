@@ -8,7 +8,17 @@ type Quote struct {
 	Author string        `json:"author"`
 }
 
+type Quote2 struct {
+	ID     string `json:"id"`
+	Text   string `json:"text"`
+	Author string `json:"author"`
+}
+
 type QuoteList []Quote
+
+type QuotesLibraryNode struct {
+	allQuotes QuoteList
+}
 
 func GetQuoteByID(id string) interface{} {
 	return Quote{}
