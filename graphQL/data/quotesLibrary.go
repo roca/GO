@@ -13,10 +13,10 @@ import (
 )
 
 var quoteIDFetcher = func(obj interface{}, info graphql.ResolveInfo, ctx context.Context) (string, error) {
-	fmt.Printf("****quoteIDFetcher:  %v\n\n", reflect.TypeOf(obj))
+	fmt.Printf("****quoteIDFetcher:  %v\n", reflect.TypeOf(obj))
 	switch obj := obj.(type) {
 	case (Quote):
-		fmt.Printf("ID: %v\n", obj.ID.Hex())
+		fmt.Printf("ID: %v\n\n", obj.ID.Hex())
 		return fmt.Sprintf("%v", obj.ID.Hex()), nil
 	}
 	return "", errors.New("Not a Quote")
