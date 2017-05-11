@@ -1,10 +1,5 @@
 package pack
 
-func Add(nums ...int) int {
-	var result int
-	for _, i := range nums {
-		result += i
-	}
-
-	return result
+func Add(i, j int) int {
+	return i + j
 }
