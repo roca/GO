@@ -1,5 +1,11 @@
 package pack
 
-func Add(i, j int) int {
-	return i + j
+func Add(nums ...int) int {
+	result := 0
+
+	for _, i := range nums {
+		result += i
+	}
+	return result
+
 }
