@@ -1,7 +1,18 @@
 package pack
 
-import "testing"
-import "time"
+import (
+	"os"
+	"testing"
+	"time"
+)
+
+func TestMain(m *testing.M) {
+	println("Tests are about to run")
+	result := m.Run()
+	println("Tests done executing")
+
+	os.Exit(result)
+}
 
 func TestCanAddNumbers(t *testing.T) {
 	t.Parallel()
