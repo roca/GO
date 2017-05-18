@@ -4,6 +4,7 @@ import "testing"
 import "time"
 
 func TestCanAddNumbers(t *testing.T) {
+	t.Parallel()
 	if testing.Short() {
 		t.Skip("Skiping long tests")
 	}
@@ -20,7 +21,9 @@ func TestCanAddNumbers(t *testing.T) {
 }
 
 func TestCanSubtractNumber(t *testing.T) {
+	t.Parallel()
 	result := Subtract(10, 5)
+	time.Sleep(3 * time.Second)
 
 	if result != 5 {
 		t.Error("Failed to substract two numbers properly")
@@ -28,7 +31,7 @@ func TestCanSubtractNumber(t *testing.T) {
 }
 
 func TestCanMultiplyNumbers(t *testing.T) {
-	if testing.Verbose() {
-		t.Skip("Not implemented yet")
-	}
+	//if testing.Verbose() {
+	t.Skip("Not implemented yet")
+	//}
 }
