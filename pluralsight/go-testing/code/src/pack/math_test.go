@@ -3,8 +3,15 @@ package pack
 import (
 	"os"
 	"testing"
-	"time"
 )
+
+var addTable = []struct {
+	in  []int
+	out int
+}{
+	{[]int{1, 2}, 3},
+	{[]int{1, 2, 3, 4}, 10},
+}
 
 func TestMain(m *testing.M) {
 	println("Tests are about to run")
@@ -16,26 +23,17 @@ func TestMain(m *testing.M) {
 
 func TestCanAddNumbers(t *testing.T) {
 	t.Parallel()
-	if testing.Short() {
-		t.Skip("Skiping long tests")
-	}
-	result := Add(1, 2)
-	time.Sleep(3 * time.Second)
-	if result != 3 {
-		t.Fatal("Failed to add one and two")
-	}
-
-	result = Add(1, 2, 3, 4)
-	if result != 10 {
-		t.Error("Failed to add more then two numbers")
+	for _, entry := range addTable {
+		result := Add(entry.in...)
+		if result != entry.out {
+			t.Error("Failed to add numbers as expected")
+		}
 	}
 }
 
 func TestCanSubtractNumber(t *testing.T) {
 	t.Parallel()
 	result := Subtract(10, 5)
-	time.Sleep(3 * time.Second)
-
 	if result != 5 {
 		t.Error("Failed to substract two numbers properly")
 	}
