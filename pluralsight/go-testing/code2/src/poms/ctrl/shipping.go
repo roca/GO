@@ -3,7 +3,8 @@ package ctrl
 import (
 	"encoding/json"
 	"net/http"
-	"poms/model"
+
+	"github.com/GOCODE/pluralsight/go-testing/code2/src/poms/model"
 )
 
 type ShippingController struct{}
