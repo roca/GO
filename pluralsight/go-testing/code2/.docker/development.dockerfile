@@ -2,10 +2,10 @@
 # Docker containers inherit everything from their base.
 FROM golang:latest
 # Create a directory inside the container to store all our application and then make it the working directory.
-RUN mkdir -p /go/src/github.com/GOCODE/pluralsight/go-testing/code2
-WORKDIR /go/src/github.com/GOCODE/pluralsight/go-testing/code2
+RUN mkdir -p /go/src/code
+WORKDIR /go/src/code
 # Copy the example-app directory (where the Dockerfile lives) into the container.
-COPY . /go/src/github.com/GOCODE/pluralsight/go-testing/code2
+COPY . /go/src/code
 # Download and install any required third party dependencies into the container.
 RUN go get github.com/codegangsta/gin
 RUN go-wrapper download

@@ -9,8 +9,8 @@ services:
       ports:
         - "3000:3000"
       volumes:
-        - .:/go/src/github.com/GOCODE/pluralsight/go-testing/code2
-      working_dir: /go/src/github.com/GOCODE/pluralsight/go-testing/code2
+        - .:/go/src/code
+      working_dir: /go/src/code
     go-nginx:
       container_name: go-nginx
       build: 
