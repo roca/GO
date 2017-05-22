@@ -54,9 +54,9 @@ func init() {
 
 			switch p.Value.(type) {
 			case Quote:
-				return QuoteNodeType
+				return QuoteType
 			default:
-				return QuoteNodeType
+				return QuoteType
 			}
 		},
 	})
@@ -80,7 +80,7 @@ func init() {
 
 	quoteConnectionDefinition := relay.ConnectionDefinitions(relay.ConnectionConfig{
 		Name:     "Quote",
-		NodeType: QuoteNodeType,
+		NodeType: QuoteType,
 	})
 
 	QuotesLibraryNodeType = graphql.NewObject(graphql.ObjectConfig{

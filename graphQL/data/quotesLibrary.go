@@ -40,6 +40,9 @@ var QuoteType = graphql.NewObject(graphql.ObjectConfig{
 			Type: graphql.String,
 		},
 	},
+	Interfaces: []*graphql.Interface{
+		nodeDefinitions.NodeInterface,
+	},
 })
 
 var QuotesLibraryType = graphql.NewObject(graphql.ObjectConfig{
