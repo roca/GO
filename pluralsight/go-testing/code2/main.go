@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -18,5 +19,5 @@ func main() {
 	go http.ListenAndServe(":"+port, new(poms.GZipServer))
 
 	log.Printf("Server started on port: %v, press <ENTER> to exit", port)
-	//fmt.Scanln()
+	fmt.Scanln()
 }
