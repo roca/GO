@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/GOCODE/pluralsight/go-testing/code2/src/poms"
 	"github.com/GOCODE/pluralsight/go-testing/code2/src/poms/ctrl"
@@ -13,8 +13,10 @@ func main() {
 
 	ctrl.Setup()
 
-	go http.ListenAndServe(":3000", new(poms.GZipServer))
+	port := os.Getenv("PORT")
 
-	log.Println("Server started, press <ENTER> to exit")
-	fmt.Scanln()
+	go http.ListenAndServe(":"+port, new(poms.GZipServer))
+
+	log.Printf("Server started on port: %v, press <ENTER> to exit", port)
+	//fmt.Scanln()
 }

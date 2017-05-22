@@ -8,6 +8,7 @@ WORKDIR /go/src/github.com/GOCODE/pluralsight/go-testing/code2
 COPY . /go/src/github.com/GOCODE/pluralsight/go-testing/code2
 # Download and install any required third party dependencies into the container.
 RUN go get github.com/codegangsta/gin
+RUN go get github.com/gorilla/mux
 RUN go-wrapper download
 RUN go-wrapper install
 # Set the PORT environment variable inside the container
