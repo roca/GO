@@ -1,9 +1,7 @@
 package model
 
-import (
-	"encoding/json"
-	"testing"
-)
+import "testing"
+import "encoding/json"
 
 func TestGetsTheCorrectCurencies(t *testing.T) {
 	//arrange
@@ -17,9 +15,7 @@ func TestGetsTheCorrectCurencies(t *testing.T) {
 		{ID: 1, Name: "USD"},
 		{ID: 2, Name: "EUR"},
 	})
-
 	if string(resultJSON) != string(expected) {
 		t.Error("Did not get expected currencies")
 	}
-
 }
