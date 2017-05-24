@@ -8,6 +8,9 @@ services:
         dockerfile: .docker/development.dockerfile
       ports:
         - "3000:3000"
+        - "4000:4000"
+        - "5000:5000"
+        - "8080:8080"
       volumes:
         - .:/go/src/github.com/GOCODE/pluralsight/go-testing/code2
       working_dir: /go/src/github.com/GOCODE/pluralsight/go-testing/code2
