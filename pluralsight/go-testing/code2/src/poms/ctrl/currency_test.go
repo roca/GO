@@ -20,11 +20,15 @@ type mockResponseWriter struct {
 	capturedData []byte
 }
 
-func (mrw *mockResponseWriter) Header() http.Header {
+func (mrw mockResponseWriter) Header() http.Header {
 	return mrw.header
 }
 
-func (mrw *mockResponseWriter) Write(data []byte) (int, error) {
+func (mrw mockResponseWriter) Write(data []byte) (int, error) {
 	mrw.capturedData = data
 	return len(data), nil
+}
+
+func (mrw mockResponseWriter) WriteHeader(code int) {
+
 }
