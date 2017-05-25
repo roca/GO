@@ -15,6 +15,9 @@ RUN go-wrapper install
 ENV PORT 8080
 # Expose port 8080 to the host so we can access our application
 EXPOSE 3000
+EXPOSE 4000
+EXPOSE 5000
+EXPOSE 8080
 # Now tell Docker what command to run when the container starts
 #CMD ["go-wrapper", "run"]
 CMD gin run
