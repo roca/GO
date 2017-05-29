@@ -2,7 +2,8 @@ package main
 
 import (
 	"fmt"
-	"pack"
+
+	"github.com/GOCODE/pluralsight/go-testing/code4/03_CheckEqual/src/pack"
 )
 
 func main() {
