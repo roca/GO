@@ -12,7 +12,9 @@ RUN go get github.com/gorilla/mux
 RUN go-wrapper download
 RUN go-wrapper install
 # Set the PORT environment variable inside the container
-ENV PORT 8080
+ENV APP_PORT 8080
+ENV RECEIVER_PORT 5000
+ENV VENDOR_PORT 4000
 # Expose port 8080 to the host so we can access our application
 EXPOSE 3000
 EXPOSE 4000

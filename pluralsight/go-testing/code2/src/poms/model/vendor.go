@@ -3,6 +3,7 @@ package model
 import (
 	"encoding/json"
 	"net/http"
+	"os"
 )
 
 type Contact struct {
@@ -19,7 +20,9 @@ type Vendor struct {
 func GetVendors() []*Vendor {
 	var result []*Vendor
 
-	resp, err := http.Get("http://localhost:4000/api/vendors?type=manufacturing")
+	port := os.Getenv("VENDOR_PORT")
+
+	resp, err := http.Get("http://localhost:" + port + " /api/vendors?type=manufacturing")
 
 	if err != nil {
 		return result

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 )
 
 type Receiver struct {
@@ -20,7 +21,9 @@ type ReceiverDto struct {
 func GetReceivers() []*Receiver {
 	var result []*Receiver
 
-	resp, err := http.Get("http://localhost:5000/api/orgUnits?type=all")
+	port := os.Getenv("RECEIVER_PORT")
+
+	resp, err := http.Get("http://localhost:" + port + "/api/orgUnits?type=all")
 
 	if err != nil {
 		return result

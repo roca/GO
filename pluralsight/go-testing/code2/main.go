@@ -14,7 +14,7 @@ func main() {
 
 	ctrl.Setup()
 
-	port := os.Getenv("PORT")
+	port := os.Getenv("APP_PORT")
 
 	go http.ListenAndServe(":"+port, new(poms.GZipServer))
 
