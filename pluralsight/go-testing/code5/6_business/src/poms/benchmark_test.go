@@ -3,8 +3,9 @@ package poms
 import (
 	"net/http"
 	"os"
-	"poms/ctrl"
 	"testing"
+
+	"github.com/GOCODE/pluralsight/go-testing/code2/src/poms/ctrl"
 )
 
 func TestMain(m *testing.M) {
@@ -18,13 +19,8 @@ func TestMain(m *testing.M) {
 }
 
 func BenchmarkGetPurchaseOrder(b *testing.B) {
+	b.ReportAllocs()
 	for i := 0; i < b.N; i++ {
-		http.Get("http://localhost:3000/api/purchaseOrders/1")
-	}
-}
-
-func BenchmarkGetCurrencies(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		http.Get("http://localhost:3000/api/currencies")
+		http.Get("http://localhost:3000/api/purchaserOrders/1")
 	}
 }

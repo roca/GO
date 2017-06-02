@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"poms"
-	"poms/ctrl"
+
+	"github.com/GOCODE/pluralsight/go-testing/code2/src/poms"
+	"github.com/GOCODE/pluralsight/go-testing/code2/src/poms/ctrl"
 )
 
 func main() {
