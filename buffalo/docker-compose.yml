@@ -1,0 +1,14 @@
+version: "2"
+
+services:
+    buffalo:
+      container_name: buffalo
+      build: 
+        context: .
+        dockerfile: .docker/buffalo.dockerfile
+      ports:
+        - "3000:3000"
+      volumes:
+        - .:/go/src/github.com/GOCODE/buffalo
+      working_dir: /go/src/github.com/GOCODE/buffalo
+ 
