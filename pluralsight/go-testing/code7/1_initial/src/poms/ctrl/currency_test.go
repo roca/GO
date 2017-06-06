@@ -3,8 +3,9 @@ package ctrl
 import (
 	"encoding/json"
 	"net/http"
-	"poms/model"
 	"testing"
+
+	"github.com/GOCODE/pluralsight/go-testing/code2/src/poms/model"
 )
 
 var capturedData []byte
