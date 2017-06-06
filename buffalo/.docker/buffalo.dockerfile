@@ -8,7 +8,7 @@ WORKDIR /go/src/github.com/GOCODE/buffalo
 COPY . /go/src/github.com/GOCODE/buffalo
 # Download and install any required third party dependencies into the container.
 # Set the PORT environment variable inside the container
-ENV PORT 8080
+ENV PORT 3000
 # Expose port 8080 to the host so we can access our application
 EXPOSE 3000
 # Now tell Docker what command to run when the container starts
