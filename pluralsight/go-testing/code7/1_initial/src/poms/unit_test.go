@@ -4,9 +4,10 @@ import (
 	"encoding/json"
 	"net/http"
 	"os"
-	"poms/ctrl"
-	"poms/model"
 	"testing"
+
+	"github.com/GOCODE/pluralsight/go-testing/code2/src/poms/ctrl"
+	"github.com/GOCODE/pluralsight/go-testing/code2/src/poms/model"
 )
 
 func TestMain(m *testing.M) {
