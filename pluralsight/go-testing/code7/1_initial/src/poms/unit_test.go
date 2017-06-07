@@ -2,6 +2,7 @@ package poms
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"testing"
@@ -25,11 +26,13 @@ func TestGetVendors(t *testing.T) {
 
 	if err == nil {
 		var vendors []model.Vendor
-		data := make([]byte, resp.ContentLength)
+		data, err := ioutil.ReadAll(resp.Body)
 
-		resp.Body.Read(data)
+		if err == nil {
+			resp.Body.Read(data)
 
-		err = json.Unmarshal(data, &vendors)
+			err = json.Unmarshal(data, &vendors)
+		}
 
 	}
 
