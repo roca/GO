@@ -36,7 +36,7 @@ func TestGetVendors(t *testing.T) {
 
 	}
 
-	if err != nil {
+	if err != nil || resp.StatusCode == 500 {
 		t.Error("Failed to retrieve vendors")
 	}
 }
