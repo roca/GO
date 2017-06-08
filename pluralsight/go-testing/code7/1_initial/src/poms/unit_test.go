@@ -7,8 +7,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/GOCODE/pluralsight/go-testing/code2/src/poms/ctrl"
-	"github.com/GOCODE/pluralsight/go-testing/code2/src/poms/model"
+	"github.com/GOCODE/pluralsight/go-testing/code7/1_initial/src/poms/ctrl"
+	"github.com/GOCODE/pluralsight/go-testing/code7/1_initial/src/poms/model"
 )
 
 func TestMain(m *testing.M) {

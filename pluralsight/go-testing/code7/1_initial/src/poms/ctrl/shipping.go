@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/GOCODE/pluralsight/go-testing/code2/src/poms/model"
+	"github.com/GOCODE/pluralsight/go-testing/code7/1_initial/src/poms/model"
 )
 
 type ShippingController struct{}

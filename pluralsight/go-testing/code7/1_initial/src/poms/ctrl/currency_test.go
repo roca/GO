@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/GOCODE/pluralsight/go-testing/code2/src/poms/model"
+	"github.com/GOCODE/pluralsight/go-testing/code7/1_initial/src/poms/model"
 )
 
 var capturedData []byte
