@@ -16,10 +16,12 @@ type Vendor struct {
 	Contact *Contact `json:"contact"`
 }
 
+var VendorServiceUrl = "http://localhost:4000/api/vendors?type=manufacturing"
+
 func GetVendors() ([]*Vendor, error) {
 	var result []*Vendor
 
-	resp, err := http.Get("http://localhost:4000/api/vendors?type=manufacturing")
+	resp, err := http.Get(VendorServiceUrl)
 
 	if err != nil {
 		return nil, err

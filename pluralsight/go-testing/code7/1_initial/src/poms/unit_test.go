@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"net/http/httptest"
 	"os"
 	"testing"
 
@@ -12,6 +13,11 @@ import (
 )
 
 func TestMain(m *testing.M) {
+	ms := setupMockService()
+	defer ms.Close()
+
+	model.VendorServiceUrl = ms.URL
+
 	ctrl.Setup()
 
 	go http.ListenAndServe(":3000", new(GZipServer))
@@ -19,6 +25,21 @@ func TestMain(m *testing.M) {
 	m.Run()
 
 	os.Exit(0)
+}
+
+func setupMockService() *httptest.Server {
+	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var vendors []*Vendor
+		if r.URL.Query().Get("type") == "manufacturing" {
+			vendors = GetVendors()
+		}
+
+		data, _ := json.Marshal(vendors)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.Write(data)
+	}))
+
 }
 
 func TestGetVendors(t *testing.T) {
@@ -39,4 +60,43 @@ func TestGetVendors(t *testing.T) {
 	if err != nil || resp.StatusCode == 500 {
 		t.Error("Failed to retrieve vendors")
 	}
+}
+
+type Contact struct {
+	Name  string `json:"name"`
+	Phone string `json:"phone"`
+}
+
+type Vendor struct {
+	Id      int      `json:"id"`
+	Name    string   `json:"name"`
+	Contact *Contact `json:"contact"`
+}
+
+func GetVendors() []*Vendor {
+	result := []*Vendor{
+		{
+			Id:   1,
+			Name: "Smith and Jones Mfg",
+			Contact: &Contact{
+				Name:  "Martha Jones",
+				Phone: "+1 (888)555-9639",
+			},
+		}, {
+			Id:   2,
+			Name: "Oswald Unlimited",
+			Contact: &Contact{
+				Name:  "Clara Smith",
+				Phone: "(926)555-1798",
+			},
+		}, {
+			Id:   3,
+			Name: "Noble Products",
+			Contact: &Contact{
+				Name:  "Brian Jeffries",
+				Phone: "(425)555-1998",
+			},
+		},
+	}
+	return result
 }
