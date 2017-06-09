@@ -1,6 +1,31 @@
 version: "2"
 
+volumes:
+  dbdata:
+    driver: local
 services:
+    postgres:
+      container_name: postgres
+      build: 
+        context: .
+        dockerfile: .docker/postgres.dockerfile
+      ports:
+        # We'll bind our host's port 5432 to postgres's port 5432, so we can use
+        # our database IDEs with it:
+        - "5432:5432"
+      volumes:
+        # Mount the DB dumps folder into the container, to be able to create & access database dumps:
+        - .docker/db/dumps:/db/dumps
+        # Mount out tmp folder, we might want to have access to something there during development:
+        - .docker/db/tmp:/tmp
+        # Mount our 'restoredb' script:
+        - .docker/db/bin/restoredb:/bin/restoredb:ro
+        # Mount our 'dumpdb' script:
+        - .docker/db/bin/dumpdb:/bin/dumpdb:ro
+        # We'll mount the 'postgres-data' volume into the location Postgres stores it's data:
+        - dbdata:/var/lib/postgresql/data
+      environment:
+        POSTGRES_PASSWORD: 3x4mpl3
     buffalo:
       container_name: buffalo
       build: 
