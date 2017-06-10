@@ -20,11 +20,31 @@ func TestMain(m *testing.M) {
 
 	ctrl.Setup()
 
-	go http.ListenAndServe(":3000", new(GZipServer))
-
 	m.Run()
 
 	os.Exit(0)
+}
+
+func TestGetVendors(t *testing.T) {
+	req, err := http.NewRequest("GET", "http://localhost:3000/api/vendors", nil)
+	w := httptest.NewRecorder()
+	http.DefaultServeMux.ServeHTTP(w, req)
+
+	if err == nil {
+		var vendors []model.Vendor
+		data, err := ioutil.ReadAll(w.Body)
+
+		if err == nil {
+			w.Body.Read(data)
+
+			err = json.Unmarshal(data, &vendors)
+		}
+
+	}
+
+	if err != nil || w.Code == 500 {
+		t.Error("Failed to retrieve vendors")
+	}
 }
 
 func setupMockService() *httptest.Server {
@@ -40,26 +60,6 @@ func setupMockService() *httptest.Server {
 		w.Write(data)
 	}))
 
-}
-
-func TestGetVendors(t *testing.T) {
-	resp, err := http.Get("http://localhost:3000/api/vendors")
-
-	if err == nil {
-		var vendors []model.Vendor
-		data, err := ioutil.ReadAll(resp.Body)
-
-		if err == nil {
-			resp.Body.Read(data)
-
-			err = json.Unmarshal(data, &vendors)
-		}
-
-	}
-
-	if err != nil || resp.StatusCode == 500 {
-		t.Error("Failed to retrieve vendors")
-	}
 }
 
 type Contact struct {
