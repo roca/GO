@@ -1,0 +1,14 @@
+development:
+  url: {{envOr "DEVELOPMENT_DATABASE_URL" "postgres://postgres:3x4mpl3@postgres:5432/coke_development?sslmode=disable"}}
+  # dialect: postgres
+  # database: coke_development
+  # user: postgres
+  # password: 3x4mpl3
+  # host: postgres
+  # pool: 5
+
+test:
+  url: {{envOr "TEST_DATABASE_URL" "postgres://postgres:3x4mpl3@postgres:5432/coke_test?sslmode=disable"}}
+
+production:
+  url: {{envOr "DATABASE_URL" "postgres://postgres:3x4mpl3@postgres:5432/coke_production?sslmode=disable"}}
