@@ -15,15 +15,13 @@ func main() {
 
 	go http.ListenAndServe(":3000", new(poms.GZipServer))
 
-	f, err := os.Create("cpu.prof")
+	f, err := os.Create("heap.prof")
 
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
-	pprof.StartCPUProfile(f)
-	for i := 0; i < 1000; i++ {
-		http.Get("http://localhost:3000/api/purchaseOrders/1")
-	}
-	pprof.StopCPUProfile()
+	http.Get("http://localhost:3000/api/purchaseOrders/1")
+	pprof.WriteHeapProfile(f)
+	f.Close()
 }
