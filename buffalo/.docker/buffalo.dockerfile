@@ -3,6 +3,8 @@
 FROM gobuffalo/buffalo
 # Create a directory inside the container to store all our application and then make it the working directory.
 RUN mkdir -p /go/src/github.com/GOCODE/buffalo
+RUN go get github.com/markbates/goth
+RUN go get github.com/mrjones/oauth
 WORKDIR /go/src/github.com/GOCODE/buffalo
 # Copy the example-app directory (where the Dockerfile lives) into the container.
 COPY . /go/src/github.com/GOCODE/buffalo
