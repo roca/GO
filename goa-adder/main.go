@@ -1,4 +1,4 @@
-//go:generate goagen bootstrap -d goa/design
+//go:generate goagen bootstrap -d github.com/GOCODE/goa-adder/design
 
 package main
 
@@ -12,9 +12,6 @@ func main() {
 	// Create service
 	service := goa.New("adder")
 
-	cs := NewSwaggerController(service)
-	app.MountSwaggerController(service, cs)
-
 	// Mount middleware
 	service.Use(middleware.RequestID())
 	service.Use(middleware.LogRequest(true))
@@ -25,8 +22,12 @@ func main() {
 	c := NewOperandsController(service)
 	app.MountOperandsController(service, c)
 
+	cs := NewSwaggerController(service)
+	app.MountSwaggerController(service, cs)
+
 	// Start service
 	if err := service.ListenAndServe(":8080"); err != nil {
 		service.LogError("startup", "err", err)
 	}
+
 }

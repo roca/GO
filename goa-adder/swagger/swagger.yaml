@@ -25,6 +25,8 @@ paths:
         name: right
         required: true
         type: integer
+      produces:
+      - text/plain
       responses:
         "200":
           description: OK
