@@ -1,6 +1,8 @@
 package main
 
-import "github.com/goadesign/goa"
+import (
+	"github.com/goadesign/goa"
+)
 
 // SwaggerController implements the swagger resource.
 type SwaggerController struct {
