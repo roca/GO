@@ -4,6 +4,14 @@ volumes:
   dbdata:
     driver: local
 services:
+    hello_go:
+      container_name: hello_go
+      build:
+        context: .
+        dockerfile: .docker/hello_go.dockerfile
+      ports: 
+        - "3000:3000"
+      working_dir: /var/app
     postgres:
       container_name: postgres
       build: 
