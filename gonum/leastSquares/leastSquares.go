@@ -1,10 +1,14 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
+	"strconv"
+	"strings"
 )
 
 func main() {
@@ -33,7 +37,30 @@ func main() {
 		m[i] = make([]float64, nOrder)
 	}
 
-	fmt.Println(m)
+	f, err := os.Open(dataFilePath)
+	if err != nil {
+		fmt.Printf("error opening file: %v\n", err)
+		os.Exit(1)
+	}
+	r := bufio.NewReader(f)
+	s, e := Readln(r)
+	for e == nil {
+
+		re := regexp.MustCompile("  +")
+		data := re.ReplaceAllString(s, "")
+		point := strings.Split(data, ",")
+		pointX, errX := strconv.ParseFloat(point[0], 64)
+		if errX != nil {
+			fmt.Println("Can't read %s", point[0])
+		}
+		pointY, errY := strconv.ParseFloat(point[1], 64)
+		if errY != nil {
+			fmt.Println("Can't read %s", point[1])
+		}
+		fmt.Printf("%g %g\n", pointX, pointY)
+
+		s, e = Readln(r)
+	}
 
 	for i, v1 := range m {
 		for j, v2 := range v1 {
@@ -55,4 +82,17 @@ type MyError struct {
 
 func (e MyError) Error() string {
 	return fmt.Sprintf("%v", e.What)
+}
+
+func Readln(r *bufio.Reader) (string, error) {
+	var (
+		isPrefix bool  = true
+		err      error = nil
+		line, ln []byte
+	)
+	for isPrefix && err == nil {
+		line, isPrefix, err = r.ReadLine()
+		ln = append(ln, line...)
+	}
+	return string(ln), err
 }
