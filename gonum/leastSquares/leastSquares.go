@@ -7,7 +7,6 @@ import (
 	"math"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strconv"
 	"strings"
 
@@ -50,8 +49,7 @@ func main() {
 	s, e := Readln(r)
 	for e == nil {
 
-		re := regexp.MustCompile("  +")
-		data := re.ReplaceAllString(s, "")
+		data := strings.Replace(s, " ", "", -1)
 		point := strings.Split(data, ",")
 		pointX, errX := strconv.ParseFloat(point[0], 64)
 		if errX != nil {
