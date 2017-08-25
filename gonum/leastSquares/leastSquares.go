@@ -28,7 +28,11 @@ func main() {
 	}
 	fmt.Printf("Data points in %s will be fit to %d order polynomial\n", dataFilePath, nOrder)
 
-	m := [2][2]float64{}
+	m := make([][]float64, nOrder)
+	for i := range m {
+		m[i] = make([]float64, nOrder)
+	}
+
 	fmt.Println(m)
 
 	for i, v1 := range m {
