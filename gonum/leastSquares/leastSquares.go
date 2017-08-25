@@ -4,11 +4,14 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
+	"math"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/gonum/matrix/mat64"
 )
 
 func main() {
@@ -30,11 +33,12 @@ func main() {
 		fmt.Printf(usage(filepath.Base(os.Args[0])))
 		os.Exit(1)
 	}
-	fmt.Printf("Data points in %s will be fit to %d order polynomial\n", dataFilePath, nOrder)
+	fmt.Printf("Data points in %s will be fit to %d order polynomial\n", dataFilePath, *nPtr)
 
-	m := make([][]float64, nOrder)
-	for i := range m {
-		m[i] = make([]float64, nOrder)
+	xx := make([][]float64, nOrder)
+	xy := make([]float64, nOrder)
+	for i := range xx {
+		xx[i] = make([]float64, nOrder)
 	}
 
 	f, err := os.Open(dataFilePath)
@@ -57,23 +61,47 @@ func main() {
 		if errY != nil {
 			fmt.Println("Can't read %s", point[1])
 		}
-		fmt.Printf("%g %g\n", pointX, pointY)
+		// fmt.Printf("%g %g\n", pointX, pointY)
 
-		for i, v1 := range m {
+		for i, v1 := range xx {
+			xy[i] = xy[i] + (pointY * math.Pow(pointX, float64(i)))
 			for j, _ := range v1 {
-				m[i][j] = m[i][j] + (float64(i) + float64(j))
+				xx[i][j] = xx[i][j] + math.Pow(pointX, (float64(i)+float64(j)))
 			}
 		}
 
 		s, e = Readln(r)
 	}
 
-	for i, v1 := range m {
-		for j, v2 := range v1 {
-			fmt.Printf("(%d %d) %g ", i, j, v2)
-		}
-		fmt.Printf("\n")
+	// for i, v1 := range xx {
+	// 	for j, v2 := range v1 {
+	// 		fmt.Printf("(%d %d) %g ", i, j, v2)
+	// 	}
+	// 	fmt.Printf("\n")
+	// }
+
+	// for i, v1 := range xy {
+	// 	fmt.Printf("(%d) %g ", i, v1)
+	// 	fmt.Printf("\n")
+	// }
+
+	mXY := mat64.NewDense(nOrder, 1, xy)
+	solution := mat64.NewDense(nOrder, 1, nil)
+
+	// print all mXY elements
+	fmt.Printf("mXY :\n%v\n\n", mat64.Formatted(mXY, mat64.Prefix(""), mat64.Excerpt(0)))
+
+	mXX := mat64.NewDense(nOrder, nOrder, nil)
+	for i, _ := range xy {
+		mXX.SetRow(i, xx[i])
 	}
+
+	// print all mXX elements
+	fmt.Printf("mXX :\n%v\n\n", mat64.Formatted(mXX, mat64.Prefix(""), mat64.Excerpt(0)))
+
+	solution.Solve(mXX, mXY)
+
+	fmt.Printf("solution :\n%v\n\n", mat64.Formatted(solution, mat64.Prefix(""), mat64.Excerpt(0)))
 
 }
 
