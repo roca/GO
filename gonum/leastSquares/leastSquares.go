@@ -17,7 +17,7 @@ func main() {
 	var nPtr = flag.Int("n", 1, "order of eqution y = AX^n + BX^(n-1) + .... CX^0")
 	flag.Parse()
 
-	nOrder := *nPtr
+	nOrder := *nPtr + 1
 
 	if len(os.Args) == 1 {
 		fmt.Printf(usage(filepath.Base(os.Args[0])))
@@ -58,6 +58,12 @@ func main() {
 			fmt.Println("Can't read %s", point[1])
 		}
 		fmt.Printf("%g %g\n", pointX, pointY)
+
+		for i, v1 := range m {
+			for j, _ := range v1 {
+				m[i][j] = m[i][j] + (float64(i) + float64(j))
+			}
+		}
 
 		s, e = Readln(r)
 	}
