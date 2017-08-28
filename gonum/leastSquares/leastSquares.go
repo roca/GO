@@ -36,6 +36,8 @@ func main() {
 
 	xx := make([][]float64, nOrder)
 	xy := make([]float64, nOrder)
+	x := make([]float64, 0)
+	y := make([]float64, 0)
 	for i := range xx {
 		xx[i] = make([]float64, nOrder)
 	}
@@ -61,6 +63,8 @@ func main() {
 		}
 		// fmt.Printf("%g %g\n", pointX, pointY)
 
+		x = append(x, pointX)
+		y = append(y, pointY)
 		for i, v1 := range xx {
 			xy[i] = xy[i] + (pointY * math.Pow(pointX, float64(i)))
 			for j, _ := range v1 {
@@ -100,11 +104,49 @@ func main() {
 	solution.Solve(mXX, mXY)
 
 	fmt.Printf("solution :\n%v\n\n", mat64.Formatted(solution, mat64.Prefix(""), mat64.Excerpt(0)))
+	fmt.Printf("R2 score: %g \n\n", r2_score(x, y, solution))
 
 }
 
 func usage(arg string) string {
 	return fmt.Sprintf("usage: %s -n=[5|4|3...1] <path_of_data_points_file>\n", arg)
+}
+
+func r2_score(xs, ys []float64, solution *mat64.Dense) float64 {
+	var yMean, sum, ssTotal, predictedY, ssResidual float64
+	predictedYs := make([]float64, 0)
+	sum = 0
+	r, _ := solution.Dims()
+
+	for _, v := range ys {
+		sum = sum + v
+	}
+	yMean = sum / float64(len(ys))
+
+	for _, v := range xs {
+		predictedY = 0
+		for i := 0; i < r; i++ {
+			predictedY = +(solution.At(i, 0) * math.Pow(v, float64(i)))
+		}
+		predictedYs = append(predictedYs, predictedY)
+	}
+
+	ssTotal = 0
+	for _, v := range ys {
+		ssTotal = ssTotal + math.Pow((v-yMean), 2.0)
+	}
+
+	ssResidual = 0
+	for i, v := range predictedYs {
+		ssResidual = ssResidual + math.Pow((v-ys[i]), 2.0)
+	}
+
+	fmt.Printf("Number of points: %d \n\n", len(predictedYs))
+	fmt.Printf("ssTotal: %g \n\n", ssTotal)
+	fmt.Printf("ssResidual: %g \n\n", ssResidual)
+
+	return 1.0 - (ssResidual / ssTotal)
+
 }
 
 // MyError is an error implementation that includes a time and message.
