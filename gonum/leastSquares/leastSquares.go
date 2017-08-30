@@ -13,6 +13,48 @@ import (
 	"github.com/gonum/matrix/mat64"
 )
 
+type Point struct {
+	X float64
+	Y float64
+}
+
+type Curve struct {
+	DataPoints []Point
+}
+
+func (c *Curve) loadDataPointsFromFile(filePath string) (int, error) {
+
+	f, err := os.Open(filePath)
+	if err != nil {
+		fmt.Printf("error opening file: %v\n", err)
+		os.Exit(1)
+	}
+	r := bufio.NewReader(f)
+	s, e := Readln(r)
+	lineCount := 0
+	for e == nil {
+		lineCount++
+		data := strings.Replace(s, " ", "", -1)
+		point := strings.Split(data, ",")
+		pointX, errX := strconv.ParseFloat(point[0], 64)
+		fmt.Printf("pointX: %g\n", pointX)
+		if errX != nil {
+			//continue
+		}
+		pointY, errY := strconv.ParseFloat(point[1], 64)
+		fmt.Printf("pointY: %g\n", pointY)
+		if errY != nil {
+			//continue
+		}
+		c.DataPoints = append(c.DataPoints, Point{pointX, pointY})
+		s, e = Readln(r)
+	}
+	if len(c.DataPoints) != lineCount {
+		return len(c.DataPoints), MyError{"Could not read some points"}
+	}
+	return len(c.DataPoints), nil
+}
+
 func main() {
 
 	flag.String("h", "help", "Method of Least Squares")
@@ -42,38 +84,57 @@ func main() {
 		xx[i] = make([]float64, nOrder)
 	}
 
-	f, err := os.Open(dataFilePath)
+	var myData Curve
+
+	pointsCount, err := myData.loadDataPointsFromFile(dataFilePath)
+	fmt.Printf("Number of points: %d \n\n", pointsCount)
 	if err != nil {
-		fmt.Printf("error opening file: %v\n", err)
+		fmt.Printf("Error reading data points: %v\n", err)
 		os.Exit(1)
 	}
-	r := bufio.NewReader(f)
-	s, e := Readln(r)
-	for e == nil {
-
-		data := strings.Replace(s, " ", "", -1)
-		point := strings.Split(data, ",")
-		pointX, errX := strconv.ParseFloat(point[0], 64)
-		if errX != nil {
-			fmt.Println("Can't read %s", point[0])
-		}
-		pointY, errY := strconv.ParseFloat(point[1], 64)
-		if errY != nil {
-			fmt.Println("Can't read %s", point[1])
-		}
-		// fmt.Printf("%g %g\n", pointX, pointY)
-
-		x = append(x, pointX)
-		y = append(y, pointY)
+	for i := 0; i < pointsCount; i++ {
+		x = append(x, myData.DataPoints[i].X)
+		y = append(y, myData.DataPoints[i].Y)
 		for i, v1 := range xx {
-			xy[i] = xy[i] + (pointY * math.Pow(pointX, float64(i)))
+			xy[i] = xy[i] + (myData.DataPoints[i].Y * math.Pow(myData.DataPoints[i].X, float64(i)))
 			for j, _ := range v1 {
-				xx[i][j] = xx[i][j] + math.Pow(pointX, (float64(i)+float64(j)))
+				xx[i][j] = xx[i][j] + math.Pow(myData.DataPoints[i].X, (float64(i)+float64(j)))
 			}
 		}
-
-		s, e = Readln(r)
 	}
+
+	// f, err := os.Open(dataFilePath)
+	// if err != nil {
+	// 	fmt.Printf("error opening file: %v\n", err)
+	// 	os.Exit(1)
+	// }
+	// r := bufio.NewReader(f)
+	// s, e := Readln(r)
+	// for e == nil {
+
+	// 	data := strings.Replace(s, " ", "", -1)
+	// 	point := strings.Split(data, ",")
+	// 	pointX, errX := strconv.ParseFloat(point[0], 64)
+	// 	if errX != nil {
+	// 		fmt.Println("Can't read %s", point[0])
+	// 	}
+	// 	pointY, errY := strconv.ParseFloat(point[1], 64)
+	// 	if errY != nil {
+	// 		fmt.Println("Can't read %s", point[1])
+	// 	}
+	// 	// fmt.Printf("%g %g\n", pointX, pointY)
+
+	// 	x = append(x, pointX)
+	// 	y = append(y, pointY)
+	// 	for i, v1 := range xx {
+	// 		xy[i] = xy[i] + (pointY * math.Pow(pointX, float64(i)))
+	// 		for j, _ := range v1 {
+	// 			xx[i][j] = xx[i][j] + math.Pow(pointX, (float64(i)+float64(j)))
+	// 		}
+	// 	}
+
+	// 	s, e = Readln(r)
+	// }
 
 	// for i, v1 := range xx {
 	// 	for j, v2 := range v1 {
@@ -141,7 +202,6 @@ func r2_score(xs, ys []float64, solution *mat64.Dense) float64 {
 		ssResidual = ssResidual + math.Pow((v-ys[i]), 2.0)
 	}
 
-	fmt.Printf("Number of points: %d \n\n", len(predictedYs))
 	fmt.Printf("ssTotal: %g \n\n", ssTotal)
 	fmt.Printf("ssResidual: %g \n\n", ssResidual)
 
