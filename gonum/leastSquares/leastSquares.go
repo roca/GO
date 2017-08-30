@@ -37,15 +37,14 @@ func (c *Curve) loadDataPointsFromFile(filePath string) (int, error) {
 		data := strings.Replace(s, " ", "", -1)
 		point := strings.Split(data, ",")
 		pointX, errX := strconv.ParseFloat(point[0], 64)
-		fmt.Printf("pointX: %g\n", pointX)
 		if errX != nil {
 			//continue
 		}
 		pointY, errY := strconv.ParseFloat(point[1], 64)
-		fmt.Printf("pointY: %g\n", pointY)
 		if errY != nil {
 			//continue
 		}
+		fmt.Printf("point %d (x,y): (%g, %g)\n", len(c.DataPoints)+1, pointX, pointY)
 		c.DataPoints = append(c.DataPoints, Point{pointX, pointY})
 		s, e = Readln(r)
 	}
@@ -87,66 +86,21 @@ func main() {
 	var myData Curve
 
 	pointsCount, err := myData.loadDataPointsFromFile(dataFilePath)
-	fmt.Printf("Number of points: %d \n\n", pointsCount)
+	fmt.Printf("\nNumber of points: %d \n\n", pointsCount)
 	if err != nil {
 		fmt.Printf("Error reading data points: %v\n", err)
 		os.Exit(1)
 	}
-	for i := 0; i < pointsCount; i++ {
-		x = append(x, myData.DataPoints[i].X)
-		y = append(y, myData.DataPoints[i].Y)
+	for k := 0; k < pointsCount; k++ {
+		x = append(x, myData.DataPoints[k].X)
+		y = append(y, myData.DataPoints[k].Y)
 		for i, v1 := range xx {
-			xy[i] = xy[i] + (myData.DataPoints[i].Y * math.Pow(myData.DataPoints[i].X, float64(i)))
+			xy[i] = xy[i] + (myData.DataPoints[k].Y * math.Pow(myData.DataPoints[k].X, float64(i)))
 			for j, _ := range v1 {
-				xx[i][j] = xx[i][j] + math.Pow(myData.DataPoints[i].X, (float64(i)+float64(j)))
+				xx[i][j] = xx[i][j] + math.Pow(myData.DataPoints[k].X, (float64(i)+float64(j)))
 			}
 		}
 	}
-
-	// f, err := os.Open(dataFilePath)
-	// if err != nil {
-	// 	fmt.Printf("error opening file: %v\n", err)
-	// 	os.Exit(1)
-	// }
-	// r := bufio.NewReader(f)
-	// s, e := Readln(r)
-	// for e == nil {
-
-	// 	data := strings.Replace(s, " ", "", -1)
-	// 	point := strings.Split(data, ",")
-	// 	pointX, errX := strconv.ParseFloat(point[0], 64)
-	// 	if errX != nil {
-	// 		fmt.Println("Can't read %s", point[0])
-	// 	}
-	// 	pointY, errY := strconv.ParseFloat(point[1], 64)
-	// 	if errY != nil {
-	// 		fmt.Println("Can't read %s", point[1])
-	// 	}
-	// 	// fmt.Printf("%g %g\n", pointX, pointY)
-
-	// 	x = append(x, pointX)
-	// 	y = append(y, pointY)
-	// 	for i, v1 := range xx {
-	// 		xy[i] = xy[i] + (pointY * math.Pow(pointX, float64(i)))
-	// 		for j, _ := range v1 {
-	// 			xx[i][j] = xx[i][j] + math.Pow(pointX, (float64(i)+float64(j)))
-	// 		}
-	// 	}
-
-	// 	s, e = Readln(r)
-	// }
-
-	// for i, v1 := range xx {
-	// 	for j, v2 := range v1 {
-	// 		fmt.Printf("(%d %d) %g ", i, j, v2)
-	// 	}
-	// 	fmt.Printf("\n")
-	// }
-
-	// for i, v1 := range xy {
-	// 	fmt.Printf("(%d) %g ", i, v1)
-	// 	fmt.Printf("\n")
-	// }
 
 	mXY := mat64.NewDense(nOrder, 1, xy)
 	solution := mat64.NewDense(nOrder, 1, nil)
