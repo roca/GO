@@ -1,13 +1,13 @@
-package  main
+package main
 
 import (
-	"bufio"
 	"flag"
 	"fmt"
 	"math"
 	"os"
 	"path/filepath"
 
+	"github.com/GOCODE/gonum/leastSquares/functionsAndTypes"
 	"github.com/gonum/matrix/mat64"
 )
 
@@ -26,7 +26,7 @@ func main() {
 	dataFilePath := os.Args[len(os.Args)-1]
 	_, err := os.Stat(dataFilePath)
 	if err != nil {
-		fmt.Println(MyError{fmt.Sprintf("NonExisting file path : %s", dataFilePath)})
+		fmt.Println(functionsAndTypes.MyError{fmt.Sprintf("NonExisting file path : %s", dataFilePath)})
 		fmt.Printf(usage(filepath.Base(os.Args[0])))
 		os.Exit(1)
 	}
@@ -40,9 +40,9 @@ func main() {
 		xx[i] = make([]float64, nOrder)
 	}
 
-	var myData Curve
+	var myData functionsAndTypes.Curve
 
-	pointsCount, err := myData.loadDataPointsFromFile(dataFilePath)
+	pointsCount, err := myData.LoadDataPointsFromFile(dataFilePath)
 	fmt.Printf("\nNumber of points: %d \n\n", pointsCount)
 	if err != nil {
 		fmt.Printf("Error reading data points: %v\n", err)
@@ -118,26 +118,4 @@ func r2_score(xs, ys []float64, solution *mat64.Dense) float64 {
 
 	return 1.0 - (ssResidual / ssTotal)
 
-}
-
-// MyError is an error implementation that includes a time and message.
-type MyError struct {
-	What string
-}
-
-func (e MyError) Error() string {
-	return fmt.Sprintf("%v", e.What)
-}
-
-func Readln(r *bufio.Reader) (string, error) {
-	var (
-		isPrefix bool  = true
-		err      error = nil
-		line, ln []byte
-	)
-	for isPrefix && err == nil {
-		line, isPrefix, err = r.ReadLine()
-		ln = append(ln, line...)
-	}
-	return string(ln), err
 }
