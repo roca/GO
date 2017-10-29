@@ -1,0 +1,11 @@
+development:
+  dialect: "sqlite3"
+  database: {{env "GOPATH" }}/github.com/GOCODE/buffalo/people/people_development.sqlite
+
+test:
+  dialect: "sqlite3"
+  database: {{env "GOPATH" }}/github.com/GOCODE/buffalo/people/people_test.sqlite
+
+production:
+  dialect: "sqlite3"
+  database: {{env "GOPATH" }}/github.com/GOCODE/buffalo/people/people_production.sqlite
