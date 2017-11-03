@@ -1,26 +1,32 @@
 package main
 
-import (
-	"fmt"
+import "fmt"
 
-	"github.com/GOCODE/pluralsight/go-and-oop/gopherpay/payment"
-)
+type CreditAccount struct{}
+
+func (c *CreditAccount) AvailableFunds() float32 {
+	fmt.Println("Getting credit funds")
+	return 250
+}
+
+type CheckingAccount struct{}
+
+func (c *CheckingAccount) AvailableFunds() float32 {
+	fmt.Println("Getting checking funds")
+	return 125
+}
+
+type HybridAccount struct {
+	creditAccount   CreditAccount
+	checkingAccount CheckingAccount
+}
+
+func (h *HybridAccount) AvailableFunds() float32 {
+	return h.creditAccount.AvailableFunds()
+}
 
 func main() {
-
-	credit := payment.CreateCreditAccount(
-		"Debra Ingram",
-		"1111-2222-3333-4444",
-		5,
-		2021,
-		123)
-
-	fmt.Printf("Owner name: %v\n", credit.OwnerName())
-	fmt.Printf("Card number: %v\n", credit.CardNumber())
-	fmt.Println("Trying to change card number")
-	err := credit.SetCardNumber("invalid")
-	if err != nil {
-		fmt.Printf("That didn't work: %v\n", err)
-	}
-	fmt.Printf("Available credit: %v\n", credit.AvailableCredit())
+	ha := &HybridAccount{}
+	fmt.Println(ha.AvailableFunds())
+	fmt.Println(ha.checkingAccount.AvailableFunds())
 }
