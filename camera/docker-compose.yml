@@ -1,0 +1,11 @@
+version: "2"
+services:
+    camera:
+      container_name: camera
+      build:
+        context: .
+        dockerfile: .docker/camera.dockerfile
+      ports: 
+        - "3000:3000"
+      working_dir: /var/app
+ 
