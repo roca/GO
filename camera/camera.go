@@ -12,7 +12,7 @@ const resp = `<html>
     </head>
     <body>
         <h1>Simple Web App</h1>
-        <p>Hello World!</p>
+        <p>Hello World Java!</p>
     </body>
 </html>`
 
