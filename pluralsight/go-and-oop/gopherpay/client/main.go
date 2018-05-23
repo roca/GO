@@ -1,32 +1,15 @@
 package main
 
-import "fmt"
+import "github.com/gopherpay/paybroker"
 
-type CreditAccount struct{}
-
-func (c *CreditAccount) AvailableFunds() float32 {
-	fmt.Println("Getting credit funds")
-	return 250
-}
-
-type CheckingAccount struct{}
-
-func (c *CheckingAccount) AvailableFunds() float32 {
-	fmt.Println("Getting checking funds")
-	return 125
-}
-
-type HybridAccount struct {
-	creditAccount   CreditAccount
-	checkingAccount CheckingAccount
-}
-
-func (h *HybridAccount) AvailableFunds() float32 {
-	return h.creditAccount.AvailableFunds()
+type PaymentOption interface {
+	ProcessPayment(float32) bool
 }
 
 func main() {
-	ha := &HybridAccount{}
-	fmt.Println(ha.AvailableFunds())
-	fmt.Println(ha.checkingAccount.AvailableFunds())
+	var option PaymentOption
+
+	option = &paybroker.PaymentBrokerAccount{}
+
+	option.ProcessPayment(500)
 }
