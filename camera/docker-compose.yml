@@ -4,7 +4,7 @@ services:
       container_name: camera
       build:
         context: .
-        dockerfile: camera.dockerfile
+        dockerfile: Dockerfile
       ports: 
         - "3000:3000"
       working_dir: /var/app
