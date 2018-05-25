@@ -8,4 +8,9 @@ services:
       ports: 
         - "3000:3000"
       working_dir: /var/app
- 
+      command:  >
+        /bin/sh -c "
+          go build camera.go && 
+          ./camera"
+      volumes:
+        - .:/var/app
