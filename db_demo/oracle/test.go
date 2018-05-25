@@ -3,24 +3,20 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"github.com/astaxie/beedb"
-	_ "github.com/mattn/go-oci8"
 	"log"
-	"time"
+
+	_ "github.com/mattn/go-oci8"
 )
 
-type Clone struct {
-	Id   int `beedb:"PK"`
-	Name string
-	Seq  string
-	//Regions   []int
-	CreatedAt time.Time
-	CreatedBy string
+type User struct {
+	ID       int `beedb:"PK"`
+	AD_LOGIN string
+	EMAIL    string
 }
 
 func main() {
 
-	db, err := sql.Open("postgres", "user=keymaster password=keymaster sid=CORELIMSDEV host=renoralimsd port=1531")
+	db, err := sql.Open("oci8", "keymaster/keymaster002@taroralimsp.regeneron.regn.com:1532/CORELIMSPROD")
 	if err != nil {
 		fmt.Println("Error")
 		panic(err)
@@ -30,44 +26,45 @@ func main() {
 		panic(conn_err)
 	}
 
-	QueryRows2(db)
+	QueryRows(db)
 }
 
 func QueryRows(db *sql.DB) {
-	rows, err := db.Query("SELECT name,seq FROM clones")
+	rows, err := db.Query("SELECT AD_LOGIN,EMAIL FROM USERS")
 	if err != nil {
 		log.Fatal(err)
 	}
 	for rows.Next() {
-		var name, seq string
-		if err := rows.Scan(&name, &seq); err != nil {
+		var AD_LOGIN, EMAIL string
+		if err := rows.Scan(&AD_LOGIN, &EMAIL); err != nil {
 			log.Fatal(err)
 		}
 
-		fmt.Printf("%s %s\n", name, seq)
+		fmt.Printf("%s %s\n", AD_LOGIN, EMAIL)
 	}
 	if err := rows.Err(); err != nil {
 		log.Fatal(err)
 	}
 
 }
-func QueryRows2(db *sql.DB) {
 
-	var orm beedb.Model
-
-	var allclones []Clone
-
-	beedb.PluralizeTableNames = true
-
-	orm = beedb.New(db, "pg")
-	beedb.OnDebug = true
-
-	err := orm.FindAll(&allclones)
-	if err != nil {
-		panic(err)
-	}
-
-	for i, clone := range allclones {
-		fmt.Printf("row %d : %s %s\n", i, clone.Name, clone.Seq)
-	}
-}
+// func QueryRows2(db *sql.DB) {
+//
+// 	var orm beedb.Model
+//
+// 	var allclones []Clone
+//
+// 	beedb.PluralizeTableNames = true
+//
+// 	orm = beedb.New(db, "pg")
+// 	beedb.OnDebug = true
+//
+// 	err := orm.FindAll(&allclones)
+// 	if err != nil {
+// 		panic(err)
+// 	}
+//
+// 	for i, clone := range allclones {
+// 		fmt.Printf("row %d : %s %s\n", i, clone.Name, clone.Seq)
+// 	}
+// }

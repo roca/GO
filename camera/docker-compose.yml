@@ -1,0 +1,21 @@
+version: "2"
+services:
+    gocv:
+      container_name: gocv
+      build:
+        context: .
+        dockerfile: gocv.dockerfile
+    camera:
+      container_name: camera
+      build:
+        context: .
+        dockerfile: Dockerfile
+      ports: 
+        - "3000:3000"
+      working_dir: /var/app
+      command:  >
+        /bin/sh -c "
+          go build camera.go && 
+          ./camera"
+      volumes:
+        - .:/var/app

@@ -1,0 +1,24 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    run: camera
+  name: camera
+  namespace: default
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      run: camera
+  template:
+    metadata:
+      labels:
+        run: camera
+    spec:
+      containers:
+      - image: rcampbell/camera
+        imagePullPolicy: Always
+        name: camera
+        ports:
+        - containerPort: 3000
+          protocol: TCP

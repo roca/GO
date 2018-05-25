@@ -1,0 +1,12 @@
+app:
+  image: 'rcampbell/graphql_development:latest'
+  ports:
+    - '3000'
+  working_dir: /go/src/github.com/GOCODE/graphQL
+go-nginx:
+  image: 'rcampbell/graphql_go-nginx:latest'
+  links:
+    - app
+  ports:
+    - '80:80'
+    - '443:443'

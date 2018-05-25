@@ -1,0 +1,27 @@
+version: "2"
+
+services:
+    development:
+      container_name: development
+      build: 
+        context: .
+        dockerfile: .docker/development.dockerfile
+      ports:
+        - "3000:3000"
+        - "4000:4000"
+        - "5000:5000"
+        - "8080:8080"
+      volumes:
+        - .:/go/src/github.com/GOCODE/pluralsight/go-testing/code2
+      working_dir: /go/src/github.com/GOCODE/pluralsight/go-testing/code2
+    go-nginx:
+      container_name: go-nginx
+      build: 
+        context: .
+        dockerfile: .docker/docker-nginx.dockerfile
+      links:
+        - development:app
+      ports:
+        - "80:80"
+        - "443:443"
+ 
