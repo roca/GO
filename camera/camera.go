@@ -12,7 +12,7 @@ const resp = `<html>
     </head>
     <body>
         <h1>Simple Web App</h1>
-        <p>Hello World : Compile for ARM 7!</p>
+        <p>Hello World : Added GOCV</p>
     </body>
 </html>`
 

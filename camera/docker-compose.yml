@@ -1,5 +1,10 @@
 version: "2"
 services:
+    gocv:
+      container_name: gocv
+      build:
+        context: .
+        dockerfile: gocv.dockerfile
     camera:
       container_name: camera
       build:

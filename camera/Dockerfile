@@ -1,4 +1,6 @@
-FROM golang
+FROM rcampbell/gocv
+
+# RUN source /go/src/gocv.io/x/gocv/env.sh
 RUN mkdir -p /var/app
 WORKDIR /var/app
 COPY camera.go /var/app
