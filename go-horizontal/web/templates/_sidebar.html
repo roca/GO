@@ -1,0 +1,10 @@
+{{define "sidebar"}}
+  <ul>
+  {{range .titles}}
+    <li>
+      <a href="/posts/{{.ID}}">{{.Subject}}</a> -
+      <em>{{.AuthorName}}</em>
+    </li>
+  {{end}}
+  </ul>
+{{end}}

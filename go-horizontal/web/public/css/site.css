@@ -1,0 +1,78 @@
+html, body {
+  margin:0 2rem;
+  font-size: 1em;
+  color: #333;
+}
+
+header {
+  margin:0;
+  padding: 1rem;
+  background-color: #84C68C;
+}
+header h2, header h1 {
+  margin: 0.3rem;
+  padding: 0;
+}
+
+header h2 {
+  padding-left: 2rem;
+}
+
+a {
+  color: #333;
+  text-decoration: none;
+}
+
+.content {
+  width: 65%;
+}
+
+.post p {
+  font-size: 1.2rem;
+  line-height: 1.6rem;
+}
+
+.sidebar {
+  width: 30%;
+  float:right;
+  background-color: #eee;
+  border: 1px #ddd solid;
+}
+
+.sidebar ul {
+  list-style-type: none;
+}
+
+.sidebar li {
+  padding: 0.2rem;
+}
+
+.sidebar a {
+  color: #10631A;
+}
+
+section.post h2 a {
+  font-size: 1.5rem;
+  color: #004208;
+}
+
+section.post em {
+  font-size: 1rem;
+  color: #aaa;
+}
+.comments ul {
+  list-style-type: none;
+}
+.comments label {
+  display: block;
+}
+
+.comments input, .comments textarea {
+  width: 100%;
+}
+
+button {
+  background-color: #84C68C;
+  padding: 0.7em;
+  float: right;
+}

@@ -1,0 +1,42 @@
+    # 1. Run docker-compose build
+    # 2. Run docker-compose up
+    # 3. Live long and prosper
+    
+version: "2"
+
+services:
+    development:
+      container_name: development
+      build: 
+        context: .
+        dockerfile: .docker/development.dockerfile
+      ports:
+        - "3000:3000"
+      volumes:
+        - .:/go/src/github.com/GOCODE/go-webservices
+      working_dir: /go/src/github.com/GOCODE/go-webservices
+      env_file:
+        - ./db/mysql/config/env.conf
+    redis:
+      container_name: redis
+      build: 
+        context: .
+        dockerfile: .docker/docker-redis.dockerfile
+      ports:
+        - "6379:6379"
+      env_file:
+        - ./db/redis/config/env.conf
+    mysql:
+      container_name: mysql
+      build: 
+        context: .
+        dockerfile: .docker/docker-mysql.dockerfile
+      ports:
+        - "3306:3306"
+      volumes:
+        - ./db/mysql/data:/var/lib/mysql:rw
+        - ./scripts:/scripts:rw
+      env_file:
+        - ./db/mysql/config/env.conf
+      command: "/scripts/mysql.sh"
+        

@@ -1,0 +1,1 @@
+kubectl patch deployment camera -p "{\"spec\":{\"template\":{\"metadata\":{\"labels\":{\"date\":\"`date +'%s'`\"}}}}}"

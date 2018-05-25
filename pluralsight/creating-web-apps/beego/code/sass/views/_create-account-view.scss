@@ -1,0 +1,17 @@
+.create-account-view {
+  height: 100%;
+
+  .mblHeading {
+    margin-bottom: 2rem;
+  }
+
+  label {
+    margin-left: 0.5rem;
+  }
+
+  button[type=submit] {
+    position: absolute;
+    bottom: 2rem;
+    left: 10%;
+  }
+}

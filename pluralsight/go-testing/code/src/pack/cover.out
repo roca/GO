@@ -1,0 +1,6 @@
+mode: set
+github.com/GOCODE/pluralsight/go-testing/code/src/pack/math.go:3.27,7.20 2 1
+github.com/GOCODE/pluralsight/go-testing/code/src/pack/math.go:12.2,12.25 1 1
+github.com/GOCODE/pluralsight/go-testing/code/src/pack/math.go:16.2,16.15 1 1
+github.com/GOCODE/pluralsight/go-testing/code/src/pack/math.go:7.20,10.3 2 0
+github.com/GOCODE/pluralsight/go-testing/code/src/pack/math.go:12.25,14.3 1 1

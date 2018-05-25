@@ -1,0 +1,184 @@
+consumes:
+- application/json
+- application/xml
+- application/gob
+- application/x-gob
+definitions:
+  BottlePayLoad:
+    description: BottlePayLoad is the type used to create bottles
+    example:
+      name: ti
+      rating: 1
+      vintage: 2818
+    properties:
+      name:
+        description: Name of bottle
+        example: ti
+        minLength: 2
+        type: string
+      rating:
+        description: Name of bottle
+        example: 1
+        maximum: 5
+        minimum: 1
+        type: integer
+      vintage:
+        description: Vintage of bottle
+        example: 2818
+        minimum: 1900
+        type: integer
+    required:
+    - name
+    - vintage
+    - rating
+    title: BottlePayLoad
+    type: object
+  bottle:
+    description: bottle media type (default view)
+    example:
+      ID: 6.438311e+18
+      name: p6
+      rating: 3
+      vintage: 2144
+    properties:
+      ID:
+        description: Unique bottle ID
+        example: 6.438311e+18
+        format: int64
+        type: integer
+      name:
+        description: Name of bottle
+        example: p6
+        minLength: 2
+        type: string
+      rating:
+        description: Name of bottle
+        example: 3
+        maximum: 5
+        minimum: 1
+        type: integer
+      vintage:
+        description: Vintage of bottle
+        example: 2144
+        minimum: 1900
+        type: integer
+    required:
+    - ID
+    - name
+    - vintage
+    - rating
+    title: 'Mediatype identifier: application/vnd.gophercon.goa.bottle'
+    type: object
+  error:
+    description: Error response media type (default view)
+    example:
+      code: invalid_value
+      detail: Value of ID must be an integer
+      id: 3F1FKVRR
+      meta:
+        timestamp: 1.458609e+09
+      status: "400"
+    properties:
+      code:
+        description: an application-specific error code, expressed as a string value.
+        example: invalid_value
+        type: string
+      detail:
+        description: a human-readable explanation specific to this occurrence of the
+          problem.
+        example: Value of ID must be an integer
+        type: string
+      id:
+        description: a unique identifier for this particular occurrence of the problem.
+        example: 3F1FKVRR
+        type: string
+      meta:
+        additionalProperties: true
+        description: a meta object containing non-standard meta-information about
+          the error.
+        example:
+          timestamp: 1.458609e+09
+        type: object
+      status:
+        description: the HTTP status code applicable to this problem, expressed as
+          a string value.
+        example: "400"
+        type: string
+    title: 'Mediatype identifier: application/vnd.goa.error'
+    type: object
+host: localhost:8080
+info:
+  description: The wine review service
+  version: ""
+paths:
+  /bottles:
+    post:
+      description: Create a bottle
+      operationId: bottle#create
+      parameters:
+      - description: BottlePayLoad is the type used to create bottles
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/BottlePayLoad'
+      responses:
+        "201":
+          description: Created
+      summary: create bottle
+      tags:
+      - bottle
+  /bottles/{id}:
+    get:
+      description: HSow a bottle
+      operationId: bottle#show
+      parameters:
+      - in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/bottle'
+      summary: show bottle
+      tags:
+      - bottle
+  /swagger-ui/{filepath}:
+    get:
+      operationId: swagger#/swagger-ui/*filepath
+      parameters:
+      - description: Relative file path
+        in: path
+        name: filepath
+        required: true
+        type: string
+      responses:
+        "200":
+          description: File downloaded
+          schema:
+            type: file
+        "404":
+          description: File not found
+          schema:
+            $ref: '#/definitions/error'
+      summary: Download swagger-ui/
+  /swagger.json:
+    get:
+      operationId: swagger#/swagger.json
+      responses:
+        "200":
+          description: File downloaded
+          schema:
+            type: file
+      summary: Download swagger/swagger.json
+produces:
+- application/json
+- application/xml
+- application/gob
+- application/x-gob
+responses:
+  Created:
+    description: Created
+swagger: "2.0"

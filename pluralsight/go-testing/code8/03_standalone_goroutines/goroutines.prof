@@ -1,0 +1,44 @@
+goroutine profile: total 18
+5 @ 0x102d3ca 0x1028307 0x1027949 0x1125c48 0x1125cb4 0x11272d7 0x1132a50 0x11fc710 0x10e5d57 0x10e6c5b 0x10e6e47 0x119641f 0x119633f 0x11f8e25 0x11fdae3 0x1201e6a 0x10572b1
+#	0x1027948	net.runtime_pollWait+0x58			/usr/local/Cellar/go/1.8.3/libexec/src/runtime/netpoll.go:164
+#	0x1125c47	net.(*pollDesc).wait+0x37			/usr/local/Cellar/go/1.8.3/libexec/src/net/fd_poll_runtime.go:75
+#	0x1125cb3	net.(*pollDesc).waitRead+0x33			/usr/local/Cellar/go/1.8.3/libexec/src/net/fd_poll_runtime.go:80
+#	0x11272d6	net.(*netFD).Read+0x1b6				/usr/local/Cellar/go/1.8.3/libexec/src/net/fd_unix.go:250
+#	0x1132a4f	net.(*conn).Read+0x6f				/usr/local/Cellar/go/1.8.3/libexec/src/net/net.go:181
+#	0x11fc70f	net/http.(*connReader).Read+0x13f		/usr/local/Cellar/go/1.8.3/libexec/src/net/http/server.go:754
+#	0x10e5d56	bufio.(*Reader).fill+0x116			/usr/local/Cellar/go/1.8.3/libexec/src/bufio/bufio.go:97
+#	0x10e6c5a	bufio.(*Reader).ReadSlice+0xba			/usr/local/Cellar/go/1.8.3/libexec/src/bufio/bufio.go:338
+#	0x10e6e46	bufio.(*Reader).ReadLine+0x36			/usr/local/Cellar/go/1.8.3/libexec/src/bufio/bufio.go:367
+#	0x119641e	net/textproto.(*Reader).readLineSlice+0x5e	/usr/local/Cellar/go/1.8.3/libexec/src/net/textproto/reader.go:55
+#	0x119633e	net/textproto.(*Reader).ReadLine+0x2e		/usr/local/Cellar/go/1.8.3/libexec/src/net/textproto/reader.go:36
+#	0x11f8e24	net/http.readRequest+0xa4			/usr/local/Cellar/go/1.8.3/libexec/src/net/http/request.go:918
+#	0x11fdae2	net/http.(*conn).readRequest+0x212		/usr/local/Cellar/go/1.8.3/libexec/src/net/http/server.go:934
+#	0x1201e69	net/http.(*conn).serve+0x499			/usr/local/Cellar/go/1.8.3/libexec/src/net/http/server.go:1763
+
+5 @ 0x102d3ca 0x103c3c4 0x103b02c 0x1215c6c 0x10572b1
+#	0x1215c6b	net/http.(*persistConn).readLoop+0x9eb	/usr/local/Cellar/go/1.8.3/libexec/src/net/http/transport.go:1599
+
+5 @ 0x102d3ca 0x103c3c4 0x103b02c 0x121706a 0x10572b1
+#	0x1217069	net/http.(*persistConn).writeLoop+0x439	/usr/local/Cellar/go/1.8.3/libexec/src/net/http/transport.go:1704
+
+1 @ 0x102d3ca 0x1028307 0x1027949 0x1125c48 0x1125cb4 0x1127b55 0x113a89e 0x1138dc9 0x12064cf 0x1205988 0x1205670 0x120625f 0x10572b1
+#	0x1027948	net.runtime_pollWait+0x58			/usr/local/Cellar/go/1.8.3/libexec/src/runtime/netpoll.go:164
+#	0x1125c47	net.(*pollDesc).wait+0x37			/usr/local/Cellar/go/1.8.3/libexec/src/net/fd_poll_runtime.go:75
+#	0x1125cb3	net.(*pollDesc).waitRead+0x33			/usr/local/Cellar/go/1.8.3/libexec/src/net/fd_poll_runtime.go:80
+#	0x1127b54	net.(*netFD).accept+0x1e4			/usr/local/Cellar/go/1.8.3/libexec/src/net/fd_unix.go:430
+#	0x113a89d	net.(*TCPListener).accept+0x2d			/usr/local/Cellar/go/1.8.3/libexec/src/net/tcpsock_posix.go:136
+#	0x1138dc8	net.(*TCPListener).AcceptTCP+0x48		/usr/local/Cellar/go/1.8.3/libexec/src/net/tcpsock.go:215
+#	0x12064ce	net/http.tcpKeepAliveListener.Accept+0x2e	/usr/local/Cellar/go/1.8.3/libexec/src/net/http/server.go:3044
+#	0x1205987	net/http.(*Server).Serve+0x227			/usr/local/Cellar/go/1.8.3/libexec/src/net/http/server.go:2643
+#	0x120566f	net/http.(*Server).ListenAndServe+0xaf		/usr/local/Cellar/go/1.8.3/libexec/src/net/http/server.go:2585
+#	0x120625e	net/http.ListenAndServe+0x7e			/usr/local/Cellar/go/1.8.3/libexec/src/net/http/server.go:2787
+
+1 @ 0x10572b1
+
+1 @ 0x125a3c2 0x125a1c0 0x1256835 0x12793d3 0x102cf7a 0x10572b1
+#	0x125a3c1	runtime/pprof.writeRuntimeProfile+0xa1	/usr/local/Cellar/go/1.8.3/libexec/src/runtime/pprof/pprof.go:632
+#	0x125a1bf	runtime/pprof.writeGoroutine+0x9f	/usr/local/Cellar/go/1.8.3/libexec/src/runtime/pprof/pprof.go:594
+#	0x1256834	runtime/pprof.(*Profile).WriteTo+0x3b4	/usr/local/Cellar/go/1.8.3/libexec/src/runtime/pprof/pprof.go:302
+#	0x12793d2	main.main+0x132				/Users/romelcampbell/go/src/github.com/GOCODE/pluralsight/go-testing/code8/03_standalone_goroutines/src/profiles/prof.go:27
+#	0x102cf79	runtime.main+0x209			/usr/local/Cellar/go/1.8.3/libexec/src/runtime/proc.go:185
+
