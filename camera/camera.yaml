@@ -22,3 +22,14 @@ spec:
         ports:
         - containerPort: 3000
           protocol: TCP
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: device
+                operator: In
+                values:
+                - rpi-1
+                - rpi-2
+                - rpi-3
