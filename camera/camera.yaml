@@ -33,3 +33,14 @@ spec:
                 - rpi-1
                 - rpi-2
                 - rpi-3
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: run
+                  operator: In
+                  values:
+                  - camera
+              topologyKey: device
