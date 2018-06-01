@@ -10,6 +10,11 @@ services:
       build:
         context: ./rpi/gobot/
         dockerfile: gobot.dockerfile
+    gocv:
+      container_name: gocv
+      build:
+        context: ./rpi/gocv/
+        dockerfile: gocv.dockerfile
     camera:
       container_name: camera
       build:

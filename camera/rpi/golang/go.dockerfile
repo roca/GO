@@ -1,6 +1,6 @@
 # Pull base image
 #FROM resin/rpi-raspbian:jessie
-FROM resin/raspberry-pi-golang:latest
+FROM resin/raspberry-pi-golang:1.9-slim
 
 ADD ./etc/services /etc/services
 
