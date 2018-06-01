@@ -1,4 +1,5 @@
 FROM rcampbell/gocv
+ENV GOPATH /go
 
 # RUN source /go/src/gocv.io/x/gocv/env.sh
 RUN mkdir -p $GOPATH/src/camera
