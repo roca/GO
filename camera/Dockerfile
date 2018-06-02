@@ -2,7 +2,7 @@ FROM rcampbell/gocv
 ENV GOPATH /go
 
 # RUN source /go/src/gocv.io/x/gocv/env.sh
-RUN mkdir -p /go/src/camera
+RUN mkdir /go/src/camera
 WORKDIR /go/src/camera
 COPY camera.go /go/src/camera
 #RUN GOARM=7 GOARCH=arm GOOS=linux go build camera.go
