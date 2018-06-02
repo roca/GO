@@ -14,4 +14,8 @@ sudo add-apt-repository \
    $(lsb_release -cs) \
    stable"
 
+sudo apt-get update
+
 sudo apt-get install -y docker-ce
+
+sudo adduser vagrant docker
