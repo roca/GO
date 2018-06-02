@@ -16,7 +16,7 @@ spec:
         run: camera
     spec:
       containers:
-      - image: rcampbell/camera
+      - image: rcampbell/camera:latest
         imagePullPolicy: Always
         name: camera
         ports:
