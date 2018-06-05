@@ -1,5 +1,7 @@
 FROM rcampbell/rpi-golang
 
+ENV GOPATH /go
+
 RUN apt-get update 
 RUN echo 'APT::Get::Assume-Yes "true";' >> /etc/apt/apt.conf
 RUN echo 'APT::Get::force-yes "true";' >> /etc/apt/apt.conf
@@ -22,5 +24,7 @@ RUN make clean
 
 RUN go get github.com/hybridgroup/mjpeg
 
+RUN cd $GOPATH/src/gocv.io/x/gocv && go build -o $GOPATH/bin/gocv-version ./cmd/version/main.go
+
 # Define default command
-CMD ["bash"]
+CMD ["$GOPATH/bin/gocv-version"]
