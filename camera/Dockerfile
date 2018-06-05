@@ -1,4 +1,4 @@
-FROM denismakogon/gocv-alpine:3.4.1-buildstage
+FROM rcampbell/gocv
 LABEL author="Romel Campbell"
 
 ENV APP_HOME /var/app
