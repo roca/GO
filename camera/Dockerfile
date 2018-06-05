@@ -3,10 +3,10 @@ LABEL author="Romel Campbell"
 
 ENV APP_HOME /var/app
 
-RUN mkdir $APP_HOME
-WORKDIR $APP_HOME
+RUN mkdir ${APP_HOME}
+WORKDIR ${APP_HOME}
 
-COPY camera.go $APP_HOME
+COPY camera.go ${APP_HOME}
 RUN go build camera.go
 ENV PORT 3000
 EXPOSE 3000
