@@ -1,4 +1,4 @@
-FROM rcampbell/rpi-golang
+FROM rcampbell/gocv
 
 ENV APP_HOME /var/app
 

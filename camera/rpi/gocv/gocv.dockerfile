@@ -24,7 +24,5 @@ RUN make clean
 
 RUN go get github.com/hybridgroup/mjpeg
 
-RUN cd $GOPATH/src/gocv.io/x/gocv && go build -o $GOPATH/bin/gocv-version ./cmd/version/main.go
-
 # Define default command
-CMD ["$GOPATH/bin/gocv-version"]
+CMD ["bash"]
