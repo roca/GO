@@ -1,14 +1,14 @@
-FROM rcampbell/opencv
+FROM rcampbell/rpi-golang
 
-ENV GOPATH /go
+RUN apt-get update
+RUN apt-get autoremove libopencv-dev python-opencv
 
-RUN go get -u -d gocv.io/x/gocv
-WORKDIR $GOPATH/src/gocv.io/x/gocv
-RUN make download
-RUN make build
-RUN make clean
+ENV APP_HOME /var/app
 
-RUN go get github.com/hybridgroup/mjpeg
+RUN mkdir -p $APP_HOME
+WORKDIR $APP_HOME
 
-# Define default command
+COPY install-opencv.sh $APP_HOME
+RUN chmod +x install-opencv.sh && ./install-opencv.sh
+
 CMD ["bash"]
