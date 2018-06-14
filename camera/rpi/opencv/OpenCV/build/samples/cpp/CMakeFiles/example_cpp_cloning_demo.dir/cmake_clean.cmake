@@ -1,0 +1,10 @@
+FILE(REMOVE_RECURSE
+  "CMakeFiles/example_cpp_cloning_demo.dir/cloning_demo.cpp.o"
+  "../../bin/example_cpp_cloning_demo.pdb"
+  "../../bin/example_cpp_cloning_demo"
+)
+
+# Per-language clean rules from dependency scanning.
+FOREACH(lang CXX)
+  INCLUDE(CMakeFiles/example_cpp_cloning_demo.dir/cmake_clean_${lang}.cmake OPTIONAL)
+ENDFOREACH(lang)

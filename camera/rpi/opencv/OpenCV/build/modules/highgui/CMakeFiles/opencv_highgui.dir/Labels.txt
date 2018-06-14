@@ -1,0 +1,49 @@
+# Target labels
+ Main
+ opencv_highgui
+ Module
+# Source files and their labels
+/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/modules/highgui/include/opencv2/highgui.hpp
+ Main
+ opencv_highgui
+ Module
+/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/modules/highgui/include/opencv2/highgui/highgui.hpp
+ Main
+ opencv_highgui
+ Module
+/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/modules/highgui/include/opencv2/highgui/highgui_c.h
+ Main
+ opencv_highgui
+ Module
+/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/modules/highgui/src/window.cpp
+ Main
+ opencv_highgui
+ Module
+/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/modules/highgui/src/roiSelector.cpp
+ Main
+ opencv_highgui
+ Module
+/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/modules/highgui/src/window_QT.cpp
+ Main
+ opencv_highgui
+ Module
+/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/modules/highgui/src/window_QT.h
+ Main
+ opencv_highgui
+ Module
+/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/modules/highgui/src/moc_window_QT.cpp
+ Main
+ opencv_highgui
+ Module
+/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/modules/highgui/qrc_window_QT.cpp
+ Main
+ opencv_highgui
+ Module
+/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/modules/highgui/src/precomp.hpp
+ Main
+ opencv_highgui
+ Module
+/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/cvconfig.h
+/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/opencv2/opencv_modules.hpp
+/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/modules/highgui/src/moc_window_QT.cpp.rule
+/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/modules/highgui/src/window_QT.qrc
