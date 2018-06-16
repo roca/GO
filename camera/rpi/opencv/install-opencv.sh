@@ -62,6 +62,10 @@ mv opencv-${OPENCV_VERSION} OpenCV
 cd OpenCV
 mkdir build
 cd build
+# need this some where ??????
+ln -s /usr/lib/arm-linux-gnueabihf/libQtOpenGL.so /usr/lib/arm-linux-gnueabihf/libQt5OpenGL.so.5.3.2
+
+
 cmake -DWITH_QT=ON -DWITH_OPENGL=ON -DFORCE_VTK=ON -DWITH_TBB=ON -DWITH_GDAL=ON -DWITH_XINE=ON -DBUILD_EXAMPLES=ON -DENABLE_PRECOMPILED_HEADERS=OFF ..
 make -j4
 sudo make install

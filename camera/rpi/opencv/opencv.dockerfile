@@ -1,5 +1,10 @@
 FROM rcampbell/rpi-golang
 
+# need this some where ??????
+# ln -s /usr/lib/arm-linux-gnueabihf/libQtOpenGL.so /usr/lib/arm-linux-gnueabihf/libQt5OpenGL.so.5.3.2
+
+
+
 RUN apt-get update
 RUN apt-get autoremove libopencv-dev python-opencv
 
