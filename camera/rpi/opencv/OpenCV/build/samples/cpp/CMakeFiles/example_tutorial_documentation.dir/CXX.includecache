@@ -1,0 +1,12 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/samples/cpp/tutorial_code/introduction/documentation/documentation.cpp
+iostream
+-
+

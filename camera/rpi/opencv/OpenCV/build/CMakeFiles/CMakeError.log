@@ -1,0 +1,520 @@
+Compilation failed:
+    source file: '/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/cmake/checks/cxx11.cpp'
+    check option: ''
+===== BUILD LOG =====
+Change Dir: /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/make "cmTryCompileExec1403410372/fast"
+/usr/bin/make -f CMakeFiles/cmTryCompileExec1403410372.dir/build.make CMakeFiles/cmTryCompileExec1403410372.dir/build
+make[1]: Entering directory `/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec1403410372.dir/cxx11.cpp.o
+/usr/bin/c++    -fPIE   -o CMakeFiles/cmTryCompileExec1403410372.dir/cxx11.cpp.o -c /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/cmake/checks/cxx11.cpp
+/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/cmake/checks/cxx11.cpp:4:2: error: #error "C++11 is not supported"
+ #error "C++11 is not supported"
+  ^
+/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/cmake/checks/cxx11.cpp: In function ‘int main()’:
+/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/cmake/checks/cxx11.cpp:11:10: error: ‘res’ does not name a type
+     auto res = test();
+          ^
+/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/cmake/checks/cxx11.cpp:12:12: error: ‘res’ was not declared in this scope
+     return res;
+            ^
+make[1]: Leaving directory `/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp'
+make[1]: *** [CMakeFiles/cmTryCompileExec1403410372.dir/cxx11.cpp.o] Error 1
+make: *** [cmTryCompileExec1403410372/fast] Error 2
+
+===== END =====
+
+Build output check failed:
+    Regex: 'command line option .* is valid for .* but not for C\+\+'
+    Output line: 'cc1plus: warning: command line option ‘-Wmissing-prototypes’ is valid for C/ObjC but not for C++ [enabled by default]'
+Compilation failed:
+    source file: '/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/src.cxx'
+    check option: ' -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Wmissing-declarations  -Wmissing-prototypes'
+===== BUILD LOG =====
+Change Dir: /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/make "cmTryCompileExec1125732316/fast"
+/usr/bin/make -f CMakeFiles/cmTryCompileExec1125732316.dir/build.make CMakeFiles/cmTryCompileExec1125732316.dir/build
+make[1]: Entering directory `/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec1125732316.dir/src.cxx.o
+/usr/bin/c++    -O3 -DNDEBUG -fPIE   -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Wmissing-declarations -Wmissing-prototypes -o CMakeFiles/cmTryCompileExec1125732316.dir/src.cxx.o -c /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/src.cxx
+cc1plus: warning: command line option ‘-Wmissing-prototypes’ is valid for C/ObjC but not for C++ [enabled by default]
+/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/src.cxx:1:0: warning: ignoring #pragma   [-Wunknown-pragmas]
+ #pragma
+ ^
+Linking CXX executable cmTryCompileExec1125732316
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec1125732316.dir/link.txt --verbose=1
+/usr/bin/c++     -O3 -DNDEBUG    CMakeFiles/cmTryCompileExec1125732316.dir/src.cxx.o  -o cmTryCompileExec1125732316 -rdynamic 
+make[1]: Leaving directory `/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp'
+
+===== END =====
+
+Build output check failed:
+    Regex: 'command line option .* is valid for .* but not for C\+\+'
+    Output line: 'cc1plus: warning: command line option ‘-Wstrict-prototypes’ is valid for C/ObjC but not for C++ [enabled by default]'
+Compilation failed:
+    source file: '/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/src.cxx'
+    check option: ' -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Wmissing-declarations  -Wstrict-prototypes'
+===== BUILD LOG =====
+Change Dir: /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/make "cmTryCompileExec1979693079/fast"
+/usr/bin/make -f CMakeFiles/cmTryCompileExec1979693079.dir/build.make CMakeFiles/cmTryCompileExec1979693079.dir/build
+make[1]: Entering directory `/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec1979693079.dir/src.cxx.o
+/usr/bin/c++    -O3 -DNDEBUG -fPIE   -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Wmissing-declarations -Wstrict-prototypes -o CMakeFiles/cmTryCompileExec1979693079.dir/src.cxx.o -c /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/src.cxx
+cc1plus: warning: command line option ‘-Wstrict-prototypes’ is valid for C/ObjC but not for C++ [enabled by default]
+/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/src.cxx:1:0: warning: ignoring #pragma   [-Wunknown-pragmas]
+ #pragma
+ ^
+Linking CXX executable cmTryCompileExec1979693079
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec1979693079.dir/link.txt --verbose=1
+/usr/bin/c++     -O3 -DNDEBUG    CMakeFiles/cmTryCompileExec1979693079.dir/src.cxx.o  -o cmTryCompileExec1979693079 -rdynamic 
+make[1]: Leaving directory `/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp'
+
+===== END =====
+
+Build output check failed:
+    Regex: 'command line option .* is valid for .* but not for C'
+    Output line: 'cc1: warning: command line option ‘-Wsign-promo’ is valid for C++/ObjC++ but not for C [enabled by default]'
+Compilation failed:
+    source file: '/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/src.c'
+    check option: ' -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Wmissing-declarations -Wmissing-prototypes -Wstrict-prototypes -Wundef -Winit-self -Wpointer-arith -Wshadow  -Wsign-promo'
+===== BUILD LOG =====
+Change Dir: /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/make "cmTryCompileExec2840180337/fast"
+/usr/bin/make -f CMakeFiles/cmTryCompileExec2840180337.dir/build.make CMakeFiles/cmTryCompileExec2840180337.dir/build
+make[1]: Entering directory `/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building C object CMakeFiles/cmTryCompileExec2840180337.dir/src.c.o
+/usr/bin/cc   -O3 -DNDEBUG -fPIE   -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Wmissing-declarations -Wmissing-prototypes -Wstrict-prototypes -Wundef -Winit-self -Wpointer-arith -Wshadow -Wsign-promo -o CMakeFiles/cmTryCompileExec2840180337.dir/src.c.o   -c /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/src.c
+cc1: warning: command line option ‘-Wsign-promo’ is valid for C++/ObjC++ but not for C [enabled by default]
+/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/src.c:1:0: warning: ignoring #pragma   [-Wunknown-pragmas]
+ #pragma
+ ^
+Linking C executable cmTryCompileExec2840180337
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec2840180337.dir/link.txt --verbose=1
+/usr/bin/cc    -O3 -DNDEBUG    CMakeFiles/cmTryCompileExec2840180337.dir/src.c.o  -o cmTryCompileExec2840180337 -rdynamic 
+make[1]: Leaving directory `/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp'
+
+===== END =====
+
+Build output check failed:
+    Regex: 'command line option .* is valid for .* but not for C'
+    Output line: 'cc1: warning: command line option ‘-Wno-delete-non-virtual-dtor’ is valid for C++/ObjC++ but not for C [enabled by default]'
+Compilation failed:
+    source file: '/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/src.c'
+    check option: ' -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Wmissing-declarations -Wmissing-prototypes -Wstrict-prototypes -Wundef -Winit-self -Wpointer-arith -Wshadow -Wuninitialized -Winit-self -Wno-narrowing  -Wno-delete-non-virtual-dtor'
+===== BUILD LOG =====
+Change Dir: /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/make "cmTryCompileExec1880319479/fast"
+/usr/bin/make -f CMakeFiles/cmTryCompileExec1880319479.dir/build.make CMakeFiles/cmTryCompileExec1880319479.dir/build
+make[1]: Entering directory `/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building C object CMakeFiles/cmTryCompileExec1880319479.dir/src.c.o
+/usr/bin/cc   -O3 -DNDEBUG -fPIE   -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Wmissing-declarations -Wmissing-prototypes -Wstrict-prototypes -Wundef -Winit-self -Wpointer-arith -Wshadow -Wuninitialized -Winit-self -Wno-narrowing -Wno-delete-non-virtual-dtor -o CMakeFiles/cmTryCompileExec1880319479.dir/src.c.o   -c /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/src.c
+cc1: warning: command line option ‘-Wno-delete-non-virtual-dtor’ is valid for C++/ObjC++ but not for C [enabled by default]
+/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/src.c:1:0: warning: ignoring #pragma   [-Wunknown-pragmas]
+ #pragma
+ ^
+Linking C executable cmTryCompileExec1880319479
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec1880319479.dir/link.txt --verbose=1
+/usr/bin/cc    -O3 -DNDEBUG    CMakeFiles/cmTryCompileExec1880319479.dir/src.c.o  -o cmTryCompileExec1880319479 -rdynamic 
+make[1]: Leaving directory `/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp'
+
+===== END =====
+
+Build output check failed:
+    Regex: 'unrecognized .*option'
+    Output line: 'cc1plus: warning: unrecognized command line option "-Wno-unnamed-type-template-args" [enabled by default]'
+Compilation failed:
+    source file: '/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/src.cxx'
+    check option: ' -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Wmissing-declarations -Wundef -Winit-self -Wpointer-arith -Wshadow -Wsign-promo -Wuninitialized -Winit-self -Wno-narrowing -Wno-delete-non-virtual-dtor  -Wno-unnamed-type-template-args'
+===== BUILD LOG =====
+Change Dir: /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/make "cmTryCompileExec1252379144/fast"
+/usr/bin/make -f CMakeFiles/cmTryCompileExec1252379144.dir/build.make CMakeFiles/cmTryCompileExec1252379144.dir/build
+make[1]: Entering directory `/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec1252379144.dir/src.cxx.o
+/usr/bin/c++    -O3 -DNDEBUG -fPIE   -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Wmissing-declarations -Wundef -Winit-self -Wpointer-arith -Wshadow -Wsign-promo -Wuninitialized -Winit-self -Wno-narrowing -Wno-delete-non-virtual-dtor -Wno-unnamed-type-template-args -o CMakeFiles/cmTryCompileExec1252379144.dir/src.cxx.o -c /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/src.cxx
+/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/src.cxx:1:0: warning: ignoring #pragma   [-Wunknown-pragmas]
+ #pragma
+ ^
+cc1plus: warning: unrecognized command line option "-Wno-unnamed-type-template-args" [enabled by default]
+Linking CXX executable cmTryCompileExec1252379144
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec1252379144.dir/link.txt --verbose=1
+/usr/bin/c++     -O3 -DNDEBUG    CMakeFiles/cmTryCompileExec1252379144.dir/src.cxx.o  -o cmTryCompileExec1252379144 -rdynamic 
+make[1]: Leaving directory `/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp'
+
+===== END =====
+
+Build output check failed:
+    Regex: 'unrecognized .*option'
+    Output line: 'cc1: warning: unrecognized command line option "-Wno-unnamed-type-template-args" [enabled by default]'
+Compilation failed:
+    source file: '/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/src.c'
+    check option: ' -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Wmissing-declarations -Wmissing-prototypes -Wstrict-prototypes -Wundef -Winit-self -Wpointer-arith -Wshadow -Wuninitialized -Winit-self -Wno-narrowing  -Wno-unnamed-type-template-args'
+===== BUILD LOG =====
+Change Dir: /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/make "cmTryCompileExec3865708378/fast"
+/usr/bin/make -f CMakeFiles/cmTryCompileExec3865708378.dir/build.make CMakeFiles/cmTryCompileExec3865708378.dir/build
+make[1]: Entering directory `/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building C object CMakeFiles/cmTryCompileExec3865708378.dir/src.c.o
+/usr/bin/cc   -O3 -DNDEBUG -fPIE   -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Wmissing-declarations -Wmissing-prototypes -Wstrict-prototypes -Wundef -Winit-self -Wpointer-arith -Wshadow -Wuninitialized -Winit-self -Wno-narrowing -Wno-unnamed-type-template-args -o CMakeFiles/cmTryCompileExec3865708378.dir/src.c.o   -c /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/src.c
+/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/src.c:1:0: warning: ignoring #pragma   [-Wunknown-pragmas]
+ #pragma
+ ^
+cc1: warning: unrecognized command line option "-Wno-unnamed-type-template-args" [enabled by default]
+Linking C executable cmTryCompileExec3865708378
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec3865708378.dir/link.txt --verbose=1
+/usr/bin/cc    -O3 -DNDEBUG    CMakeFiles/cmTryCompileExec3865708378.dir/src.c.o  -o cmTryCompileExec3865708378 -rdynamic 
+make[1]: Leaving directory `/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp'
+
+===== END =====
+
+Build output check failed:
+    Regex: 'unrecognized .*option'
+    Output line: 'cc1plus: warning: unrecognized command line option "-Wno-implicit-fallthrough" [enabled by default]'
+Compilation failed:
+    source file: '/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/src.cxx'
+    check option: ' -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Wmissing-declarations -Wundef -Winit-self -Wpointer-arith -Wshadow -Wsign-promo -Wuninitialized -Winit-self -Wno-narrowing -Wno-delete-non-virtual-dtor -Wno-comment  -Wno-implicit-fallthrough'
+===== BUILD LOG =====
+Change Dir: /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/make "cmTryCompileExec1230361440/fast"
+/usr/bin/make -f CMakeFiles/cmTryCompileExec1230361440.dir/build.make CMakeFiles/cmTryCompileExec1230361440.dir/build
+make[1]: Entering directory `/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec1230361440.dir/src.cxx.o
+/usr/bin/c++    -O3 -DNDEBUG -fPIE   -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Wmissing-declarations -Wundef -Winit-self -Wpointer-arith -Wshadow -Wsign-promo -Wuninitialized -Winit-self -Wno-narrowing -Wno-delete-non-virtual-dtor -Wno-comment -Wno-implicit-fallthrough -o CMakeFiles/cmTryCompileExec1230361440.dir/src.cxx.o -c /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/src.cxx
+/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/src.cxx:1:0: warning: ignoring #pragma   [-Wunknown-pragmas]
+ #pragma
+ ^
+cc1plus: warning: unrecognized command line option "-Wno-implicit-fallthrough" [enabled by default]
+Linking CXX executable cmTryCompileExec1230361440
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec1230361440.dir/link.txt --verbose=1
+/usr/bin/c++     -O3 -DNDEBUG    CMakeFiles/cmTryCompileExec1230361440.dir/src.cxx.o  -o cmTryCompileExec1230361440 -rdynamic 
+make[1]: Leaving directory `/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp'
+
+===== END =====
+
+Build output check failed:
+    Regex: 'unrecognized .*option'
+    Output line: 'cc1: warning: unrecognized command line option "-Wno-implicit-fallthrough" [enabled by default]'
+Compilation failed:
+    source file: '/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/src.c'
+    check option: ' -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Wmissing-declarations -Wmissing-prototypes -Wstrict-prototypes -Wundef -Winit-self -Wpointer-arith -Wshadow -Wuninitialized -Winit-self -Wno-narrowing -Wno-comment  -Wno-implicit-fallthrough'
+===== BUILD LOG =====
+Change Dir: /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/make "cmTryCompileExec2670191017/fast"
+/usr/bin/make -f CMakeFiles/cmTryCompileExec2670191017.dir/build.make CMakeFiles/cmTryCompileExec2670191017.dir/build
+make[1]: Entering directory `/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building C object CMakeFiles/cmTryCompileExec2670191017.dir/src.c.o
+/usr/bin/cc   -O3 -DNDEBUG -fPIE   -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Wmissing-declarations -Wmissing-prototypes -Wstrict-prototypes -Wundef -Winit-self -Wpointer-arith -Wshadow -Wuninitialized -Winit-self -Wno-narrowing -Wno-comment -Wno-implicit-fallthrough -o CMakeFiles/cmTryCompileExec2670191017.dir/src.c.o   -c /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/src.c
+/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/src.c:1:0: warning: ignoring #pragma   [-Wunknown-pragmas]
+ #pragma
+ ^
+cc1: warning: unrecognized command line option "-Wno-implicit-fallthrough" [enabled by default]
+Linking C executable cmTryCompileExec2670191017
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec2670191017.dir/link.txt --verbose=1
+/usr/bin/cc    -O3 -DNDEBUG    CMakeFiles/cmTryCompileExec2670191017.dir/src.c.o  -o cmTryCompileExec2670191017 -rdynamic 
+make[1]: Leaving directory `/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp'
+
+===== END =====
+
+Build output check failed:
+    Regex: 'command line option .* is valid for .* but not for C'
+    Output line: 'cc1: warning: command line option ‘-fvisibility-inlines-hidden’ is valid for C++/ObjC++ but not for C [enabled by default]'
+Compilation failed:
+    source file: '/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/src.c'
+    check option: ' -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Wmissing-declarations -Wmissing-prototypes -Wstrict-prototypes -Wundef -Winit-self -Wpointer-arith -Wshadow -Wuninitialized -Winit-self -Wno-narrowing -Wno-comment -fdiagnostics-show-option -Wno-long-long -pthread -fomit-frame-pointer -ffunction-sections -fdata-sections  -msse -msse2 -msse3 -fvisibility=hidden  -fvisibility-inlines-hidden'
+===== BUILD LOG =====
+Change Dir: /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/make "cmTryCompileExec1501786437/fast"
+/usr/bin/make -f CMakeFiles/cmTryCompileExec1501786437.dir/build.make CMakeFiles/cmTryCompileExec1501786437.dir/build
+make[1]: Entering directory `/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building C object CMakeFiles/cmTryCompileExec1501786437.dir/src.c.o
+/usr/bin/cc   -O3 -DNDEBUG -fPIE   -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Wmissing-declarations -Wmissing-prototypes -Wstrict-prototypes -Wundef -Winit-self -Wpointer-arith -Wshadow -Wuninitialized -Winit-self -Wno-narrowing -Wno-comment -fdiagnostics-show-option -Wno-long-long -pthread -fomit-frame-pointer -ffunction-sections -fdata-sections -msse -msse2 -msse3 -fvisibility=hidden -fvisibility-inlines-hidden -o CMakeFiles/cmTryCompileExec1501786437.dir/src.c.o   -c /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/src.c
+cc1: warning: command line option ‘-fvisibility-inlines-hidden’ is valid for C++/ObjC++ but not for C [enabled by default]
+/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/src.c:1:0: warning: ignoring #pragma   [-Wunknown-pragmas]
+ #pragma
+ ^
+Linking C executable cmTryCompileExec1501786437
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec1501786437.dir/link.txt --verbose=1
+/usr/bin/cc    -O3 -DNDEBUG    CMakeFiles/cmTryCompileExec1501786437.dir/src.c.o  -o cmTryCompileExec1501786437 -rdynamic 
+make[1]: Leaving directory `/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp'
+
+===== END =====
+
+Determining if the system is big endian passed with the following output:
+Change Dir: /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/make "cmTryCompileExec999814148/fast"
+/usr/bin/make -f CMakeFiles/cmTryCompileExec999814148.dir/build.make CMakeFiles/cmTryCompileExec999814148.dir/build
+make[1]: Entering directory `/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building C object CMakeFiles/cmTryCompileExec999814148.dir/TestEndianess.c.o
+/usr/bin/cc   -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Wmissing-declarations -Wmissing-prototypes -Wstrict-prototypes -Wundef -Winit-self -Wpointer-arith -Wshadow -Wuninitialized -Winit-self -Wno-narrowing -Wno-comment -fdiagnostics-show-option -Wno-long-long -pthread -fomit-frame-pointer -ffunction-sections -fdata-sections  -msse -msse2 -msse3 -fvisibility=hidden  -O3 -DNDEBUG -fPIE   -o CMakeFiles/cmTryCompileExec999814148.dir/TestEndianess.c.o   -c /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/TestEndianess.c
+Linking C executable cmTryCompileExec999814148
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec999814148.dir/link.txt --verbose=1
+/usr/bin/cc     -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Wmissing-declarations -Wmissing-prototypes -Wstrict-prototypes -Wundef -Winit-self -Wpointer-arith -Wshadow -Wuninitialized -Winit-self -Wno-narrowing -Wno-comment -fdiagnostics-show-option -Wno-long-long -pthread -fomit-frame-pointer -ffunction-sections -fdata-sections  -msse -msse2 -msse3 -fvisibility=hidden  -O3 -DNDEBUG    CMakeFiles/cmTryCompileExec999814148.dir/TestEndianess.c.o  -o cmTryCompileExec999814148 -rdynamic 
+make[1]: Leaving directory `/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp'
+
+TestEndianess.c:
+/* A 16 bit integer is required. */
+typedef unsigned short cmakeint16;
+
+/* On a little endian machine, these 16bit ints will give "THIS IS LITTLE ENDIAN."
+   On a big endian machine the characters will be exchanged pairwise. */
+const cmakeint16 info_little[] =  {0x4854, 0x5349, 0x4920, 0x2053, 0x494c, 0x5454, 0x454c, 0x4520, 0x444e, 0x4149, 0x2e4e, 0x0000};
+
+/* on a big endian machine, these 16bit ints will give "THIS IS BIG ENDIAN."
+   On a little endian machine the characters will be exchanged pairwise. */
+const cmakeint16 info_big[] =     {0x5448, 0x4953, 0x2049, 0x5320, 0x4249, 0x4720, 0x454e, 0x4449, 0x414e, 0x2e2e, 0x0000};
+
+#ifdef __CLASSIC_C__
+int main(argc, argv) int argc; char *argv[];
+#else
+int main(int argc, char *argv[])
+#endif
+{
+  int require = 0;
+  require += info_little[argc];
+  require += info_big[argc];
+  (void)argv;
+  return require;
+}
+
+
+Determining if the include file linux/videodev.h exists failed with the following output:
+Change Dir: /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/make "cmTryCompileExec2599480526/fast"
+/usr/bin/make -f CMakeFiles/cmTryCompileExec2599480526.dir/build.make CMakeFiles/cmTryCompileExec2599480526.dir/build
+make[1]: Entering directory `/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building C object CMakeFiles/cmTryCompileExec2599480526.dir/CheckIncludeFile.c.o
+/usr/bin/cc   -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Wmissing-declarations -Wmissing-prototypes -Wstrict-prototypes -Wundef -Winit-self -Wpointer-arith -Wshadow -Wuninitialized -Winit-self -Wno-narrowing -Wno-comment -fdiagnostics-show-option -Wno-long-long -pthread -fomit-frame-pointer -ffunction-sections -fdata-sections  -msse -msse2 -msse3 -fvisibility=hidden  -O3 -DNDEBUG -fPIE   -o CMakeFiles/cmTryCompileExec2599480526.dir/CheckIncludeFile.c.o   -c /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/CheckIncludeFile.c
+/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/CheckIncludeFile.c:1:28: fatal error: linux/videodev.h: No such file or directory
+ #include <linux/videodev.h>
+                            ^
+compilation terminated.
+make[1]: Leaving directory `/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp'
+make[1]: *** [CMakeFiles/cmTryCompileExec2599480526.dir/CheckIncludeFile.c.o] Error 1
+make: *** [cmTryCompileExec2599480526/fast] Error 2
+
+
+Determining if the include file sys/videoio.h exists failed with the following output:
+Change Dir: /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/make "cmTryCompileExec1938186261/fast"
+/usr/bin/make -f CMakeFiles/cmTryCompileExec1938186261.dir/build.make CMakeFiles/cmTryCompileExec1938186261.dir/build
+make[1]: Entering directory `/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building C object CMakeFiles/cmTryCompileExec1938186261.dir/CheckIncludeFile.c.o
+/usr/bin/cc   -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Wmissing-declarations -Wmissing-prototypes -Wstrict-prototypes -Wundef -Winit-self -Wpointer-arith -Wshadow -Wuninitialized -Winit-self -Wno-narrowing -Wno-comment -fdiagnostics-show-option -Wno-long-long -pthread -fomit-frame-pointer -ffunction-sections -fdata-sections  -msse -msse2 -msse3 -fvisibility=hidden  -O3 -DNDEBUG -fPIE   -o CMakeFiles/cmTryCompileExec1938186261.dir/CheckIncludeFile.c.o   -c /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/CheckIncludeFile.c
+/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/CheckIncludeFile.c:1:25: fatal error: sys/videoio.h: No such file or directory
+ #include <sys/videoio.h>
+                         ^
+compilation terminated.
+make[1]: *** [CMakeFiles/cmTryCompileExec1938186261.dir/CheckIncludeFile.c.o] Error 1
+make[1]: Leaving directory `/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp'
+make: *** [cmTryCompileExec1938186261/fast] Error 2
+
+
+Build output check failed:
+    Regex: 'command line option .* is valid for .* but not for C\+\+'
+    Output line: 'cc1plus: warning: command line option ‘-Wno-missing-prototypes’ is valid for C/ObjC but not for C++ [enabled by default]'
+Compilation failed:
+    source file: '/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/src.cxx'
+    check option: ' -Wno-missing-prototypes'
+===== BUILD LOG =====
+Change Dir: /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/make "cmTryCompileExec3118672430/fast"
+/usr/bin/make -f CMakeFiles/cmTryCompileExec3118672430.dir/build.make CMakeFiles/cmTryCompileExec3118672430.dir/build
+make[1]: Entering directory `/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec3118672430.dir/src.cxx.o
+/usr/bin/c++    -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Wmissing-declarations -Wundef -Winit-self -Wpointer-arith -Wshadow -Wsign-promo -Wuninitialized -Winit-self -Wno-narrowing -Wno-delete-non-virtual-dtor -Wno-comment -fdiagnostics-show-option -Wno-long-long -pthread -fomit-frame-pointer -ffunction-sections -fdata-sections  -msse -msse2 -msse3 -fvisibility=hidden -fvisibility-inlines-hidden -Wno-deprecated  -O3 -DNDEBUG -fPIE   -Wno-missing-prototypes -o CMakeFiles/cmTryCompileExec3118672430.dir/src.cxx.o -c /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/src.cxx
+cc1plus: warning: command line option ‘-Wno-missing-prototypes’ is valid for C/ObjC but not for C++ [enabled by default]
+/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/src.cxx:1:0: warning: ignoring #pragma   [-Wunknown-pragmas]
+ #pragma
+ ^
+Linking CXX executable cmTryCompileExec3118672430
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec3118672430.dir/link.txt --verbose=1
+/usr/bin/c++      -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Wmissing-declarations -Wundef -Winit-self -Wpointer-arith -Wshadow -Wsign-promo -Wuninitialized -Winit-self -Wno-narrowing -Wno-delete-non-virtual-dtor -Wno-comment -fdiagnostics-show-option -Wno-long-long -pthread -fomit-frame-pointer -ffunction-sections -fdata-sections  -msse -msse2 -msse3 -fvisibility=hidden -fvisibility-inlines-hidden -Wno-deprecated  -O3 -DNDEBUG     -Wl,--gc-sections CMakeFiles/cmTryCompileExec3118672430.dir/src.cxx.o  -o cmTryCompileExec3118672430 -rdynamic 
+make[1]: Leaving directory `/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp'
+
+===== END =====
+
+Build output check failed:
+    Regex: 'unrecognized .*option'
+    Output line: 'cc1plus: warning: unrecognized command line option "-Wno-tautological-undefined-compare" [enabled by default]'
+Compilation failed:
+    source file: '/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/src.cxx'
+    check option: ' -Wno-tautological-undefined-compare'
+===== BUILD LOG =====
+Change Dir: /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/make "cmTryCompileExec20233326/fast"
+/usr/bin/make -f CMakeFiles/cmTryCompileExec20233326.dir/build.make CMakeFiles/cmTryCompileExec20233326.dir/build
+make[1]: Entering directory `/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec20233326.dir/src.cxx.o
+/usr/bin/c++    -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security   -Winit-self -Wpointer-arith   -Wuninitialized -Winit-self -Wno-narrowing -Wno-delete-non-virtual-dtor -Wno-comment -fdiagnostics-show-option -Wno-long-long -pthread -fomit-frame-pointer -ffunction-sections -fdata-sections  -msse -msse2 -msse3 -fvisibility=hidden -fvisibility-inlines-hidden -Wno-deprecated -Wno-missing-declarations -Wno-shadow -Wno-unused-parameter -Wno-unused-local-typedefs -Wno-sign-compare -Wno-sign-promo -Wno-undef  -O3 -DNDEBUG -fPIE   -Wno-tautological-undefined-compare -o CMakeFiles/cmTryCompileExec20233326.dir/src.cxx.o -c /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/src.cxx
+/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/src.cxx:1:0: warning: ignoring #pragma   [-Wunknown-pragmas]
+ #pragma
+ ^
+cc1plus: warning: unrecognized command line option "-Wno-tautological-undefined-compare" [enabled by default]
+Linking CXX executable cmTryCompileExec20233326
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec20233326.dir/link.txt --verbose=1
+/usr/bin/c++      -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security   -Winit-self -Wpointer-arith   -Wuninitialized -Winit-self -Wno-narrowing -Wno-delete-non-virtual-dtor -Wno-comment -fdiagnostics-show-option -Wno-long-long -pthread -fomit-frame-pointer -ffunction-sections -fdata-sections  -msse -msse2 -msse3 -fvisibility=hidden -fvisibility-inlines-hidden -Wno-deprecated -Wno-missing-declarations -Wno-shadow -Wno-unused-parameter -Wno-unused-local-typedefs -Wno-sign-compare -Wno-sign-promo -Wno-undef  -O3 -DNDEBUG     -Wl,--gc-sections CMakeFiles/cmTryCompileExec20233326.dir/src.cxx.o  -o cmTryCompileExec20233326 -rdynamic 
+make[1]: Leaving directory `/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp'
+
+===== END =====
+
+Build output check failed:
+    Regex: 'unrecognized .*option'
+    Output line: 'cc1plus: warning: unrecognized command line option "-Wno-unused-const-variable" [enabled by default]'
+Compilation failed:
+    source file: '/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/src.cxx'
+    check option: ' -Wno-unused-const-variable'
+===== BUILD LOG =====
+Change Dir: /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/make "cmTryCompileExec4239519364/fast"
+/usr/bin/make -f CMakeFiles/cmTryCompileExec4239519364.dir/build.make CMakeFiles/cmTryCompileExec4239519364.dir/build
+make[1]: Entering directory `/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec4239519364.dir/src.cxx.o
+/usr/bin/c++    -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security   -Winit-self -Wpointer-arith   -Wuninitialized -Winit-self -Wno-narrowing -Wno-delete-non-virtual-dtor -Wno-comment -fdiagnostics-show-option -Wno-long-long -pthread -fomit-frame-pointer -ffunction-sections -fdata-sections  -msse -msse2 -msse3 -fvisibility=hidden -fvisibility-inlines-hidden -Wno-deprecated -Wno-missing-declarations -Wno-shadow -Wno-unused-parameter -Wno-unused-local-typedefs -Wno-sign-compare -Wno-sign-promo -Wno-undef -Wno-ignored-qualifiers -Wno-extra -Wno-unused-function  -O3 -DNDEBUG -fPIE   -Wno-unused-const-variable -o CMakeFiles/cmTryCompileExec4239519364.dir/src.cxx.o -c /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/src.cxx
+/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/src.cxx:1:0: warning: ignoring #pragma   [-Wunknown-pragmas]
+ #pragma
+ ^
+cc1plus: warning: unrecognized command line option "-Wno-unused-const-variable" [enabled by default]
+Linking CXX executable cmTryCompileExec4239519364
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec4239519364.dir/link.txt --verbose=1
+/usr/bin/c++      -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security   -Winit-self -Wpointer-arith   -Wuninitialized -Winit-self -Wno-narrowing -Wno-delete-non-virtual-dtor -Wno-comment -fdiagnostics-show-option -Wno-long-long -pthread -fomit-frame-pointer -ffunction-sections -fdata-sections  -msse -msse2 -msse3 -fvisibility=hidden -fvisibility-inlines-hidden -Wno-deprecated -Wno-missing-declarations -Wno-shadow -Wno-unused-parameter -Wno-unused-local-typedefs -Wno-sign-compare -Wno-sign-promo -Wno-undef -Wno-ignored-qualifiers -Wno-extra -Wno-unused-function  -O3 -DNDEBUG     -Wl,--gc-sections CMakeFiles/cmTryCompileExec4239519364.dir/src.cxx.o  -o cmTryCompileExec4239519364 -rdynamic 
+make[1]: Leaving directory `/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp'
+
+===== END =====
+
+Build output check failed:
+    Regex: 'unrecognized .*option'
+    Output line: 'cc1plus: warning: unrecognized command line option "-Wno-shorten-64-to-32" [enabled by default]'
+Compilation failed:
+    source file: '/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/src.cxx'
+    check option: ' -Wno-shorten-64-to-32'
+===== BUILD LOG =====
+Change Dir: /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/make "cmTryCompileExec3655932938/fast"
+/usr/bin/make -f CMakeFiles/cmTryCompileExec3655932938.dir/build.make CMakeFiles/cmTryCompileExec3655932938.dir/build
+make[1]: Entering directory `/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec3655932938.dir/src.cxx.o
+/usr/bin/c++    -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security   -Winit-self -Wpointer-arith   -Wuninitialized -Winit-self -Wno-narrowing -Wno-delete-non-virtual-dtor -Wno-comment -fdiagnostics-show-option -Wno-long-long -pthread -fomit-frame-pointer -ffunction-sections -fdata-sections  -msse -msse2 -msse3 -fvisibility=hidden -fvisibility-inlines-hidden -Wno-deprecated -Wno-missing-declarations -Wno-shadow -Wno-unused-parameter -Wno-unused-local-typedefs -Wno-sign-compare -Wno-sign-promo -Wno-undef -Wno-ignored-qualifiers -Wno-extra -Wno-unused-function  -O3 -DNDEBUG -fPIE   -Wno-shorten-64-to-32 -o CMakeFiles/cmTryCompileExec3655932938.dir/src.cxx.o -c /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/src.cxx
+/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/src.cxx:1:0: warning: ignoring #pragma   [-Wunknown-pragmas]
+ #pragma
+ ^
+cc1plus: warning: unrecognized command line option "-Wno-shorten-64-to-32" [enabled by default]
+Linking CXX executable cmTryCompileExec3655932938
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec3655932938.dir/link.txt --verbose=1
+/usr/bin/c++      -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security   -Winit-self -Wpointer-arith   -Wuninitialized -Winit-self -Wno-narrowing -Wno-delete-non-virtual-dtor -Wno-comment -fdiagnostics-show-option -Wno-long-long -pthread -fomit-frame-pointer -ffunction-sections -fdata-sections  -msse -msse2 -msse3 -fvisibility=hidden -fvisibility-inlines-hidden -Wno-deprecated -Wno-missing-declarations -Wno-shadow -Wno-unused-parameter -Wno-unused-local-typedefs -Wno-sign-compare -Wno-sign-promo -Wno-undef -Wno-ignored-qualifiers -Wno-extra -Wno-unused-function  -O3 -DNDEBUG     -Wl,--gc-sections CMakeFiles/cmTryCompileExec3655932938.dir/src.cxx.o  -o cmTryCompileExec3655932938 -rdynamic 
+make[1]: Leaving directory `/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp'
+
+===== END =====
+
+Build output check failed:
+    Regex: 'unrecognized .*option'
+    Output line: 'cc1plus: warning: unrecognized command line option "-Wno-enum-compare-switch" [enabled by default]'
+Compilation failed:
+    source file: '/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/src.cxx'
+    check option: ' -Wno-enum-compare-switch'
+===== BUILD LOG =====
+Change Dir: /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/make "cmTryCompileExec592639705/fast"
+/usr/bin/make -f CMakeFiles/cmTryCompileExec592639705.dir/build.make CMakeFiles/cmTryCompileExec592639705.dir/build
+make[1]: Entering directory `/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec592639705.dir/src.cxx.o
+/usr/bin/c++    -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security   -Winit-self -Wpointer-arith   -Wuninitialized -Winit-self -Wno-narrowing -Wno-delete-non-virtual-dtor -Wno-comment -fdiagnostics-show-option -Wno-long-long -pthread -fomit-frame-pointer -ffunction-sections -fdata-sections  -msse -msse2 -msse3 -fvisibility=hidden -fvisibility-inlines-hidden -Wno-deprecated -Wno-missing-declarations -Wno-shadow -Wno-unused-parameter -Wno-unused-local-typedefs -Wno-sign-compare -Wno-sign-promo -Wno-undef -Wno-ignored-qualifiers -Wno-extra -Wno-unused-function -Wno-invalid-offsetof  -O3 -DNDEBUG -fPIE   -Wno-enum-compare-switch -o CMakeFiles/cmTryCompileExec592639705.dir/src.cxx.o -c /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/src.cxx
+/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/src.cxx:1:0: warning: ignoring #pragma   [-Wunknown-pragmas]
+ #pragma
+ ^
+cc1plus: warning: unrecognized command line option "-Wno-enum-compare-switch" [enabled by default]
+Linking CXX executable cmTryCompileExec592639705
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec592639705.dir/link.txt --verbose=1
+/usr/bin/c++      -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security   -Winit-self -Wpointer-arith   -Wuninitialized -Winit-self -Wno-narrowing -Wno-delete-non-virtual-dtor -Wno-comment -fdiagnostics-show-option -Wno-long-long -pthread -fomit-frame-pointer -ffunction-sections -fdata-sections  -msse -msse2 -msse3 -fvisibility=hidden -fvisibility-inlines-hidden -Wno-deprecated -Wno-missing-declarations -Wno-shadow -Wno-unused-parameter -Wno-unused-local-typedefs -Wno-sign-compare -Wno-sign-promo -Wno-undef -Wno-ignored-qualifiers -Wno-extra -Wno-unused-function -Wno-invalid-offsetof  -O3 -DNDEBUG     -Wl,--gc-sections CMakeFiles/cmTryCompileExec592639705.dir/src.cxx.o  -o cmTryCompileExec592639705 -rdynamic 
+make[1]: Leaving directory `/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp'
+
+===== END =====
+
+Build output check failed:
+    Regex: 'unrecognized .*option'
+    Output line: 'cc1plus: warning: unrecognized command line option "-Wno-inconsistent-missing-override" [enabled by default]'
+Compilation failed:
+    source file: '/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/src.cxx'
+    check option: ' -Wno-inconsistent-missing-override'
+===== BUILD LOG =====
+Change Dir: /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/make "cmTryCompileExec758726077/fast"
+/usr/bin/make -f CMakeFiles/cmTryCompileExec758726077.dir/build.make CMakeFiles/cmTryCompileExec758726077.dir/build
+make[1]: Entering directory `/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec758726077.dir/src.cxx.o
+/usr/bin/c++    -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Wmissing-declarations -Wundef -Winit-self -Wpointer-arith -Wshadow -Wsign-promo -Wuninitialized -Winit-self -Wno-narrowing -Wno-delete-non-virtual-dtor -Wno-comment -fdiagnostics-show-option -Wno-long-long -pthread -fomit-frame-pointer -ffunction-sections -fdata-sections  -msse -msse2 -msse3 -fvisibility=hidden -fvisibility-inlines-hidden  -Wno-deprecated  -O3 -DNDEBUG -fPIE   -Wno-inconsistent-missing-override -o CMakeFiles/cmTryCompileExec758726077.dir/src.cxx.o -c /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/src.cxx
+/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/src.cxx:1:0: warning: ignoring #pragma   [-Wunknown-pragmas]
+ #pragma
+ ^
+cc1plus: warning: unrecognized command line option "-Wno-inconsistent-missing-override" [enabled by default]
+Linking CXX executable cmTryCompileExec758726077
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec758726077.dir/link.txt --verbose=1
+/usr/bin/c++      -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Wmissing-declarations -Wundef -Winit-self -Wpointer-arith -Wshadow -Wsign-promo -Wuninitialized -Winit-self -Wno-narrowing -Wno-delete-non-virtual-dtor -Wno-comment -fdiagnostics-show-option -Wno-long-long -pthread -fomit-frame-pointer -ffunction-sections -fdata-sections  -msse -msse2 -msse3 -fvisibility=hidden -fvisibility-inlines-hidden  -Wno-deprecated  -O3 -DNDEBUG     -Wl,--gc-sections CMakeFiles/cmTryCompileExec758726077.dir/src.cxx.o  -o cmTryCompileExec758726077 -rdynamic 
+make[1]: Leaving directory `/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp'
+
+===== END =====
+
+Build output check failed:
+    Regex: 'unrecognized .*option'
+    Output line: 'cc1plus: warning: unrecognized command line option "-Wno-unused-private-field" [enabled by default]'
+Compilation failed:
+    source file: '/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/src.cxx'
+    check option: ' -Wno-unused-private-field'
+===== BUILD LOG =====
+Change Dir: /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/make "cmTryCompileExec2351577239/fast"
+/usr/bin/make -f CMakeFiles/cmTryCompileExec2351577239.dir/build.make CMakeFiles/cmTryCompileExec2351577239.dir/build
+make[1]: Entering directory `/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec2351577239.dir/src.cxx.o
+/usr/bin/c++    -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Wmissing-declarations -Wundef -Winit-self -Wpointer-arith -Wshadow -Wsign-promo -Wuninitialized -Winit-self -Wno-narrowing -Wno-delete-non-virtual-dtor -Wno-comment -fdiagnostics-show-option -Wno-long-long -pthread -fomit-frame-pointer -ffunction-sections -fdata-sections  -msse -msse2 -msse3 -fvisibility=hidden -fvisibility-inlines-hidden -Wno-unused-function -Wno-overloaded-virtual  -O3 -DNDEBUG -fPIE   -Wno-unused-private-field -o CMakeFiles/cmTryCompileExec2351577239.dir/src.cxx.o -c /go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/src.cxx
+/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp/src.cxx:1:0: warning: ignoring #pragma   [-Wunknown-pragmas]
+ #pragma
+ ^
+cc1plus: warning: unrecognized command line option "-Wno-unused-private-field" [enabled by default]
+Linking CXX executable cmTryCompileExec2351577239
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec2351577239.dir/link.txt --verbose=1
+/usr/bin/c++      -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Wmissing-declarations -Wundef -Winit-self -Wpointer-arith -Wshadow -Wsign-promo -Wuninitialized -Winit-self -Wno-narrowing -Wno-delete-non-virtual-dtor -Wno-comment -fdiagnostics-show-option -Wno-long-long -pthread -fomit-frame-pointer -ffunction-sections -fdata-sections  -msse -msse2 -msse3 -fvisibility=hidden -fvisibility-inlines-hidden -Wno-unused-function -Wno-overloaded-virtual  -O3 -DNDEBUG     -Wl,--gc-sections CMakeFiles/cmTryCompileExec2351577239.dir/src.cxx.o  -o cmTryCompileExec2351577239 -rdynamic 
+make[1]: Leaving directory `/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/build/CMakeFiles/CMakeTmp'
+
+===== END =====
+

@@ -1,0 +1,21 @@
+# Target labels
+ Main
+ opencv_objdetect
+ PerfTest
+# Source files and their labels
+/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/modules/objdetect/perf/opencl/perf_cascades.cpp
+ Main
+ opencv_objdetect
+ PerfTest
+/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/modules/objdetect/perf/opencl/perf_hogdetect.cpp
+ Main
+ opencv_objdetect
+ PerfTest
+/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/modules/objdetect/perf/perf_main.cpp
+ Main
+ opencv_objdetect
+ PerfTest
+/go/src/github.com/GOCODE/camera/rpi/opencv/OpenCV/modules/objdetect/perf/perf_precomp.hpp
+ Main
+ opencv_objdetect
+ PerfTest

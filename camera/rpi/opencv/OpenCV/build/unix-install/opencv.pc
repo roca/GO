@@ -1,0 +1,14 @@
+# Package Information for pkg-config
+
+prefix=/usr/local
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib/x86_64-linux-gnu
+includedir_old=${prefix}/include/opencv
+includedir_new=${prefix}/include
+
+Name: OpenCV
+Description: Open Source Computer Vision Library
+Version: 3.4.1
+Libs: -L${exec_prefix}/lib/x86_64-linux-gnu -lopencv_dnn -lopencv_ml -lopencv_objdetect -lopencv_shape -lopencv_stitching -lopencv_superres -lopencv_videostab -lopencv_calib3d -lopencv_features2d -lopencv_highgui -lopencv_videoio -lopencv_imgcodecs -lopencv_video -lopencv_photo -lopencv_imgproc -lopencv_flann -lopencv_viz -lopencv_core
+Libs.private: -ldl -lm -lpthread -lrt -L/usr/lib/x86_64-linux-gnu -lGLU -lGL -lSM -lICE -lX11 -lXext -L/usr/lib -ltbb
+Cflags: -I${includedir_old} -I${includedir_new}
