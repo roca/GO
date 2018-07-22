@@ -1,0 +1,12 @@
+version: "2"
+ 
+services:
+    container_demo:
+      container_name: container_demo
+      build: 
+        context: .
+        dockerfile: Dockerfile
+      volumes:
+        - .:/go/src/container_demo
+      working_dir: /go/src/container_demo
+      privileged: true
