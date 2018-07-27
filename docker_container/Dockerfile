@@ -9,6 +9,9 @@ RUN mkdir -p /go/src/container_demo
 
 WORKDIR /go/src/container_demo
 
+RUN mkdir -p /go/src/container_demo/ROOT_FOR_CONTAINER/proc
+RUN ln -s /bin /go/src/container_demo/ROOT_FOR_CONTAINER/bin
+
 COPY ./main.go /go/src/container_demo
 
 RUN go get github.com/codegangsta/gin

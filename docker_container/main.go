@@ -39,6 +39,9 @@ func child() {
 	fmt.Printf("Child Running %v as %d\n", os.Args[2:], os.Getpid())
 
 	syscall.Sethostname([]byte("container"))
+	syscall.Chroot("ROOT_FOR_CONTAINER")
+	syscall.Chdir("/")
+	syscall.Mount("proc", "proc", "proc", 0, "")
 
 	cmd := exec.Command(os.Args[2], os.Args[3:]...)
 	cmd.Stdin = os.Stdin
@@ -46,6 +49,8 @@ func child() {
 	cmd.Stderr = os.Stderr
 
 	must(cmd.Run())
+
+	syscall.Unmount("/proc", 0)
 
 }
 
