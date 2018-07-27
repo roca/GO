@@ -1,3 +1,6 @@
+apt-get install -y kubelet=1.10.0-00 kubeadm=1.10.0-00 kubectl=1.10.0-00 --allow-downgrades
+
+
 kubectl patch deployment camera -p "{\"spec\":{\"template\":{\"metadata\":{\"labels\":{\"date\":\"`date +'%s'`\"}}}}}"
 
 Rebuild master:
@@ -22,6 +25,8 @@ As root:
 
         on master: swapoff -a && kubeadm init --pod-network-cidr 10.244.0.0/16 --apiserver-advertise-address=192.168.1.100
 
+        on each node: kubeadm join <master-tokens-info> --ignore-preflight-errors=cr
+
 As non-root
 
    mkdir -p $HOME/.kube
@@ -39,5 +44,21 @@ As non-root
     sudo weavedinstaller
 
 
+
+
+    KUARD page 57
+
+ kubectl run alpaca-prod         --image=gcr.io/kuar-demo/kuard-arm:1 --replicas=2 --labels="ver=1,app=alpaca,env=prod"
+ kubectl run alpaca-test        --image=gcr.io/kuar-demo/kuard-arm:2 --replicas=1 --labels="ver=2,app=alpaca,env=test"
+ kubectl run bandicoot-prod     --image=gcr.io/kuar-demo/kuard-arm:2 --replicas=2 --labels="ver=2,app=bandicoot,env=prod"
+ kubectl run bandicoot-staging  --image=gcr.io/kuar-demo/kuard-arm:2 --replicas=1 --labels="ver=2,app=bandicoot,env=staging"
+
+
+
+Page 67
+ kubectl run alpaca-prod         --image=gcr.io/kuar-demo/kuard-arm:1 --replicas=3 --port=8080 --labels="ver=1,app=alpaca,env=prod"
+ kubectl expose deployment alpaca-prod
+ kubectl run bandicoot-prod     --image=gcr.io/kuar-demo/kuard-arm:2 --replicas=2 --port=8080 --labels="ver=2,app=bandicoot,env=prod"
+ kubectl expose deployment bandicoot-prod
    
 

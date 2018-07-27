@@ -1,0 +1,19 @@
+apiVersion: extensions/v1beta1
+kind: ReplicaSet
+metadata: 
+  name: kuard
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: kuard
+        version: "2"
+    spec:
+      containers:
+        - image: gcr.io/kuar-demo/kuard-arm:1
+          name: kuard
+          ports:
+            - containerPort: 8080
+              name: http
+              protocol: TCP
