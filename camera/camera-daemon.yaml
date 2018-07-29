@@ -1,0 +1,20 @@
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  labels:
+    run: camera
+  name: camera
+  namespace: default
+spec:
+  template:
+    metadata:
+      labels:
+        run: camera
+    spec:
+      containers:
+      - image: rcampbell/camera:latest
+        imagePullPolicy: Always
+        name: camera
+        ports:
+        - containerPort: 3000
+          protocol: TCP

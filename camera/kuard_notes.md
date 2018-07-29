@@ -1,0 +1,21 @@
+
+    KUARD page 57
+
+ kubectl run alpaca-prod         --image=gcr.io/kuar-demo/kuard-arm:1 --replicas=2 --labels="ver=1,app=alpaca,env=prod"
+ kubectl run alpaca-test        --image=gcr.io/kuar-demo/kuard-arm:2 --replicas=1 --labels="ver=2,app=alpaca,env=test"
+ kubectl run bandicoot-prod     --image=gcr.io/kuar-demo/kuard-arm:2 --replicas=2 --labels="ver=2,app=bandicoot,env=prod"
+ kubectl run bandicoot-staging  --image=gcr.io/kuar-demo/kuard-arm:2 --replicas=1 --labels="ver=2,app=bandicoot,env=staging"
+
+
+
+Page 67
+ kubectl run alpaca-prod         --image=gcr.io/kuar-demo/kuard-arm:1 --replicas=3 --port=8080 --labels="ver=1,app=alpaca,env=prod"
+ kubectl expose deployment alpaca-prod
+ kubectl run bandicoot-prod     --image=gcr.io/kuar-demo/kuard-arm:2 --replicas=2 --port=8080 --labels="ver=2,app=bandicoot,env=prod"
+ kubectl expose deployment bandicoot-prod
+
+
+ Page 96
+
+ kubectl run -i oneshot --image=gcr.io/kuar-demo/kuard-arm:1 --restart=OnFailure -- --keygen-enable --keygen-enable --keygen-exit-on-complete --keygen-num-to-gen 10
+   
