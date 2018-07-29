@@ -19,3 +19,14 @@ Page 67
 
  kubectl run -i oneshot --image=gcr.io/kuar-demo/kuard-arm:1 --restart=OnFailure -- --keygen-enable --keygen-enable --keygen-exit-on-complete --keygen-num-to-gen 10
    
+Page 104
+
+    curl -X PUT localhost:8080/memq/server/queues/keygen
+
+    for i in work-item-{0..99}; do
+    curl -X POST localhost:8080/memq/server/queues/keygen/enqueue -d "$i"
+    done
+
+Page 108
+
+kubectl create configmap my-config --from-file=my-config.txt --from-literal=extra-parm=extra-value --from-literal=another-parm=another-value
