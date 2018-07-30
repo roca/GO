@@ -30,3 +30,12 @@ Page 104
 Page 108
 
 kubectl create configmap my-config --from-file=my-config.txt --from-literal=extra-parm=extra-value --from-literal=another-parm=another-value
+
+
+Page 112
+
+curl -O https://storage.googleapis.com/kuar-demo/kuard.crt
+curl -O https://storage.googleapis.com/kuar-demo/kuard.key
+
+kubectl create secret generic kuard-tls --from-file=kuard.crt --from-file=kuard.key
+kubectl create secret docker-registry my-image-pull-secret --docker-username=<username> --docker-password=<password> --docker-email=<email-address>
