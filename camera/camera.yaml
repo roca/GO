@@ -44,3 +44,5 @@ spec:
                   values:
                   - camera
               topologyKey: device
+      imagePullSecrets:
+        - name: my-image-pull-secret
