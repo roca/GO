@@ -8,6 +8,3 @@ spec:
       storage: 1Gi
   accessModes:
     - ReadWriteOnce
-  selector:
-    matchLabels:
-      volume: my-volume
