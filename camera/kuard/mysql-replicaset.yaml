@@ -14,9 +14,13 @@ spec:
       labels:
         app: mysql
     spec:
+      hostAliases:
+      - ip: "10.244.2.1"
+        hostnames:
+        - "foo.local"
       containers:
-      - name: database
-        image: mysql
+      - name: mysql
+        image: hypriot/rpi-mysql
         resources:
           requests:
             cpu: 1
