@@ -1,4 +1,4 @@
-apt-get install -y kubelet=1.10.0-00 kubeadm=1.10.0-00 kubectl=1.10.0-00 --allow-downgrades
+apt-get install -y kubelet=1.10.0-00 kubeadm=1.10.0-00 kubectl=1.10.0-00 --allow-downgrades --allow-change-held-packages
 
 
 kubectl patch deployment camera -p "{\"spec\":{\"template\":{\"metadata\":{\"labels\":{\"date\":\"`date +'%s'`\"}}}}}"
@@ -13,6 +13,12 @@ sudo nano /boot/cmdline
 and add this at the very end. Don't press enter.
 cgroup_enable=cpuset cgroup_enable=memory
 
+Note that KUBELET_NETWORK_ARGS is what tells kubelet which kind of network plugin to expect. If you remove it then kubelet expects no plugin, and therefore you get whatever the underlying container runtime gives you: typically Docker "bridge" networking.
+
+vi /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+
+
+
 As root:
 
         apt-get update && apt-get install -y apt-transport-https curl
@@ -20,10 +26,11 @@ As root:
         cat <<EOF >/etc/apt/sources.list.d/kubernetes.list
         deb http://apt.kubernetes.io/ kubernetes-xenial main
         EOF
-        apt-get update
-        apt-get install -y kubelet kubeadm kubectl
+        apt-get update && apt-get install -y kubelet=1.10.0-00 kubeadm=1.10.0-00 kubectl=1.10.0-00
 
         on master: swapoff -a && kubeadm init --pod-network-cidr 10.244.0.0/16 --apiserver-advertise-address=192.168.1.100
+
+        kubeadm token create --print-join-command 
 
         on each node: swapoff -a && kubeadm join <master-tokens-info> --ignore-preflight-errors=cri
 

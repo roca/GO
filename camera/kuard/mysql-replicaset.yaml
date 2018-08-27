@@ -1,0 +1,42 @@
+apiVersion: extensions/v1beta1
+kind: ReplicaSet
+metadata:
+  name: mysql
+  labels:
+    app: mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      hostAliases:
+      - ip: "10.244.2.1"
+        hostnames:
+        - "foo.local"
+      containers:
+      - name: mysql
+        image: hypriot/rpi-mysql
+        resources:
+          requests:
+            cpu: 1
+            memory: 256Mi
+        env:
+          - name: MYSQL_ROOT_PASSWORD
+            value: some-password-here
+        livenessProbe:
+          tcpSocket:
+            port: 3306
+        ports:
+        - containerPort: 3306
+        volumeMounts:
+          - name: database
+            mountPath: "/var/lib/mysql"
+      volumes:
+      - name: database
+        persistentVolumeClaim:
+          claimName: database
