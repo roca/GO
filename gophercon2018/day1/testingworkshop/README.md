@@ -9,3 +9,6 @@ https://agouti.org/
 http://onsi.github.io/ginkgo/
 
 http://onsi.github.io/gomega/
+
+
+https://blog.carlmjohnson.net/post/2016-11-27-how-to-use-go-generate/
