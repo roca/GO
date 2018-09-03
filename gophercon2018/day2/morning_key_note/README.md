@@ -9,3 +9,5 @@
     https://github.com/ajstarks/svgo
 4) Machine Learning on Go Code
     https://medium.com/justforfunc
+5) Go Concurrency Patterns
+    https://www.youtube.com/watch?v=f6kdp27TYZs
