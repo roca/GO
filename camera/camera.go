@@ -13,7 +13,7 @@ const resp = `<html>
 	</head>
     <body>
         <h1>Simple Web App</h1>
-        <p>Hello World : Added GOCV to {{.Hostname}} xxyzzzzzz</p>
+        <p>Hello World : Added GOCV to {{.Hostname}} xxyzzz</p>
     </body>
 </html>`
 
