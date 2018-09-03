@@ -10,10 +10,10 @@ import (
 const resp = `<html>
     <head>
         <title>Simple Web App</title>
-    </head>
+	</head>
     <body>
         <h1>Simple Web App</h1>
-        <p>Hello World : Added GOCV to {{.Hostname}}</p>
+        <p>Hello World : Added GOCV to {{.Hostname}} xxys</p>
     </body>
 </html>`
 
