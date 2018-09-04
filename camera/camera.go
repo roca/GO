@@ -13,9 +13,9 @@ const resp = `<html>
 	</head>
     <body>
         <h1>Simple Web App</h1>
-        <p>Hello World : Added GOCV to {{.Hostname}}xxxxxx</p>
+        <p>Hello World : Added GOCV to {{.Hostname}}</p>
     </body>
-</html>`
+</html>
 
 type Data struct {
 	Hostname string // has to be uppercase/exportable/public
