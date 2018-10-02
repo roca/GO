@@ -5,8 +5,8 @@ metadata:
 spec:
   volumes:
     - name: "kuard-data"
-      hostPath:
-        path: "/var/lib/kuard"
+      persistentVolumeClaim:
+        claimName: database        
   containers:
     - image: gcr.io/kuar-demo/kuard-arm:1
       name: kuard
