@@ -1,4 +1,4 @@
-package main
+package deck
 
 import (
 	"fmt"
@@ -13,7 +13,7 @@ import (
 // which is a slice of strings
 type deck []string
 
-func newDeck() deck {
+func NewDeck() deck {
 
 	cards := deck{}
 
@@ -28,7 +28,7 @@ func newDeck() deck {
 	return cards
 }
 
-func (d deck) print() {
+func (d deck) Print() {
 	for i, card := range d {
 		fmt.Println(i, card)
 	}
@@ -57,7 +57,7 @@ func newDeckFromFile(filename string) deck {
 	return deck(s)
 }
 
-func (d deck) shuffle() {
+func (d deck) Shuffle() {
 	source := rand.NewSource(time.Now().UnixNano())
 	r := rand.New(source)
 
