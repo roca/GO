@@ -42,11 +42,12 @@ func (d deck) toString() string {
 	return strings.Join([]string(d), ",")
 }
 
-func (d deck) saveToFile(filename string) error {
+func (d deck) SaveToFile(filename string) error {
 	return ioutil.WriteFile(filename, []byte(d.toString()), 0666)
 }
 
-func newDeckFromFile(filename string) deck {
+//NewDeckFromFile ...
+func NewDeckFromFile(filename string) deck {
 	bs, err := ioutil.ReadFile(filename)
 	if err != nil {
 		fmt.Println("Error", err)
