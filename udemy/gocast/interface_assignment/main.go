@@ -24,18 +24,18 @@ func (t triangle) getArea() float64 {
 	return 0.5 * t.base * t.height
 }
 func (t triangle) printArea() {
-	fmt.Printf("Area of this triagle shape is: %v\n", t.getArea())
+	fmt.Printf("Area of this triangle shape is: %v\n", t.getArea())
 }
 
 type shape interface {
 	printArea()
 }
 
-func printtAreaOfShape(s shape) {
+func printAreaOfShape(s shape) {
 	s.printArea()
 }
 
 func main() {
 	t := triangle{base: 5, height: 10}
-	printtAreaOfShape(t)
+	printAreaOfShape(t)
 }

@@ -9,23 +9,29 @@ func main() {
 
 	links := []string{
 		"google.com",
-		"facebok.com",
+		"facebook.com",
 		"stackoverflow.com",
 		"golang.org",
 		"amazon.com",
 	}
 
+	c := make(chan string)
+
 	for _, link := range links {
-		go checkLink(link)
+		go checkLink(link, c)
 	}
+
+	fmt.Println(<-c)
 
 }
 
-func checkLink(link string) {
+func checkLink(link string, c chan string) {
 	_, err := http.Get("http://" + link)
 	if err != nil {
 		fmt.Println(link, "might be down!")
+		c <- "Might be down I think"
 		return
 	}
 	fmt.Println(link, "is up!")
+	c <- "Yep its up"
 }
