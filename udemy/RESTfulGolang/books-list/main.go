@@ -65,9 +65,26 @@ func addBook(w http.ResponseWriter, r *http.Request) {
 }
 
 func updateBook(w http.ResponseWriter, r *http.Request) {
-	log.Println("Update book is called")
+	var newBook book
+	_ = json.NewDecoder(r.Body).Decode(&newBook)
+
+	for i, book := range books {
+		if book.ID == newBook.ID {
+			books[i] = newBook
+		}
+	}
+
+	json.NewEncoder(w).Encode(books)
 }
 
 func removeBook(w http.ResponseWriter, r *http.Request) {
-	log.Println("Remove book is called")
+	params := mux.Vars(r)
+	id, _ := strconv.Atoi(params["id"])
+
+	for i, book := range books {
+		if book.ID == id {
+			books = append(books[:i], books[i+1:]...)
+		}
+	}
+	json.NewEncoder(w).Encode(books)
 }
