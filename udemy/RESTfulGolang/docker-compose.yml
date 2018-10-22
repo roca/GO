@@ -11,3 +11,8 @@ services:
       - ./dbdata:/var/lib/postgresql/data
     ports:
       - '5432:5432'
+  swagger-editor:
+    image: swaggerapi/swagger-editor
+    restart: always
+    ports:
+      - '8080:8080'
