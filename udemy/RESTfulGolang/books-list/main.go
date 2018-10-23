@@ -4,7 +4,13 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
+
+	_ "database/sql"
+
+	"github.com/lib/pq"
+	"github.com/subosito/gotenv"
 
 	"github.com/gorilla/mux"
 )
@@ -18,24 +24,39 @@ type book struct {
 
 var books []book
 
+func logFatal(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func init() {
+	gotenv.Load()
+}
 func main() {
-	router := mux.NewRouter()
+	//Make sure you setup the ELEPHANTSQL_URL to be a uri, e.g. 'postgres://user:pass@host/db?options'
+	pgUrl, err := pq.ParseURL(os.Getenv("ELEPHANTSQL_URL"))
+	logFatal(err)
 
-	books = append(books,
-		book{ID: 1, Title: "Golang pointers", Author: "Mr. Golang", Year: "2010"},
-		book{ID: 2, Title: "Goroutines", Author: "Mr. Goroutine", Year: "2011"},
-		book{ID: 3, Title: "Golang routers", Author: "Mr. Router", Year: "2012"},
-		book{ID: 4, Title: "Golang concurrency", Author: "Mr. Currency", Year: "2013"},
-		book{ID: 5, Title: "Golang good parts", Author: "Mr. Good", Year: "2014"},
-	)
+	log.Println(pgUrl)
 
-	router.HandleFunc("/books", getBooks).Methods("GET")
-	router.HandleFunc("/books/{id}", getBook).Methods("GET")
-	router.HandleFunc("/books", addBook).Methods("POST")
-	router.HandleFunc("/books", updateBook).Methods("PUT")
-	router.HandleFunc("/books/{id}", removeBook).Methods("DELETE")
+	// router := mux.NewRouter()
 
-	log.Fatal(http.ListenAndServe(":8000", router))
+	// books = append(books,
+	// 	book{ID: 1, Title: "Golang pointers", Author: "Mr. Golang", Year: "2010"},
+	// 	book{ID: 2, Title: "Goroutines", Author: "Mr. Goroutine", Year: "2011"},
+	// 	book{ID: 3, Title: "Golang routers", Author: "Mr. Router", Year: "2012"},
+	// 	book{ID: 4, Title: "Golang concurrency", Author: "Mr. Currency", Year: "2013"},
+	// 	book{ID: 5, Title: "Golang good parts", Author: "Mr. Good", Year: "2014"},
+	// )
+
+	// router.HandleFunc("/books", getBooks).Methods("GET")
+	// router.HandleFunc("/books/{id}", getBook).Methods("GET")
+	// router.HandleFunc("/books", addBook).Methods("POST")
+	// router.HandleFunc("/books", updateBook).Methods("PUT")
+	// router.HandleFunc("/books/{id}", removeBook).Methods("DELETE")
+
+	// log.Fatal(http.ListenAndServe(":8000", router))
 
 }
 
@@ -50,6 +71,7 @@ func getBook(w http.ResponseWriter, r *http.Request) {
 	for _, book := range books {
 		if book.ID == id {
 			json.NewEncoder(w).Encode(&book)
+			break
 		}
 	}
 }
@@ -71,6 +93,7 @@ func updateBook(w http.ResponseWriter, r *http.Request) {
 	for i, book := range books {
 		if book.ID == newBook.ID {
 			books[i] = newBook
+			break
 		}
 	}
 
@@ -84,6 +107,7 @@ func removeBook(w http.ResponseWriter, r *http.Request) {
 	for i, book := range books {
 		if book.ID == id {
 			books = append(books[:i], books[i+1:]...)
+			break
 		}
 	}
 	json.NewEncoder(w).Encode(books)
