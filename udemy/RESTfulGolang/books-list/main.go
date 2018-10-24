@@ -7,7 +7,7 @@ import (
 	"os"
 	"strconv"
 
-	_ "database/sql"
+	"database/sql"
 
 	"github.com/lib/pq"
 	"github.com/subosito/gotenv"
@@ -23,6 +23,7 @@ type book struct {
 }
 
 var books []book
+var db *sql.DB
 
 func logFatal(err error) {
 	if err != nil {
@@ -38,9 +39,15 @@ func main() {
 	pgUrl, err := pq.ParseURL(os.Getenv("ELEPHANTSQL_URL"))
 	logFatal(err)
 
+	db, err = sql.Open("postgres", pgUrl)
+	logFatal(err)
+
+	err = db.Ping()
+	logFatal(err)
+
 	log.Println(pgUrl)
 
-	// router := mux.NewRouter()
+	router := mux.NewRouter()
 
 	// books = append(books,
 	// 	book{ID: 1, Title: "Golang pointers", Author: "Mr. Golang", Year: "2010"},
@@ -50,22 +57,25 @@ func main() {
 	// 	book{ID: 5, Title: "Golang good parts", Author: "Mr. Good", Year: "2014"},
 	// )
 
-	// router.HandleFunc("/books", getBooks).Methods("GET")
-	// router.HandleFunc("/books/{id}", getBook).Methods("GET")
-	// router.HandleFunc("/books", addBook).Methods("POST")
-	// router.HandleFunc("/books", updateBook).Methods("PUT")
-	// router.HandleFunc("/books/{id}", removeBook).Methods("DELETE")
+	router.HandleFunc("/books", getBooks).Methods("GET")
+	router.HandleFunc("/books/{id}", getBook).Methods("GET")
+	router.HandleFunc("/books", addBook).Methods("POST")
+	router.HandleFunc("/books", updateBook).Methods("PUT")
+	router.HandleFunc("/books/{id}", removeBook).Methods("DELETE")
 
-	// log.Fatal(http.ListenAndServe(":8000", router))
-	// sh := http.StripPrefix("/swagger-ui/", http.FileServer(http.Dir("./swagger-ui/")))
-	// router.PathPrefix("/swagger-ui/").Handler(sh)
+	log.Fatal(http.ListenAndServe(":8000", router))
+	sh := http.StripPrefix("/swagger-ui/", http.FileServer(http.Dir("./swagger-ui/")))
+	router.PathPrefix("/swagger-ui/").Handler(sh)
 
-	// log.Fatal(http.ListenAndServe(":8000", router))
+	log.Fatal(http.ListenAndServe(":8000", router))
 
 }
 
 func getBooks(w http.ResponseWriter, r *http.Request) {
-	json.NewEncoder(w).Encode(books)
+	var bookRecord book
+	bookRecords = []book{}
+
+	row
 }
 
 func getBook(w http.ResponseWriter, r *http.Request) {
