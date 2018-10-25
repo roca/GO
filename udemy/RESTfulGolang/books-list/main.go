@@ -110,8 +110,10 @@ func getBook(w http.ResponseWriter, r *http.Request) {
 	rows, err := db.Query("select * from books where id=$1", params["id"])
 	logFatal(err)
 
-	err = rows.Scan(&book.ID, &book.Title, &book.Author, &book.Year)
-	logFatal(err)
+	for rows.Next() {
+		err = rows.Scan(&book.ID, &book.Title, &book.Author, &book.Year)
+		logFatal(err)
+	}
 
 	json.NewEncoder(w).Encode(book)
 }
