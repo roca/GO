@@ -33,8 +33,7 @@ func logFatal(err error) {
 
 func init() {
 	gotenv.Load()
-}
-func main() {
+
 	//Make sure you setup the ELEPHANTSQL_URL to be a uri, e.g. 'postgres://user:pass@host/db?options'
 	pgUrl, err := pq.ParseURL(os.Getenv("ELEPHANTSQL_URL"))
 	logFatal(err)
@@ -47,15 +46,30 @@ func main() {
 
 	log.Println(pgUrl)
 
-	router := mux.NewRouter()
+	_, err = db.Exec("DROP TABLE books")
+	logFatal(err)
 
-	// books = append(books,
-	// 	book{ID: 1, Title: "Golang pointers", Author: "Mr. Golang", Year: "2010"},
-	// 	book{ID: 2, Title: "Goroutines", Author: "Mr. Goroutine", Year: "2011"},
-	// 	book{ID: 3, Title: "Golang routers", Author: "Mr. Router", Year: "2012"},
-	// 	book{ID: 4, Title: "Golang concurrency", Author: "Mr. Currency", Year: "2013"},
-	// 	book{ID: 5, Title: "Golang good parts", Author: "Mr. Good", Year: "2014"},
-	// )
+	createTableSQL := "CREATE TABLE books ( "
+	createTableSQL += "ID     integer NOT NULL,"
+	createTableSQL += "Title  character varying NOT NULL,"
+	createTableSQL += "Author character varying NOT NULL,"
+	createTableSQL += "Year   character varying NOT NULL"
+	createTableSQL += ")"
+
+	_, err = db.Exec(createTableSQL)
+	logFatal(err)
+
+	insertBooksSQL := " INSERT INTO books (id, title, author, year) VALUES ( 1, 'Golang pointers', 'Mr. Golang', '2010' ); "
+	insertBooksSQL += " INSERT INTO books (id, title, author, year) VALUES ( 2, 'Goroutines', 'Mr. Goroutine', '2011' ); "
+	insertBooksSQL += " INSERT INTO books (id, title, author, year) VALUES ( 3, 'Golang routers', 'Mr. Router', '2012' ); "
+	insertBooksSQL += " INSERT INTO books (id, title, author, year) VALUES ( 4, 'Golang concurrency', 'Mr. Currency', '2013' ); "
+	insertBooksSQL += " INSERT INTO books (id, title, author, year) VALUES ( 5, 'Golang good parts', 'Mr. Good', '2014' ); "
+	_, err = db.Exec(insertBooksSQL)
+	logFatal(err)
+}
+func main() {
+
+	router := mux.NewRouter()
 
 	router.HandleFunc("/books", getBooks).Methods("GET")
 	router.HandleFunc("/books/{id}", getBook).Methods("GET")
