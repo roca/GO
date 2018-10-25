@@ -15,14 +15,14 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type book struct {
+type Book struct {
 	ID     int    `json:"id"`
 	Title  string `json:"title"`
 	Author string `json:"author"`
 	Year   string `json:"year"`
 }
 
-var books []book
+var books []Book
 var db *sql.DB
 
 func logFatal(err error) {
@@ -72,36 +72,47 @@ func main() {
 }
 
 func getBooks(w http.ResponseWriter, r *http.Request) {
-	var bookRecord book
-	bookRecords = []book{}
+	var book Book
+	books = []Book{}
 
-	row
+	rows, err := db.Query("select * from books")
+	logFatal(err)
+
+	defer rows.Close()
+
+	for rows.Next() {
+		err := rows.Scan(&book.ID, &book.Title, &book.Author, &book.Year)
+		logFatal(err)
+
+		books = append(books, book)
+	}
+	json.NewEncoder(w).Encode(books)
 }
 
 func getBook(w http.ResponseWriter, r *http.Request) {
+	var book Book
 	params := mux.Vars(r)
-	id, _ := strconv.Atoi(params["id"])
 
-	for _, book := range books {
-		if book.ID == id {
-			json.NewEncoder(w).Encode(&book)
-			break
-		}
-	}
+	rows, err := db.Query("select * from books where id=$1", params["id"])
+	logFatal(err)
+
+	err = rows.Scan(&book.ID, &book.Title, &book.Author, &book.Year)
+	logFatal(err)
+
+	json.NewEncoder(w).Encode(book)
 }
 
 func addBook(w http.ResponseWriter, r *http.Request) {
-	var newBook book
+	var newBook Book
 	_ = json.NewDecoder(r.Body).Decode(&newBook)
 
 	books = append(books, newBook)
-
 	json.NewEncoder(w).Encode(books)
 
 }
 
 func updateBook(w http.ResponseWriter, r *http.Request) {
-	var newBook book
+	var newBook Book
 	_ = json.NewDecoder(r.Body).Decode(&newBook)
 
 	for i, book := range books {
