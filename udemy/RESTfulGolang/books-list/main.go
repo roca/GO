@@ -107,23 +107,24 @@ func getBook(w http.ResponseWriter, r *http.Request) {
 	var book Book
 	params := mux.Vars(r)
 
-	rows, err := db.Query("select * from books where id=$1", params["id"])
-	logFatal(err)
+	rows := db.QueryRow("select * from books where id=$1", params["id"])
 
-	for rows.Next() {
-		err = rows.Scan(&book.ID, &book.Title, &book.Author, &book.Year)
-		logFatal(err)
-	}
+	err := rows.Scan(&book.ID, &book.Title, &book.Author, &book.Year)
+	logFatal(err)
 
 	json.NewEncoder(w).Encode(book)
 }
 
 func addBook(w http.ResponseWriter, r *http.Request) {
 	var newBook Book
+	var newBookID int
 	_ = json.NewDecoder(r.Body).Decode(&newBook)
 
-	books = append(books, newBook)
-	json.NewEncoder(w).Encode(books)
+	err := db.QueryRow("insert into books (id, title, author, year) values($1, $2, $3, $4) RETURNING id;",
+		newBook.ID, newBook.Title, newBook.Author, newBook.Year).Scan(&newBookID)
+	logFatal(err)
+
+	getBooks(w, r)
 
 }
 
