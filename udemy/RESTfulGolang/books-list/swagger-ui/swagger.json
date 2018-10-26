@@ -4,5 +4,33 @@
     "version": "1.0"
   },
   "swagger": "2.0",
-  "paths": {}
+  "servers": [
+    {"url": "http://localhost:8000/"}
+  ],
+  "paths": {
+    "/books": {
+      "get": {
+        "summary": "Returns a list of users.",
+        "responses": {
+          "200": {
+            "description": "A JSON array of books"
+          }
+        }
+      }
+    },
+    "/books/{id}": {
+      "get": {
+        "summary": "Returns a book by id",
+        "description": "Parameter description in CommonMark or HTML.",
+        "parameters": [
+          {"name": "id", "in": "path","required": "true", "schema": {"type": "integer", "format": "int64", "minimum":1}}
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    }
+  }
 }

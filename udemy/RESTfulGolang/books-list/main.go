@@ -79,7 +79,6 @@ func main() {
 	router.HandleFunc("/books", updateBook).Methods("PUT")
 	router.HandleFunc("/books/{id}", removeBook).Methods("DELETE")
 
-	log.Fatal(http.ListenAndServe(":8000", router))
 	sh := http.StripPrefix("/swagger-ui/", http.FileServer(http.Dir("./swagger-ui/")))
 	router.PathPrefix("/swagger-ui/").Handler(sh)
 
