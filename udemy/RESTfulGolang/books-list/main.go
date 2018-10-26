@@ -47,10 +47,12 @@ func init() {
 	log.Println(pgUrl)
 
 	_, err = db.Exec("DROP TABLE books")
-	logFatal(err)
+	if err != nil {
+		log.Println(err)
+	}
 
 	createTableSQL := "CREATE TABLE books ( "
-	createTableSQL += "ID     integer NOT NULL,"
+	createTableSQL += "ID     SERIAL,"
 	createTableSQL += "Title  character varying NOT NULL,"
 	createTableSQL += "Author character varying NOT NULL,"
 	createTableSQL += "Year   character varying NOT NULL"
@@ -59,11 +61,11 @@ func init() {
 	_, err = db.Exec(createTableSQL)
 	logFatal(err)
 
-	insertBooksSQL := " INSERT INTO books (id, title, author, year) VALUES ( 1, 'Golang pointers', 'Mr. Golang', '2010' ); "
-	insertBooksSQL += " INSERT INTO books (id, title, author, year) VALUES ( 2, 'Goroutines', 'Mr. Goroutine', '2011' ); "
-	insertBooksSQL += " INSERT INTO books (id, title, author, year) VALUES ( 3, 'Golang routers', 'Mr. Router', '2012' ); "
-	insertBooksSQL += " INSERT INTO books (id, title, author, year) VALUES ( 4, 'Golang concurrency', 'Mr. Currency', '2013' ); "
-	insertBooksSQL += " INSERT INTO books (id, title, author, year) VALUES ( 5, 'Golang good parts', 'Mr. Good', '2014' ); "
+	insertBooksSQL := " INSERT INTO books (title, author, year) VALUES ('Golang pointers', 'Mr. Golang', '2010' ); "
+	insertBooksSQL += " INSERT INTO books (title, author, year) VALUES ('Goroutines', 'Mr. Goroutine', '2011' ); "
+	insertBooksSQL += " INSERT INTO books (title, author, year) VALUES ('Golang routers', 'Mr. Router', '2012' ); "
+	insertBooksSQL += " INSERT INTO books (title, author, year) VALUES ('Golang concurrency', 'Mr. Currency', '2013' ); "
+	insertBooksSQL += " INSERT INTO books (title, author, year) VALUES ('Golang good parts', 'Mr. Good', '2014' ); "
 	_, err = db.Exec(insertBooksSQL)
 	logFatal(err)
 }
@@ -120,9 +122,11 @@ func addBook(w http.ResponseWriter, r *http.Request) {
 	var newBookID int
 	_ = json.NewDecoder(r.Body).Decode(&newBook)
 
-	err := db.QueryRow("insert into books (id, title, author, year) values($1, $2, $3, $4) RETURNING id;",
-		newBook.ID, newBook.Title, newBook.Author, newBook.Year).Scan(&newBookID)
+	err := db.QueryRow("insert into books (title, author, year) values($1, $2, $3) RETURNING id;",
+		newBook.Title, newBook.Author, newBook.Year).Scan(&newBookID)
 	logFatal(err)
+
+	log.Println("New book added with ID of", newBookID)
 
 	getBooks(w, r)
 
