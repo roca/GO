@@ -1,12 +1,15 @@
 {
+  "swagger": "2.0",
   "info": {
     "title": "Book List'",
     "version": "1.0"
   },
-  "swagger": "2.0",
   "servers": [
     {"url": "http://localhost:8000/"}
   ],
+  "parameters": {
+    "id": {"name": "id", "in": "path","required": "true", "schema": {"type": "integer", "format": "int64", "minimum":1}}
+  },
   "paths": {
     "/books": {
       "get": {
@@ -21,9 +24,21 @@
     "/books/{id}": {
       "get": {
         "summary": "Returns a book by id",
-        "description": "Parameter description in CommonMark or HTML.",
+        "description": "Adds a book from the list of books",
         "parameters": [
-          {"name": "id", "in": "path","required": "true", "schema": {"type": "integer", "format": "int64", "minimum":1}}
+          {"$ref": "#/parameters/id"}
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Removes a book by id",
+        "description": "removes a book from the list of books",
+        "parameters": [
+          {"$ref": "#/parameters/id"}
         ],
         "responses": {
           "200": {

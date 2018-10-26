@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strconv"
 
 	"database/sql"
 
@@ -147,13 +146,9 @@ func updateBook(w http.ResponseWriter, r *http.Request) {
 
 func removeBook(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	id, _ := strconv.Atoi(params["id"])
 
-	for i, book := range books {
-		if book.ID == id {
-			books = append(books[:i], books[i+1:]...)
-			break
-		}
-	}
-	json.NewEncoder(w).Encode(books)
+	_, err := db.Exec("delete from books where id=$1", params["id"])
+	logFatal(err)
+
+	getBooks(w, r)
 }
