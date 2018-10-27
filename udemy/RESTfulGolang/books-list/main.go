@@ -134,14 +134,14 @@ func updateBook(w http.ResponseWriter, r *http.Request) {
 	var newBook Book
 	_ = json.NewDecoder(r.Body).Decode(&newBook)
 
-	for i, book := range books {
-		if book.ID == newBook.ID {
-			books[i] = newBook
-			break
-		}
-	}
+	result, err := db.Exec("update books set title=$1, author=$2, year=$3 where id=$4 RETURNING id", &newBook.Title, &newBook.Author, &newBook.Year, &newBook.ID)
 
-	json.NewEncoder(w).Encode(books)
+	rowsUpdated, err := result.RowsAffected()
+	logFatal(err)
+
+	log.Println("The number of rows affected is", rowsUpdated)
+
+	getBooks(w, r)
 }
 
 func removeBook(w http.ResponseWriter, r *http.Request) {
