@@ -1,27 +1,19 @@
 package main
 
 import (
-	"encoding/json"
+	"database/sql"
 	"log"
 	"net/http"
-	"os"
 
-	"database/sql"
+	"github.com/GOCODE/udemy/RESTfulGolang/books-list/controllers"
+	"github.com/GOCODE/udemy/RESTfulGolang/books-list/driver"
 
-	"github.com/lib/pq"
-	"github.com/subosito/gotenv"
+	"github.com/GOCODE/udemy/RESTfulGolang/books-list/models"
 
 	"github.com/gorilla/mux"
 )
 
-type Book struct {
-	ID     int    `json:"id"`
-	Title  string `json:"title"`
-	Author string `json:"author"`
-	Year   string `json:"year"`
-}
-
-var books []Book
+var books []models.Book
 var db *sql.DB
 
 func logFatal(err error) {
@@ -31,21 +23,10 @@ func logFatal(err error) {
 }
 
 func init() {
-	gotenv.Load()
 
-	//Make sure you setup the ELEPHANTSQL_URL to be a uri, e.g. 'postgres://user:pass@host/db?options'
-	pgUrl, err := pq.ParseURL(os.Getenv("ELEPHANTSQL_URL"))
-	logFatal(err)
+	db = driver.ConnectDB()
 
-	db, err = sql.Open("postgres", pgUrl)
-	logFatal(err)
-
-	err = db.Ping()
-	logFatal(err)
-
-	log.Println(pgUrl)
-
-	_, err = db.Exec("DROP TABLE books")
+	_, err := db.Exec("DROP TABLE books")
 	if err != nil {
 		log.Println(err)
 	}
@@ -71,89 +52,17 @@ func init() {
 func main() {
 
 	router := mux.NewRouter()
+	controller := controllers.Controller{}
 
-	router.HandleFunc("/books", getBooks).Methods("GET")
-	router.HandleFunc("/books/{id}", getBook).Methods("GET")
-	router.HandleFunc("/books", addBook).Methods("POST")
-	router.HandleFunc("/books", updateBook).Methods("PUT")
-	router.HandleFunc("/books/{id}", removeBook).Methods("DELETE")
+	router.HandleFunc("/books", controller.GetBooks(db)).Methods("GET")
+	router.HandleFunc("/books/{id}", controller.GetBook(db)).Methods("GET")
+	// router.HandleFunc("/books", addBook).Methods("POST")
+	// router.HandleFunc("/books", updateBook).Methods("PUT")
+	// router.HandleFunc("/books/{id}", removeBook).Methods("DELETE")
 
 	sh := http.StripPrefix("/swagger-ui/", http.FileServer(http.Dir("./swagger-ui/")))
 	router.PathPrefix("/swagger-ui/").Handler(sh)
 
 	log.Fatal(http.ListenAndServe(":8000", router))
 
-}
-
-func getBooks(w http.ResponseWriter, r *http.Request) {
-	var book Book
-	books = []Book{}
-
-	rows, err := db.Query("select * from books")
-	logFatal(err)
-
-	defer rows.Close()
-
-	for rows.Next() {
-		err := rows.Scan(&book.ID, &book.Title, &book.Author, &book.Year)
-		logFatal(err)
-
-		books = append(books, book)
-	}
-	json.NewEncoder(w).Encode(books)
-}
-
-func getBook(w http.ResponseWriter, r *http.Request) {
-	var book Book
-	params := mux.Vars(r)
-
-	rows := db.QueryRow("select * from books where id=$1", params["id"])
-
-	err := rows.Scan(&book.ID, &book.Title, &book.Author, &book.Year)
-	logFatal(err)
-
-	json.NewEncoder(w).Encode(book)
-}
-
-func addBook(w http.ResponseWriter, r *http.Request) {
-	var newBook Book
-	var newBookID int
-	_ = json.NewDecoder(r.Body).Decode(&newBook)
-
-	err := db.QueryRow("insert into books (title, author, year) values($1, $2, $3) RETURNING id;",
-		newBook.Title, newBook.Author, newBook.Year).Scan(&newBookID)
-	logFatal(err)
-
-	log.Println("New book added with ID of", newBookID)
-
-	getBooks(w, r)
-
-}
-
-func updateBook(w http.ResponseWriter, r *http.Request) {
-	var newBook Book
-	_ = json.NewDecoder(r.Body).Decode(&newBook)
-
-	result, err := db.Exec("update books set title=$1, author=$2, year=$3 where id=$4 RETURNING id", &newBook.Title, &newBook.Author, &newBook.Year, &newBook.ID)
-
-	rowsUpdated, err := result.RowsAffected()
-	logFatal(err)
-
-	log.Println("The number of rows affected is", rowsUpdated)
-
-	getBooks(w, r)
-}
-
-func removeBook(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-
-	result, err := db.Exec("delete from books where id=$1", params["id"])
-	logFatal(err)
-
-	rowsUpdated, err := result.RowsAffected()
-	logFatal(err)
-
-	log.Println("The number of rows deleted is", rowsUpdated)
-
-	getBooks(w, r)
 }
