@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/GOCODE/udemy/RESTfulGolang/books-list/models"
+	"github.com/GOCODE/udemy/RESTfulGolang/repository/book"
 	"github.com/gorilla/mux"
 )
 
@@ -27,17 +28,9 @@ func (c Controller) GetBooks(db *sql.DB) http.HandlerFunc {
 		var book models.Book
 		books = []models.Book{}
 
-		rows, err := db.Query("select * from books")
-		logFatal(err)
+		bookRepo := repository.BookRepository{}
+		books = bookRepo.GetBooks(db, book, books)
 
-		defer rows.Close()
-
-		for rows.Next() {
-			err := rows.Scan(&book.ID, &book.Title, &book.Author, &book.Year)
-			logFatal(err)
-
-			books = append(books, book)
-		}
 		json.NewEncoder(w).Encode(books)
 	}
 }
