@@ -7,7 +7,7 @@ import (
 	"net/http"
 
 	"github.com/GOCODE/udemy/RESTfulGolang/books-list/models"
-	"github.com/GOCODE/udemy/RESTfulGolang/repository/book"
+	"github.com/GOCODE/udemy/RESTfulGolang/books-list/repository/book"
 	"github.com/gorilla/mux"
 )
 
