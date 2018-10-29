@@ -57,9 +57,8 @@ func (c Controller) GetBook(db *sql.DB) http.HandlerFunc {
 	}
 }
 
-// Addook ...
+// AddBook ...
 func (c Controller) AddBook(db *sql.DB) http.HandlerFunc {
-
 	return func(w http.ResponseWriter, r *http.Request) {
 		var newBook models.Book
 		var newBookID int
@@ -72,34 +71,39 @@ func (c Controller) AddBook(db *sql.DB) http.HandlerFunc {
 		log.Println("New book added with ID of", newBookID)
 
 		c.GetBooks(db)(w, r)
-
 	}
 }
 
-// func updateBook(w http.ResponseWriter, r *http.Request) {
-// 	var newBook models.Book
-// 	_ = json.NewDecoder(r.Body).Decode(&newBook)
+// UpdateBook ...
+func (c Controller) UpdateBook(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var newBook models.Book
+		_ = json.NewDecoder(r.Body).Decode(&newBook)
 
-// 	result, err := db.Exec("update books set title=$1, author=$2, year=$3 where id=$4 RETURNING id", &newBook.Title, &newBook.Author, &newBook.Year, &newBook.ID)
+		result, err := db.Exec("update books set title=$1, author=$2, year=$3 where id=$4 RETURNING id", &newBook.Title, &newBook.Author, &newBook.Year, &newBook.ID)
 
-// 	rowsUpdated, err := result.RowsAffected()
-// 	logFatal(err)
+		rowsUpdated, err := result.RowsAffected()
+		logFatal(err)
 
-// 	log.Println("The number of rows affected is", rowsUpdated)
+		log.Println("The number of rows affected is", rowsUpdated)
 
-// 	getBooks(w, r)
-// }
+		c.GetBooks(db)(w, r)
+	}
+}
 
-// func removeBook(w http.ResponseWriter, r *http.Request) {
-// 	params := mux.Vars(r)
+// RemoveBook ...
+func (c Controller) RemoveBook(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		params := mux.Vars(r)
 
-// 	result, err := db.Exec("delete from books where id=$1", params["id"])
-// 	logFatal(err)
+		result, err := db.Exec("delete from books where id=$1", params["id"])
+		logFatal(err)
 
-// 	rowsUpdated, err := result.RowsAffected()
-// 	logFatal(err)
+		rowsUpdated, err := result.RowsAffected()
+		logFatal(err)
 
-// 	log.Println("The number of rows deleted is", rowsUpdated)
+		log.Println("The number of rows deleted is", rowsUpdated)
 
-// 	getBooks(w, r)
-// }
+		c.GetBooks(db)(w, r)
+	}
+}

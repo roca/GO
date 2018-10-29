@@ -57,8 +57,8 @@ func main() {
 	router.HandleFunc("/books", controller.GetBooks(db)).Methods("GET")
 	router.HandleFunc("/books/{id}", controller.GetBook(db)).Methods("GET")
 	router.HandleFunc("/books", controller.AddBook(db)).Methods("POST")
-	// router.HandleFunc("/books", updateBook).Methods("PUT")
-	// router.HandleFunc("/books/{id}", removeBook).Methods("DELETE")
+	router.HandleFunc("/books", controller.UpdateBook(db)).Methods("PUT")
+	router.HandleFunc("/books/{id}", controller.RemoveBook(db)).Methods("DELETE")
 
 	sh := http.StripPrefix("/swagger-ui/", http.FileServer(http.Dir("./swagger-ui/")))
 	router.PathPrefix("/swagger-ui/").Handler(sh)
