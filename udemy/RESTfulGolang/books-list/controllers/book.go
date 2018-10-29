@@ -57,20 +57,24 @@ func (c Controller) GetBook(db *sql.DB) http.HandlerFunc {
 	}
 }
 
-// func addBook(w http.ResponseWriter, r *http.Request) {
-// 	var newBook models.Book
-// 	var newBookID int
-// 	_ = json.NewDecoder(r.Body).Decode(&newBook)
+// Addook ...
+func (c Controller) AddBook(db *sql.DB) http.HandlerFunc {
 
-// 	err := db.QueryRow("insert into books (title, author, year) values($1, $2, $3) RETURNING id;",
-// 		newBook.Title, newBook.Author, newBook.Year).Scan(&newBookID)
-// 	logFatal(err)
+	return func(w http.ResponseWriter, r *http.Request) {
+		var newBook models.Book
+		var newBookID int
+		_ = json.NewDecoder(r.Body).Decode(&newBook)
 
-// 	log.Println("New book added with ID of", newBookID)
+		err := db.QueryRow("insert into books (title, author, year) values($1, $2, $3) RETURNING id;",
+			newBook.Title, newBook.Author, newBook.Year).Scan(&newBookID)
+		logFatal(err)
 
-// 	getBooks(w, r)
+		log.Println("New book added with ID of", newBookID)
 
-// }
+		c.GetBooks(db)(w, r)
+
+	}
+}
 
 // func updateBook(w http.ResponseWriter, r *http.Request) {
 // 	var newBook models.Book
