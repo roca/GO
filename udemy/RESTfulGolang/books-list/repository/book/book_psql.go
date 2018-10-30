@@ -76,7 +76,5 @@ func (b BookRepository) RemoveBook(db *sql.DB, id int) int64 {
 	rowsDeleted, err := result.RowsAffected()
 	logFatal(err)
 
-	log.Println("The number of rows deleted is", rowsDeleted)
-
 	return rowsDeleted
 }
