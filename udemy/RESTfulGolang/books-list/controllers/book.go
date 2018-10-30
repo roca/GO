@@ -57,12 +57,11 @@ func (c Controller) GetBook(db *sql.DB) http.HandlerFunc {
 func (c Controller) AddBook(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var newBook models.Book
-		var newBookID int
 		_ = json.NewDecoder(r.Body).Decode(&newBook)
 
-		err := db.QueryRow("insert into books (title, author, year) values($1, $2, $3) RETURNING id;",
-			newBook.Title, newBook.Author, newBook.Year).Scan(&newBookID)
-		logFatal(err)
+		bookRepo := repository.BookRepository{}
+
+		newBookID := bookRepo.AddBook(db, newBook)
 
 		log.Println("New book added with ID of", newBookID)
 
@@ -73,13 +72,12 @@ func (c Controller) AddBook(db *sql.DB) http.HandlerFunc {
 // UpdateBook ...
 func (c Controller) UpdateBook(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var newBook models.Book
-		_ = json.NewDecoder(r.Body).Decode(&newBook)
+		var existingBook models.Book
+		_ = json.NewDecoder(r.Body).Decode(&existingBook)
 
-		result, err := db.Exec("update books set title=$1, author=$2, year=$3 where id=$4 RETURNING id", &newBook.Title, &newBook.Author, &newBook.Year, &newBook.ID)
+		bookRepo := repository.BookRepository{}
 
-		rowsUpdated, err := result.RowsAffected()
-		logFatal(err)
+		rowsUpdated := bookRepo.UpdateBook(db, existingBook)
 
 		log.Println("The number of rows affected is", rowsUpdated)
 
@@ -92,13 +90,14 @@ func (c Controller) RemoveBook(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		params := mux.Vars(r)
 
-		result, err := db.Exec("delete from books where id=$1", params["id"])
+		id, err := strconv.Atoi(params["id"])
 		logFatal(err)
 
-		rowsUpdated, err := result.RowsAffected()
-		logFatal(err)
+		bookRepo := repository.BookRepository{}
 
-		log.Println("The number of rows deleted is", rowsUpdated)
+		rowsDeleted := bookRepo.RemoveBook(db, id)
+
+		log.Println("The number of rows deleted is", rowsDeleted)
 
 		c.GetBooks(db)(w, r)
 	}
