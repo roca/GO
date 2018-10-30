@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/GOCODE/udemy/RESTfulGolang/books-list/models"
 	"github.com/GOCODE/udemy/RESTfulGolang/books-list/repository/book"
@@ -41,10 +42,12 @@ func (c Controller) GetBook(db *sql.DB) http.HandlerFunc {
 		var book models.Book
 		params := mux.Vars(r)
 
-		rows := db.QueryRow("select * from books where id=$1", params["id"])
+		bookRepo := repository.BookRepository{}
 
-		err := rows.Scan(&book.ID, &book.Title, &book.Author, &book.Year)
+		id, err := strconv.Atoi(params["id"])
 		logFatal(err)
+
+		book = bookRepo.GetBook(db, book, id)
 
 		json.NewEncoder(w).Encode(book)
 	}
