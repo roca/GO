@@ -11,7 +11,7 @@ func main() {
 
 func concepts() {
 	k := 12
-	K := 12
+	K := 14
 	fmt.Println(k, K)
 
 }
