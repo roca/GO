@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	fmt.Println("HelloWorld")
+	fmt.Println("HelloWorldi 漢字")
 }
