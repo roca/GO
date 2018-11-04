@@ -14,4 +14,7 @@ func concepts() {
 	K := 14
 	fmt.Println(k, K)
 
+	fmt.Println(4 / 2 * 3)
+	fmt.Println(4 + 2*3)
+
 }

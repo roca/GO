@@ -1,0 +1,68 @@
+
+= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+In MySQL Workbench:
+CREATE SCHEMA `go_db1`;
+right-click / Set As Default Schema
+
+= = = = = = = = = = = = = = = = = = = = = = = = = = = = 
+CREATE TABLE person (
+	id SERIAL PRIMARY KEY,
+	name VARCHAR(255)
+);
+
+= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+INSERT INTO `go_db1`.`person` (`id`, `name`) VALUES ('1', 'Ava');
+INSERT INTO `go_db1`.`person` (`id`, `name`) VALUES ('2', 'John');
+INSERT INTO `go_db1`.`person` (`id`, `name`) VALUES ('3', 'June');
+INSERT INTO `go_db1`.`person` (`id`, `name`) VALUES ('4', 'Tim');
+
+DELETE FROM `go_db1`.`person` WHERE `id`='5';
+
+= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+CREATE TABLE house (
+	id SERIAL PRIMARY KEY,
+	price FLOAT,
+	min_down FLOAT,
+	prop_tax FLOAT,
+	m_cost FLOAT
+);
+
+= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+INSERT INTO `go_db1`.`house` (`id`, `price`, `min_down`, `prop_tax`, `m_cost`) VALUES ('1', '2000000', '400000', '9200', '1800');
+INSERT INTO `go_db1`.`house` (`id`, `price`, `min_down`, `prop_tax`, `m_cost`) VALUES ('2', '1750000', '350000', '8050', '1800');
+INSERT INTO `go_db1`.`house` (`id`, `price`, `min_down`, `prop_tax`, `m_cost`) VALUES ('3', '1500000', '300000', '6900', '1800');
+INSERT INTO `go_db1`.`house` (`id`, `price`, `min_down`, `prop_tax`, `m_cost`) VALUES ('4', '1250000', '250000', '5750', '1800');
+
+= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+CREATE TABLE customer (
+	id SERIAL PRIMARY KEY,
+	first_name VARCHAR(255),
+	last_name VARCHAR(255),
+	credit_score INT,
+	salary FLOAT,
+	downpayment FLOAT,
+	house_id INT
+);
+
+
+= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+INSERT INTO `go_db1`.`customer` (`id`, `first_name`, `last_name`, `credit_score`, `salary`, `downpayment`, `house_id`) VALUES ('1', 'Nick', 'White', '670', '253000', '320000', '3');
+INSERT INTO `go_db1`.`customer` (`id`, `first_name`, `last_name`, `credit_score`, `salary`, `downpayment`, `house_id`) VALUES ('2', 'Tom', 'Jones', '770', '264000', '800000', '1');
+INSERT INTO `go_db1`.`customer` (`id`, `first_name`, `last_name`, `credit_score`, `salary`, `downpayment`, `house_id`) VALUES ('3', 'Nicole', 'Freedman', '750', '203000', '850000', '2');
+INSERT INTO `go_db1`.`customer` (`id`, `first_name`, `last_name`, `credit_score`, `salary`, `downpayment`, `house_id`) VALUES ('4', 'June', 'Green', '700', '148000', '600000', '4');
+
+INSERT INTO `go_db1`.`customer` (`id`, `first_name`, `last_name`, `credit_score`, `salary`, `downpayment`, `house_id`) VALUES ('5', 'Tim', 'White', '645', '253000', '320000', '3');
+INSERT INTO `go_db1`.`customer` (`id`, `first_name`, `last_name`, `credit_score`, `salary`, `downpayment`, `house_id`) VALUES ('6', 'Jack', 'Jones', '770', '290000', '800000', '1');
+INSERT INTO `go_db1`.`customer` (`id`, `first_name`, `last_name`, `credit_score`, `salary`, `downpayment`, `house_id`) VALUES ('7', 'Nancy', 'Freedman', '750', '200000', '850000', '2');
+INSERT INTO `go_db1`.`customer` (`id`, `first_name`, `last_name`, `credit_score`, `salary`, `downpayment`, `house_id`) VALUES ('8', 'Erin', 'Green', '649', '148000', '600000', '4');
+INSERT INTO `go_db1`.`customer` (`id`, `first_name`, `last_name`, `credit_score`, `salary`, `downpayment`, `house_id`) VALUES ('9', 'Nick', 'Cooper', '670', '253000', '320000', '3');
+INSERT INTO `go_db1`.`customer` (`id`, `first_name`, `last_name`, `credit_score`, `salary`, `downpayment`, `house_id`) VALUES ('10', 'Tom', 'Cooper', '770', '274000', '700000', '1');
+
+
+= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+SELECT * from `go_db1`.`customer`;
+
+UPDATE `go_db1`.`customer` SET `last_name`='Green' WHERE `id`='3';
+DELETE FROM `go_db1`.`customer` WHERE `id`='3';
+
+DROP SCHEMA `go_db1` ;
