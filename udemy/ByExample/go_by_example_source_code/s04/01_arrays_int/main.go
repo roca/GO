@@ -8,6 +8,15 @@ import (
 )
 
 func main() {
+
+	var days interface{}
+	days = [...]string{"Mon", "Tue"}
+
+	switch i := days.(type) {
+	default:
+		fmt.Printf("%T %v", i, i)
+	}
+
 	var nums [3]int
 
 	var sum1 int
