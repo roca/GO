@@ -9,13 +9,9 @@ import (
 
 func main() {
 
-	var days interface{}
-	days = [...]string{"Mon", "Tue"}
+	days := [...]string{"Mon", "Tue"}
 
-	switch i := days.(type) {
-	default:
-		fmt.Printf("%T %v", i, i)
-	}
+	fmt.Printf("%T %v", days, days)
 
 	var nums [3]int
 
