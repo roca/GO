@@ -28,4 +28,6 @@ func main() {
 		}
 		fmt.Printf(" (hashKey: %d) \n", hashKey)
 	}
+
+	BuildHash()
 }
