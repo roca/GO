@@ -8,7 +8,7 @@ import (
 // This example is only to demonstrate how hashtables work.
 // The logic to make HashKeys is not optimized.
 // This solution only works for up to 3 characters.
-func BuildHash() {
+func main() {
 	values := []string{"ABC", "ACB", "BAC", "BCA", "CAB", "CBA"}
 
 	// 65x100 + 66x10 + 67x1 = 7227
@@ -16,11 +16,15 @@ func BuildHash() {
 	hashMap := map[int]string{}
 	for _, v := range values {
 
-		hashMap[HashKey(len(v)-1, 0, v)] = v
+		hashMap[HashK(v)] = v
 
 	}
 
 	fmt.Println(hashMap)
+}
+
+func HashK(s string) int {
+	return HashKey(len(s)-1, 0, s)
 }
 
 func HashKey(i int, key int, chars string) int {

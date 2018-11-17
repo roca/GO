@@ -21,6 +21,7 @@ func main() {
 		bytes := []byte(values[v])
 		f := 0
 		hashKey = 0
+		fmt.Print(values[v], " ")
 		for i := range bytes {
 			fmt.Print(bytes[i], " ")
 			hashKey += int(bytes[i]) * factor[f]
@@ -28,6 +29,4 @@ func main() {
 		}
 		fmt.Printf(" (hashKey: %d) \n", hashKey)
 	}
-
-	BuildHash()
 }
