@@ -28,7 +28,7 @@ func main() {
 
 	fmt.Printf("%v\n", counts)
 
-	// for k, v := range counts {
-	// 	fmt.Printf("%7d %3s %3d  \n", k, string(k), v)
-	// }
+	for k, v := range counts {
+		fmt.Printf("%7d %3s %3d  \n", k, string(k), v)
+	}
 }
