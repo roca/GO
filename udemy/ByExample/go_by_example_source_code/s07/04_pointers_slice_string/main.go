@@ -13,6 +13,8 @@ func main() {
 	y := x[1:3]
 	q := &y
 
+	fmt.Printf("&x=%x\n", &x)
+
 	fmt.Printf("*p=%s &p=%x\n", *p, &p)
 	fmt.Printf("*q=%s &q=%x\n", *q, &q)
 
