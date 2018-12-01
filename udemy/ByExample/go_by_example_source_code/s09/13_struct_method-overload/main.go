@@ -14,7 +14,7 @@ type movie struct {
 }
 
 type imdb struct {
-	movie
+	movie   movie
 	name    string
 	comment string
 }
@@ -24,7 +24,7 @@ func (m movie) fullInfo() string {
 }
 
 func (i imdb) fullInfo() string {
-	return strings.ToLower(i.movie.name + "-" + 
+	return strings.ToLower(i.movie.name + "-" +
 		i.movie.actor + "-" + i.name + "-" + i.comment)
 }
 
