@@ -8,17 +8,17 @@ import (
 	"sort"
 )
 
-type Sortable []int
+type iSortable []int
 
-func (p Sortable) Len() int           { return len(p) }
-func (p Sortable) Less(i, j int) bool { return p[i] < p[j] }
-func (p Sortable) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
+func (p iSortable) Len() int           { return len(p) }
+func (p iSortable) Less(i, j int) bool { return p[i] < p[j] }
+func (p iSortable) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
 
 func main() {
 	n := []int{7, 2, 10, 14, 1, 14, 9}
 	fmt.Println(n)
 
-	sort.Sort(Sortable(n))
+	sort.Sort(iSortable(n))
 	// sort.Sort(sort.IntSlice(n))
 	fmt.Println(n)
 

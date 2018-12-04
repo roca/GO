@@ -28,6 +28,7 @@ func main() {
 
 	// ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 	var player3 player
+	//player3 := new(player)
 	fmt.Println("Player 3=", player3)
 
 	player3.name = "Usain Bolt"

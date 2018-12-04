@@ -15,6 +15,14 @@ func factorial(n int) int {
 	if n == 0 {
 		return 1
 	}
-	fmt.Print(n, " ") //for debugging purposes
+	clear(64)
+	fmt.Print(&n, " ") //for debugging purposes
 	return n * factorial(n-1)
+}
+
+func clear(i int) []byte {
+	if i == 0 {
+		return nil
+	}
+	return clear(i - 1)
 }
