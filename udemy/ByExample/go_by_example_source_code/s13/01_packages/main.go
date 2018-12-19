@@ -4,14 +4,14 @@
 package main
 
 import (
+	"athletes"
 	"fmt"
+	"shapes1"
+	"shapes2"
 	"strings"
 
 	//p1 is an alias for the "animals" package
-	p1 "./animals"
-	"./athletes"
-	"./shapes1"
-	"./shapes2"
+	p1 "animals"
 )
 
 func main() {
