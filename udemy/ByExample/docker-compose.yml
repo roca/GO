@@ -1,8 +1,23 @@
 version: "3.2"
  
 services:
-    postgres:
-      container_name: postgres
+    mysqldb:
+      container_name: mysqldb
+      build:
+        context: .
+        dockerfile: ./.docker/mysql.dockerfile
+      restart: always
+      environment:
+        MYSQL_ROOT_PASSWORD: password
+        MYSQL_DATABASE: byexample
+        MYSQL_USER: root
+        MYSQL_PASSWORD: password
+      volumes:
+        - "mysqldbdata:/var/lib/mysql"
+      ports:
+        - "3306:3306"
+    postgresdb:
+      container_name: postgresdb
       build:
         context: .
         dockerfile: .docker/postgres.dockerfile
@@ -12,6 +27,7 @@ services:
       env_file:
         - ./.docker/pgsetup/postgres.env
       volumes:
-        - "dbdata:/var/lib/postgresql/data"
+        - "postgresdbdata:/var/lib/postgresql/data"
 volumes:
-  dbdata:
+  mysqldbdata:
+  postgresdbdata:
