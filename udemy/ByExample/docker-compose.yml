@@ -1,0 +1,17 @@
+version: "3.2"
+ 
+services:
+    postgres:
+      container_name: postgres
+      build:
+        context: .
+        dockerfile: .docker/postgres.dockerfile
+      privileged: true
+      ports:
+        - "5432:5432"
+      env_file:
+        - ./.docker/pgsetup/postgres.env
+      volumes:
+        - "dbdata:/var/lib/postgresql/data"
+volumes:
+  dbdata:
