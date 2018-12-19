@@ -1,6 +1,16 @@
 version: "3.2"
  
 services:
+    development:
+      container_name: development
+      build: 
+        context: .
+        dockerfile: .docker/development.dockerfile
+      ports:
+        - "3000:3000"
+      volumes:
+        - .:/go/src/github.com/GOCODE/udemy/ByExample
+      working_dir: /go/src/github.com/GOCODE/udemy/ByExample
     mysqldb:
       container_name: mysqldb
       build:
