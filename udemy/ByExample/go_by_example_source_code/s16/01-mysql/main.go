@@ -4,7 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 
-	dbu "./dbutil"
+	dbu "dbutil"
+
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -24,7 +25,7 @@ func main() {
 
 	defer db.Close()
 
-	// test1Select()
+	test1Select()
 	// test2Select()
 	// test3Insert()
 	// test4Update()

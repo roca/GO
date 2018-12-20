@@ -6,6 +6,7 @@ WORKDIR /go/src/github.com/GOCODE/udemy/ByExample
 COPY . /go/src/github.com/GOCODE/udemy/ByExample
 
 RUN go get github.com/codegangsta/gin
+RUN go get github.com/go-sql-driver/mysql
 
 EXPOSE 3000
 
