@@ -1,7 +1,7 @@
 
 = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 In MySQL Workbench:
-CREATE SCHEMA `go_db1`;
+CREATE SCHEMA `byexample`;
 right-click / Set As Default Schema
 
 = = = = = = = = = = = = = = = = = = = = = = = = = = = = 

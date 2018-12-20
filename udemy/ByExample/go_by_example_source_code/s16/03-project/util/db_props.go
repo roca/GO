@@ -41,7 +41,7 @@ const User = "root"
 const Password = "tyler"
 
 // DbName ...
-const DbName = "go_db1"
+const DbName = "byexample"
 
 // TableName1 ...
 const TableName1 = "customer"

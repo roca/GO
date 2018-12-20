@@ -15,15 +15,15 @@ const DbDriver = "mysql"
 const User = "root"
 
 // Password ...
-const Password = "tyler"
+const Password = "password"
 
 // DbName ...
-const DbName = "go_db1"
+const DbName = "byexample"
 
 // TableName ...
 const TableName = "person"
 
 // DataSourceName ...
-// dataSourceName := "root:tyler@tcp(127.0.0.1:3306)/go_db1?charset=utf8"
+// dataSourceName := "root:tyler@tcp(127.0.0.1:3306)/byexample?charset=utf8"
 var DataSourceName = fmt.Sprintf("%s:%s@tcp(127.0.0.1:3306)/%s?charset=utf8",
 	User, Password, DbName)

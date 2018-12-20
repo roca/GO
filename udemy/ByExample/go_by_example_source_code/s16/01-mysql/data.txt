@@ -1,7 +1,7 @@
 
 = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 In MySQL Workbench:
-CREATE SCHEMA `go_db1`;
+CREATE SCHEMA `byexample`;
 right-click / Set As Default Schema
 
 = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
@@ -11,12 +11,12 @@ CREATE TABLE person (
 );
 
 = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-INSERT INTO `go_db1`.`person` (`id`, `name`) VALUES ('1', 'Ava');
-INSERT INTO `go_db1`.`person` (`id`, `name`) VALUES ('2', 'John');
-INSERT INTO `go_db1`.`person` (`id`, `name`) VALUES ('3', 'June');
-INSERT INTO `go_db1`.`person` (`id`, `name`) VALUES ('4', 'Tim');
+INSERT INTO `byexample`.`person` (`id`, `name`) VALUES ('1', 'Ava');
+INSERT INTO `byexample`.`person` (`id`, `name`) VALUES ('2', 'John');
+INSERT INTO `byexample`.`person` (`id`, `name`) VALUES ('3', 'June');
+INSERT INTO `byexample`.`person` (`id`, `name`) VALUES ('4', 'Tim');
 
 = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-SELECT * FROM `go_db1`.`person`;
-UPDATE `go_db1`.`person` SET `name`='Jack' WHERE `id`='2';
-DELETE FROM `go_db1`.`person` WHERE `id`='2';
+SELECT * FROM `byexample`.`person`;
+UPDATE `byexample`.`person` SET `name`='Jack' WHERE `id`='2';
+DELETE FROM `byexample`.`person` WHERE `id`='2';
