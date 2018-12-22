@@ -20,10 +20,10 @@ var DbDriver = "mysql" // **added for PostgreSQL**
 
 // User ...
 // const User = "root"
-var User = "root" // **added for PostgreSQL**
+var User = "postgres" // **added for PostgreSQL**
 
 // Password ...
-const Password = "tyler"
+const Password = "postgres"
 
 // DbName ...
 const DbName = "byexample"
@@ -32,6 +32,6 @@ const DbName = "byexample"
 const TableName = "person"
 
 // DataSourceName ...
-// dataSourceName := "root:tyler@tcp(127.0.0.1:3306)/byexample?charset=utf8"
-var DataSourceName = fmt.Sprintf("%s:%s@tcp(127.0.0.1:3306)/%s?charset=utf8",
+// dataSourceName := "root:tyler@tcp(postgresdb:3306)/byexample?charset=utf8"
+var DataSourceName = fmt.Sprintf("%s:%s@tcp(postgresdb:3306)/%s?charset=utf8",
 	User, Password, DbName)
