@@ -7,6 +7,7 @@ COPY . /go/src/github.com/GOCODE/udemy/ByExample
 
 RUN go get github.com/codegangsta/gin
 RUN go get github.com/go-sql-driver/mysql
+RUN go get github.com/lib/pq
 
 EXPOSE 3000
 
