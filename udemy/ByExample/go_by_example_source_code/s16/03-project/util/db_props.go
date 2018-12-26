@@ -38,7 +38,7 @@ const DbDriver = "mysql"
 const User = "root"
 
 // Password ...
-const Password = "tyler"
+const Password = "password"
 
 // DbName ...
 const DbName = "byexample"
@@ -50,8 +50,8 @@ const TableName1 = "customer"
 const TableName2 = "house"
 
 // DataSourceName ...
-// dataSourceName := "root:tyler@tcp(127.0.0.1:3306)/gwp?charset=utf8"
-var DataSourceName = fmt.Sprintf("%s:%s@tcp(127.0.0.1:3306)/%s?charset=utf8",
+// dataSourceName := "root:password@tcp(mysqldb:3306)/gwp?charset=utf8"
+var DataSourceName = fmt.Sprintf("%s:%s@tcp(mysqldb:3306)/%s?charset=utf8",
 	User, Password, DbName)
 
 // DB ...

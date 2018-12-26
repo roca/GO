@@ -33,5 +33,4 @@ const TableName = "person"
 
 // DataSourceName ...
 // dataSourceName := "root:tyler@tcp(postgresdb:3306)/byexample?charset=utf8"
-var DataSourceName = fmt.Sprintf("%s:%s@tcp(postgresdb:3306)/%s?charset=utf8",
-	User, Password, DbName)
+var DataSourceName = fmt.Sprintf("root:password@tcp(mysqldb:3306)/%s?charset=utf8", DbName)

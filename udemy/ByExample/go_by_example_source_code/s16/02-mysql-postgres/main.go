@@ -6,6 +6,7 @@ import (
 
 	dbu "./dbutil"
 	_ "github.com/go-sql-driver/mysql" // $ go get github.com/go-sql-driver/mysql
+
 	// **added for PostgreSQL**
 	_ "github.com/lib/pq" // $ go get github.com/lib/pq
 )
@@ -19,7 +20,7 @@ func init() { // **added for PostgreSQL**
 		dbu.DbDriver = "postgres"
 		dbu.User = "postgres"
 
-		dbu.DataSourceName = fmt.Sprintf("host=localhost port=5432 user=%s "+
+		dbu.DataSourceName = fmt.Sprintf("host=postgresdb port=5432 user=%s "+
 			"password=%s dbname=%s sslmode=disable", dbu.User, dbu.Password, dbu.DbName)
 	}
 }
