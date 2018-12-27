@@ -7,7 +7,8 @@ import (
 	"runtime"
 	"time"
 
-	utl "./util"
+	utl "util"
+
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -39,5 +40,5 @@ func main() {
 	defer utl.DB.Close()
 
 	utl.MatchCustomersHouses()
-	utl.LogMrtgApps()
+	// utl.LogMrtgApps()
 }
