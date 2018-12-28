@@ -41,15 +41,15 @@ func MatchCustomersHouses() {
 		Mrtgs = append(Mrtgs, mrtg)
 	}
 
-	// for i, m := range Mrtgs {
-	// 	fmt.Println(i, m)
-	// }
-
-	WaitG.Add(NumOfRowsCustomer)
-	for i, mrtg := range Mrtgs {
-		go checkMortgageStatus(mrtg, i)
+	for i, m := range Mrtgs {
+		fmt.Println(i, m)
 	}
-	WaitG.Wait()
+
+	// WaitG.Add(NumOfRowsCustomer)
+	// for i, mrtg := range Mrtgs {
+	// 	go checkMortgageStatus(mrtg, i)
+	// }
+	// WaitG.Wait()
 
 	elapsed := time.Since(start)
 	fmt.Printf("= = = = = = = = = = = = = = = = = = = = = = = = = = =\n")
