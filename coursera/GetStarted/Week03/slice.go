@@ -1,3 +1,5 @@
+package main
+
 /*
 Write a program which prompts the user to enter integers and stores the integers in a sorted slice.
 The program should be written as a loop.
@@ -7,26 +9,52 @@ The program adds the integer to the slice, sorts the slice, and prints the conte
 The slice must grow in size to accommodate any number of integers which the user decides to enter.
 The program should only quit (exiting the loop) when the user enters the character ‘X’ instead of an integer.
 */
-package main
 
 import (
+	"errors"
 	"fmt"
 	"log"
+	"regexp"
+	"strconv"
+	"strings"
 )
 
 func main() {
 
-	sliceInputs := make([]int, 3)
-	var newElement int
+	sliceInputs := make([]int, 0, 3)
+	var newElement string
 
 	for {
 		fmt.Print("\nPlease enter an integer to be added to the slice. Type an 'X' when your done :  ")
-		_, err := fmt.Scan(&newElement)
+		fmt.Scan(&newElement)
+		i, err := GetIntFromString(newElement)
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
 			break
 		}
-		sliceInputs = append(sliceInputs, newElement)
+		sliceInputs = append(sliceInputs, i)
+		fmt.Println(sliceInputs)
 	}
 
+}
+
+// GetIntFromString ...
+func GetIntFromString(v string) (int, error) {
+
+	//	Trim away Leading and Trailing spaces
+	v = strings.TrimSpace(v)
+
+	// Check that a decimal point was not included
+	regex, err := regexp.Compile("(?i)X")
+	if regex.MatchString(v) {
+		return 0, errors.New("Done")
+	}
+
+	// Input should parse to a Intege
+	i, err := strconv.ParseFloat(v, 32)
+	if err != nil {
+		return 0, err
+	}
+
+	return int(i), nil
 }
