@@ -15,6 +15,7 @@ import (
 	"fmt"
 	"log"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -33,6 +34,7 @@ func main() {
 			break
 		}
 		sliceInputs = append(sliceInputs, i)
+		sort.Ints(sliceInputs)
 		fmt.Println(sliceInputs)
 	}
 
