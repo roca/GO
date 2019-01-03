@@ -24,18 +24,20 @@ func main() {
 
 	sliceInputs := make([]int, 0, 3)
 	var newElement string
-
+	fmt.Println("Current slice:", sliceInputs)
 	for {
-		fmt.Print("\nPlease enter an integer to be added to the slice. Type an 'X' when your done :  ")
+		fmt.Print("Please enter an integer to be added to the slice. Type an 'X' to exist the program :  ")
 		fmt.Scan(&newElement)
 		i, err := GetIntFromString(newElement)
-		if err != nil {
+		if err != nil && err.Error() == "Done" {
 			log.Println(err)
 			break
+		} else if err != nil {
+			continue
 		}
 		sliceInputs = append(sliceInputs, i)
 		sort.Ints(sliceInputs)
-		fmt.Println(sliceInputs)
+		fmt.Println("Current slice:", sliceInputs)
 	}
 
 }
