@@ -8,3 +8,25 @@ The slice must grow in size to accommodate any number of integers which the user
 The program should only quit (exiting the loop) when the user enters the character ‘X’ instead of an integer.
 */
 package main
+
+import (
+	"fmt"
+	"log"
+)
+
+func main() {
+
+	sliceInputs := make([]int, 3)
+	var newElement int
+
+	for {
+		fmt.Print("\nPlease enter an integer to be added to the slice. Type an 'X' when your done :  ")
+		_, err := fmt.Scan(&newElement)
+		if err != nil {
+			log.Fatal(err)
+			break
+		}
+		sliceInputs = append(sliceInputs, newElement)
+	}
+
+}
