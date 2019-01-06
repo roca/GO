@@ -7,20 +7,26 @@ Your program should use Marshal() to create a JSON object from the map, and then
 package main
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"log"
+	"os"
+	"strings"
 )
 
 func main() {
 
-	var name, address string
+	// Scanf wont work if your input has spaces :)
+	consoleReader := bufio.NewReader(os.Stdin)
 
 	fmt.Println("Please enter a name")
-	fmt.Scan(&name)
+	name, _ := consoleReader.ReadString('\n')
+	name = strings.TrimSuffix(name, "\n")
 
 	fmt.Println("Please enter a address")
-	fmt.Scan(&address)
+	address, _ := consoleReader.ReadString('\n')
+	address = strings.TrimSuffix(address, "\n")
 
 	myMap := map[string]string{
 		"name":    name,
@@ -38,12 +44,6 @@ func main() {
 
 // ReturnJSONString : converts a GO object to JSON string
 func ReturnJSONString(o interface{}) (string, error) {
-
 	jsonObject, err := json.Marshal(o)
-	if err != nil {
-		log.Fatal("Could not covert this object to JSON")
-	}
-
 	return string(jsonObject), err
-
 }
