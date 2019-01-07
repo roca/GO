@@ -12,6 +12,75 @@ After reading all lines from the file, your program should iterate through your 
 
 package main
 
+import (
+	"bufio"
+	"fmt"
+	"log"
+	"os"
+	"strings"
+)
+
+// Person : Each field will be a string of size 20 (characters).
+type Person struct {
+	fname [20]byte
+	lname [20]byte
+}
+
+// People ...
+type People []Person
+
 func main() {
 
+	var filePath string
+
+	fmt.Print("Please enter the full path name of the text file : ")
+	fmt.Scan(&filePath)
+
+	people, err := ReadPeopleFromFile(filePath)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, person := range people {
+		// %s format will convert the array of bytes to a string
+		fmt.Printf("FirstName: %s , LastName: %s\n", person.fname, person.lname)
+	}
+
+}
+
+// ReadPeopleFromFile : reads people from a file
+func ReadPeopleFromFile(filePath string) (People, error) {
+	people := People{}
+
+	file, err := os.Open(filePath)
+	if err != nil {
+		return nil, err
+	}
+
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+
+	for scanner.Scan() {
+		line := scanner.Text()
+		values := strings.Split(line, " ")
+
+		if len(values) > 1 {
+			firstName := makeByteArrayFromString(values[0])
+			lastName := makeByteArrayFromString(values[1])
+
+			people = append(people, Person{fname: firstName, lname: lastName})
+		}
+	}
+
+	return people, nil
+}
+
+func makeByteArrayFromString(str string) [20]byte {
+	var arr [20]byte
+	for k, v := range []byte(str) {
+		arr[k] = byte(v)
+	}
+	return arr
 }
