@@ -18,6 +18,7 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"regexp"
 	"strconv"
@@ -34,6 +35,10 @@ func main() {
 	sequence = strings.TrimSuffix(sequence, "\n")
 
 	ints := ConvertStringToInts(sequence)
+	if len(ints) > 10 {
+		log.Println("Only 10 intgers please. Try again!")
+		os.Exit(1)
+	}
 
 	BubbleSort(ints)
 
