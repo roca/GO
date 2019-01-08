@@ -29,6 +29,10 @@ func Swap(ints []int, position int) error {
 	if len(ints) <= 1 {
 		return errors.New("no vaules to swap! slice size <= 1")
 	}
+	if position > len(ints)-1 {
+		return errors.New("position index out of range")
+	}
+
 	if position != len(ints)-1 {
 		ints[position], ints[position+1] = ints[position+1], ints[position]
 	} else {

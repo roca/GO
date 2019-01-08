@@ -28,4 +28,10 @@ func TestSwap(t *testing.T) {
 	if err.Error() != "no vaules to swap! slice size <= 1" {
 		t.Error(err)
 	}
+
+	ints3 := []int{1, 2, 3}
+	err = Swap(ints3, 8) // index out of range
+	if err.Error() != "position index out of range" {
+		t.Error(err)
+	}
 }
