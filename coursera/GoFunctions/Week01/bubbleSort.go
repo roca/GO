@@ -35,7 +35,7 @@ func Swap(ints []int, position int) error {
 
 	if position != len(ints)-1 {
 		ints[position], ints[position+1] = ints[position+1], ints[position]
-	} else {
+	} else { // Swaps the last two element if position is the last element
 		ints[position-1], ints[position] = ints[position], ints[position-1]
 	}
 
