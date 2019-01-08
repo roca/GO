@@ -14,13 +14,66 @@ The Swap() function should return nothing, but it should swap the contents of th
 */
 package main
 
-import "errors"
+import (
+	"bufio"
+	"errors"
+	"fmt"
+	"os"
+	"regexp"
+	"strconv"
+	"strings"
+)
 
 func main() {
 
+	// Scanf wont work if your input has spaces :)
+	consoleReader := bufio.NewReader(os.Stdin)
+
+	fmt.Println("Please type in a sequence of up to 10 integers")
+	sequence, _ := consoleReader.ReadString('\n')
+	sequence = strings.TrimSuffix(sequence, "\n")
+
+	ints := ConvertStringToInts(sequence)
+
+	BubbleSort(ints)
+
+	fmt.Print("BubbleSorted: ")
+	for _, v := range ints {
+		fmt.Printf("%d ", v)
+	}
+	fmt.Print("\n")
+
 }
 
+// ConvertStringToInts : converts string of ints to a slice of ints
+func ConvertStringToInts(s string) []int {
+
+	ints := []int{}
+	s = strings.TrimSpace(s)
+
+	stringsArray := regexp.MustCompile("[\\s+|\\,]+").Split(s, -1)
+	for _, stringElement := range stringsArray {
+		if stringElement == " " {
+			continue
+		}
+		value, _ := strconv.Atoi(stringElement)
+		ints = append(ints, value)
+	}
+
+	return ints
+
+}
+
+// BubbleSort : modifies a slice so that the elements are in sorted order
 func BubbleSort(ints []int) {
+
+	for i := 0; i < len(ints); i++ {
+		for j := 0; j < len(ints)-i-1; j++ {
+			if ints[j] > ints[j+1] {
+				Swap(ints, j)
+			}
+		}
+	}
 
 }
 

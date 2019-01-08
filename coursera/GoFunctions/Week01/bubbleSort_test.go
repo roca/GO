@@ -1,8 +1,32 @@
 package main
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestBubbleSort(t *testing.T) {
+
+	ints := []int{1, 3, 2, 4, 5, 9, 10, 6, 8, 7, 0}
+	BubbleSort(ints)
+	for i, v := range ints {
+		if v != i {
+			t.Errorf("%d != %d\n", v, i)
+		}
+	}
+
+}
+
+func TestConvertStringToInts(t *testing.T) {
+	ints := ConvertStringToInts("0 1 2 3 4 ")
+	if len(ints) != 5 {
+		t.Errorf("ints is oncrrect length %d insted of 5", len(ints))
+	}
+
+	for i, v := range ints {
+		if v != i {
+			t.Errorf("%d != %d\n", v, i)
+		}
+	}
 
 }
 
