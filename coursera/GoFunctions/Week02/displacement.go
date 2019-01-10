@@ -41,6 +41,7 @@ import (
 
 //float64 arguments, acceleration a, initial velocity vo, and initial displacement so.
 
+//GenDisplaceFn : returns a function which computes displacement as a function of time, assuming the given values acceleration, initial velocity, and initial displacement.
 func GenDisplaceFn(a, vo, so float64) func(float64) float64 {
 
 	return func(t float64) float64 {
@@ -72,7 +73,7 @@ func main() {
 	// Scanf wont work if your input has spaces :)
 	consoleReader := bufio.NewReader(os.Stdin)
 
-	fmt.Println("Enter values for acceleration, initial velocity, and initial displacement on one line. (etc. 10, 2, 1")
+	fmt.Println("Enter values for acceleration (a), initial velocity (vo), and initial displacement (so) on one line. (example: 10, 2, 1)")
 	params, _ := consoleReader.ReadString('\n')
 	params = strings.TrimSuffix(params, "\n")
 
@@ -87,11 +88,11 @@ func main() {
 	fmt.Println("Now enter a value for time.")
 	fmt.Scan(&time)
 
-	fmt.Println(floats)
-	fmt.Println(time)
+	fmt.Println("a, vo, so :", floats)
+	fmt.Println("time:", time)
 
 	fn := GenDisplaceFn(floats[0], floats[1], floats[2])
 
-	fmt.Println("displacements = ½ a t2 + vot + so = ", fn(time))
+	fmt.Println("displacement = (½ a t^2) + vot + so = ", fn(time))
 
 }
