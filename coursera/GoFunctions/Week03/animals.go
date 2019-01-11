@@ -57,6 +57,8 @@ func main() {
 	// Scanf wont work if your input has spaces :)
 	consoleReader := bufio.NewReader(os.Stdin)
 
+	fmt.Println("Enter two fields, the animal of interest (cow, bird or snake) and the requested information (eat, move or speak) seprated by a space. (Example: cow eat")
+
 	for {
 		fmt.Print(">")
 		userInput, _ := consoleReader.ReadString('\n')
