@@ -16,7 +16,7 @@ func TestGenDisplaceFn(t *testing.T) {
 func TestConvertStringToFloats(t *testing.T) {
 	floats := ConvertStringToFloats("0 1 2 3 4 ")
 	if len(floats) != 5 {
-		t.Errorf("floats is oncrrect length %d insted of 5", len(floats))
+		t.Errorf("floats slice is incorrect length %d insted of 5", len(floats))
 	}
 
 	for i, v := range floats {
