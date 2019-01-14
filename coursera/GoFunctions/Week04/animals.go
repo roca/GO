@@ -18,7 +18,7 @@ type Animal interface {
 // Cow ...
 type Cow struct{}
 
-// Eat method should print the Cow’s food
+// Eat : "grass"
 func (a Cow) Eat() {
 	fmt.Println("grass")
 }
