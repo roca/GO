@@ -69,8 +69,6 @@ func (a Snake) Speak() {
 	fmt.Println("hsss")
 }
 
-var animals map[string]Animal
-
 // Request take in a request and executes the approriate action
 func Request(a Animal, request string) {
 	switch request {
@@ -99,7 +97,7 @@ func animalFactory(animalType string) (Animal, error) {
 
 func main() {
 
-	animals = map[string]Animal{}
+	animals := map[string]Animal{}
 
 	// Scanf wont work if your input has spaces :)
 	consoleReader := bufio.NewReader(os.Stdin)
@@ -129,7 +127,11 @@ func main() {
 			fmt.Println("Created it!")
 		case "query":
 			animal, request := animalRequest[1], animalRequest[2]
-			Request(animals[animal], request)
+			if animals[animal] != nil {
+				Request(animals[animal], request)
+			} else {
+				fmt.Println("Can't find this animal!")
+			}
 		default:
 			fmt.Println("Only 'newanimal' or 'query' can be handled. Try again.")
 		}
