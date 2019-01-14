@@ -81,7 +81,7 @@ func Request(a Animal, request string) {
 	case "speak":
 		a.Speak()
 	default:
-		fmt.Println("This Cow doesn't know how to do that! It can only eat, move or speak")
+		fmt.Println("This animal doesn't know how to do that! It can only eat, move or speak")
 	}
 }
 
@@ -123,6 +123,7 @@ func main() {
 			newAnimal, err := animalFactory(animalType)
 			if err != nil {
 				fmt.Println(err)
+				continue
 			}
 			animals[name] = newAnimal
 			fmt.Println("Created it!")
