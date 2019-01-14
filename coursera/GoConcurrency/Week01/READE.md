@@ -2,7 +2,9 @@ Moore's law is the observation that the number of transistors in a dense integra
 
 - Increasing transistor density leads to increased power consumption. High power leads to high temperature. Creative ways of keep the transitor cool is becoming increasingly difficult
 
--  Also has more and more transistor are pack close togther 
+-  Also as the density of integrated circuits increase and transistors are packed closer togther, current leakages between circuts becomes a problem.
+
+
 
 
 
