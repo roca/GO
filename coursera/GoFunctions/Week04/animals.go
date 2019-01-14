@@ -15,48 +15,58 @@ type Animal interface {
 	Speak()
 }
 
-// Cow : type called Cow which is a struct containing three fields:food, locomotion, and noise, all of which are strings
-type Cow struct {
-	food       string
-	locomotion string
-	noise      string
-}
+// Cow ...
+type Cow struct{}
 
 // Eat method should print the Cow’s food
 func (a Cow) Eat() {
-	fmt.Println(a.food)
+	fmt.Println("grass")
 }
 
-// Move method should print the Cow’s locomotion
+// Move : walk
 func (a Cow) Move() {
-	fmt.Println(a.locomotion)
+	fmt.Println("walk")
 }
 
-// Speak method should print the Cow’s spoken sound
+// Speak : "moo"
 func (a Cow) Speak() {
-	fmt.Println(a.noise)
+	fmt.Println("moo")
 }
 
-// Bird : type called Cow which is a struct containing three fields:food, locomotion, and noise, all of which are strings
-type Bird struct {
-	food       string
-	locomotion string
-	noise      string
-}
+// Bird ...
+type Bird struct{}
 
-// Eat method should print the Cow’s food
+// Eat : "worms"
 func (a Bird) Eat() {
-	fmt.Println(a.food)
+	fmt.Println("worms")
 }
 
-// Move method should print the Cow’s locomotion
+// Move : "fly"
 func (a Bird) Move() {
-	fmt.Println(a.locomotion)
+	fmt.Println("fly")
 }
 
-// Speak method should print the Cow’s spoken sound
+// Speak : "peep"
 func (a Bird) Speak() {
-	fmt.Println(a.noise)
+	fmt.Println("peep")
+}
+
+// Snake ...
+type Snake struct{}
+
+// Eat : "mice"
+func (a Snake) Eat() {
+	fmt.Println("mice")
+}
+
+// Move : "slither"
+func (a Snake) Move() {
+	fmt.Println("slither")
+}
+
+// Speak : "hsss"
+func (a Snake) Speak() {
+	fmt.Println("hsss")
 }
 
 var animals map[string]Animal
@@ -78,11 +88,11 @@ func Request(a Animal, request string) {
 func animalFactory(animalType string) (Animal, error) {
 	switch animalType {
 	case "cow":
-		return Cow{food: "grass", locomotion: "walk", noise: "moo"}, nil
+		return Cow{}, nil
 	case "bird":
-		return Bird{food: "worms", locomotion: "fly", noise: "peep"}, nil
+		return Bird{}, nil
 	case "snake":
-		return Cow{food: "mice", locomotion: "slither", noise: "hsss"}, nil
+		return Snake{}, nil
 	}
 	return nil, errors.New("Can't create animal of this type")
 }
@@ -94,23 +104,35 @@ func main() {
 	// Scanf wont work if your input has spaces :)
 	consoleReader := bufio.NewReader(os.Stdin)
 
-	fmt.Println("Enter two fields, the Cow of interest (cow, bird or snake) and the requested information (eat, move or speak) seprated by a space. (Example: cow eat)")
+	fmt.Println("Three inputs are required. (Example: 'newanimal timmy bird' or 'query timmy speak'")
 
 	for {
 		fmt.Print(">")
 		userInput, _ := consoleReader.ReadString('\n')
 		userInput = strings.TrimSuffix(userInput, "\n")
 
-		AnimalRequest := strings.Split(userInput, " ")
-
-		animal, request := AnimalRequest[0], AnimalRequest[1]
-		newAnimal, err := animalFactory(animal)
-		if err != nil {
-			fmt.Println(err)
+		animalRequest := strings.Split(userInput, " ")
+		if len(animalRequest) < 3 {
+			fmt.Println("Three inputs are required. (Example: 'newanimal timmy bird' or 'query timmy speak'")
+			continue
 		}
-		animals[animal] = newAnimal
 
-		Request(animals[animal], request)
+		switch animalRequest[0] {
+		case "newanimal":
+			name, animalType := animalRequest[1], animalRequest[2]
+			newAnimal, err := animalFactory(animalType)
+			if err != nil {
+				fmt.Println(err)
+			}
+			animals[name] = newAnimal
+			fmt.Println("Created it!")
+		case "query":
+			animal, request := animalRequest[1], animalRequest[2]
+			Request(animals[animal], request)
+		default:
+			fmt.Println("Only 'newanimal' or 'query' can be handled. Try again.")
+		}
+
 	}
 
 }
