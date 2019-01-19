@@ -4,6 +4,12 @@ import (
 	"testing"
 )
 
+func TestSliceUp(t *test.T) {
+	ints := []int{1, 3, 2, 4, 5, 9, 10, 6, 8, 7, 0}
+	slices := SliceUp(ints)
+
+}
+
 func TestBubbleSort(t *testing.T) {
 
 	ints := []int{1, 3, 2, 4, 5, 9, 10, 6, 8, 7, 0}
