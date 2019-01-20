@@ -30,6 +30,13 @@ func main() {
 	sequence, _ := consoleReader.ReadString('\n')
 	sequence = strings.TrimSuffix(sequence, "\n")
 
+	// Check that a decimal point was included
+	r, _ := regexp.Compile("\\.")
+	foundDecimal := r.FindString(sequence)
+	if foundDecimal != "" {
+		panic("Do not input any floating point numbers")
+	}
+
 	ints := ConvertStringToInts(sequence)
 
 	size := int(len(ints) / 4)
