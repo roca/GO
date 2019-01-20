@@ -45,6 +45,10 @@ func main() {
 	}
 	partitions := [][]int{}
 	partitions = SliceUp(partitions, ints, size)
+	// There will be always 4 partions even if some are empty
+	for i := 0; i <= (4 - len(partitions)); i++ {
+		partitions = append(partitions, []int{})
+	}
 
 	var wg sync.WaitGroup
 	for i, partition := range partitions {
