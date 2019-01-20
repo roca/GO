@@ -42,10 +42,6 @@ func TestSliceUp(t *testing.T) {
 
 	}
 
-	// if len(slices[len(slices)-1]) != lastSize {
-	// 	t.Errorf("The last partition should have %d element insted of %d", lastSize, len(slices[len(slices)-1]))
-	// }
-
 }
 
 func TestBubbleSort(t *testing.T) {
