@@ -36,19 +36,19 @@ func main() {
 	if (len(ints) % 4.0) != 0 {
 		size++
 	}
-	slices := [][]int{}
-	slices = SliceUp(slices, ints, size)
+	partitions := [][]int{}
+	partitions = SliceUp(partitions, ints, size)
 
 	var wg sync.WaitGroup
-	for i := 0; i < len(slices); i++ {
+	for i, partition := range partitions {
 		wg.Add(1)
-		go SortSlice(slices[i], i, &wg)
+		go SortSlice(partition, i, &wg)
 	}
 	wg.Wait()
 
 	mergedSlice := []int{}
-	for j := 0; j < len(slices); j++ {
-		mergedSlice = MergeSortedSlices(mergedSlice, slices[j])
+	for _, partition := range partitions {
+		mergedSlice = MergeSortedSlices(mergedSlice, partition)
 	}
 	fmt.Println("All partitions merged and sorted :", mergedSlice)
 
