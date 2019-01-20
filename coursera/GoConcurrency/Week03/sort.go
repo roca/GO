@@ -45,6 +45,24 @@ func main() {
 	fmt.Print("\n")
 
 }
+func SliceUp(slices [][]int, ints []int, size int) [][]int {
+
+	if len(ints) == 0 {
+		return slices
+	}
+
+	partition := []int{}
+	start := 0
+
+	for start = 0; start < size && start < len(ints); start++ {
+		partition = append(partition, ints[start])
+	}
+	fmt.Println(partition)
+	slices = append(slices, partition)
+
+	return SliceUp(slices, ints[start:], size)
+
+}
 
 // ConvertStringToInts : converts string of ints to a slice of ints
 func ConvertStringToInts(s string) []int {

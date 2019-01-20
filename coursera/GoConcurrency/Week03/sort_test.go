@@ -1,12 +1,50 @@
 package main
 
 import (
+	"fmt"
 	"testing"
 )
 
-func TestSliceUp(t *test.T) {
-	ints := []int{1, 3, 2, 4, 5, 9, 10, 6, 8, 7, 0}
-	slices := SliceUp(ints)
+func TestSliceUp(t *testing.T) {
+
+	testCases := [][]int{
+		{1, 3, 2, 4, 5, 9, 10, 6, 8, 7, 0, 11, 22, 33, 2, 1, 17},
+		{1, 3, 2, 4, 5, 9, 10, 6, 8, 7, 0, 11, 22},
+		{1, 3, 2, 4, 5, 9, 10, 6, 8, 7, 0, 22},
+		{1, 3, 2, 4, 5, 9, 10, 6, 8, 7, 0},
+		{1, 3, 2, 4, 5, 9, 10, 6, 8, 7},
+		{1, 3, 2, 4, 5, 9, 10, 6, 8},
+		{1, 3, 2, 4},
+		{1, 3, 2},
+		{1, 2},
+		{1},
+		{},
+	}
+
+	for i, ints := range testCases {
+
+		fmt.Println("Test case :", i, ints)
+
+		size := int(len(ints) / 4)
+		if (len(ints) % 4.0) != 0 {
+			size++
+		}
+		slices := [][]int{}
+		slices = SliceUp(slices, ints, size)
+		if len(slices) > 4 {
+			t.Errorf("In case %d : The program should partition the array into 4 parts not %d", i, len(slices))
+		}
+		for j := 0; j < len(slices); j++ {
+			if len(slices[j]) > size {
+				t.Errorf("Test case %d : The each partition should have less than %d elements this one has %d", i, size, len(slices[j]))
+			}
+		}
+
+	}
+
+	// if len(slices[len(slices)-1]) != lastSize {
+	// 	t.Errorf("The last partition should have %d element insted of %d", lastSize, len(slices[len(slices)-1]))
+	// }
 
 }
 
