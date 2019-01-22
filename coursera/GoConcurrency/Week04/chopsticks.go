@@ -15,7 +15,7 @@ var on sync.Once
 var wg sync.WaitGroup
 
 func setup() {
-	//wg.Add(5)
+
 	fmt.Println("Init")
 }
 
@@ -23,17 +23,18 @@ func (p Philo) eat() {
 
 	on.Do(setup)
 
-	for {
-		p.leftCS.Lock()
-		p.rightCS.Lock()
+	//for {
+	p.leftCS.Lock()
+	p.rightCS.Lock()
 
-		fmt.Println("eating")
+	fmt.Println("eating")
 
-		p.rightCS.Unlock()
-		p.leftCS.Unlock()
-	}
+	p.rightCS.Unlock()
+	p.leftCS.Unlock()
 
-	//wg.Done()
+	wg.Done()
+	//}
+
 }
 
 func main() {
@@ -46,9 +47,11 @@ func main() {
 		philos[i] = &Philo{Csticks[i], Csticks[(i+1)%5]}
 	}
 
+	wg.Add(5)
+
 	for i := 0; i < 5; i++ {
 		go philos[i].eat()
 	}
 
-	// wg.Wait()
+	wg.Wait()
 }
