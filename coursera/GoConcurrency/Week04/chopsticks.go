@@ -12,8 +12,10 @@ type Philo struct {
 }
 
 var on sync.Once
+var wg sync.WaitGroup
 
 func setup() {
+	//wg.Add(5)
 	fmt.Println("Init")
 }
 
@@ -30,6 +32,8 @@ func (p Philo) eat() {
 		p.rightCS.Unlock()
 		p.leftCS.Unlock()
 	}
+
+	//wg.Done()
 }
 
 func main() {
@@ -45,4 +49,6 @@ func main() {
 	for i := 0; i < 5; i++ {
 		go philos[i].eat()
 	}
+
+	// wg.Wait()
 }
