@@ -19,8 +19,9 @@ import (
 )
 
 type ChopS struct {
-	id    int
-	stick sync.Mutex
+	id          int
+	stick       sync.Mutex
+	isBeingUsed bool
 }
 
 type Philo struct {
@@ -42,10 +43,14 @@ func (p Philo) eat() {
 
 	for i := 0; i < 3; i++ {
 		p.leftCS.stick.Lock()
+		p.leftCS.isBeingUsed = true
 		p.rightCS.stick.Lock()
+		p.rightCS.isBeingUsed = true
 		fmt.Printf("philosopher %d starting to eat with copstick %d and %d\n", p.id, p.leftCS.id, p.rightCS.id)
 
+		p.rightCS.isBeingUsed = false
 		p.rightCS.stick.Unlock()
+		p.leftCS.isBeingUsed = false
 		p.leftCS.stick.Unlock()
 		fmt.Printf("philosopher %d finishing eating with copstick %d and %d\n", p.id, p.leftCS.id, p.rightCS.id)
 
@@ -58,7 +63,7 @@ func main() {
 	Csticks := make([]*ChopS, 5)
 	for i := 0; i < 5; i++ {
 		stick := new(sync.Mutex)
-		Csticks[i] = &ChopS{i, *stick}
+		Csticks[i] = &ChopS{i, *stick, false}
 	}
 	philos := make([]*Philo, 5)
 	for i := 0; i < 5; i++ {
