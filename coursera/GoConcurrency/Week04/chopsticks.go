@@ -30,7 +30,8 @@ type Philo struct {
 }
 
 var on sync.Once
-var wg sync.WaitGroup
+var wgPhilosophers sync.WaitGroup
+var wgHost sync.WaitGroup
 
 func setup() {
 
@@ -42,20 +43,20 @@ func (p Philo) eat() {
 	on.Do(setup)
 
 	for i := 0; i < 3; i++ {
-		p.leftCS.stick.Lock()
+		//p.leftCS.stick.Lock()
 		p.leftCS.isBeingUsed = true
-		p.rightCS.stick.Lock()
+		//p.rightCS.stick.Lock()
 		p.rightCS.isBeingUsed = true
-		fmt.Printf("philosopher %d starting to eat with copstick %d and %d\n", p.id, p.leftCS.id, p.rightCS.id)
+		fmt.Printf("philosopher %d starting to eat with copstick left %d and right %d\n", p.id, p.leftCS.id, p.rightCS.id)
 
 		p.rightCS.isBeingUsed = false
-		p.rightCS.stick.Unlock()
+		//p.rightCS.stick.Unlock()
 		p.leftCS.isBeingUsed = false
-		p.leftCS.stick.Unlock()
-		fmt.Printf("philosopher %d finishing eating with copstick %d and %d\n", p.id, p.leftCS.id, p.rightCS.id)
+		//p.leftCS.stick.Unlock()
+		fmt.Printf("philosopher %d finishing eating with copstick left %d and right %d\n", p.id, p.leftCS.id, p.rightCS.id)
 
 	}
-	wg.Done()
+	wgPhilosophers.Done()
 
 }
 
@@ -70,10 +71,23 @@ func main() {
 		philos[i] = &Philo{i + 1, Csticks[i], Csticks[(i+1)%5]}
 	}
 
-	wg.Add(2)
+	for i := 0; i < 5; i++ {
+		for j := 0; j < 5; j++ {
+			if i != j {
+				wgHost.Add(1)
+				go HostPhilosopherPair(philos[i], philos[j])
+			}
+		}
+	}
 
-	go philos[0].eat()
-	go philos[1].eat()
+	wgHost.Wait()
+}
 
-	wg.Wait()
+func HostPhilosopherPair(philosopher1, philosopher2 *Philo) {
+	fmt.Printf("*******************Hosting philosopher %d and %d\n", philosopher1.id, philosopher2.id)
+	wgPhilosophers.Add(2)
+	go philosopher1.eat()
+	go philosopher2.eat()
+	wgPhilosophers.Wait()
+	wgHost.Done()
 }
