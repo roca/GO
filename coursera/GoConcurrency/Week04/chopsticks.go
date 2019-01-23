@@ -1,3 +1,16 @@
+/*
+1 There should be 5 philosophers sharing chopsticks, with one chopstick between each adjacent pair of philosophers.
+2 Each philosopher should eat only 3 times (not in an infinite loop as we did in lecture)
+3 The philosophers pick up the chopsticks in any order, not lowest-numbered first (which we did in lecture).
+4 In order to eat, a philosopher must get permission from a host which executes in its own goroutine.
+5 The host allows no more than 2 philosophers to eat concurrently.
+6 Each philosopher is numbered, 1 through 5.
+7 When a philosopher starts eating (after it has obtained necessary locks) it prints “starting to eat <number>” on a line by itself,
+  where <number> is the number of the philosopher.
+8 When a philosopher finishes eating (before it has released its locks) it prints “finishing eating <number>” on a line by itself,
+  where <number> is the number of the philosopher.
+*/
+
 package main
 
 import (
@@ -5,9 +18,13 @@ import (
 	"sync"
 )
 
-type ChopS struct{ sync.Mutex }
+type ChopS struct {
+	id    int
+	stick sync.Mutex
+}
 
 type Philo struct {
+	id              int
 	leftCS, rightCS *ChopS
 }
 
@@ -23,35 +40,35 @@ func (p Philo) eat() {
 
 	on.Do(setup)
 
-	//for {
-	p.leftCS.Lock()
-	p.rightCS.Lock()
+	for i := 0; i < 3; i++ {
+		p.leftCS.stick.Lock()
+		p.rightCS.stick.Lock()
+		fmt.Printf("philosopher %d starting to eat with copstick %d and %d\n", p.id, p.leftCS.id, p.rightCS.id)
 
-	fmt.Println("eating")
+		p.rightCS.stick.Unlock()
+		p.leftCS.stick.Unlock()
+		fmt.Printf("philosopher %d finishing eating with copstick %d and %d\n", p.id, p.leftCS.id, p.rightCS.id)
 
-	p.rightCS.Unlock()
-	p.leftCS.Unlock()
-
+	}
 	wg.Done()
-	//}
 
 }
 
 func main() {
 	Csticks := make([]*ChopS, 5)
 	for i := 0; i < 5; i++ {
-		Csticks[i] = new(ChopS)
+		stick := new(sync.Mutex)
+		Csticks[i] = &ChopS{i, *stick}
 	}
 	philos := make([]*Philo, 5)
 	for i := 0; i < 5; i++ {
-		philos[i] = &Philo{Csticks[i], Csticks[(i+1)%5]}
+		philos[i] = &Philo{i + 1, Csticks[i], Csticks[(i+1)%5]}
 	}
 
-	wg.Add(5)
+	wg.Add(2)
 
-	for i := 0; i < 5; i++ {
-		go philos[i].eat()
-	}
+	go philos[0].eat()
+	go philos[1].eat()
 
 	wg.Wait()
 }
