@@ -78,8 +78,8 @@ func main() {
 	// for {
 	for i := 0; i < 5; i++ {
 		for j := 0; j < 5; j++ {
-			if i != j {
-				HostPhilosopherPair(philos[0], philos[1])
+			if i != j && (i+1 == j || (i+1)%5 == j) {
+				HostPhilosopherPair(philos[i], philos[j])
 			}
 		}
 	}
