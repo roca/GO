@@ -28,6 +28,7 @@ type ChopS struct {
 type Philo struct {
 	id              int
 	leftCS, rightCS *ChopS
+	eatCount        int
 }
 
 var on sync.Once
@@ -70,6 +71,7 @@ func (p *Philo) eat(randomOrder bool) {
 		}
 
 		fmt.Printf("philosopher %d starting to eat with copstick left %d and right %d\n", p.id, p.leftCS.id, p.rightCS.id)
+		p.eatCount++
 
 		time.Sleep(100 * time.Millisecond) // philosophers need time to eat too :);
 
@@ -98,6 +100,7 @@ func (p *Philo) eat(randomOrder bool) {
 }
 
 func main() {
+
 	Csticks := make([]*ChopS, 5)
 	for i := 0; i < 5; i++ {
 		stick := new(sync.Mutex)
@@ -105,7 +108,7 @@ func main() {
 	}
 	philos := make([]*Philo, 5)
 	for i := 0; i < 5; i++ {
-		philos[i] = &Philo{i + 1, Csticks[i], Csticks[(i+1)%5]}
+		philos[i] = &Philo{i + 1, Csticks[i], Csticks[(i+1)%5], 0}
 	}
 
 	for i := 0; i < 5; i++ {
@@ -121,6 +124,13 @@ func main() {
 		}
 	}
 	wg.Wait()
+
+	fmt.Println("\nHosted adjacent pairs {0,1} {1,2} {2,3} {3,4} {4,0}")
+	fmt.Println("These are the cases where Philosophers may compete for the same chopstick.")
+	fmt.Println("Each philosopher eats three times with another philosopher")
+	for _, philo := range philos {
+		fmt.Printf("Philosopher %d eat %d times\n", philo.id, philo.eatCount)
+	}
 }
 
 // HostPhilosopherPair : hosts a pair of philosophers and adds two entries to wait group
