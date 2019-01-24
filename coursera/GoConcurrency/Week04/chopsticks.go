@@ -35,7 +35,7 @@ var on sync.Once
 var wg sync.WaitGroup
 
 func setup() {
-	fmt.Println("This will host adjacent pairs {0,1} {1,2} {2,3} {3,4} {4,0}")
+	fmt.Println("This will host adjacent pairs {1,2} {2,3} {3,4} {4,5} {5,1}")
 	fmt.Println("These are the cases where Philosophers may compete for the same chopstick.")
 }
 
@@ -116,7 +116,7 @@ func main() {
 			if i != j && (i+1 == j || (i+1)%5 == j) {
 
 				/*
-				 This will host adjacent pairs 0,1 1,2 2,3 3,4 4,0.
+				 This will host adjacent pairs {1,2} {2,3} {3,4} {4,5} {5,1}.
 				 These are the cases where Philosophers may compete for the same chopstick.
 				*/
 				HostPhilosopherPair(philos[i], philos[j])
@@ -125,9 +125,9 @@ func main() {
 	}
 	wg.Wait()
 
-	fmt.Println("\nHosted adjacent pairs {0,1} {1,2} {2,3} {3,4} {4,0}")
+	fmt.Println("\nEach philosopher eats three times with an adjacent philosopher")
+	fmt.Println("Hosted adjacent pairs {1,2} {2,3} {3,4} {4,5} {5,1}")
 	fmt.Println("These are the cases where Philosophers may compete for the same chopstick.")
-	fmt.Println("Each philosopher eats three times with another philosopher")
 	for _, philo := range philos {
 		fmt.Printf("Philosopher %d eat %d times\n", philo.id, philo.eatCount)
 	}
