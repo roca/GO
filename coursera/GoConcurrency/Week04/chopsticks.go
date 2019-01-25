@@ -34,11 +34,6 @@ type Philo struct {
 var on sync.Once
 var wg sync.WaitGroup
 
-func setup() {
-	fmt.Println("This will host adjacent pairs {1,2} {2,3} {3,4} {4,5} {5,1}")
-	fmt.Println("These are the cases where Philosophers may compete for the same chopstick.")
-}
-
 /*
 	eat(true): philosophers pick up chopsicks in a random order.
 		A deadlock can occur in this case.
@@ -48,8 +43,6 @@ func setup() {
 		Seems to avoid deadlocks in this case.
 */
 func (p *Philo) eat(randomOrder bool) {
-
-	on.Do(setup)
 
 	for i := 0; i < 3; i++ {
 
@@ -70,7 +63,7 @@ func (p *Philo) eat(randomOrder bool) {
 			p.rightCS.isBeingUsed = true
 		}
 
-		fmt.Printf("philosopher %d starting to eat with copstick left %d and right %d\n", p.id, p.leftCS.id, p.rightCS.id)
+		fmt.Printf("\tphilosopher %d starting to eat with copstick left %d and right %d\n", p.id, p.leftCS.id, p.rightCS.id)
 		p.eatCount++
 
 		time.Sleep(100 * time.Millisecond) // philosophers need time to eat too :);
@@ -92,7 +85,7 @@ func (p *Philo) eat(randomOrder bool) {
 			p.rightCS.stick.Unlock()
 		}
 
-		fmt.Printf("philosopher %d finishing eating with copstick left %d and right %d\n", p.id, p.leftCS.id, p.rightCS.id)
+		fmt.Printf("\tphilosopher %d finishing eating with copstick left %d and right %d\n", p.id, p.leftCS.id, p.rightCS.id)
 
 	}
 	wg.Done()
@@ -111,6 +104,9 @@ func main() {
 		philos[i] = &Philo{i + 1, Csticks[i], Csticks[(i+1)%5], 0}
 	}
 
+	fmt.Println("Each philosopher eats three times with an adjacent philosopher")
+	fmt.Println("Hosted adjacent pairs {1,2} {2,3} {3,4} {4,5} {5,1}")
+	fmt.Println("These are the cases where Philosophers may compete for the same chopstick.")
 	for i := 0; i < 5; i++ {
 		for j := 0; j < 5; j++ {
 			if i != j && (i+1 == j || (i+1)%5 == j) {
@@ -120,22 +116,17 @@ func main() {
 				 These are the cases where Philosophers may compete for the same chopstick.
 				*/
 				HostPhilosopherPair(philos[i], philos[j])
+
 			}
 		}
-	}
-	wg.Wait()
-
-	fmt.Println("\nEach philosopher eats three times with an adjacent philosopher")
-	fmt.Println("Hosted adjacent pairs {1,2} {2,3} {3,4} {4,5} {5,1}")
-	fmt.Println("These are the cases where Philosophers may compete for the same chopstick.")
-	for _, philo := range philos {
-		fmt.Printf("Philosopher %d eat %d times\n", philo.id, philo.eatCount)
 	}
 }
 
 // HostPhilosopherPair : hosts a pair of philosophers and adds two entries to wait group
 func HostPhilosopherPair(philosopher1, philosopher2 *Philo) {
-	//fmt.Printf("*******************Hosting philosopher %d and %d\n", philosopher1.id, philosopher2.id)
+	fmt.Printf("\n******************* Hosting philosopher %d and %d\n", philosopher1.id, philosopher2.id)
+	philosopher1.eatCount = 0
+	philosopher2.eatCount = 0
 	wg.Add(2)
 	/*
 		 eat(true): philosophers pick up chopsicks in a random order.
@@ -145,6 +136,9 @@ func HostPhilosopherPair(philosopher1, philosopher2 *Philo) {
 				The chopsick with the lowest id gets picked up first.
 				Seems to avoid deadlocks in this case.
 	*/
-	go philosopher1.eat(false) // true: philosophers pick up chopsicks in a random order
-	go philosopher2.eat(false) // false: philosophers pick up chopsicks in a non-random order
+	go philosopher1.eat(true) // true: philosophers pick up chopsicks in a random order
+	go philosopher2.eat(true) // false: philosophers pick up chopsicks in a non-random order
+	wg.Wait()
+	fmt.Printf("Philosopher %d eat %d times\n", philosopher1.id, philosopher1.eatCount)
+	fmt.Printf("Philosopher %d eat %d times\n", philosopher2.id, philosopher2.eatCount)
 }
