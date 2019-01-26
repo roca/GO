@@ -1,0 +1,43 @@
+version: "3.2"
+ 
+services:
+    development:
+      container_name: development
+      build: 
+        context: .
+        dockerfile: .docker/development.dockerfile
+      ports:
+        - "3000:3000"
+      volumes:
+        - .:/go/src/github.com/GOCODE/udemy/MachineLearning
+      working_dir: /go/src/github.com/GOCODE/udemy/MachineLearning
+#     mysqldb:
+#       container_name: mysqldb
+#       build:
+#         context: .
+#         dockerfile: ./.docker/mysql.dockerfile
+#       restart: always
+#       environment:
+#         MYSQL_ROOT_PASSWORD: password
+#         MYSQL_DATABASE: byexample
+#         MYSQL_USER: root
+#         MYSQL_PASSWORD: password
+#       volumes:
+#         - "mysqldbdata:/var/lib/mysql"
+#       ports:
+#         - "3306:3306"
+#     postgresdb:
+#       container_name: postgresdb
+#       build:
+#         context: .
+#         dockerfile: .docker/postgres.dockerfile
+#       privileged: true
+#       ports:
+#         - "5432:5432"
+#       env_file:
+#         - ./.docker/pgsetup/postgres.env
+#       volumes:
+#         - "postgresdbdata:/var/lib/postgresql/data"
+# volumes:
+#   mysqldbdata:
+#   postgresdbdata:
