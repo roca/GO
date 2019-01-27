@@ -14,7 +14,7 @@ RUN go get github.com/patrickmn/go-cache
 RUN go get github.com/boltdb/bolt
 RUN go get github.com/gonum/matrix/mat64
 RUN go get github.com/gonum/floats
-RUN go gtet github.com/gonum/blas/blas64
+RUN go get github.com/gonum/blas/blas64
 
 EXPOSE 3000
 
