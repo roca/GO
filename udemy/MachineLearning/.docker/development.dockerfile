@@ -16,6 +16,12 @@ RUN go get github.com/gonum/matrix/mat64
 RUN go get github.com/gonum/floats
 RUN go get github.com/gonum/blas/blas64
 
+RUN go get github.com/gonum/stat
+RUN go get github.com/kniren/gota/dataframe
+RUN go get github.com/montanaflynn/stats
+
+RUN go get gonum.org/v1/plot
+
 EXPOSE 3000
 
 CMD ["tail","-f","/dev/null"]
