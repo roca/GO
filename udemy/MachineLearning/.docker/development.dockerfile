@@ -21,6 +21,7 @@ RUN go get github.com/kniren/gota/dataframe
 RUN go get github.com/montanaflynn/stats
 
 RUN go get gonum.org/v1/plot
+RUN go get github.com/gonum/mathext
 
 EXPOSE 3000
 
