@@ -22,6 +22,7 @@ RUN go get github.com/montanaflynn/stats
 
 RUN go get gonum.org/v1/plot
 RUN go get github.com/gonum/mathext
+RUN go get github.com/sajari/regression
 
 EXPOSE 3000
 
