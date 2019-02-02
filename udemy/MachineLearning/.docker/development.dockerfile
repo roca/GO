@@ -23,6 +23,10 @@ RUN go get github.com/montanaflynn/stats
 RUN go get gonum.org/v1/plot
 RUN go get github.com/gonum/mathext
 RUN go get github.com/sajari/regression
+RUN go get github.com/berkmancenter/ridge
+RUN go get github.com/sjwhitworth/golearn/base
+RUN go get github.com/sjwhitworth/golearn/evaluation
+RUN go get github.com/sjwhitworth/golearn/knn
 
 EXPOSE 3000
 
