@@ -27,6 +27,7 @@ RUN go get github.com/berkmancenter/ridge
 RUN go get github.com/sjwhitworth/golearn/base
 RUN go get github.com/sjwhitworth/golearn/evaluation
 RUN go get github.com/sjwhitworth/golearn/knn
+RUN go get github.com/mash/gokmeans
 
 EXPOSE 3000
 
