@@ -28,6 +28,7 @@ RUN go get github.com/sjwhitworth/golearn/base
 RUN go get github.com/sjwhitworth/golearn/evaluation
 RUN go get github.com/sjwhitworth/golearn/knn
 RUN go get github.com/mash/gokmeans
+RUN go get github.com/lytics/anomalyzer
 
 EXPOSE 3000
 
