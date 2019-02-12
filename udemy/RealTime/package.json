@@ -1,0 +1,15 @@
+{
+  "name": "realtime",
+  "version": "1.0.0",
+  "description": "Realtime app",
+  "main": "app.js",
+  "scripts": {
+    "start": "serve",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Romel Campbell",
+  "license": "ISC",
+  "dependencies": {
+    "serve": "^10.1.2"
+  }
+}

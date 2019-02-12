@@ -1,7 +1,7 @@
 class Channel extends React.Component{
     render() {
         return(
-            <li>Channel name</li>
+            <li>Channel Name</li>
         )
     }
 }
