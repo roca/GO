@@ -1,16 +1,14 @@
 version: "2"
 services:
   node:
-    image: "node:8"
-    user: "node"
+    build:
+      context: .
+      dockerfile: ./Dockerfile    
     working_dir: /home/node/app
     environment:
       - NODE_ENV=production
       - PORT=3000
     volumes:
       - ./:/home/node/app
-    expose:
-      - "3000"
     ports:
       - "3000:3000"
-    command: "npm start"
