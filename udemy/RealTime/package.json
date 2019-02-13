@@ -10,6 +10,12 @@
   "author": "Romel Campbell",
   "license": "ISC",
   "dependencies": {
-    "serve": "^10.1.2"
+    "react": "^0.14.2",
+    "react-dom": "^0.14.2",
+    "serve": "^10.1.2",
+    "webpack": "^4.29.3"
+  },
+  "devDependencies": {
+    "webpack-cli": "^3.2.3"
   }
 }
