@@ -44,9 +44,10 @@
 /* 0 */
 /***/ (function(module, exports) {
 
-	"use strict";
-
 	//ReactDOM.render(<ChannelSection />, document.getElementById('app'));
+	'use strict';
+
+	alert('this is an alert');
 
 /***/ })
 /******/ ]);
