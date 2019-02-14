@@ -1,0 +1,1 @@
+//ReactDOM.render(<ChannelSection />, document.getElementById('app'));
