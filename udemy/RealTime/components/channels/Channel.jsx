@@ -8,7 +8,6 @@ class Channel extends Component{
     }
     render() {
         const {channel} = this.props;
-        console.log(channel);
         return(
             <li>
                 <a onClick={this.onClick.bind(this)}>
