@@ -6,7 +6,6 @@ class ChannelForm extends Component {
         e.preventDefault();
         const node = this.refs.channel;
         const channelName = node.value;
-        console.log(channelName);
         addChannel(channelName);
         node.value = '';
     }

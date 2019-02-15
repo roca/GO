@@ -14,18 +14,17 @@ class App extends Component{
         // TODO: Get Channels Message
     }   
 
-    addChannel(namel) {
-        console.log('name:' + name);
+    addChannel(name) {
         let {channels} = this.state;
         channels.push({id: channels.length, name});
         this.setState({channels});
-        // TODO: Send to server
+         // TODO: Send to server
     }
 
     render() {
         return (
             <ChannelSection 
-                {...this.state} 
+                channels={this.state.channels} 
                 setChannel={this.setChannel.bind(this)} 
                 addChannel={this.addChannel.bind(this)}/>
         );
