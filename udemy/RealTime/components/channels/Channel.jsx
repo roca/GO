@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 
-class Channel extends React.Component{
+class Channel extends Component{
     onClick() {
         e.preventDefault();
         const {setChannel, channel} = this.props;
@@ -19,8 +19,8 @@ class Channel extends React.Component{
 }
 
 Channel.propTypes = {
-    channel: React.ProTypes.object.isRequired,
-    setChannel: React.ProTypes.func.isRequired
+    channel: React.PropTypes.object.isRequired,
+    setChannel: React.PropTypes.func.isRequired
 }
 
 export default Channel;
