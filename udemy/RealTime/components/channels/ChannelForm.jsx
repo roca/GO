@@ -1,3 +1,5 @@
+import React, {Component} from 'react';
+
 class ChannelForm extends React.Component {
     constructor(props){
         super(props);

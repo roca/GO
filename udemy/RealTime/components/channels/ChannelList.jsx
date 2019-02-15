@@ -1,3 +1,6 @@
+import React, {Component} from 'react';
+import Channel from './Channel.jsx';
+
 class ChannelList extends React.Component {
     render() {
         return (
