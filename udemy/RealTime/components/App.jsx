@@ -5,12 +5,14 @@ class App extends Component{
     constructor(props){
         super(props);
         this.state = {
-            channels: []
+            channels: [],
+            activeChannel: {}
         };
     }
 
     setChannel(activeChannel) {
         this.setState({activeChannel});
+        console.log('Get Channels Message');
         // TODO: Get Channels Message
     }   
 
@@ -23,11 +25,15 @@ class App extends Component{
 
     render() {
         return (
-            <ChannelSection 
-                channels={this.state.channels} 
-                setChannel={this.setChannel.bind(this)} 
-                addChannel={this.addChannel.bind(this)}/>
-        );
+            <div className='app'>
+                <div className='nav'>
+                    <ChannelSection 
+                        {...this.state} 
+                        setChannel={this.setChannel.bind(this)} 
+                        addChannel={this.addChannel.bind(this)}/>
+                </div>
+            </div>
+         );
     }
 }
 

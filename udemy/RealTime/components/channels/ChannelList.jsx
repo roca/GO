@@ -3,12 +3,11 @@ import Channel from './Channel.jsx';
 
 class ChannelList extends Component {
     render() {
-        const {channels, setChannel} = this.props;
          return (
             <ul>{
-                channels.map( (channel,index) => {
+                this.props.channels.map( (channel,index) => {
                      return (
-                       <Channel key={index} channel={channel} setChannel={setChannel} />
+                       <Channel key={index} channel={channel} {...this.props}/>
                      );
                    
                 })
@@ -19,7 +18,8 @@ class ChannelList extends Component {
 
 ChannelList.propTypes = {
     channels: React.PropTypes.array.isRequired,
-    setChannel: React.PropTypes.func.isRequired
+    setChannel: React.PropTypes.func.isRequired,
+    activeChannel: React.PropTypes.object.isRequired
 }
 
 export default ChannelList;
