@@ -25,7 +25,7 @@ class App extends Component{
          // TODO: Send to server
     }
 
-    addUser(name) {
+    setUserName(name) {
         let {users} = this.state;
         users.push({id: users.length, name});
         this.setState({users});
@@ -42,7 +42,7 @@ class App extends Component{
                         addChannel={this.addChannel.bind(this)}/>
                     <UserSection 
                         {...this.state} 
-                        addUser={this.addUser.bind(this)}/>
+                        setUserName={this.setUserName.bind(this)}/>
                 </div>
                 
             </div>

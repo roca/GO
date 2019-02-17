@@ -1,10 +1,10 @@
 import React, {Component} from 'react';
 
-class User extends Comment{
+class User extends Component{
     render() {
         return (
             <li>
-                {this.compareDocumentPosition.user.name}
+                {this.props.user.name}
             </li>
         );
     }

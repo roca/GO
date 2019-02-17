@@ -19825,8 +19825,8 @@
 	            // TODO: Send to server
 	        }
 	    }, {
-	        key: 'addUser',
-	        value: function addUser(name) {
+	        key: 'setUserName',
+	        value: function setUserName(name) {
 	            var users = this.state.users;
 
 	            users.push({ id: users.length, name: name });
@@ -19846,7 +19846,7 @@
 	                        setChannel: this.setChannel.bind(this),
 	                        addChannel: this.addChannel.bind(this) })),
 	                    _react2['default'].createElement(_usersUserSectionJsx2['default'], _extends({}, this.state, {
-	                        addUser: this.addUser.bind(this) }))
+	                        setUserName: this.setUserName.bind(this) }))
 	                )
 	            );
 	        }
@@ -20223,7 +20223,7 @@
 
 	UserSection.propTypes = {
 	    users: _react2['default'].PropTypes.array.isRequired,
-	    addUser: _react2['default'].PropTypes.func.isRequired
+	    setUserName: _react2['default'].PropTypes.func.isRequired
 	};
 
 	exports['default'] = UserSection;
@@ -20265,12 +20265,12 @@
 	    _createClass(UserForm, [{
 	        key: 'onSubmit',
 	        value: function onSubmit(e) {
-	            var addUser = this.props.addUser;
+	            var setUserName = this.props.setUserName;
 
 	            e.preventDefault();
 	            var node = this.refs.user;
 	            var userName = node.value;
-	            addUser(userName);
+	            setUserName(userName);
 	            node.value = '';
 	        }
 	    }, {
@@ -20297,7 +20297,7 @@
 	})(_react.Component);
 
 	UserForm.propTypes = {
-	    addUser: _react2['default'].PropTypes.func.isRequired
+	    setUserName: _react2['default'].PropTypes.func.isRequired
 	};
 
 	exports['default'] = UserForm;
@@ -20387,8 +20387,8 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var User = (function (_Comment) {
-	    _inherits(User, _Comment);
+	var User = (function (_Component) {
+	    _inherits(User, _Component);
 
 	    function User() {
 	        _classCallCheck(this, User);
@@ -20402,13 +20402,13 @@
 	            return _react2['default'].createElement(
 	                'li',
 	                null,
-	                this.compareDocumentPosition.user.name
+	                this.props.user.name
 	            );
 	        }
 	    }]);
 
 	    return User;
-	})(Comment);
+	})(_react.Component);
 
 	User.propTypes = {
 	    user: _react2['default'].PropTypes.object.isRequired

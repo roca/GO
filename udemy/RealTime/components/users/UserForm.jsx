@@ -2,11 +2,11 @@ import React, {Component} from 'react';
 
 class UserForm extends Component {
     onSubmit(e) {
-        const {addUser} = this.props;
+        const {setUserName} = this.props;
         e.preventDefault();
         const node = this.refs.user;
         const userName = node.value;
-        addUser(userName);
+        setUserName(userName);
         node.value = '';
     }
     render() {
@@ -26,7 +26,7 @@ class UserForm extends Component {
 }
 
 UserForm.propTypes = {
-    addUser: React.PropTypes.func.isRequired
+    setUserName: React.PropTypes.func.isRequired
 }
 
 export default UserForm;
