@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import ChannelSection from './channels/ChannelSection.jsx';
 import UserSection from './users/UserSection.jsx';
+import MessageSection from './messages/MessageSection.jsx';
 
 class App extends Component{
     constructor(props){
@@ -43,6 +44,10 @@ class App extends Component{
                     <UserSection 
                         {...this.state} 
                         setUserName={this.setUserName.bind(this)}/>
+                </div>
+                <div className='nav'>
+                    <MessageSection
+                        {...this.state}/>
                 </div>
                 
             </div>

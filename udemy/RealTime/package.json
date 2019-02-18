@@ -10,13 +10,14 @@
   "author": "Romel Campbell",
   "license": "ISC",
   "devDependencies": {
-    "babel-loader": "^5.3.3",
     "babel-core": "^5.0.0",
+    "babel-loader": "^5.3.3",
     "react": "^0.14.2",
     "react-dom": "^0.14.2",
     "webpack": "^1.12.2"
   },
   "dependencies": {
+    "fecha": "^3.0.2",
     "serve": "^10.1.2"
   }
 }
