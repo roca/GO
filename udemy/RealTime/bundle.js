@@ -19809,7 +19809,8 @@
 	            channels: [],
 	            users: [],
 	            messages: [],
-	            activeChannel: {}
+	            activeChannel: {},
+	            connected: false
 	        };
 	    }
 
@@ -19821,13 +19822,53 @@
 	            // TODO: Get Channels Message
 	        }
 	    }, {
+	        key: 'componentDidMount',
+	        value: function componentDidMount() {
+	            var ws = this.ws = new WebSocket('ws://echo.websocket.org');
+	            ws.onmessage = this.message.bind(this);
+	            ws.onopen = this.open.bind(this);
+	            ws.onclose = this.close.bind(this);
+	        }
+	    }, {
+	        key: 'message',
+	        value: function message(e) {
+	            var event = JSON.parse(e.data);
+	            if (event.name === 'channel add') {
+	                this.newChannel(event.data);
+	            }
+	        }
+	    }, {
+	        key: 'open',
+	        value: function open() {
+	            this.setState({ connected: true });
+	        }
+	    }, {
+	        key: 'close',
+	        value: function close() {
+	            this.setState({ connected: false });
+	        }
+	    }, {
+	        key: 'newChannel',
+	        value: function newChannel(channel) {
+	            var channels = this.state.channels;
+
+	            channels.push(channel);
+	            this.setState({ channels: channels });
+	        }
+	    }, {
 	        key: 'addChannel',
 	        value: function addChannel(name) {
 	            var channels = this.state.channels;
 
-	            channels.push({ id: channels.length, name: name });
-	            this.setState({ channels: channels });
 	            // TODO: Send to server
+	            var msg = {
+	                name: 'channel add',
+	                data: {
+	                    id: channels.length,
+	                    name: name
+	                }
+	            };
+	            this.ws.send(JSON.stringify(msg));
 	        }
 	    }, {
 	        key: 'setUserName',
@@ -20493,7 +20534,7 @@
 	                    _react2['default'].createElement(
 	                        'strong',
 	                        null,
-	                        activeChannel.name !== undefined ? activeChannel.name : 'Select a Channel'
+	                        activeChannel.name !== undefined ? activeChannel.name : 'Select A Channel'
 	                    )
 	                ),
 	                _react2['default'].createElement(
