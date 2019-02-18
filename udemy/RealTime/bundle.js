@@ -20493,7 +20493,7 @@
 	                    _react2['default'].createElement(
 	                        'strong',
 	                        null,
-	                        activeChannel.name
+	                        activeChannel.name !== undefined ? activeChannel.name : 'Select a Channel'
 	                    )
 	                ),
 	                _react2['default'].createElement(
