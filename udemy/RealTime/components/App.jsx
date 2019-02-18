@@ -9,13 +9,14 @@ class App extends Component{
         this.state = {
             channels: [],
             users: [],
+            messages: [],
             activeChannel: {}
         };
     }
 
     setChannel(activeChannel) {
         this.setState({activeChannel});
-        console.log('Get Channels Message');
+        //console.log('Get Channels Message');
         // TODO: Get Channels Message
     }   
 
@@ -33,6 +34,15 @@ class App extends Component{
          // TODO: Send to server
     }
 
+    addMessage(body) {
+        let{messages, users} = this.state;
+        let createdAt = new Date;
+        let author = users.length > 0 ? users[0].name : 'anonymous';
+        messages.push({id: messages.length, body, createdAt, author});
+        this.setState({messages});
+        // TODO: Send to server
+
+    }
     render() {
         return (
             <div className='app'>
@@ -45,11 +55,9 @@ class App extends Component{
                         {...this.state} 
                         setUserName={this.setUserName.bind(this)}/>
                 </div>
-                <div className='nav'>
-                    <MessageSection
-                        {...this.state}/>
-                </div>
-                
+                <MessageSection
+                    {...this.state}
+                    addMessage={this.addMessage.bind(this)}/>
             </div>
          );
     }

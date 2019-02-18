@@ -11,7 +11,7 @@ class Message extends Component{
                     <strong>{message.author}</strong>
                     <i className='timestamp'>{createdAt}</i>
                 </div>
-                <div>{message.body}</div>
+                <div className='body'>{message.body}</div>
             </li>
         );
     }

@@ -19794,6 +19794,10 @@
 
 	var _usersUserSectionJsx2 = _interopRequireDefault(_usersUserSectionJsx);
 
+	var _messagesMessageSectionJsx = __webpack_require__(168);
+
+	var _messagesMessageSectionJsx2 = _interopRequireDefault(_messagesMessageSectionJsx);
+
 	var App = (function (_Component) {
 	    _inherits(App, _Component);
 
@@ -19804,6 +19808,7 @@
 	        this.state = {
 	            channels: [],
 	            users: [],
+	            messages: [],
 	            activeChannel: {}
 	        };
 	    }
@@ -19812,7 +19817,7 @@
 	        key: 'setChannel',
 	        value: function setChannel(activeChannel) {
 	            this.setState({ activeChannel: activeChannel });
-	            console.log('Get Channels Message');
+	            //console.log('Get Channels Message');
 	            // TODO: Get Channels Message
 	        }
 	    }, {
@@ -19834,6 +19839,19 @@
 	            // TODO: Send to server
 	        }
 	    }, {
+	        key: 'addMessage',
+	        value: function addMessage(body) {
+	            var _state = this.state;
+	            var messages = _state.messages;
+	            var users = _state.users;
+
+	            var createdAt = new Date();
+	            var author = users.length > 0 ? users[0].name : 'anonymous';
+	            messages.push({ id: messages.length, body: body, createdAt: createdAt, author: author });
+	            this.setState({ messages: messages });
+	            // TODO: Send to server
+	        }
+	    }, {
 	        key: 'render',
 	        value: function render() {
 	            return _react2['default'].createElement(
@@ -19847,7 +19865,9 @@
 	                        addChannel: this.addChannel.bind(this) })),
 	                    _react2['default'].createElement(_usersUserSectionJsx2['default'], _extends({}, this.state, {
 	                        setUserName: this.setUserName.bind(this) }))
-	                )
+	                ),
+	                _react2['default'].createElement(_messagesMessageSectionJsx2['default'], _extends({}, this.state, {
+	                    addMessage: this.addMessage.bind(this) }))
 	            );
 	        }
 	    }]);
@@ -20272,6 +20292,7 @@
 	            var userName = node.value;
 	            setUserName(userName);
 	            node.value = '';
+	            //node.disabled = true;
 	        }
 	    }, {
 	        key: 'render',
@@ -20416,6 +20437,635 @@
 
 	exports['default'] = User;
 	module.exports = exports['default'];
+
+/***/ }),
+/* 168 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	    value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _MessageFormJsx = __webpack_require__(169);
+
+	var _MessageFormJsx2 = _interopRequireDefault(_MessageFormJsx);
+
+	var _MessageListJsx = __webpack_require__(170);
+
+	var _MessageListJsx2 = _interopRequireDefault(_MessageListJsx);
+
+	var MessageSection = (function (_Component) {
+	    _inherits(MessageSection, _Component);
+
+	    function MessageSection() {
+	        _classCallCheck(this, MessageSection);
+
+	        _get(Object.getPrototypeOf(MessageSection.prototype), 'constructor', this).apply(this, arguments);
+	    }
+
+	    _createClass(MessageSection, [{
+	        key: 'render',
+	        value: function render() {
+	            var activeChannel = this.props.activeChannel;
+
+	            return _react2['default'].createElement(
+	                'div',
+	                { className: 'messages-container panel panel-default' },
+	                _react2['default'].createElement(
+	                    'div',
+	                    { className: 'panel-heading' },
+	                    _react2['default'].createElement(
+	                        'strong',
+	                        null,
+	                        activeChannel.name
+	                    )
+	                ),
+	                _react2['default'].createElement(
+	                    'div',
+	                    { className: 'panel-body messages' },
+	                    _react2['default'].createElement(_MessageListJsx2['default'], this.props),
+	                    _react2['default'].createElement(_MessageFormJsx2['default'], this.props)
+	                )
+	            );
+	        }
+	    }]);
+
+	    return MessageSection;
+	})(_react.Component);
+
+	MessageSection.propTypes = {
+	    messages: _react2['default'].PropTypes.array.isRequired,
+	    activeChannel: _react2['default'].PropTypes.object.isRequired,
+	    addMessage: _react2['default'].PropTypes.func.isRequired
+	};
+
+	exports['default'] = MessageSection;
+	module.exports = exports['default'];
+
+/***/ }),
+/* 169 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	    value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var MessageForm = (function (_Component) {
+	    _inherits(MessageForm, _Component);
+
+	    function MessageForm() {
+	        _classCallCheck(this, MessageForm);
+
+	        _get(Object.getPrototypeOf(MessageForm.prototype), 'constructor', this).apply(this, arguments);
+	    }
+
+	    _createClass(MessageForm, [{
+	        key: 'onSubmit',
+	        value: function onSubmit(e) {
+	            e.preventDefault();
+	            var node = this.refs.message;
+	            var message = node.value;
+	            this.props.addMessage(message);
+	            node.value = '';
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            var input = undefined;
+	            if (this.props.activeChannel.id !== undefined) {
+	                input = _react2['default'].createElement('input', {
+	                    ref: 'message',
+	                    type: 'text',
+	                    className: 'form-control',
+	                    placeholder: 'Add Message...' });
+	            }
+	            return _react2['default'].createElement(
+	                'form',
+	                { onSubmit: this.onSubmit.bind(this) },
+	                _react2['default'].createElement(
+	                    'div',
+	                    { className: 'form-group' },
+	                    input
+	                )
+	            );
+	        }
+	    }]);
+
+	    return MessageForm;
+	})(_react.Component);
+
+	MessageForm.propTypes = {
+	    activeChannel: _react2['default'].PropTypes.object.isRequired,
+	    addMessage: _react2['default'].PropTypes.func.isRequired
+	};
+
+	exports['default'] = MessageForm;
+	module.exports = exports['default'];
+
+/***/ }),
+/* 170 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	    value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _MessageJsx = __webpack_require__(171);
+
+	var _MessageJsx2 = _interopRequireDefault(_MessageJsx);
+
+	var MessageList = (function (_Component) {
+	    _inherits(MessageList, _Component);
+
+	    function MessageList() {
+	        _classCallCheck(this, MessageList);
+
+	        _get(Object.getPrototypeOf(MessageList.prototype), 'constructor', this).apply(this, arguments);
+	    }
+
+	    _createClass(MessageList, [{
+	        key: 'render',
+	        value: function render() {
+	            return _react2['default'].createElement(
+	                'ul',
+	                null,
+	                this.props.messages.map(function (message, index) {
+	                    return _react2['default'].createElement(_MessageJsx2['default'], { key: index, message: message });
+	                })
+	            );
+	        }
+	    }]);
+
+	    return MessageList;
+	})(_react.Component);
+
+	MessageList.propTypes = {
+	    messages: _react2['default'].PropTypes.array.isRequired
+	};
+
+	exports['default'] = MessageList;
+	module.exports = exports['default'];
+
+/***/ }),
+/* 171 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	    value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _fecha = __webpack_require__(172);
+
+	var _fecha2 = _interopRequireDefault(_fecha);
+
+	var Message = (function (_Component) {
+	    _inherits(Message, _Component);
+
+	    function Message() {
+	        _classCallCheck(this, Message);
+
+	        _get(Object.getPrototypeOf(Message.prototype), 'constructor', this).apply(this, arguments);
+	    }
+
+	    _createClass(Message, [{
+	        key: 'render',
+	        value: function render() {
+	            var message = this.props.message;
+
+	            var createdAt = _fecha2['default'].format(message.createdAt, 'HH:mm:ss MM/DD/YYYY');
+	            return _react2['default'].createElement(
+	                'li',
+	                { className: 'message' },
+	                _react2['default'].createElement(
+	                    'div',
+	                    { className: 'author' },
+	                    _react2['default'].createElement(
+	                        'strong',
+	                        null,
+	                        message.author
+	                    ),
+	                    _react2['default'].createElement(
+	                        'i',
+	                        { className: 'timestamp' },
+	                        createdAt
+	                    )
+	                ),
+	                _react2['default'].createElement(
+	                    'div',
+	                    { className: 'body' },
+	                    message.body
+	                )
+	            );
+	        }
+	    }]);
+
+	    return Message;
+	})(_react.Component);
+
+	Message.propTypes = {
+	    message: _react2['default'].PropTypes.object.isRequired
+	};
+
+	exports['default'] = Message;
+	module.exports = exports['default'];
+
+/***/ }),
+/* 172 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	(function (global, factory) {
+	   true ? module.exports = factory() :
+	  typeof define === 'function' && define.amd ? define(factory) :
+	  (global.fecha = factory());
+	}(this, (function () { 'use strict';
+
+	  /**
+	   * Parse or format dates
+	   * @class fecha
+	   */
+	  var fecha = {};
+	  var token = /d{1,4}|M{1,4}|YY(?:YY)?|S{1,3}|Do|ZZ|([HhMsDm])\1?|[aA]|"[^"]*"|'[^']*'/g;
+	  var twoDigits = '\\d\\d?';
+	  var threeDigits = '\\d{3}';
+	  var fourDigits = '\\d{4}';
+	  var word = '[^\\s]+';
+	  var literal = /\[([^]*?)\]/gm;
+	  var noop = function () {
+	  };
+
+	  function regexEscape(str) {
+	    return str.replace( /[|\\{()[^$+*?.-]/g, '\\$&');
+	  }
+
+	  function shorten(arr, sLen) {
+	    var newArr = [];
+	    for (var i = 0, len = arr.length; i < len; i++) {
+	      newArr.push(arr[i].substr(0, sLen));
+	    }
+	    return newArr;
+	  }
+
+	  function monthUpdate(arrName) {
+	    return function (d, v, i18n) {
+	      var index = i18n[arrName].indexOf(v.charAt(0).toUpperCase() + v.substr(1).toLowerCase());
+	      if (~index) {
+	        d.month = index;
+	      }
+	    };
+	  }
+
+	  function pad(val, len) {
+	    val = String(val);
+	    len = len || 2;
+	    while (val.length < len) {
+	      val = '0' + val;
+	    }
+	    return val;
+	  }
+
+	  var dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+	  var monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+	  var monthNamesShort = shorten(monthNames, 3);
+	  var dayNamesShort = shorten(dayNames, 3);
+	  fecha.i18n = {
+	    dayNamesShort: dayNamesShort,
+	    dayNames: dayNames,
+	    monthNamesShort: monthNamesShort,
+	    monthNames: monthNames,
+	    amPm: ['am', 'pm'],
+	    DoFn: function DoFn(D) {
+	      return D + ['th', 'st', 'nd', 'rd'][D % 10 > 3 ? 0 : (D - D % 10 !== 10) * D % 10];
+	    }
+	  };
+
+	  var formatFlags = {
+	    D: function(dateObj) {
+	      return dateObj.getDate();
+	    },
+	    DD: function(dateObj) {
+	      return pad(dateObj.getDate());
+	    },
+	    Do: function(dateObj, i18n) {
+	      return i18n.DoFn(dateObj.getDate());
+	    },
+	    d: function(dateObj) {
+	      return dateObj.getDay();
+	    },
+	    dd: function(dateObj) {
+	      return pad(dateObj.getDay());
+	    },
+	    ddd: function(dateObj, i18n) {
+	      return i18n.dayNamesShort[dateObj.getDay()];
+	    },
+	    dddd: function(dateObj, i18n) {
+	      return i18n.dayNames[dateObj.getDay()];
+	    },
+	    M: function(dateObj) {
+	      return dateObj.getMonth() + 1;
+	    },
+	    MM: function(dateObj) {
+	      return pad(dateObj.getMonth() + 1);
+	    },
+	    MMM: function(dateObj, i18n) {
+	      return i18n.monthNamesShort[dateObj.getMonth()];
+	    },
+	    MMMM: function(dateObj, i18n) {
+	      return i18n.monthNames[dateObj.getMonth()];
+	    },
+	    YY: function(dateObj) {
+	      return pad(String(dateObj.getFullYear()), 4).substr(2);
+	    },
+	    YYYY: function(dateObj) {
+	      return pad(dateObj.getFullYear(), 4);
+	    },
+	    h: function(dateObj) {
+	      return dateObj.getHours() % 12 || 12;
+	    },
+	    hh: function(dateObj) {
+	      return pad(dateObj.getHours() % 12 || 12);
+	    },
+	    H: function(dateObj) {
+	      return dateObj.getHours();
+	    },
+	    HH: function(dateObj) {
+	      return pad(dateObj.getHours());
+	    },
+	    m: function(dateObj) {
+	      return dateObj.getMinutes();
+	    },
+	    mm: function(dateObj) {
+	      return pad(dateObj.getMinutes());
+	    },
+	    s: function(dateObj) {
+	      return dateObj.getSeconds();
+	    },
+	    ss: function(dateObj) {
+	      return pad(dateObj.getSeconds());
+	    },
+	    S: function(dateObj) {
+	      return Math.round(dateObj.getMilliseconds() / 100);
+	    },
+	    SS: function(dateObj) {
+	      return pad(Math.round(dateObj.getMilliseconds() / 10), 2);
+	    },
+	    SSS: function(dateObj) {
+	      return pad(dateObj.getMilliseconds(), 3);
+	    },
+	    a: function(dateObj, i18n) {
+	      return dateObj.getHours() < 12 ? i18n.amPm[0] : i18n.amPm[1];
+	    },
+	    A: function(dateObj, i18n) {
+	      return dateObj.getHours() < 12 ? i18n.amPm[0].toUpperCase() : i18n.amPm[1].toUpperCase();
+	    },
+	    ZZ: function(dateObj) {
+	      var o = dateObj.getTimezoneOffset();
+	      return (o > 0 ? '-' : '+') + pad(Math.floor(Math.abs(o) / 60) * 100 + Math.abs(o) % 60, 4);
+	    }
+	  };
+
+	  var parseFlags = {
+	    D: [twoDigits, function (d, v) {
+	      d.day = v;
+	    }],
+	    Do: [twoDigits + word, function (d, v) {
+	      d.day = parseInt(v, 10);
+	    }],
+	    M: [twoDigits, function (d, v) {
+	      d.month = v - 1;
+	    }],
+	    YY: [twoDigits, function (d, v) {
+	      var da = new Date(), cent = +('' + da.getFullYear()).substr(0, 2);
+	      d.year = '' + (v > 68 ? cent - 1 : cent) + v;
+	    }],
+	    h: [twoDigits, function (d, v) {
+	      d.hour = v;
+	    }],
+	    m: [twoDigits, function (d, v) {
+	      d.minute = v;
+	    }],
+	    s: [twoDigits, function (d, v) {
+	      d.second = v;
+	    }],
+	    YYYY: [fourDigits, function (d, v) {
+	      d.year = v;
+	    }],
+	    S: ['\\d', function (d, v) {
+	      d.millisecond = v * 100;
+	    }],
+	    SS: ['\\d{2}', function (d, v) {
+	      d.millisecond = v * 10;
+	    }],
+	    SSS: [threeDigits, function (d, v) {
+	      d.millisecond = v;
+	    }],
+	    d: [twoDigits, noop],
+	    ddd: [word, noop],
+	    MMM: [word, monthUpdate('monthNamesShort')],
+	    MMMM: [word, monthUpdate('monthNames')],
+	    a: [word, function (d, v, i18n) {
+	      var val = v.toLowerCase();
+	      if (val === i18n.amPm[0]) {
+	        d.isPm = false;
+	      } else if (val === i18n.amPm[1]) {
+	        d.isPm = true;
+	      }
+	    }],
+	    ZZ: ['[^\\s]*?[\\+\\-]\\d\\d:?\\d\\d|[^\\s]*?Z', function (d, v) {
+	      var parts = (v + '').match(/([+-]|\d\d)/gi), minutes;
+
+	      if (parts) {
+	        minutes = +(parts[1] * 60) + parseInt(parts[2], 10);
+	        d.timezoneOffset = parts[0] === '+' ? minutes : -minutes;
+	      }
+	    }]
+	  };
+	  parseFlags.dd = parseFlags.d;
+	  parseFlags.dddd = parseFlags.ddd;
+	  parseFlags.DD = parseFlags.D;
+	  parseFlags.mm = parseFlags.m;
+	  parseFlags.hh = parseFlags.H = parseFlags.HH = parseFlags.h;
+	  parseFlags.MM = parseFlags.M;
+	  parseFlags.ss = parseFlags.s;
+	  parseFlags.A = parseFlags.a;
+
+
+	  // Some common format strings
+	  fecha.masks = {
+	    default: 'ddd MMM DD YYYY HH:mm:ss',
+	    shortDate: 'M/D/YY',
+	    mediumDate: 'MMM D, YYYY',
+	    longDate: 'MMMM D, YYYY',
+	    fullDate: 'dddd, MMMM D, YYYY',
+	    shortTime: 'HH:mm',
+	    mediumTime: 'HH:mm:ss',
+	    longTime: 'HH:mm:ss.SSS'
+	  };
+
+	  /***
+	   * Format a date
+	   * @method format
+	   * @param {Date|number} dateObj
+	   * @param {string} mask Format of the date, i.e. 'mm-dd-yy' or 'shortDate'
+	   */
+	  fecha.format = function (dateObj, mask, i18nSettings) {
+	    var i18n = i18nSettings || fecha.i18n;
+
+	    if (typeof dateObj === 'number') {
+	      dateObj = new Date(dateObj);
+	    }
+
+	    if (Object.prototype.toString.call(dateObj) !== '[object Date]' || isNaN(dateObj.getTime())) {
+	      throw new Error('Invalid Date in fecha.format');
+	    }
+
+	    mask = fecha.masks[mask] || mask || fecha.masks['default'];
+
+	    var literals = [];
+
+	    // Make literals inactive by replacing them with ??
+	    mask = mask.replace(literal, function($0, $1) {
+	      literals.push($1);
+	      return '??';
+	    });
+	    // Apply formatting rules
+	    mask = mask.replace(token, function ($0) {
+	      return $0 in formatFlags ? formatFlags[$0](dateObj, i18n) : $0.slice(1, $0.length - 1);
+	    });
+	    // Inline literal values back into the formatted value
+	    return mask.replace(/\?\?/g, function() {
+	      return literals.shift();
+	    });
+	  };
+
+	  /**
+	   * Parse a date string into an object, changes - into /
+	   * @method parse
+	   * @param {string} dateStr Date string
+	   * @param {string} format Date parse format
+	   * @returns {Date|boolean}
+	   */
+	  fecha.parse = function (dateStr, format, i18nSettings) {
+	    var i18n = i18nSettings || fecha.i18n;
+
+	    if (typeof format !== 'string') {
+	      throw new Error('Invalid format in fecha.parse');
+	    }
+
+	    format = fecha.masks[format] || format;
+
+	    // Avoid regular expression denial of service, fail early for really long strings
+	    // https://www.owasp.org/index.php/Regular_expression_Denial_of_Service_-_ReDoS
+	    if (dateStr.length > 1000) {
+	      return null;
+	    }
+
+	    var dateInfo = {};
+	    var parseInfo = [];
+	    var newFormat = regexEscape(format).replace(token, function ($0) {
+	      if (parseFlags[$0]) {
+	        var info = parseFlags[$0];
+	        parseInfo.push(info[1]);
+	        return '(' + info[0] + ')';
+	      }
+
+	      return $0;
+	    });
+	    var matches = dateStr.match(new RegExp(newFormat, 'i'));
+	    if (!matches) {
+	      return null;
+	    }
+
+	    for (var i = 1; i < matches.length; i++) {
+	      parseInfo[i - 1](dateInfo, matches[i], i18n);
+	    }
+
+	    var today = new Date();
+	    if (dateInfo.isPm === true && dateInfo.hour != null && +dateInfo.hour !== 12) {
+	      dateInfo.hour = +dateInfo.hour + 12;
+	    } else if (dateInfo.isPm === false && +dateInfo.hour === 12) {
+	      dateInfo.hour = 0;
+	    }
+
+	    var date;
+	    if (dateInfo.timezoneOffset != null) {
+	      dateInfo.minute = +(dateInfo.minute || 0) - +dateInfo.timezoneOffset;
+	      date = new Date(Date.UTC(dateInfo.year || today.getFullYear(), dateInfo.month || 0, dateInfo.day || 1,
+	        dateInfo.hour || 0, dateInfo.minute || 0, dateInfo.second || 0, dateInfo.millisecond || 0));
+	    } else {
+	      date = new Date(dateInfo.year || today.getFullYear(), dateInfo.month || 0, dateInfo.day || 1,
+	        dateInfo.hour || 0, dateInfo.minute || 0, dateInfo.second || 0, dateInfo.millisecond || 0);
+	    }
+	    return date;
+	  };
+
+	  return fecha;
+
+	})));
+
 
 /***/ })
 /******/ ]);

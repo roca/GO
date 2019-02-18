@@ -2,30 +2,35 @@ import React, {Component} from 'react';
 
 class MessageForm extends Component {
     onSubmit(e) {
-        const {addMessage} = this.props;
         e.preventDefault();
         const node = this.refs.message;
-        const messageName = node.value;
-        addMessage(messageName);
+        const message = node.value;
+        this.props.addMessage(message);
         node.value = '';
     }
     render() {
+        let input;
+        if(this.props.activeChannel.id !== undefined){
+            input = (
+                <input
+                    ref='message'
+                    type='text'
+                    className='form-control'
+                    placeholder='Add Message...' />
+            );
+        }
         return (
             <form onSubmit={this.onSubmit.bind(this)}>
-            <div className='form-group'>
-                <input  
-                    className='form-control'
-                    placeholder='Add Message'
-                    type='text'
-                    ref='message'
-                />
-            </div>
+                <div className='form-group'>
+                    {input}
+                </div>
             </form>
         );
     }
 }
 
 MessageForm.propTypes = {
+    activeChannel: React.PropTypes.object.isRequired,
     addMessage: React.PropTypes.func.isRequired
 }
 

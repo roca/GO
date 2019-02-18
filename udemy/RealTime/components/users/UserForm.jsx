@@ -8,6 +8,7 @@ class UserForm extends Component {
         const userName = node.value;
         setUserName(userName);
         node.value = '';
+        //node.disabled = true;
     }
     render() {
         return (
