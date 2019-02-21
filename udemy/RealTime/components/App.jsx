@@ -17,12 +17,6 @@ class App extends Component{
         };
     }
 
-    setChannel(activeChannel) {
-        this.setState({activeChannel});
-        //console.log('Get Channels Message');
-        // TODO: Get Channels Message
-    }   
-
     componentDidMount() {
         let socket = this.socket = new Socket();
         socket.on('connect', this.OnConnect.bind(this));
@@ -31,6 +25,13 @@ class App extends Component{
         socket.on('user add', this.onAddUser.bind(this));
         socket.on('user edit', this.onEditUser.bind(this));
         socket.on('user remove', this.onRemoveUser.bind(this));
+        socket.on('message add',this.onMessageAdd.bind(this));
+    }
+
+    onMessageAdd(message) {
+        let {messages} = this.state;
+        messages.push(message);
+        this.setState({messages});
     }
 
     onRemoveUser(removeUser){
@@ -60,12 +61,15 @@ class App extends Component{
 
     onConnect(){
         this.setState({connected: true});
+        this.socket.emit('channel subscribe');
+        this.socket.emit('user subscribe');
     }
 
     onDisConnect(){
         this.setState({connected: false});
     }
-    newChannel(channel){
+    
+    onAddChanne(channel){
         let {channels} = this.state;
         channels.push(channel);
         this.setState({channels});
@@ -75,19 +79,22 @@ class App extends Component{
         this.socket.emit('channel add', {name});
     }
 
+    setChannel(activeChannel) {
+        this.setState({activeChannel});
+        // TODO: Get Channels Message
+    }   
+
     setUserName(name) {
         this.socket.emit('user edit', {name});
     }
 
     addMessage(body) {
-        let{messages, users} = this.state;
-        let createdAt = new Date;
-        let author = users.length > 0 ? users[0].name : 'anonymous';
-        messages.push({id: messages.length, body, createdAt, author});
-        this.setState({messages});
-        // TODO: Send to server
+        let{activeChannel} = this.state;
+        this.socket.emit('message add', 
+            {id: activeChannel.id,body});
 
     }
+        //console.log('Get Channels Message');
     render() {
         return (
             <div className='app'>

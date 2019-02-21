@@ -19802,6 +19802,8 @@
 
 	var _socketJs2 = _interopRequireDefault(_socketJs);
 
+	var _constants = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"constants\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
+
 	var App = (function (_Component) {
 	    _inherits(App, _Component);
 
@@ -19819,20 +19821,71 @@
 	    }
 
 	    _createClass(App, [{
-	        key: 'setChannel',
-	        value: function setChannel(activeChannel) {
-	            this.setState({ activeChannel: activeChannel });
-	            //console.log('Get Channels Message');
-	            // TODO: Get Channels Message
-	        }
-	    }, {
 	        key: 'componentDidMount',
 	        value: function componentDidMount() {
-	            var ws = this.ws = new WebSocket('ws://echo.websocket.org');
+	            var socket = this.socket = new _socketJs2['default']();
+	            socket.on('connect', this.OnConnect.bind(this));
+	            socket.on('disconnect', this.onDisConnect.bind(this));
+	            socket.on('channel add', this.onAddChannel.bind(this));
+	            socket.on('user add', this.onAddUser.bind(this));
+	            socket.on('user edit', this.onEditUser.bind(this));
+	            socket.on('user remove', this.onRemoveUser.bind(this));
+	            socket.on('message add', this.onMessageAdd.bind(this));
 	        }
 	    }, {
-	        key: 'newChannel',
-	        value: function newChannel(channel) {
+	        key: 'onMessageAdd',
+	        value: function onMessageAdd(message) {
+	            var messages = this.state.messages;
+
+	            messages.push(message);
+	            this.setState({ messages: messages });
+	        }
+	    }, {
+	        key: 'onRemoveUser',
+	        value: function onRemoveUser(removeUser) {
+	            var users = this.state.users;
+
+	            users = users.filter(function (user) {
+	                return user.id !== removeUser.id;
+	            });
+	            this.setState({ users: users });
+	        }
+	    }, {
+	        key: 'onAddUser',
+	        value: function onAddUser(user) {
+	            var users = this.state.users;
+
+	            users.push(user);
+	            this.setState({ users: users });
+	        }
+	    }, {
+	        key: 'onEditUser',
+	        value: function onEditUser(editUser) {
+	            var users = this.state.users;
+
+	            users = users.map(function (user) {
+	                if (editUser.id === user.id) {
+	                    return editUser;
+	                }
+	                return user;
+	            });
+	            this.setState({ users: users });
+	        }
+	    }, {
+	        key: 'onConnect',
+	        value: function onConnect() {
+	            this.setState({ connected: true });
+	            this.socket.emit('channel subscribe');
+	            this.socket.emit('user subscribe');
+	        }
+	    }, {
+	        key: 'onDisConnect',
+	        value: function onDisConnect() {
+	            this.setState({ connected: false });
+	        }
+	    }, {
+	        key: 'onAddChanne',
+	        value: function onAddChanne(channel) {
 	            var channels = this.state.channels;
 
 	            channels.push(channel);
@@ -19841,40 +19894,28 @@
 	    }, {
 	        key: 'addChannel',
 	        value: function addChannel(name) {
-	            var channels = this.state.channels;
-
-	            // TODO: Send to server
-	            var msg = {
-	                name: 'channel add',
-	                data: {
-	                    id: channels.length,
-	                    name: name
-	                }
-	            };
-	            this.ws.send(JSON.stringify(msg));
+	            this.socket.emit('channel add', { name: name });
+	        }
+	    }, {
+	        key: 'setChannel',
+	        value: function setChannel(activeChannel) {
+	            this.setState({ activeChannel: activeChannel });
+	            // TODO: Get Channels Message
 	        }
 	    }, {
 	        key: 'setUserName',
 	        value: function setUserName(name) {
-	            var users = this.state.users;
-
-	            users.push({ id: users.length, name: name });
-	            this.setState({ users: users });
-	            // TODO: Send to server
+	            this.socket.emit('user edit', { name: name });
 	        }
 	    }, {
 	        key: 'addMessage',
 	        value: function addMessage(body) {
-	            var _state = this.state;
-	            var messages = _state.messages;
-	            var users = _state.users;
+	            var activeChannel = this.state.activeChannel;
 
-	            var createdAt = new Date();
-	            var author = users.length > 0 ? users[0].name : 'anonymous';
-	            messages.push({ id: messages.length, body: body, createdAt: createdAt, author: author });
-	            this.setState({ messages: messages });
-	            // TODO: Send to server
+	            this.socket.emit('message add', { id: activeChannel.id, body: body });
 	        }
+
+	        //console.log('Get Channels Message');
 	    }, {
 	        key: 'render',
 	        value: function render() {
