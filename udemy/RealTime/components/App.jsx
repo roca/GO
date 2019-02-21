@@ -3,7 +3,6 @@ import ChannelSection from './channels/ChannelSection.jsx';
 import UserSection from './users/UserSection.jsx';
 import MessageSection from './messages/MessageSection.jsx';
 import Socket from './../socket.js';
-import { SSL_OP_COOKIE_EXCHANGE } from 'constants';
 
 class App extends Component{
     constructor(props){
@@ -69,7 +68,7 @@ class App extends Component{
         this.setState({connected: false});
     }
     
-    onAddChanne(channel){
+    onAddChannel(channel){
         let {channels} = this.state;
         channels.push(channel);
         this.setState({channels});
@@ -81,7 +80,10 @@ class App extends Component{
 
     setChannel(activeChannel) {
         this.setState({activeChannel});
-        // TODO: Get Channels Message
+        this.socket.emit('message unsubscribe');
+        this.setState({messages: []});
+        this.socket.emit('message subscribe',
+            {channelId: activeChannel.id});
     }   
 
     setUserName(name) {

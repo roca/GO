@@ -19802,8 +19802,6 @@
 
 	var _socketJs2 = _interopRequireDefault(_socketJs);
 
-	var _constants = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"constants\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
-
 	var App = (function (_Component) {
 	    _inherits(App, _Component);
 
@@ -19884,8 +19882,8 @@
 	            this.setState({ connected: false });
 	        }
 	    }, {
-	        key: 'onAddChanne',
-	        value: function onAddChanne(channel) {
+	        key: 'onAddChannel',
+	        value: function onAddChannel(channel) {
 	            var channels = this.state.channels;
 
 	            channels.push(channel);
@@ -19900,7 +19898,9 @@
 	        key: 'setChannel',
 	        value: function setChannel(activeChannel) {
 	            this.setState({ activeChannel: activeChannel });
-	            // TODO: Get Channels Message
+	            this.socket.emit('message unsubscribe');
+	            this.setState({ messages: [] });
+	            this.socket.emit('message subscribe', { channelId: activeChannel.id });
 	        }
 	    }, {
 	        key: 'setUserName',
