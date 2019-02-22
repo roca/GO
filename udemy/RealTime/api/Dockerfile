@@ -1,10 +1,15 @@
-FROM golang:latest
+FROM golang:1.11-alpine
 
-RUN mkdir -p /go/src/github.com/GOCODE/udemy/RealTime
-WORKDIR /go/src/github.com/GOCODE/udemy/RealTime
+RUN apk add --no-cache ca-certificates git
 
-COPY . /go/src/github.com/GOCODE/udemy/RealTime
+RUN go get github.com/codegangsta/gin
+
+RUN mkdir -p /go/src/github.com/GOCODE/udemy/RealTime/api
+WORKDIR /go/src/github.com/GOCODE/udemy/RealTime/api
+
+COPY . $WORKDIR
 
 EXPOSE 3001
 
-CMD ["tail","-f","/dev/null"]
+# CMD ["tail", "-f", "/dev/null"]
+ENTRYPOINT  gin  --bin "rtsupport" --immediate --appPort 3001 run main.go
