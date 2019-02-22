@@ -1,14 +1,25 @@
 version: "2"
 services:
-  node:
+  client:
+    container_name: client
     build:
-      context: .
-      dockerfile: ./Dockerfile    
+      context: ./client
+      dockerfile: Dockerfile    
     working_dir: /home/node/app
     environment:
       - NODE_ENV=production
       - PORT=3000
     volumes:
-      - ./:/home/node/app
+      - ./client:/home/node/app
     ports:
       - "3000:3000"
+  api:
+    container_name: api
+    build: 
+      context: ./api
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./api:/go/src/github.com/GOCODE/udemy/RealTime
+    working_dir: /go/src/github.com/GOCODE/udemy/RealTime
