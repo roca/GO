@@ -1,4 +1,4 @@
-version: "2"
+version: "3.6"
 services:
   client:
     container_name: client
@@ -21,5 +21,5 @@ services:
     ports:
       - "3001:3001"
     volumes:
-      - ./api:/go/src/github.com/GOCODE/udemy/RealTime
-    working_dir: /go/src/github.com/GOCODE/udemy/RealTime
+      - ./api:/go/src/github.com/GOCODE/udemy/RealTime/api
+    working_dir: /go/src/github.com/GOCODE/udemy/RealTime/api
