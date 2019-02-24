@@ -70,9 +70,7 @@ func addChannel(data interface{}) error {
 	var channel Channel
 
 	err := mapstructure.Decode(data, &channel)
-	if err != nil {
-		return err
-	}
+	logFatal(err)
 	channel.ID = "1"
 	fmt.Printf("%#v\n", channel)
 	return nil
