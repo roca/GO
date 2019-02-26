@@ -1,6 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"math/rand"
+	"time"
+)
 
 type Message struct {
 	Name string      `json:"name"`
@@ -17,6 +21,38 @@ func (client *Client) write() {
 	}
 }
 
+func (client *Client) subscribeChannels() {
+	//TODO; changefeed Query RethonkDB
+	for {
+		time.Sleep(r())
+		client.send <- Message{"channel add", ""}
+	}
+}
+
+func (client *Client) subscribeMessages() {
+	//TODO; changefeed Query RethonkDB
+	for {
+		time.Sleep(r())
+		client.send <- Message{"message add", ""}
+	}
+}
+
+func r() time.Duration {
+	return time.Millisecond * time.Duration(rand.Intn(1000))
+}
+
+// NewClient ...
+func NewClient() *Client {
+	return &Client{
+		send: make(chan Message),
+	}
+}
+
 func main() {
+
+	client := NewClient()
+	go client.subscribeChannels()
+	go client.subscribeMessages()
+	client.write()
 
 }
