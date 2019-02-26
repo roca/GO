@@ -29,7 +29,13 @@ function onOpen(evt)
       name: 'Hardware Support'
     }
   }
+
+  var subMsg = {
+    name: 'channel subscribe'
+  }
+
   writeToScreen("CONNECTED");
+  doSend(JSON.stringify(subMsg));
   doSend(JSON.stringify(msg));
 }
 

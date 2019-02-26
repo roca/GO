@@ -66,7 +66,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 				break
 			}
 		case "channel subscribe":
-			subscribeChannel(socket)
+			go subscribeChannel(socket)
 		default:
 			fmt.Printf("%#v\n", inMessage)
 		}
@@ -83,14 +83,16 @@ func addChannel(data interface{}) error {
 	err := mapstructure.Decode(data, &channel)
 	logFatal(err)
 	channel.ID = "1"
-	fmt.Println("added channel")
+	fmt.Println("added channel", data)
 	return nil
 }
 
 func subscribeChannel(socket *websocket.Conn) {
+	// TODO : retinkDB Query / changefeed
 	for {
 		time.Sleep(time.Second * 1)
 		message := Message{"channel add", Channel{"1", "Software Support"}}
 		socket.WriteJSON(message)
+		fmt.Println("sent new channel")
 	}
 }
