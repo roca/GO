@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/websocket"
 	"github.com/mitchellh/mapstructure"
@@ -36,6 +37,16 @@ func logFatal(err error) {
 	}
 }
 
+func messageError(err error, socket *websocket.Conn) {
+	var outMessage Message
+	if err != nil {
+		outMessage = Message{"error", err}
+		if err := socket.WriteJSON(outMessage); err != nil {
+			logFatal(err)
+		}
+	}
+}
+
 func handler(w http.ResponseWriter, r *http.Request) {
 	// fmt.Fprintf(w, "Hello from GO")
 	socket, err := upgrader.Upgrade(w, r, nil)
@@ -44,7 +55,6 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		// msgType, msg, err := socket.ReadMessage()
 		// logFatal(err)
 		var inMessage Message
-		var outMessage Message
 		if err := socket.ReadJSON(&inMessage); err != nil {
 			logFatal(err)
 			break
@@ -52,12 +62,13 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		switch inMessage.Name {
 		case "channel add":
 			if err := addChannel(inMessage.Data); err != nil {
-				outMessage = Message{"error", err}
-				if err := socket.WriteJSON(&outMessage); err != nil {
-					logFatal(err)
-					break
-				}
+				messageError(err, socket)
+				break
 			}
+		case "channel subscribe":
+			subscribeChannel(socket)
+		default:
+			fmt.Printf("%#v\n", inMessage)
 		}
 		// fmt.Println(string(msg))
 		// err = socket.WriteMessage(msgType, msg)
@@ -72,6 +83,14 @@ func addChannel(data interface{}) error {
 	err := mapstructure.Decode(data, &channel)
 	logFatal(err)
 	channel.ID = "1"
-	fmt.Printf("%#v\n", channel)
+	fmt.Println("added channel")
 	return nil
+}
+
+func subscribeChannel(socket *websocket.Conn) {
+	for {
+		time.Sleep(time.Second * 1)
+		message := Message{"channel add", Channel{"1", "Software Support"}}
+		socket.WriteJSON(message)
+	}
 }
