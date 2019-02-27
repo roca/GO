@@ -1,25 +1,9 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
-	"time"
-
-	"github.com/gorilla/websocket"
-	"github.com/mitchellh/mapstructure"
 )
-
-var upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
-	CheckOrigin:     func(r *http.Request) bool { return true },
-}
-
-type Message struct {
-	Name string      `json:"name"`
-	Data interface{} `json:"data"`
-}
 
 type Channel struct {
 	ID   string `json:"id"`
@@ -27,7 +11,11 @@ type Channel struct {
 }
 
 func main() {
-	http.HandleFunc("/", handler)
+	router := NewRouter()
+
+	//router.Handle("channel add", addChannel)
+
+	http.Handle("/", router)
 	http.ListenAndServe(":3001", nil)
 }
 
@@ -37,62 +25,6 @@ func logFatal(err error) {
 	}
 }
 
-func messageError(err error, socket *websocket.Conn) {
-	var outMessage Message
-	if err != nil {
-		outMessage = Message{"error", err}
-		if err := socket.WriteJSON(outMessage); err != nil {
-			logFatal(err)
-		}
-	}
-}
-
 func handler(w http.ResponseWriter, r *http.Request) {
-	// fmt.Fprintf(w, "Hello from GO")
-	socket, err := upgrader.Upgrade(w, r, nil)
-	logFatal(err)
-	for {
-		// msgType, msg, err := socket.ReadMessage()
-		// logFatal(err)
-		var inMessage Message
-		if err := socket.ReadJSON(&inMessage); err != nil {
-			logFatal(err)
-			break
-		}
-		switch inMessage.Name {
-		case "channel add":
-			if err := addChannel(inMessage.Data); err != nil {
-				messageError(err, socket)
-				break
-			}
-		case "channel subscribe":
-			go subscribeChannel(socket)
-		default:
-			fmt.Printf("%#v\n", inMessage)
-		}
-		// fmt.Println(string(msg))
-		// err = socket.WriteMessage(msgType, msg)
-		// logFatal(err)
-	}
 
-}
-
-func addChannel(data interface{}) error {
-	var channel Channel
-
-	err := mapstructure.Decode(data, &channel)
-	logFatal(err)
-	channel.ID = "1"
-	fmt.Println("added channel", data)
-	return nil
-}
-
-func subscribeChannel(socket *websocket.Conn) {
-	// TODO : retinkDB Query / changefeed
-	for {
-		time.Sleep(time.Second * 1)
-		message := Message{"channel add", Channel{"1", "Software Support"}}
-		socket.WriteJSON(message)
-		fmt.Println("sent new channel")
-	}
 }
