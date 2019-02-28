@@ -1,5 +1,14 @@
 version: "3.6"
 services:
+  rethinkdb:
+    image: rethinkdb
+    working_dir: /data
+    volumes: 
+      - ./rethinkdb:/data
+    ports: 
+      - "29015:29015"
+      - "28015:28015"
+      - "8080:8080"
   client:
     container_name: client
     build:
