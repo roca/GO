@@ -1,6 +1,7 @@
 version: "3.6"
 services:
   rethinkdb:
+    container_name: rethinkdb
     image: rethinkdb
     working_dir: /data
     volumes: 

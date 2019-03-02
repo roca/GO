@@ -5,6 +5,7 @@ RUN apk add --no-cache ca-certificates git
 RUN go get github.com/codegangsta/gin
 RUN go get  github.com/gorilla/websocket
 RUN go get github.com/mitchellh/mapstructure
+RUN go get github.com/dancannon/gorethink
 
 RUN mkdir -p /go/src/github.com/GOCODE/udemy/RealTime/api
 WORKDIR /go/src/github.com/GOCODE/udemy/RealTime/api
