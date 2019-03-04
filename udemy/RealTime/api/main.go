@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -8,8 +9,13 @@ import (
 )
 
 type Channel struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+	ID   string `json:"id" gorethink:"id,omitempty"`
+	Name string `json:"name" gorethink:"name"`
+}
+
+type User struct {
+	ID   string `gorethink:"id,omitempty"`
+	Name string `gorethink:"name"`
 }
 
 func main() {
@@ -17,9 +23,10 @@ func main() {
 		Address:  "rethinkdb:28015",
 		Database: "rtsupport",
 	})
-	logFatal(err)
+	logPanic(err)
 
 	router := NewRouter(session)
+	fmt.Println("router created!")
 
 	router.Handle("channel add", addChannel)
 
@@ -30,6 +37,12 @@ func main() {
 func logFatal(err error) {
 	if err != nil {
 		log.Println(err)
+	}
+}
+
+func logPanic(err error) {
+	if err != nil {
+		log.Panic(err.Error())
 	}
 }
 

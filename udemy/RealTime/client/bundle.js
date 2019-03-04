@@ -19821,8 +19821,9 @@
 	    _createClass(App, [{
 	        key: 'componentDidMount',
 	        value: function componentDidMount() {
-	            var socket = this.socket = new _socketJs2['default']();
-	            socket.on('connect', this.OnConnect.bind(this));
+	            var ws = new WebSocket('ws://192.168.99.100:3001');
+	            var socket = this.socket = new _socketJs2['default'](ws);
+	            socket.on('connect', this.onConnect.bind(this));
 	            socket.on('disconnect', this.onDisConnect.bind(this));
 	            socket.on('channel add', this.onAddChannel.bind(this));
 	            socket.on('user add', this.onAddUser.bind(this));
@@ -21175,7 +21176,7 @@
 	    }, {
 	        key: 'emit',
 	        value: function emit(name, data) {
-	            var message = JSON.stringify(e.data);
+	            var message = JSON.stringify({ name: name, data: data });
 	            this.ws.send(message);
 	        }
 	    }, {

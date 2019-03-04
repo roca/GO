@@ -17,8 +17,9 @@ class App extends Component{
     }
 
     componentDidMount() {
-        let socket = this.socket = new Socket();
-        socket.on('connect', this.OnConnect.bind(this));
+        let ws = new WebSocket('ws://192.168.99.100:3001')
+        let socket = this.socket = new Socket(ws);
+        socket.on('connect', this.onConnect.bind(this));
         socket.on('disconnect', this.onDisConnect.bind(this));
         socket.on('channel add', this.onAddChannel.bind(this));
         socket.on('user add', this.onAddUser.bind(this));
