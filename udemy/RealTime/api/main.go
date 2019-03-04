@@ -3,6 +3,8 @@ package main
 import (
 	"log"
 	"net/http"
+
+	r "github.com/dancannon/gorethink"
 )
 
 type Channel struct {
@@ -11,7 +13,13 @@ type Channel struct {
 }
 
 func main() {
-	router := NewRouter()
+	session, err := r.Connect(r.ConnectOpts{
+		Address:  "rethinkdb:28015",
+		Database: "rtsupport",
+	})
+	logFatal(err)
+
+	router := NewRouter(session)
 
 	router.Handle("channel add", addChannel)
 
