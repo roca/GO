@@ -30,6 +30,7 @@ func subscribeChannel(client *Client, data interface{}) {
 			Run(client.session)
 		if err != nil {
 			client.send <- Message{"error", err.Error()}
+			return
 		}
 		var change r.ChangeResponse
 		for cursor.Next(&change) {

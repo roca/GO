@@ -45,7 +45,3 @@ func logPanic(err error) {
 		log.Panic(err.Error())
 	}
 }
-
-func handler(w http.ResponseWriter, r *http.Request) {
-
-}
