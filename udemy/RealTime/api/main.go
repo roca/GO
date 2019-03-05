@@ -29,7 +29,7 @@ func main() {
 	fmt.Println("router created!")
 
 	router.Handle("channel add", addChannel)
-
+	router.Handle("channel subscribe", subscribeChannel)
 	http.Handle("/", router)
 	http.ListenAndServe(":3001", nil)
 }
