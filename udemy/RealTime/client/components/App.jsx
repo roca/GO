@@ -19,7 +19,7 @@ class App extends Component{
     componentDidMount() {
         let ws = new WebSocket('ws://192.168.99.100:3001')
         let socket = this.socket = new Socket(ws);
-        socket.on('connect', this.onConnect.bind(this));
+        socket.on('connected', this.onConnect.bind(this));
         socket.on('disconnect', this.onDisConnect.bind(this));
         socket.on('channel add', this.onAddChannel.bind(this));
         socket.on('user add', this.onAddUser.bind(this));
@@ -60,7 +60,6 @@ class App extends Component{
     }
 
     onConnect(){
-        console.log('ws sending channel subscribe');
         this.setState({connected: true});
         this.socket.emit('channel subscribe');
         this.socket.emit('user subscribe');
@@ -71,7 +70,6 @@ class App extends Component{
     }
     
     onAddChannel(channel){
-        console.log(channel);
         let {channels} = this.state;
         channels.push(channel);
         this.setState({channels});
@@ -99,7 +97,7 @@ class App extends Component{
             {id: activeChannel.id,body});
 
     }
-        //console.log('Get Channels Message');
+    
     render() {
         return (
             <div className='app'>

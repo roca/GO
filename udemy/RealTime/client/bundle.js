@@ -19823,7 +19823,7 @@
 	        value: function componentDidMount() {
 	            var ws = new WebSocket('ws://192.168.99.100:3001');
 	            var socket = this.socket = new _socketJs2['default'](ws);
-	            socket.on('connect', this.onConnect.bind(this));
+	            socket.on('connected', this.onConnect.bind(this));
 	            socket.on('disconnect', this.onDisConnect.bind(this));
 	            socket.on('channel add', this.onAddChannel.bind(this));
 	            socket.on('user add', this.onAddUser.bind(this));
@@ -19873,7 +19873,6 @@
 	    }, {
 	        key: 'onConnect',
 	        value: function onConnect() {
-	            console.log('ws sending channel subscribe');
 	            this.setState({ connected: true });
 	            this.socket.emit('channel subscribe');
 	            this.socket.emit('user subscribe');
@@ -19886,7 +19885,6 @@
 	    }, {
 	        key: 'onAddChannel',
 	        value: function onAddChannel(channel) {
-	            console.log(channel);
 	            var channels = this.state.channels;
 
 	            channels.push(channel);
@@ -19917,8 +19915,6 @@
 
 	            this.socket.emit('message add', { id: activeChannel.id, body: body });
 	        }
-
-	        //console.log('Get Channels Message');
 	    }, {
 	        key: 'render',
 	        value: function render() {

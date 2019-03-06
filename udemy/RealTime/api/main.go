@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 
@@ -26,7 +25,6 @@ func main() {
 	logPanic(err)
 
 	router := NewRouter(session)
-	fmt.Println("router created!")
 
 	router.Handle("channel add", addChannel)
 	router.Handle("channel subscribe", subscribeChannel)
