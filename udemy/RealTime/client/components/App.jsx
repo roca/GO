@@ -60,6 +60,7 @@ class App extends Component{
     }
 
     onConnect(){
+        console.log('ws sending channel subscribe');
         this.setState({connected: true});
         this.socket.emit('channel subscribe');
         this.socket.emit('user subscribe');
@@ -70,6 +71,7 @@ class App extends Component{
     }
     
     onAddChannel(channel){
+        console.log(channel);
         let {channels} = this.state;
         channels.push(channel);
         this.setState({channels});

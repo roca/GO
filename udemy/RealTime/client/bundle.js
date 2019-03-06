@@ -19873,6 +19873,7 @@
 	    }, {
 	        key: 'onConnect',
 	        value: function onConnect() {
+	            console.log('ws sending channel subscribe');
 	            this.setState({ connected: true });
 	            this.socket.emit('channel subscribe');
 	            this.socket.emit('user subscribe');
@@ -19885,6 +19886,7 @@
 	    }, {
 	        key: 'onAddChannel',
 	        value: function onAddChannel(channel) {
+	            console.log(channel);
 	            var channels = this.state.channels;
 
 	            channels.push(channel);
