@@ -20,6 +20,13 @@ type Client struct {
 	stopChannels map[int]chan bool
 }
 
+func (c *Client) Close() {
+	for _, ch := range c.stopChannels {
+		ch <- true
+	}
+	close(c.send)
+}
+
 func (c *Client) NewStopChannel(stopKey int) chan bool {
 	stop := make(chan bool)
 	c.stopChannels[stopKey] = stop
