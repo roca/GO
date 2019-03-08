@@ -28,9 +28,17 @@ func (c *Client) Close() {
 }
 
 func (c *Client) NewStopChannel(stopKey int) chan bool {
+	c.StopForKey(stopKey)
 	stop := make(chan bool)
 	c.stopChannels[stopKey] = stop
 	return stop
+}
+
+func (c *Client) StopForKey(key int) {
+	if ch, found := c.stopChannels[key]; found {
+		ch <- true
+		delete(c.stopChannels, key)
+	}
 }
 
 func (client *Client) Read() {
