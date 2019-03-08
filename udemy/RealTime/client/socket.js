@@ -44,23 +44,3 @@ class Socket {
 }
 
 export default Socket;
-/*
-
-Channel Events
-    'channel add'
-    'channel subscribe'
-    'channel unsubscribe'
-
-User events
-    'user edit'
-    'user subscribe'
-    'user unsubscribe'
-    'user add'
-    'user remove'
-
-Message Events
-    'message add'
-    'message subscribe'
-    'message unsubscribe'
-
-*/

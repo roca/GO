@@ -68,3 +68,25 @@ func subscribeChannel(client *Client, data interface{}) {
 func unsubscribeChannel(client *Client, data interface{}) {
 	client.StopForKey(ChannelStop)
 }
+
+// User Events
+func editUser(client *Client, data interface{}) {}
+
+func subscribeUser(client *Client, data interface{}) {}
+
+func unsubscribeUser(client *Client, data interface{}) {
+	client.StopForKey(UserStop)
+}
+
+func addUser(client *Client, data interface{}) {}
+
+func removeUser(client *Client, data interface{}) {}
+
+//Message Events
+func addMessage(client *Client, data interface{}) {}
+
+func subscribeMessage(client *Client, data interface{}) {}
+
+func unsubscribeMessage(client *Client, data interface{}) {
+	client.StopForKey(MessageStop)
+}
