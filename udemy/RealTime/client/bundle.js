@@ -20760,7 +20760,7 @@
 	        value: function render() {
 	            var message = this.props.message;
 
-	            var createdAt = ""; //fecha.format(message.createdAt, 'HH:mm:ss MM/DD/YYYY');
+	            var createdAt = _fecha2['default'].format(new Date(message.createdAt), 'HH:mm:ss MM/DD/YY');
 	            return _react2['default'].createElement(
 	                'li',
 	                { className: 'message' },
