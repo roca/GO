@@ -7,16 +7,6 @@ import (
 	r "github.com/dancannon/gorethink"
 )
 
-type Channel struct {
-	ID   string `json:"id" gorethink:"id,omitempty"`
-	Name string `json:"name" gorethink:"name"`
-}
-
-type User struct {
-	ID   string `gorethink:"id,omitempty"`
-	Name string `gorethink:"name"`
-}
-
 /*
 
 Channel Events
@@ -28,8 +18,6 @@ User events
     'user edit'
     'user subscribe'
     'user unsubscribe'
-    'user add'
-    'user remove'
 
 Message Events
     'message add'
@@ -56,13 +44,11 @@ func main() {
 	router.Handle("user edit", editUser)
 	router.Handle("user subscribe", subscribeUser)
 	router.Handle("user unsubscribe", unsubscribeUser)
-	router.Handle("user add", addUser)
-	router.Handle("user remove", removeUser)
 
 	//Message Events
-	router.Handle("message add", addMessage)
-	router.Handle("message subscribe", subscribeMessage)
-	router.Handle("message unsubscribe", unsubscribeMessage)
+	router.Handle("message add", addChannelMessage)
+	router.Handle("message subscribe", subscribeChannelMessage)
+	router.Handle("message unsubscribe", unsubscribeChannelMessage)
 
 	http.Handle("/", router)
 	http.ListenAndServe(":3001", nil)

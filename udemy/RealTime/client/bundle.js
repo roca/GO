@@ -19913,7 +19913,7 @@
 	        value: function addMessage(body) {
 	            var activeChannel = this.state.activeChannel;
 
-	            this.socket.emit('message add', { id: activeChannel.id, body: body });
+	            this.socket.emit('message add', { channelId: activeChannel.id, body: body });
 	        }
 	    }, {
 	        key: 'render',
@@ -20760,7 +20760,7 @@
 	        value: function render() {
 	            var message = this.props.message;
 
-	            var createdAt = _fecha2['default'].format(message.createdAt, 'HH:mm:ss MM/DD/YYYY');
+	            var createdAt = ""; //fecha.format(message.createdAt, 'HH:mm:ss MM/DD/YYYY');
 	            return _react2['default'].createElement(
 	                'li',
 	                { className: 'message' },
@@ -21203,27 +21203,6 @@
 	})();
 
 	exports['default'] = Socket;
-
-	/*
-
-	Channel Events
-	    'channel add'
-	    'channel subscribe'
-	    'channel unsubscribe'
-
-	User events
-	    'user edit'
-	    'user subscribe'
-	    'user unsubscribe'
-	    'user add'
-	    'user remove'
-
-	Message Events
-	    'message add'
-	    'message subscribe'
-	    'message unsubscribe'
-
-	*/
 	module.exports = exports['default'];
 
 /***/ }),

@@ -94,7 +94,7 @@ class App extends Component{
     addMessage(body) {
         let{activeChannel} = this.state;
         this.socket.emit('message add', 
-            {id: activeChannel.id,body});
+            {channelId: activeChannel.id,body});
 
     }
     
