@@ -1,0 +1,35 @@
+version: "3.6"
+services:
+  # rethinkdb:
+  #   container_name: rethinkdb
+  #   image: rethinkdb
+  #   working_dir: /data
+  #   volumes: 
+  #     - ./rethinkdb:/data
+  #   ports: 
+  #     - "29015:29015"
+  #     - "28015:28015"
+  #     - "8080:8080"
+  # client:
+  #   container_name: client
+  #   build:
+  #     context: ./client
+  #     dockerfile: Dockerfile    
+  #   working_dir: /home/node/app
+  #   environment:
+  #     - NODE_ENV=production
+  #     - PORT=3000
+  #   volumes:
+  #     - ./client:/home/node/app
+  #   ports:
+  #     - "3000:3000"
+  api:
+    container_name: api
+    build: 
+      context: ./api
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./api:/go/src/github.com/GOCODE/udemy/RESTfulJWT/api
+    working_dir: /go/src/github.com/GOCODE/udemy/RESTfulJWT/api
