@@ -2,6 +2,8 @@ FROM golang:1.11-alpine
 
 RUN apk add --no-cache ca-certificates git
 
+RUN go get github.com/codegangsta/gin
+
 RUN go get github.com/dgrijalva/jwt-go
 RUN go get github.com/gorilla/mux
 RUN go get github.com/lib/pq

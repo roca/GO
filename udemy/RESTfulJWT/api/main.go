@@ -1,7 +1,13 @@
 package main
 
-import "fmt"
+import (
+	"github.com/gorilla/mux"
+)
 
 func main() {
-	fmt.Println("This is main .go")
+	router := mux.NewRouter()
+
+	router.HandleFunc("/signup", signup).Methods("POST")
+	router.HandleFunc("/login", login).Methods("POST")
+	router.HandleFunc("/protected", TokenVerifyMiddleware(ProtectedEndpoint)).Methods("GET")
 }
