@@ -8,6 +8,20 @@ import (
 	"github.com/gorilla/mux"
 )
 
+type User struct {
+	IDA      int    `json:"id"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type JWT struct {
+	Token string `json:"token"`
+}
+
+type Error struct {
+	Message string `json:"message"`
+}
+
 func main() {
 	router := mux.NewRouter()
 
@@ -22,18 +36,18 @@ func main() {
 }
 
 func signup(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("signup invoked.")
+	w.Write([]byte("successfully called signup"))
 }
 
 func login(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("login invoked.")
+	w.Write([]byte("successfully called login"))
 }
 
 func protectedEndpoint(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("protectedEndpoint invoked.")
+	w.Write([]byte("successfully called protected"))
 }
 
 func TokenVerifyMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	fmt.Println("TokenVerifyMiddleware invoked.")
-	return nil
+	return next
 }
