@@ -25,6 +25,7 @@ services:
   #     - "3000:3000"
   db:
     image: postgres
+    privileged: true
     restart: always
     environment:
       POSTGRES_PASSWORD: password
