@@ -1,28 +1,5 @@
 version: "3.6"
 services:
-  # rethinkdb:
-  #   container_name: rethinkdb
-  #   image: rethinkdb
-  #   working_dir: /data
-  #   volumes: 
-  #     - ./rethinkdb:/data
-  #   ports: 
-  #     - "29015:29015"
-  #     - "28015:28015"
-  #     - "8080:8080"
-  # client:
-  #   container_name: client
-  #   build:
-  #     context: ./client
-  #     dockerfile: Dockerfile    
-  #   working_dir: /home/node/app
-  #   environment:
-  #     - NODE_ENV=production
-  #     - PORT=3000
-  #   volumes:
-  #     - ./client:/home/node/app
-  #   ports:
-  #     - "3000:3000"
   db:
     image: postgres
     privileged: true
@@ -30,8 +7,8 @@ services:
     environment:
       POSTGRES_PASSWORD: password
     volumes:
-      - ./dbdata:/var/lib/postgresql/data
-      # - /data/postgresql:/var/lib/postgresql/data
+      # - ./dbdata:/var/lib/postgresql/data
+      - /data/postgresql:/var/lib/postgresql/data
     ports:
       - '5432:5432'
   api:
