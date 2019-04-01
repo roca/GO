@@ -6,7 +6,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/GOCODE/udemy/RESTfulJWT/driver"
+	"github.com/GOCODE/udemy/RESTfulJWT/api/driver"
 	"github.com/gorilla/mux"
 )
 
@@ -26,15 +26,35 @@ type Error struct {
 
 var db *sql.DB
 
+func logFatal(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
 // postgres://postgres:password@db/jwtexample?options'
 func init() {
 
 	db = driver.ConnectDB()
 
-	_, err := db.Exec("DROP TABLE books")
+	_, err := db.Exec("DROP TABLE users")
 	if err != nil {
 		log.Println(err)
 	}
+
+	createTableSQL := "CREATE TABLE USERS ( "
+	createTableSQL += "ID SERIAL PRIMARY KEY,"
+	createTableSQL += "EMAIL TEXT NOT NULL UNIQUE,"
+	createTableSQL += "PASSWORD TEXT NOT NULL"
+	createTableSQL += ")"
+
+	_, err = db.Exec(createTableSQL)
+	logFatal(err)
+
+	insertUsersSQL := " INSERT INTO USERS (EMAIL, PASSWORD) VALUES ('test@example.com','12345'); "
+	insertUsersSQL += " INSERT INTO USERS (EMAIL, PASSWORD) VALUES ('test123@example.com','abcd');"
+	_, err = db.Exec(insertUsersSQL)
+	logFatal(err)
 
 }
 
