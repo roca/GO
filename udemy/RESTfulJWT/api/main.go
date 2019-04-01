@@ -1,10 +1,12 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
 
+	"github.com/GOCODE/udemy/RESTfulJWT/driver"
 	"github.com/gorilla/mux"
 )
 
@@ -20,6 +22,20 @@ type JWT struct {
 
 type Error struct {
 	Message string `json:"message"`
+}
+
+var db *sql.DB
+
+// postgres://postgres:password@db/jwtexample?options'
+func init() {
+
+	db = driver.ConnectDB()
+
+	_, err := db.Exec("DROP TABLE books")
+	if err != nil {
+		log.Println(err)
+	}
+
 }
 
 func main() {
