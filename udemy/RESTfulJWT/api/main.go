@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -71,7 +72,9 @@ func main() {
 }
 
 func signup(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("successfully called signup"))
+	var user User
+	json.NewDecoder(r.Body).Decode(&user)
+	fmt.Println(user)
 }
 
 func login(w http.ResponseWriter, r *http.Request) {
