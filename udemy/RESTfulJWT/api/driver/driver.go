@@ -2,7 +2,6 @@ package driver
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"os"
 
@@ -22,7 +21,6 @@ func ConnectDB() *sql.DB {
 	gotenv.Load()
 
 	pgUrl, err := pq.ParseURL(os.Getenv("POSTGRES_CONNECTION_STRING"))
-	fmt.Println(pgUrl)
 	logFatal(err)
 
 	db, err = sql.Open("postgres", pgUrl)
@@ -30,8 +28,6 @@ func ConnectDB() *sql.DB {
 
 	err = db.Ping()
 	logFatal(err)
-
-	log.Println(pgUrl)
 
 	return db
 }
