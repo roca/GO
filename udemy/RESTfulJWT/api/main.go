@@ -32,7 +32,7 @@ func logFatal(err error) {
 	}
 }
 
-// postgres://postgres:password@db/jwtexample?options'
+// POSTGRES_CONNECTION_STRING = postgres://postgres:password@db/jwtexample'
 func init() {
 
 	db = driver.ConnectDB()
@@ -50,9 +50,10 @@ func init() {
 
 	_, err = db.Exec(createTableSQL)
 	logFatal(err)
+	fmt.Println("Table created")
 
 	insertUsersSQL := " INSERT INTO USERS (EMAIL, PASSWORD) VALUES ('test@example.com','12345'); "
-	insertUsersSQL += " INSERT INTO USERS (EMAIL, PASSWORD) VALUES ('test123@example.com','abcd');"
+	insertUsersSQL += " INSERT INTO USERS (EMAIL, PASSWORD) VALUES ('test123@example.com','abcde');"
 	_, err = db.Exec(insertUsersSQL)
 	logFatal(err)
 
