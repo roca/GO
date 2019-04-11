@@ -71,10 +71,28 @@ func main() {
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", port), router))
 }
 
+func respondWithError(w http.ResponseWriter, status int, error Error) {
+	w.WriteHeader(status)
+	json.NewEncoder(w).Encode(error)
+}
+
 func signup(w http.ResponseWriter, r *http.Request) {
 	var user User
+	var error Error
 	json.NewDecoder(r.Body).Decode(&user)
-	fmt.Println(user)
+
+	if user.Email == "" {
+		error.Message = "Email is missing"
+		respondWithError(w, http.StatusBadRequest, error)
+		return
+	}
+
+	if user.Password == "" {
+		error.Message = "Password is missing"
+		respondWithError(w, http.StatusBadRequest, error)
+		return
+	}
+
 }
 
 func login(w http.ResponseWriter, r *http.Request) {

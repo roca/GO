@@ -10,6 +10,7 @@ RUN go get github.com/dgrijalva/jwt-go
 RUN go get github.com/gorilla/mux
 RUN go get github.com/lib/pq
 RUN go get golang.org/x/crypto/bcrypt
+RUN go get github.com/davecgh/go-spew/spew
 
 RUN mkdir -p /go/src/github.com/GOCODE/udemy/RESTfulJWT/api
 WORKDIR /go/src/github.com/GOCODE/udemy/RESTfulJWT/api
