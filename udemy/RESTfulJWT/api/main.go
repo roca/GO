@@ -8,8 +8,8 @@ import (
 	"net/http"
 
 	"golang.org/x/crypto/bcrypt"
+	"udemy.com/RESTfulJWT/api/driver"
 
-	"github.com/GOCODE/udemy/RESTfulJWT/api/driver"
 	"github.com/gorilla/mux"
 )
 

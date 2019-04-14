@@ -26,5 +26,5 @@ services:
     ports:
       - "3001:3001"
     volumes:
-      - ./api:/go/src/github.com/GOCODE/udemy/RESTfulJWT/api
-    working_dir: /go/src/github.com/GOCODE/udemy/RESTfulJWT/api
+      - ./api:/code
+    working_dir: /code
