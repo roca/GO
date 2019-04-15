@@ -11,6 +11,8 @@ import (
 	"udemy.com/RESTfulJWT/api/driver"
 
 	"github.com/gorilla/mux"
+
+	"github.com/dgrijalva/jwt-go"
 )
 
 type User struct {
@@ -121,8 +123,34 @@ func signup(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func GenerateToken(user User) (string, error) {
+	var err error
+	secret := "secret"
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"email": user.Email,
+		"iss":   "course",
+	})
+
+	tokenString, err := token.SignedString([]byte(secret))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return tokenString, nil
+}
+
 func login(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("successfully called login"))
+	var user User
+	json.NewDecoder(r.Body).Decode(&user)
+
+	token, err := GenerateToken(user)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(token)
+	//w.Write([]byte("successfully called login"))
 }
 
 func protectedEndpoint(w http.ResponseWriter, r *http.Request) {
