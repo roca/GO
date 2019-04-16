@@ -10,7 +10,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"udemy.com/RESTfulJWT/api/driver"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/gorilla/mux"
 
 	"github.com/dgrijalva/jwt-go"
@@ -143,7 +142,7 @@ func GenerateToken(user User) (string, error) {
 
 func login(w http.ResponseWriter, r *http.Request) {
 	var user User
-	//var jwt JWT
+	var jwt JWT
 	var error Error
 
 	json.NewDecoder(r.Body).Decode(&user)
@@ -160,7 +159,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//password := user.Password
+	password := user.Password
 	row := db.QueryRow("select * from users where email=$1", user.Email)
 	err := row.Scan(&user.ID, &user.Email, &user.Password)
 	if err != nil {
@@ -173,15 +172,25 @@ func login(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	hashedPassword := user.Password
+
+	err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+	if err != nil {
+		error.Message = "Invalid Password"
+		respondWithError(w, http.StatusBadRequest, error)
+		return
+	}
+
 	token, err := GenerateToken(user)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	spew.Dump(user)
+	w.WriteHeader(http.StatusOK)
+	jwt.Token = token
 
-	fmt.Println(token)
-	//w.Write([]byte("successfully called login"))
+	responseJSON(w, jwt)
+
 }
 
 func protectedEndpoint(w http.ResponseWriter, r *http.Request) {
