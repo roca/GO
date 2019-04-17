@@ -6,3 +6,5 @@ create table users (
 
 insert into users (email, password) values ('test@example.com','12345');
 insert into users (email, password) values ('test123@example.com','abcd');
+
+token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InJvbWVsY2FtcGJlbGxAZ21haWwuY29tIiwiaXNzIjoiY291cnNlIn0.7oEdTKOxIw7i_zpbGM1kBAgsy_hRhad9Pdaq_fQRwNA
