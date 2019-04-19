@@ -39,3 +39,35 @@ func Test_Signup(t *testing.T) {
 	assert.Equal(t, "", expectedUser.Password, "Returned Password should be blank")
 
 }
+
+func Test_Login(t *testing.T) {
+
+	var expectedJWT JWT
+	var userJWT JWT
+
+	aUser := User{
+		Email:    "JoeSmith@testing.com",
+		Password: "qwertyu",
+	}
+
+	userJWTTokeString, _ := GenerateToken(aUser)
+	userJWT.Token = userJWTTokeString
+
+	jsonUser, _ := json.Marshal(&aUser)
+	req, err := http.NewRequest("POST", "/login", bytes.NewBuffer(jsonUser))
+	if err != nil {
+		t.Fatal(err)
+	}
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(login)
+
+	handler.ServeHTTP(rr, req)
+
+	// Should return a 200 status code
+	assert.Equal(t, 200, rr.Code, "OK response is expected")
+
+	// Should return a JWT token
+	json.NewDecoder(rr.Body).Decode(&expectedJWT)
+	assert.Equal(t, userJWT, expectedJWT, "Returned inncorrect JWT token")
+
+}
