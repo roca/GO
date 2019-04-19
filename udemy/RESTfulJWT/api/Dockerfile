@@ -1,6 +1,4 @@
-FROM golang:1.12-alpine
-
-RUN apk add --no-cache ca-certificates git
+FROM golang:1.12
 
 RUN go get github.com/codegangsta/gin
 
