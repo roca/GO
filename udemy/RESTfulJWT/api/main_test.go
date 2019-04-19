@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -69,5 +70,31 @@ func Test_Login(t *testing.T) {
 	// Should return a JWT token
 	json.NewDecoder(rr.Body).Decode(&expectedJWT)
 	assert.Equal(t, userJWT, expectedJWT, "Returned inncorrect JWT token")
+
+}
+
+func Test_Protected(t *testing.T) {
+
+	var userJWT JWT
+
+	aUser := User{
+		Email:    "JoeSmith@testing.com",
+		Password: "qwertyu",
+	}
+
+	userJWTTokeString, _ := GenerateToken(aUser)
+	userJWT.Token = userJWTTokeString
+
+	req, err := http.NewRequest("GET", "/protected", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", userJWT.Token))
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(TokenVerifyMiddleware(protectedEndpoint))
+
+	handler.ServeHTTP(rr, req)
+	assert.Equal(t, "successfully called protected", rr.Body.String(), "Bearer token dose not match")
 
 }
