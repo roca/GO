@@ -6,7 +6,6 @@ import (
 	"os"
 
 	"github.com/lib/pq"
-	"github.com/subosito/gotenv"
 )
 
 var db *sql.DB
@@ -18,7 +17,6 @@ func logFatal(err error) {
 }
 
 func ConnectDB() *sql.DB {
-	gotenv.Load()
 
 	pgUrl, err := pq.ParseURL(os.Getenv("POSTGRES_CONNECTION_STRING"))
 	logFatal(err)

@@ -9,13 +9,14 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"udemy.com/RESTfulJWT/api/models"
 )
 
 func Test_Signup(t *testing.T) {
 
-	var expectedUser User
+	var expectedUser models.User
 
-	aUser := User{
+	aUser := models.User{
 		Email:    "JoeSmith@testing.com",
 		Password: "qwertyu",
 	}
@@ -43,10 +44,10 @@ func Test_Signup(t *testing.T) {
 
 func Test_Login(t *testing.T) {
 
-	var expectedJWT JWT
-	var userJWT JWT
+	var expectedJWT models.JWT
+	var userJWT models.JWT
 
-	aUser := User{
+	aUser := models.User{
 		Email:    "JoeSmith@testing.com",
 		Password: "qwertyu",
 	}
@@ -58,6 +59,7 @@ func Test_Login(t *testing.T) {
 	req, err := http.NewRequest("POST", "/login", bytes.NewBuffer(jsonUser))
 	if err != nil {
 		t.Fatal(err)
+
 	}
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(login)
@@ -75,9 +77,9 @@ func Test_Login(t *testing.T) {
 
 func Test_Protected(t *testing.T) {
 
-	var userJWT JWT
+	var userJWT models.JWT
 
-	aUser := User{
+	aUser := models.User{
 		Email:    "JoeSmith@testing.com",
 		Password: "qwertyu",
 	}

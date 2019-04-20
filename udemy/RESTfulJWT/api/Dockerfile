@@ -3,7 +3,7 @@ FROM golang:1.12
 RUN go get github.com/codegangsta/gin
 
 RUN mkdir -p /code
-WORKDIR code
+WORKDIR /code
 
 COPY . $WORKDIR
 

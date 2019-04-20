@@ -6,29 +6,18 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 
 	"golang.org/x/crypto/bcrypt"
 	"udemy.com/RESTfulJWT/api/driver"
+	"udemy.com/RESTfulJWT/api/models"
 
 	"github.com/gorilla/mux"
+	"github.com/subosito/gotenv"
 
-	"github.com/dgrijalva/jwt-go"
+	jwt "github.com/dgrijalva/jwt-go"
 )
-
-type User struct {
-	ID       int    `json:"id"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
-type JWT struct {
-	Token string `json:"token"`
-}
-
-type Error struct {
-	Message string `json:"message"`
-}
 
 var db *sql.DB
 
@@ -39,6 +28,7 @@ func logFatal(err error) {
 }
 
 func init() {
+	gotenv.Load()
 
 	db = driver.ConnectDB()
 
@@ -76,7 +66,7 @@ func main() {
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", port), router))
 }
 
-func respondWithError(w http.ResponseWriter, status int, error Error) {
+func respondWithError(w http.ResponseWriter, status int, error models.Error) {
 	w.WriteHeader(status)
 	json.NewEncoder(w).Encode(error)
 }
@@ -86,8 +76,8 @@ func responseJSON(w http.ResponseWriter, data interface{}) {
 }
 
 func signup(w http.ResponseWriter, r *http.Request) {
-	var user User
-	var error Error
+	var user models.User
+	var error models.Error
 	json.NewDecoder(r.Body).Decode(&user)
 
 	if user.Email == "" {
@@ -124,16 +114,16 @@ func signup(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func GenerateToken(user User) (string, error) {
+// GenerateToken ..
+func GenerateToken(user models.User) (string, error) {
 	var err error
-	secret := "secret"
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"email": user.Email,
 		"iss":   "course",
 	})
 
-	tokenString, err := token.SignedString([]byte(secret))
+	tokenString, err := token.SignedString([]byte(os.Getenv("SECRET")))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -142,9 +132,9 @@ func GenerateToken(user User) (string, error) {
 }
 
 func login(w http.ResponseWriter, r *http.Request) {
-	var user User
-	var jwt JWT
-	var error Error
+	var user models.User
+	var jwt models.JWT
+	var error models.Error
 
 	json.NewDecoder(r.Body).Decode(&user)
 
@@ -168,9 +158,8 @@ func login(w http.ResponseWriter, r *http.Request) {
 			error.Message = "The user does not exists"
 			respondWithError(w, http.StatusBadRequest, error)
 			return
-		} else {
-			log.Fatal(err)
 		}
+		log.Fatal(err)
 	}
 
 	hashedPassword := user.Password
@@ -198,9 +187,10 @@ func protectedEndpoint(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("successfully called protected"))
 }
 
+// TokenVerifyMiddleware ..
 func TokenVerifyMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		var errorObject Error
+		var errorObject models.Error
 		authHeader := r.Header.Get("Authorization")
 		bearerToken := strings.Split(authHeader, " ")
 
@@ -212,7 +202,7 @@ func TokenVerifyMiddleware(next http.HandlerFunc) http.HandlerFunc {
 					return nil, fmt.Errorf("There was an error")
 				}
 
-				return []byte("secret"), nil
+				return []byte(os.Getenv("SECRET")), nil
 			})
 
 			if error != nil {
