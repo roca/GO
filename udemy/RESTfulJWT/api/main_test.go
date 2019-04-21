@@ -9,10 +9,17 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"udemy.com/RESTfulJWT/api/controllers"
+	"udemy.com/RESTfulJWT/api/driver"
 	"udemy.com/RESTfulJWT/api/models"
+	"udemy.com/RESTfulJWT/api/utils"
 )
 
 func Test_Signup(t *testing.T) {
+
+	controller := controllers.Controller{}
+
+	db = driver.ConnectDB()
 
 	var expectedUser models.User
 
@@ -27,7 +34,7 @@ func Test_Signup(t *testing.T) {
 		t.Fatal(err)
 	}
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(signup)
+	handler := http.HandlerFunc(controller.Signup(db))
 
 	handler.ServeHTTP(rr, req)
 
@@ -44,6 +51,10 @@ func Test_Signup(t *testing.T) {
 
 func Test_Login(t *testing.T) {
 
+	controller := controllers.Controller{}
+
+	db = driver.ConnectDB()
+
 	var expectedJWT models.JWT
 	var userJWT models.JWT
 
@@ -52,7 +63,7 @@ func Test_Login(t *testing.T) {
 		Password: "qwertyu",
 	}
 
-	userJWTTokeString, _ := GenerateToken(aUser)
+	userJWTTokeString, _ := utils.GenerateToken(aUser)
 	userJWT.Token = userJWTTokeString
 
 	jsonUser, _ := json.Marshal(&aUser)
@@ -62,7 +73,7 @@ func Test_Login(t *testing.T) {
 
 	}
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(login)
+	handler := http.HandlerFunc(controller.Login(db))
 
 	handler.ServeHTTP(rr, req)
 
@@ -77,6 +88,10 @@ func Test_Login(t *testing.T) {
 
 func Test_Protected(t *testing.T) {
 
+	controller := controllers.Controller{}
+
+	db = driver.ConnectDB()
+
 	var userJWT models.JWT
 
 	aUser := models.User{
@@ -84,7 +99,7 @@ func Test_Protected(t *testing.T) {
 		Password: "qwertyu",
 	}
 
-	userJWTTokeString, _ := GenerateToken(aUser)
+	userJWTTokeString, _ := utils.GenerateToken(aUser)
 	userJWT.Token = userJWTTokeString
 
 	req, err := http.NewRequest("GET", "/protected", nil)
@@ -94,9 +109,13 @@ func Test_Protected(t *testing.T) {
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", userJWT.Token))
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(TokenVerifyMiddleware(protectedEndpoint))
+	handler := http.HandlerFunc(controller.TokenVerifyMiddleware(controller.ProtectedEndpoint()))
 
 	handler.ServeHTTP(rr, req)
-	assert.Equal(t, "successfully called protected", rr.Body.String(), "Bearer token dose not match")
+
+	message := ""
+	json.NewDecoder(rr.Body).Decode(&message)
+
+	assert.Equal(t, "successfully called protected", message, "Bearer token dose not match")
 
 }
