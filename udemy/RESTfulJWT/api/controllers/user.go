@@ -9,6 +9,8 @@ import (
 	"os"
 	"strings"
 
+	userRepository "udemy.com/RESTfulJWT/api/repository/user"
+
 	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
 	"udemy.com/RESTfulJWT/api/models"
@@ -44,9 +46,9 @@ func (c Controller) Signup(db *sql.DB) http.HandlerFunc {
 
 		user.Password = string(hash)
 
-		stmt := "insert into users (email, password) values($1, $2) RETURNING id;"
+		userRepo := userRepository.UserRepository{}
+		user = userRepo.Signup(db, user)
 
-		err = db.QueryRow(stmt, user.Email, user.Password).Scan(&user.ID)
 		if err != nil {
 			error.Message = "Server error."
 			utils.RespondWithError(w, http.StatusInternalServerError, error)
@@ -82,8 +84,9 @@ func (c Controller) Login(db *sql.DB) http.HandlerFunc {
 		}
 
 		password := user.Password
-		row := db.QueryRow("select * from users where email=$1", user.Email)
-		err := row.Scan(&user.ID, &user.Email, &user.Password)
+		userRepo := userRepository.UserRepository{}
+		user, err := userRepo.Login(db, user)
+
 		if err != nil {
 			if err == sql.ErrNoRows {
 				error.Message = "The user does not exists"
