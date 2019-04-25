@@ -24,7 +24,7 @@ services:
     # depends_on:
     #   - db
     ports:
-      - "3001:3001"
+      - "50051:50051"
     volumes:
       - ./src:/code
     working_dir: /code

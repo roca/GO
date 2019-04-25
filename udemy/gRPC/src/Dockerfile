@@ -1,8 +1,8 @@
 FROM golang:1.12
 
 RUN go get github.com/codegangsta/gin
-RUN go get google.golang.org/grpc
-RUN go get github.com/golang/protobuf/protoc-gen-go
+RUN go get -u google.golang.org/grpc
+RUN go get -u github.com/golang/protobuf/protoc-gen-go
 
 
 RUN mkdir -p /code
@@ -17,7 +17,7 @@ RUN export PROTOC_ZIP=protoc-3.7.1-linux-x86_64.zip \
 && rm -f $PROTOC_ZIP
 
 
-EXPOSE 3001
+EXPOSE 50051
 
 CMD ["tail", "-f", "/dev/null"]
 # ENTRYPOINT  gin  --bin "api" --immediate --appPort 3001 run main.go
