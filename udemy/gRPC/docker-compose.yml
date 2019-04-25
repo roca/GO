@@ -1,28 +1,28 @@
 version: "3.6"
 services:
-  db:
-    image: postgres
-    privileged: true
-    restart: always
-    environment:
-      POSTGRES_PASSWORD: password
-    volumes:
-      # - ./dbdata:/var/lib/postgresql/data
-      - /data/postgresql:/var/lib/postgresql/data
-    ports:
-      - '5432:5432'
-  adminer:
-    image: adminer
-    restart: always
-    ports:
-      - 8080:8080
+  # db:
+  #   image: postgres
+  #   privileged: true
+  #   restart: always
+  #   environment:
+  #     POSTGRES_PASSWORD: password
+  #   volumes:
+  #     # - ./dbdata:/var/lib/postgresql/data
+  #     - /data/postgresql:/var/lib/postgresql/data
+  #   ports:
+  #     - '5432:5432'
+  # adminer:
+  #   image: adminer
+  #   restart: always
+  #   ports:
+  #     - 8080:8080
   src:
     container_name: src
     build: 
       context: ./src
       dockerfile: Dockerfile
-    depends_on:
-      - db
+    # depends_on:
+    #   - db
     ports:
       - "3001:3001"
     volumes:
