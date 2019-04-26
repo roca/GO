@@ -28,3 +28,5 @@ services:
     volumes:
       - ./src:/code
     working_dir: /code
+    extra_hosts:
+      - "local.regeneron.regn.com:192.168.99.100"
