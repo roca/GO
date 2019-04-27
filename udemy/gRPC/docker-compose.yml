@@ -19,14 +19,14 @@ services:
   src:
     container_name: src
     build: 
-      context: ./src
+      context: ./code
       dockerfile: Dockerfile
     # depends_on:
     #   - db
     ports:
       - "50051:50051"
     volumes:
-      - ./src:/code
+      - ./code:/code
     working_dir: /code
     extra_hosts:
       - "local.regeneron.regn.com:192.168.99.100"

@@ -1,4 +1,4 @@
-module udemy.com/gRPC/src
+module udemy.com/gRPC/code
 
 go 1.12
 

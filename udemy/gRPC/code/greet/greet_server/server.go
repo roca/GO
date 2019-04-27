@@ -6,7 +6,7 @@ import (
 	"log"
 	"net"
 
-	"udemy.com/gRPC/src/greet/greetpb"
+	"udemy.com/gRPC/code/greet/greetpb"
 
 	"google.golang.org/grpc"
 )
