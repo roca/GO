@@ -8,6 +8,10 @@ message  Nums {
     float second_num = 2;
 }
 
+message  PrimeNumber {
+    int32 number = 1;
+}
+
 message SumRequest {
     Nums nums = 1;
 }
@@ -16,7 +20,17 @@ message SumResponse {
     float total = 1;
 }
 
+message PrimeNumbersRequest {
+    PrimeNumber number = 1;
+}
+
+message PrimeNumbersResponse {
+    int32 result = 1;
+}
+
 service CalculatorService {
     // Unary
     rpc Sum(SumRequest) returns (SumResponse) {};
+
+    rpc PrimeNumbers(PrimeNumbersRequest) returns (stream PrimeNumbersResponse) {};
 }
