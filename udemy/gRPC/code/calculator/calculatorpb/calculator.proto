@@ -16,7 +16,7 @@ message SumResponse {
     float total = 1;
 }
 
-service SumService {
+service CalculatorService {
     // Unary
     rpc Sum(SumRequest) returns (SumResponse) {};
 }

@@ -6,7 +6,6 @@ import (
 	"log"
 	"net"
 
-	"udemy.com/gRPC/code/calculator/calculatorpb"
 	"udemy.com/gRPC/code/greet/greetpb"
 
 	"google.golang.org/grpc"
@@ -20,17 +19,6 @@ func (*server) Greet(ctx context.Context, req *greetpb.GreetRequest) (*greetpb.G
 	result := "Hello" + firstName
 	res := &greetpb.GreetResponse{
 		Result: result,
-	}
-	return res, nil
-}
-
-func (*server) Sum(ctx context.Context, req *calculatorpb.SumRequest) (*calculatorpb.SumResponse, error) {
-	fmt.Printf("Sum function was invocked with %v\n", req)
-	firstNum := req.GetNums().GetFirstNum()
-	secondNum := req.GetNums().GetSecondNum()
-	result := firstNum + secondNum
-	res := &calculatorpb.SumResponse{
-		Total: result,
 	}
 	return res, nil
 }
