@@ -54,11 +54,11 @@ func PrimeFactors(n int) (pfs []int) {
 
 func (*server) PrimeNumbers(req *calculatorpb.PrimeNumbersRequest, stream calculatorpb.CalculatorService_PrimeNumbersServer) error {
 	fmt.Printf("PrimeNumber function was invocked with %v\n", req)
-	primeNumber := req.GetNumber().GetNumber()
+	primeNumber := req.GetNumber()
 	primeFactors := PrimeFactors(int(primeNumber))
 	for _, p := range primeFactors {
 		res := &calculatorpb.PrimeNumbersResponse{
-			Result: int32(p),
+			Result: int64(p),
 		}
 		stream.Send(res)
 		time.Sleep(1 * time.Second)

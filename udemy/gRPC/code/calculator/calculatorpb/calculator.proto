@@ -8,10 +8,6 @@ message  Nums {
     float second_num = 2;
 }
 
-message  PrimeNumber {
-    int32 number = 1;
-}
-
 message SumRequest {
     Nums nums = 1;
 }
@@ -21,11 +17,11 @@ message SumResponse {
 }
 
 message PrimeNumbersRequest {
-    PrimeNumber number = 1;
+    int64 number = 1;
 }
 
 message PrimeNumbersResponse {
-    int32 result = 1;
+    int64 result = 1;
 }
 
 service CalculatorService {

@@ -47,12 +47,9 @@ func doUnary(c calculatorpb.CalculatorServiceClient) {
 
 func doServerStreaming(c calculatorpb.CalculatorServiceClient) {
 	fmt.Println("Starting to do a Server Streaming RPC...")
-	primeNumber := &calculatorpb.PrimeNumber{
-		Number: 120,
-	}
 
 	req := &calculatorpb.PrimeNumbersRequest{
-		Number: primeNumber,
+		Number: 12390392840,
 	}
 
 	resStream, err := c.PrimeNumbers(context.Background(), req)
@@ -62,7 +59,7 @@ func doServerStreaming(c calculatorpb.CalculatorServiceClient) {
 	for {
 		msg, err := resStream.Recv()
 		if err == io.EOF {
-			// we've readched the end of the stream
+			// we've reached the end of the stream
 			break
 		}
 		if err != nil {
