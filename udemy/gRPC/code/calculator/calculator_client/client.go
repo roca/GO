@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"time"
 
 	"google.golang.org/grpc"
 
@@ -24,7 +25,8 @@ func main() {
 	//fmt.Printf("Created client: %f", c)
 
 	//doUnary(c)
-	doServerStreaming(c)
+	//doServerStreaming(c)
+	doClientStreaming(c)
 }
 
 func doUnary(c calculatorpb.CalculatorServiceClient) {
@@ -67,5 +69,36 @@ func doServerStreaming(c calculatorpb.CalculatorServiceClient) {
 		}
 		log.Printf("Response from PrimeNumbers: %v", msg.GetResult())
 	}
+
+}
+
+func doClientStreaming(c calculatorpb.CalculatorServiceClient) {
+	fmt.Println("Starting to do a Client Streaming RPC...")
+
+	requests := []*calculatorpb.ComputeAverageRequest{
+		&calculatorpb.ComputeAverageRequest{Number: 1},
+		&calculatorpb.ComputeAverageRequest{Number: 2},
+		&calculatorpb.ComputeAverageRequest{Number: 3},
+		&calculatorpb.ComputeAverageRequest{Number: 4},
+	}
+
+	stream, err := c.ComputeAverage(context.Background())
+	if err != nil {
+		log.Fatalf("error while calling LongGreet: %v", err)
+	}
+
+	// we iterate over our slice and send each message individually
+	for _, req := range requests {
+		fmt.Printf("Sending req: %v\n", req)
+		stream.Send(req)
+		time.Sleep(1 * time.Second)
+	}
+
+	res, err := stream.CloseAndRecv()
+	if err != nil {
+		log.Fatalf("error while recieving response from LongGreet: %v", err)
+	}
+
+	fmt.Printf("ComputeAverage Response: %v\n", res)
 
 }
