@@ -68,7 +68,7 @@ func (*server) PrimeNumbers(req *calculatorpb.PrimeNumbersRequest, stream calcul
 }
 
 func (*server) ComputeAverage(stream calculatorpb.CalculatorService_ComputeAverageServer) error {
-	fmt.Println("ComputeAverag function was invocked with a streaming request")
+	fmt.Println("ComputeAverage function was invocked with a streaming request")
 	sum := float64(0)
 	count := float64(0)
 
