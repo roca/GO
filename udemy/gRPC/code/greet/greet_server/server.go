@@ -61,6 +61,10 @@ func (*server) LongGreet(stream greetpb.GreetService_LongGreetServer) error {
 	}
 }
 
+func (*server) GreetEveryone(stream greetpb.GreetService_GreetEveryoneServer) error {
+	return nil
+}
+
 func main() {
 	fmt.Println("Hello world")
 
