@@ -27,7 +27,8 @@ func main() {
 	//doUnary(c)
 	//doServerStreaming(c)
 	//doClientStreaming(c)
-	doBiDiStreaming(c)
+	//doBiDiStreaming(c)
+	doErrorUnary(c)
 }
 
 func doUnary(c calculatorpb.CalculatorServiceClient) {
@@ -147,4 +148,7 @@ func doBiDiStreaming(c calculatorpb.CalculatorServiceClient) {
 	// block until everything in done
 	<-waitc
 
+}
+
+func doErrorUnary(c calculatorpb.CalculatorServiceClient) {
 }
