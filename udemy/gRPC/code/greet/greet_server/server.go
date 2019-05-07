@@ -24,7 +24,7 @@ type server struct{}
 func (*server) Greet(ctx context.Context, req *greetpb.GreetRequest) (*greetpb.GreetResponse, error) {
 	fmt.Printf("Greet function was invocked with %v\n", req)
 	firstName := req.GetGreeting().GetFirstName()
-	result := "Hello" + firstName
+	result := "Hello " + firstName
 	res := &greetpb.GreetResponse{
 		Result: result,
 	}
@@ -115,16 +115,20 @@ func main() {
 		log.Fatalf("Failed to listen: %v", err)
 	}
 
-	certFile := "ssl/server.crt"
-	keyFile := "ssl/server.pem"
-	creds, sslErr := credentials.NewServerTLSFromFile(certFile, keyFile)
-	if sslErr != nil {
-		log.Fatalf("Failed loading certificates: %v\n", sslErr)
-		return
+	tls := false
+	opts := []grpc.ServerOption{}
+	if tls {
+		certFile := "ssl/server.crt"
+		keyFile := "ssl/server.pem"
+		creds, sslErr := credentials.NewServerTLSFromFile(certFile, keyFile)
+		if sslErr != nil {
+			log.Fatalf("Failed loading certificates: %v\n", sslErr)
+			return
+		}
+		opts = append(opts, grpc.Creds(creds))
 	}
-	opts := grpc.Creds(creds)
 
-	s := grpc.NewServer(opts)
+	s := grpc.NewServer(opts...)
 	greetpb.RegisterGreetServiceServer(s, &server{})
 
 	if err := s.Serve(lis); err != nil {
