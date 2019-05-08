@@ -11,6 +11,8 @@ http://avi.im/grpc-errors/
 
 https://grpc.io/docs/guides/error/
 
+https://github.com/ktr0731/evans
+
 
 Course code soure @ https://github.com/simplesteph/grpc-go-course
 
