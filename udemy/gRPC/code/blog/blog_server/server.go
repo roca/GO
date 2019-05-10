@@ -15,6 +15,8 @@ import (
 	"udemy.com/gRPC/code/blog/blogpb"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 var collection *mongo.Collection
@@ -28,11 +30,47 @@ type blogItem struct {
 	Title    string             `bson:"title"`
 }
 
+// CreateBlog ...
+func (*server) CreateBlog(ctx context.Context, req *blogpb.CreateBlogRequets) (*blogpb.CreateBlogResponse, error) {
+	blog := req.GetBlog()
+
+	data := blogItem{
+		AuthorID: blog.GetAuthorId(),
+		Title:    blog.GetTitle(),
+		Content:  blog.GetContent(),
+	}
+
+	res, err := collection.InsertOne(ctx, data)
+	if err != nil {
+		return nil, status.Errorf(
+			codes.Internal,
+			fmt.Sprintf("Internal error: %v", err),
+		)
+	}
+	oid, ok := res.InsertedID.(primitive.ObjectID)
+	if !ok {
+		return nil, status.Errorf(
+			codes.Internal,
+			fmt.Sprintf("Cannot convert to OID"),
+		)
+	}
+
+	return &blogpb.CreateBlogResponse{
+		Blog: &blogpb.Blog{
+			Id:       oid.Hex(),
+			AuthorId: blog.GetAuthorId(),
+			Title:    blog.GetTitle(),
+			Content:  blog.GetContent(),
+		},
+	}, nil
+
+}
+
 func main() {
 	// if we crash the go code, we get the file name and line number
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
-	fmt.Println("Blog Service Started")
+	fmt.Println("Connecting to MonogDB")
 
 	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://mongo:27017"))
 	if err != nil {
@@ -43,9 +81,13 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
+	err = client.Ping(ctx, nil) // Check client connection
+	if err != nil {
+		log.Fatal(err)
+	}
 	collection = client.Database("mydb").Collection("blog")
 
+	fmt.Println("Blog Service Started")
 	lis, err := net.Listen("tcp", "0.0.0.0:50051")
 	if err != nil {
 		log.Fatalf("Failed to listen: %v", err)
@@ -72,5 +114,7 @@ func main() {
 	s.Stop()
 	fmt.Println("Closing the listener")
 	lis.Close()
+	fmt.Println("Closing MongoDB Connection")
+	client.Disconnect(ctx)
 	fmt.Println("End of Program")
 }

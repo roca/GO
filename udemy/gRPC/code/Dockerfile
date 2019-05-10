@@ -4,7 +4,7 @@ RUN go get github.com/codegangsta/gin
 RUN go get -u google.golang.org/grpc
 RUN go get -u github.com/golang/protobuf/protoc-gen-go
 RUN go get github.com/ktr0731/evans
-RUN go.mongodb.org/mongo-driver/mongo
+RUN go get go.mongodb.org/mongo-driver/mongo
 
 
 RUN mkdir -p /code
