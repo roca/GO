@@ -9,6 +9,7 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/subosito/gotenv"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -32,6 +33,7 @@ type blogItem struct {
 
 // CreateBlog ...
 func (*server) CreateBlog(ctx context.Context, req *blogpb.CreateBlogRequets) (*blogpb.CreateBlogResponse, error) {
+	fmt.Println("Create blog request")
 	blog := req.GetBlog()
 
 	data := blogItem{
@@ -69,10 +71,11 @@ func (*server) CreateBlog(ctx context.Context, req *blogpb.CreateBlogRequets) (*
 func main() {
 	// if we crash the go code, we get the file name and line number
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
+	gotenv.Load()
 
 	fmt.Println("Connecting to MonogDB")
 
-	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://mongo:27017"))
+	client, err := mongo.NewClient(options.Client().ApplyURI(os.Getenv("MONGODB_CONNECTION_STRING")))
 	if err != nil {
 		log.Fatal(err)
 	}
