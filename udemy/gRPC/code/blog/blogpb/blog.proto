@@ -20,6 +20,15 @@ message CreateBlogResponse {
     Blog blog = 1; // will have a blog id
 }
 
+message ReadBlogRequets{
+    Blog blog_id = 1;
+}
+
+message ReadBlogResponse {
+    Blog blog = 1; 
+}
+
 service BlogService {
    rpc CreateBlog (CreateBlogRequets) returns (CreateBlogResponse);
+   rpc ReadBlog (ReadBlogRequets) returns (ReadBlogResponse); // return NOT_FOUND if not found
 }

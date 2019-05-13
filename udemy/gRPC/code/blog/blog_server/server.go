@@ -31,6 +31,14 @@ type blogItem struct {
 	Title    string             `bson:"title"`
 }
 
+//ReadeBlog ...
+func (*server) ReadBlog(ctx context.Context, req *blogpb.ReadBlogRequets) (*blogpb.ReadBlogResponse, error) {
+	fmt.Println("Read blog request")
+	blogId := req.GetBlogId()
+
+	oid, err := primitive.ObjectIDFromHex(bloId)
+}
+
 // CreateBlog ...
 func (*server) CreateBlog(ctx context.Context, req *blogpb.CreateBlogRequets) (*blogpb.CreateBlogResponse, error) {
 	fmt.Println("Create blog request")
