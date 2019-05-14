@@ -38,9 +38,28 @@ func doUnary(c blogpb.BlogServiceClient) {
 		Blog: blog,
 	}
 
-	res, err := c.CreateBlog(context.Background(), req)
+	createBlogRes, err := c.CreateBlog(context.Background(), req)
 	if err != nil {
 		log.Fatalf("error while calling Blog RPC: %v", err)
 	}
-	log.Printf("Blog has been created: %v", res.Blog)
+	log.Printf("Blog has been created: %v", createBlogRes.Blog)
+	blogID := createBlogRes.GetBlog().GetId()
+
+	// read Blog
+	fmt.Println("Reading the blog")
+
+	_, err2 := c.ReadBlog(context.Background(), &blogpb.ReadBlogRequets{
+		BlogId: "5cdb08200b9d068dcc9b3eff",
+	})
+	if err2 != nil {
+		log.Printf("error while calling ReadBlog RPC: %v\n", err2)
+	}
+
+	readBlogReq := &blogpb.ReadBlogRequets{BlogId: blogID}
+	readBlodRes, err := c.ReadBlog(context.Background(), readBlogReq)
+	if err != nil {
+		log.Printf("error while calling ReadBlog RPC: %v\n", err)
+	}
+
+	log.Printf("Blog was read: %v\n", readBlodRes)
 }
