@@ -21,7 +21,7 @@ message CreateBlogResponse {
 }
 
 message ReadBlogRequets{
-    Blog blog_id = 1;
+    string blog_id = 1;
 }
 
 message ReadBlogResponse {

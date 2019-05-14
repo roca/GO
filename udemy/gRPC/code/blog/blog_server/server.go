@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/subosito/gotenv"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -34,9 +35,36 @@ type blogItem struct {
 //ReadeBlog ...
 func (*server) ReadBlog(ctx context.Context, req *blogpb.ReadBlogRequets) (*blogpb.ReadBlogResponse, error) {
 	fmt.Println("Read blog request")
-	blogId := req.GetBlogId()
+	blogID := req.GetBlogId()
 
-	oid, err := primitive.ObjectIDFromHex(bloId)
+	oid, err := primitive.ObjectIDFromHex(blogID)
+	if err != nil {
+		return nil, status.Errorf(
+			codes.InvalidArgument,
+			fmt.Sprintf("Cannot parse ID: %v\n", err),
+		)
+	}
+
+	// create an empty struct
+	data := &blogItem{}
+	filter := bson.D{{"_id", oid}}
+
+	res := collection.FindOne(ctx, filter)
+	if err := res.Decode(data); err != nil {
+		return nil, status.Errorf(
+			codes.NotFound,
+			fmt.Sprintf("Cannot find blog with specified ID: %v\n", err),
+		)
+	}
+
+	return &blogpb.ReadBlogResponse{
+		Blog: &blogpb.Blog{
+			Id:       data.ID.Hex(),
+			AuthorId: data.AuthorID,
+			Content:  data.Content,
+			Title:    data.Title,
+		},
+	}, nil
 }
 
 // CreateBlog ...
