@@ -104,6 +104,47 @@ func (*server) CreateBlog(ctx context.Context, req *blogpb.CreateBlogRequets) (*
 
 }
 
+func UpdateBlog(ctx context.Context, req *blogpb.UpdateBlogRequets) (*blogpb.UpdateBlogResponse, error) {
+	fmt.Println("Update blog request")
+	blog := req.GetBlog()
+	oid, err := primitive.ObjectIDFromHex(blog.GetId())
+	if err != nil {
+		return nil, status.Errorf(
+			codes.InvalidArgument,
+			fmt.Sprintf("Cannot parse ID: %v\n", err),
+		)
+	}
+
+	// create an empty struct
+	data := &blogItem{}
+	filter := bson.D{{"_id", oid}}
+
+	res := collection.FindOne(ctx, filter)
+	if err := res.Decode(data); err != nil {
+		return nil, status.Errorf(
+			codes.NotFound,
+			fmt.Sprintf("Cannot find blog with specified ID: %v\n", err),
+		)
+	}
+
+	// we update our internal struct
+	data.AuthorID = blog.GetAuthorId()
+	data.Content = blog.GetContent()
+	data.Title = blog.GetTitle()
+
+	updateRes, updateErr := collection.ReplaceOne(ctx, filter, data)
+	if updateErr := updateRes.Decode(data); err != nil {
+		return nil, status.Errorf(
+			codes.NotFound,
+			fmt.Sprintf("Cannot update object in MongoDB: %v\n", updateErr),
+		)
+	}
+
+	return &blogpb.UpdateBlogResponse{
+		Blog: data,
+		},
+	}, nil
+}
 func main() {
 	// if we crash the go code, we get the file name and line number
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
