@@ -80,4 +80,14 @@ func doUnary(c blogpb.BlogServiceClient) {
 
 	log.Printf("Blog was updated: %v\n", updateBlogRes)
 
+	// Delete blog
+	deleteBlogRes, err := c.DeleteBlog(context.Background(), &blogpb.DeleteBlogRequets{
+		BlogId: blogID,
+	})
+	if err != nil {
+		log.Printf("error while calling DeleteBlog RPC: %v\n", err)
+	}
+
+	log.Printf("Blog %v was delete: \n", deleteBlogRes.GetBlogId())
+
 }
