@@ -149,6 +149,43 @@ func (*server) UpdateBlog(ctx context.Context, req *blogpb.UpdateBlogRequets) (*
 	}, nil
 }
 
+func (*server) DeleteBlog(ctx context.Context, req *blogpb.DeleteBlogRequets) (*blogpb.DeleteBlogResponse, error) {
+	fmt.Println("Delete blog request")
+	blogID := req.GetBlogId()
+
+	oid, err := primitive.ObjectIDFromHex(blogID)
+	if err != nil {
+		return nil, status.Errorf(
+			codes.InvalidArgument,
+			fmt.Sprintf("Cannot parse ID: %v\n", err),
+		)
+	}
+
+	filter := bson.D{{"_id", oid}}
+
+	res, err := collection.DeleteOne(ctx, filter)
+	if err != nil {
+		return nil, status.Errorf(
+			codes.Internal,
+			fmt.Sprintf("Cannot delete object in MongoDB: %v\n", err),
+		)
+	}
+
+	if res.DeletedCount == 0 {
+		return nil, status.Errorf(
+			codes.NotFound,
+			fmt.Sprintf("Cannot find blog in MongoDBi: %v", err),
+		)
+	}
+
+	fmt.Printf("Deleted %v records\n", res.DeletedCount)
+
+	return &blogpb.DeleteBlogResponse{
+		BlogId: blogID,
+	}, nil
+
+}
+
 func main() {
 	// if we crash the go code, we get the file name and line number
 	log.SetFlags(log.LstdFlags | log.Lshortfile)

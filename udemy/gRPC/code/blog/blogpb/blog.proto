@@ -27,6 +27,7 @@ message ReadBlogRequets{
 message ReadBlogResponse {
     Blog blog = 1; 
 }
+
 message UpdateBlogRequets{
     Blog blog = 1; 
 }
@@ -35,8 +36,17 @@ message UpdateBlogResponse {
     Blog blog = 1; 
 }
 
+message DeleteBlogRequets{
+    string blog_id = 1;
+}
+
+message DeleteBlogResponse {
+    string blog_id = 1;
+}
+
 service BlogService {
    rpc CreateBlog (CreateBlogRequets) returns (CreateBlogResponse);
    rpc ReadBlog (ReadBlogRequets) returns (ReadBlogResponse); // return NOT_FOUND if not found
    rpc UpdateBlog (UpdateBlogRequets) returns (UpdateBlogResponse); // return NOT_FOUND if not found
+   rpc DeleteBlog (DeleteBlogRequets) returns (DeleteBlogResponse); // return NOT_FOUND if not found
 }
