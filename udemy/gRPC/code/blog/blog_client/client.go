@@ -95,7 +95,7 @@ func doUnary(c blogpb.BlogServiceClient) {
 
 	listBlogStream, err := c.ListBlog(context.Background(), &blogpb.ListBlogRequest{})
 	if err != nil {
-		log.Fatal("error while calling PrimeNumbers RPC: %v", err)
+		log.Fatalf("error while calling ListBlog RPC: %v", err)
 	}
 	for {
 		blog, err := listBlogStream.Recv()
