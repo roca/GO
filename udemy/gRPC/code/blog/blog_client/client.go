@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"io"
 	"log"
 
 	"google.golang.org/grpc"
@@ -34,7 +35,7 @@ func doUnary(c blogpb.BlogServiceClient) {
 		Content:  "Content of the first blog",
 	}
 
-	req := &blogpb.CreateBlogRequets{
+	req := &blogpb.CreateBlogRequest{
 		Blog: blog,
 	}
 
@@ -48,14 +49,14 @@ func doUnary(c blogpb.BlogServiceClient) {
 	// read Blog
 	fmt.Println("Reading the blog")
 
-	_, err2 := c.ReadBlog(context.Background(), &blogpb.ReadBlogRequets{
+	_, err2 := c.ReadBlog(context.Background(), &blogpb.ReadBlogRequest{
 		BlogId: "5cdb08200b9d068dcc9b3eff",
 	})
 	if err2 != nil {
 		log.Printf("error while calling ReadBlog RPC: %v\n", err2)
 	}
 
-	readBlogReq := &blogpb.ReadBlogRequets{BlogId: blogID}
+	readBlogReq := &blogpb.ReadBlogRequest{BlogId: blogID}
 	readBlogRes, err := c.ReadBlog(context.Background(), readBlogReq)
 	if err != nil {
 		log.Printf("error while calling ReadBlog RPC: %v\n", err)
@@ -72,7 +73,7 @@ func doUnary(c blogpb.BlogServiceClient) {
 		Content:  "Content of the first blog, with some awsome additions",
 	}
 
-	updateBlogReq := &blogpb.UpdateBlogRequets{Blog: newBlog}
+	updateBlogReq := &blogpb.UpdateBlogRequest{Blog: newBlog}
 	updateBlogRes, err := c.UpdateBlog(context.Background(), updateBlogReq)
 	if err != nil {
 		log.Printf("error while calling UpdateBlog RPC: %v\n", err)
@@ -81,7 +82,7 @@ func doUnary(c blogpb.BlogServiceClient) {
 	log.Printf("Blog was updated: %v\n", updateBlogRes)
 
 	// Delete blog
-	deleteBlogRes, err := c.DeleteBlog(context.Background(), &blogpb.DeleteBlogRequets{
+	deleteBlogRes, err := c.DeleteBlog(context.Background(), &blogpb.DeleteBlogRequest{
 		BlogId: blogID,
 	})
 	if err != nil {
@@ -89,5 +90,23 @@ func doUnary(c blogpb.BlogServiceClient) {
 	}
 
 	log.Printf("Blog %v was delete: \n", deleteBlogRes.GetBlogId())
+
+	// List Blogs
+
+	listBlogStream, err := c.ListBlog(context.Background(), &blogpb.ListBlogRequest{})
+	if err != nil {
+		log.Fatal("error while calling PrimeNumbers RPC: %v", err)
+	}
+	for {
+		blog, err := listBlogStream.Recv()
+		if err == io.EOF {
+			// we've reached the end of the stream
+			break
+		}
+		if err != nil {
+			log.Fatalf("error while reading stream: %v", err)
+		}
+		log.Printf("Response from listBlog: %v", blog.GetBlog())
+	}
 
 }

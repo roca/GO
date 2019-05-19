@@ -33,7 +33,7 @@ type blogItem struct {
 }
 
 //ReadeBlog ...
-func (*server) ReadBlog(ctx context.Context, req *blogpb.ReadBlogRequets) (*blogpb.ReadBlogResponse, error) {
+func (*server) ReadBlog(ctx context.Context, req *blogpb.ReadBlogRequest) (*blogpb.ReadBlogResponse, error) {
 	fmt.Println("Read blog request")
 	blogID := req.GetBlogId()
 
@@ -63,7 +63,7 @@ func (*server) ReadBlog(ctx context.Context, req *blogpb.ReadBlogRequets) (*blog
 }
 
 // CreateBlog ...
-func (*server) CreateBlog(ctx context.Context, req *blogpb.CreateBlogRequets) (*blogpb.CreateBlogResponse, error) {
+func (*server) CreateBlog(ctx context.Context, req *blogpb.CreateBlogRequest) (*blogpb.CreateBlogResponse, error) {
 	fmt.Println("Create blog request")
 	blog := req.GetBlog()
 
@@ -108,7 +108,7 @@ func dataToBlogPb(data *blogItem) *blogpb.Blog {
 	}
 }
 
-func (*server) UpdateBlog(ctx context.Context, req *blogpb.UpdateBlogRequets) (*blogpb.UpdateBlogResponse, error) {
+func (*server) UpdateBlog(ctx context.Context, req *blogpb.UpdateBlogRequest) (*blogpb.UpdateBlogResponse, error) {
 	fmt.Println("Update blog request")
 	blog := req.GetBlog()
 	oid, err := primitive.ObjectIDFromHex(blog.GetId())
@@ -149,7 +149,7 @@ func (*server) UpdateBlog(ctx context.Context, req *blogpb.UpdateBlogRequets) (*
 	}, nil
 }
 
-func (*server) DeleteBlog(ctx context.Context, req *blogpb.DeleteBlogRequets) (*blogpb.DeleteBlogResponse, error) {
+func (*server) DeleteBlog(ctx context.Context, req *blogpb.DeleteBlogRequest) (*blogpb.DeleteBlogResponse, error) {
 	fmt.Println("Delete blog request")
 	blogID := req.GetBlogId()
 
@@ -186,7 +186,7 @@ func (*server) DeleteBlog(ctx context.Context, req *blogpb.DeleteBlogRequets) (*
 
 }
 
-func (*server) ListBlog(req *blogpb.ListBlogRequets, stream blogpb.BlogService_ListBlogServer) error {
+func (*server) ListBlog(req *blogpb.ListBlogRequest, stream blogpb.BlogService_ListBlogServer) error {
 	fmt.Println("List blog request")
 
 	cur, err := collection.Find(context.Background(), nil)
@@ -200,19 +200,15 @@ func (*server) ListBlog(req *blogpb.ListBlogRequets, stream blogpb.BlogService_L
 	for cur.Next(context.Background()) {
 		data := &blogItem{}
 
-		if err := cur.Decode(data); err != nil {
+		err := cur.Decode(data)
+		if err != nil {
 			return status.Errorf(
 				codes.Internal,
 				fmt.Sprintf("Error while decoding data from MongoDB: %v\n", err),
 			)
 		}
 
-		if err := stream.Send(&blogpb.ListBlogResponse{
-			Blog: dataToBlogPb(data),
-		}); err != nil {
-			log.Printf("Error while sending data to client: %v", err)
-			return err
-		}
+		stream.Send(&blogpb.ListBlogResponse{Blog: dataToBlogPb(data)})
 	}
 
 	if err := cur.Err(); err != nil {

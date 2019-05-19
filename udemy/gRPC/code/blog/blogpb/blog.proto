@@ -12,7 +12,7 @@ message Blog {
     string content = 4;
 }
 
-message CreateBlogRequets{
+message CreateBlogRequest{
     Blog blog = 1;
 }
 
@@ -20,7 +20,7 @@ message CreateBlogResponse {
     Blog blog = 1; // will have a blog id
 }
 
-message ReadBlogRequets{
+message ReadBlogRequest{
     string blog_id = 1;
 }
 
@@ -28,7 +28,7 @@ message ReadBlogResponse {
     Blog blog = 1; 
 }
 
-message UpdateBlogRequets{
+message UpdateBlogRequest{
     Blog blog = 1; 
 }
 
@@ -36,7 +36,7 @@ message UpdateBlogResponse {
     Blog blog = 1; 
 }
 
-message DeleteBlogRequets{
+message DeleteBlogRequest{
     string blog_id = 1;
 }
 
@@ -44,7 +44,7 @@ message DeleteBlogResponse {
     string blog_id = 1;
 }
 
-message ListBlogRequets{
+message ListBlogRequest{
 }
 
 message ListBlogResponse {
@@ -52,9 +52,9 @@ message ListBlogResponse {
 }
 
 service BlogService {
-   rpc CreateBlog (CreateBlogRequets) returns (CreateBlogResponse);
-   rpc ReadBlog (ReadBlogRequets) returns (ReadBlogResponse); // return NOT_FOUND if not found
-   rpc UpdateBlog (UpdateBlogRequets) returns (UpdateBlogResponse); // return NOT_FOUND if not found
-   rpc DeleteBlog (DeleteBlogRequets) returns (DeleteBlogResponse); // return NOT_FOUND if not found
-   rpc ListBlog (ListBlogRequets) returns (stream ListBlogResponse);
+   rpc CreateBlog (CreateBlogRequest) returns (CreateBlogResponse) {};
+   rpc ReadBlog (ReadBlogRequest) returns (ReadBlogResponse) {}; // return NOT_FOUND if not found
+   rpc UpdateBlog (UpdateBlogRequest) returns (UpdateBlogResponse) {}; // return NOT_FOUND if not found
+   rpc DeleteBlog (DeleteBlogRequest) returns (DeleteBlogResponse) {}; // return NOT_FOUND if not found
+   rpc ListBlog (ListBlogRequest) returns (stream ListBlogResponse) {};
 }
