@@ -93,12 +93,12 @@ func doUnary(c blogpb.BlogServiceClient) {
 
 	// List Blogs
 
-	listBlogStream, err := c.ListBlog(context.Background(), &blogpb.ListBlogRequest{})
+	stream, err := c.ListBlog(context.Background(), &blogpb.ListBlogRequest{})
 	if err != nil {
 		log.Fatalf("error while calling ListBlog RPC: %v", err)
 	}
 	for {
-		blog, err := listBlogStream.Recv()
+		res, err := stream.Recv()
 		if err == io.EOF {
 			// we've reached the end of the stream
 			break
@@ -106,7 +106,7 @@ func doUnary(c blogpb.BlogServiceClient) {
 		if err != nil {
 			log.Fatalf("error while reading stream: %v", err)
 		}
-		log.Printf("Response from listBlog: %v", blog.GetBlog())
+		log.Printf("Response from listBlog: %v", res.GetBlog())
 	}
 
 }

@@ -189,7 +189,7 @@ func (*server) DeleteBlog(ctx context.Context, req *blogpb.DeleteBlogRequest) (*
 func (*server) ListBlog(req *blogpb.ListBlogRequest, stream blogpb.BlogService_ListBlogServer) error {
 	fmt.Println("List blog request")
 
-	cur, err := collection.Find(context.Background(), nil)
+	cur, err := collection.Find(context.Background(), bson.D{})
 	if err != nil {
 		return status.Errorf(
 			codes.Internal,
