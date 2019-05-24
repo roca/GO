@@ -1,33 +1,10 @@
 version: "3.6"
 services:
-  mongo:
-    container_name: mongo
-    image: mongo
-    restart: always
-    ports:
-      - 27017:27017
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
-    volumes: 
-      - /data:/data/db
-  mongo-express:
-    image: mongo-express
-    restart: always
-    ports:
-      - 8081:8081
-    environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: root
-      ME_CONFIG_MONGODB_ADMINPASSWORD: example
   src:
     container_name: src
     build: 
       context: ./code
       dockerfile: Dockerfile
-    depends_on:
-      - mongo
-    ports:
-      - "50051:50051"
     volumes:
       - ./code:/code
     working_dir: /code
