@@ -13,4 +13,5 @@ aws lambda create-function \
 
 aws lambda invoke \
 --function-name questionresponse \
---payload '{"Question": "How tall are you?"}'
+--payload '{"Question": "How tall are you?"}' \
+outfile
