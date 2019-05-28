@@ -1,5 +1,5 @@
 {
     "Name":     "Lambda_UP_1",
-    "Bucket":   "lambda.storyfeet.com",
+    "Bucket":   "lamdba.storyfeet.com",
     "Role":     "donothing"
 }

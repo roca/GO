@@ -2,7 +2,7 @@ Save time and resources by building applications with Golang and deploying them 
 
 API; endpoint, Invoke URL: https://kl4mnqn3bc.execute-api.us-east-1.amazonaws.com/Prod
 
-
+Examples create/invoke:
 
 aws lambda create-function \
 --function-name questionresponse \
@@ -14,4 +14,10 @@ aws lambda create-function \
 aws lambda invoke \
 --function-name questionresponse \
 --payload '{"Question": "How tall are you?"}' \
+outfile
+
+
+aws lambda invoke \
+--function-name Lambda_UP_1_firstgo \
+--payload '{"Username":"Romel"}' \
 outfile
