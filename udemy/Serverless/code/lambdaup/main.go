@@ -2,8 +2,10 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"os/exec"
 )
 
@@ -27,8 +29,14 @@ func run(prog string, args ...string) ([]byte, error) {
 	var outBuf bytes.Buffer
 	var errBuf bytes.Buffer
 
-	io.Copy(&outBuf, outPipe)
+	ch := make(chan bool)
+	go func() {
+		io.Copy(&outBuf, outPipe)
+		ch <- true
+	}()
 	io.Copy(&errBuf, errPipe)
+
+	_ = <-ch
 
 	err = cmd.Wait()
 	if err != nil {
@@ -42,6 +50,40 @@ func run(prog string, args ...string) ([]byte, error) {
 	return outBuf.Bytes(), nil
 }
 
-func main() {
+type RoleList struct {
+	Roles []Role
+}
 
+type Role struct {
+	RoleName string
+	Arn      string
+}
+
+func RoleMap() (map[string]string, error) {
+	res := make(map[string]string)
+	data, err := run("aws", "iam", "list-roles")
+	if err != nil {
+		return res, err
+	}
+
+	var rlist RoleList
+	err = json.Unmarshal(data, &rlist)
+	if err != nil {
+		return res, err
+	}
+
+	for _, v := range rlist.Roles {
+		res[v.RoleName] = v.Arn
+	}
+	return res, nil
+}
+
+func main() {
+	rm, err := RoleMap()
+	if err != nil {
+		log.Fatal(err)
+	}
+	for k, v := range rm {
+		fmt.Printf("%50s:\t%s\n", k, v)
+	}
 }
