@@ -9,7 +9,7 @@ WORKDIR /code
 
 COPY . $WORKDIR
 
-RUN apt-get update && apt-get install -y unzip zip
+RUN apt-get update && apt-get install -y unzip zip awscli
 
 ENV GOOS=linux
 ENV GOARCH=amd64

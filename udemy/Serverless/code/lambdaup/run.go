@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"os/exec"
 )
 
@@ -78,12 +77,12 @@ func RoleMap() (map[string]string, error) {
 	return res, nil
 }
 
-func main() {
-	rm, err := RoleMap()
-	if err != nil {
-		log.Fatal(err)
-	}
-	for k, v := range rm {
-		fmt.Printf("%50s:\t%s\n", k, v)
-	}
-}
+// func main() {
+// 	rm, err := RoleMap()
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	for k, v := range rm {
+// 		fmt.Printf("%50s:\t%s\n", k, v)
+// 	}
+// }
