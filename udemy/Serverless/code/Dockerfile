@@ -2,7 +2,7 @@ FROM golang:1.12
 
 RUN go get github.com/codegangsta/gin
 # RUN go get github.com/aws/aws-lambda-go
-# RUN go get github.com/aws/aws-sdk-go
+RUN go get github.com/aws/aws-sdk-go
 
 RUN mkdir -p /code
 WORKDIR /code
