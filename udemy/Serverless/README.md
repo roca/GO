@@ -21,3 +21,8 @@ aws lambda invoke \
 --function-name Lambda_UP_1_firstgo \
 --payload '{"Username":"Romel"}' \
 outfile
+
+aws lambda invoke \
+--function-name Chatter_servicewriter \
+--payload '{"Txt":"Pete"}' \
+outfile
