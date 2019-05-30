@@ -99,6 +99,24 @@ func (lp LProject) UploadLambda(name string) error {
 		return err
 	}
 
+	fl, err := NewFunctionList()
+	if err != nil {
+		return err
+	}
+
+	if fl.HasFunction(lamdbaName) {
+		fmt.Println("Updating Function")
+		resp, err := run("aws", "lambda", "update-function-code",
+			"--function-name", lamdbaName,
+			"--s3-bucket", lp.Bucket,
+			"--s3-key", lamdbaName+".zip")
+		if err != nil {
+			return err
+		}
+		fmt.Println(string(resp))
+		return nil
+	}
+
 	fmt.Println("Createing Function")
 	resp, err := run("aws", "lambda", "create-function",
 		"--function-name", lamdbaName,
