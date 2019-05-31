@@ -27,11 +27,9 @@ aws lambda invoke \
 --payload '{"Txt":"Pete"}' \
 outfile
 
-http://minisite.storyfeet.com.s3-website-us-east-1.amazonaws.com
-http://storyfeet.s3-website-us-east-1.amazonaws.com
+http://minisite.desertfoxdev.org.s3-website-us-east-1.amazonaws.com
 
-arn:aws:s3:::minisite.storyfeet.com
-arn:aws:s3:::storyfeet
+arn:aws:s3:::minisite.desertfoxdev.org
 
 
-http://storyfeet.minisite.desertfoxdev.org
+http://minisite.desertfoxdev.org
