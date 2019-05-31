@@ -28,3 +28,10 @@ aws lambda invoke \
 outfile
 
 http://minisite.storyfeet.com.s3-website-us-east-1.amazonaws.com
+http://storyfeet.s3-website-us-east-1.amazonaws.com
+
+arn:aws:s3:::minisite.storyfeet.com
+arn:aws:s3:::storyfeet
+
+
+http://storyfeet.minisite.desertfoxdev.org
