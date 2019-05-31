@@ -26,3 +26,5 @@ aws lambda invoke \
 --function-name Chatter_servicewriter \
 --payload '{"Txt":"Pete"}' \
 outfile
+
+http://minisite.storyfeet.com.s3-website-us-east-1.amazonaws.com
