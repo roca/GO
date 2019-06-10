@@ -1,17 +1,26 @@
 package chatsess
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"fmt"
+	"strings"
 
 	"golang.org/x/crypto/scrypt"
 )
 
 func NewPassword(p string) string {
-
+	salt := make([]byte, 10)
+	rand.Read(salt)
+	return password(p, salt)
 }
 
 func CheckPassword(p, h string) bool {
+	s := strings.Split(h, "_")[0]
+	salt, _ := hex.DecodeString(s)
 
+	nh := password(p, salt)
+	return h == nh
 }
 
 func password(p string, s []byte) string {
