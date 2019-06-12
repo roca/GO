@@ -33,4 +33,16 @@ http://www.desertfoxdev.org.s3-website-us-east-1.amazonaws.com
 arn:aws:s3:::desertfoxdev.org
 
 
+
+From with in the chatter directory
+    
+    Path/to/lambdaup -n new_user
+
+aws lambda invoke \
+--function-name Chatter_new_user \
+--payload '{"Username":"Matt", "Password":"mattthemaker"}' \
+outfile
+
+
+
 http://www.desertfoxdev.org
