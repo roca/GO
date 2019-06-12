@@ -65,3 +65,16 @@ func GetDBUser(uname string, sess *session.Session) (User, error) {
 	return User{Username: uname, Password: *(pwv.S)}, nil
 
 }
+
+// GetDBUserPass ...
+func GetDBUserPass(uname, pass string, sess *session.Session) (User, error) {
+	user, err := GetDBUser(uname, sess)
+	if err != nil {
+		return user, err
+	}
+	if !CheckPassword(pass, user.Password) {
+		return User{}, fmt.Errorf("Passord Doesn't Match")
+	}
+
+	return user, err
+}
