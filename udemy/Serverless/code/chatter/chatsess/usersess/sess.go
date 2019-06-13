@@ -30,7 +30,7 @@ func GetLogin(id string, sess *session.Session) (Login, error) {
 	dbc := dynamodb.New(sess)
 	dbres, err := dbc.GetItem(&dynamodb.GetItemInput{
 		TableName: aws.String("ch_sessions"),
-		Key:       map[string]*dynamodb.AttributeValue{"Sessid": {S: aws.String(id)}},
+		Key:       map[string]*dynamodb.AttributeValue{"SessId": {S: aws.String(id)}},
 	})
 
 	if err != nil {
@@ -56,7 +56,7 @@ func (l Login) Put(sess *session.Session) error {
 	_, err := dbc.PutItem(&dynamodb.PutItemInput{
 		TableName: aws.String("ch_sessions"),
 		Item: map[string]*dynamodb.AttributeValue{
-			"Sessid":   {S: aws.String(l.Sessid)},
+			"SessId":   {S: aws.String(l.Sessid)},
 			"Username": {S: aws.String(l.Username)},
 		},
 	})

@@ -7,6 +7,8 @@ import (
 	"udemy.com/serverless/code/chatter/chatsess/usersess"
 
 	"github.com/aws/aws-sdk-go/aws/session"
+
+	"github.com/aws/aws-lambda-go/lambda"
 )
 
 type Event struct {
@@ -28,7 +30,7 @@ func handler(c context.Context, ev Event) (Response, error) {
 	if err != nil {
 		return Response{
 			Job: "Login", Err: err.Error(),
-		}, err
+		}, nil
 	}
 
 	lg := usersess.NewLogin(u.Username)
@@ -38,7 +40,7 @@ func handler(c context.Context, ev Event) (Response, error) {
 		return Response{
 			Job: "Login",
 			Err: err.Error(),
-		}, err
+		}, nil
 	}
 
 	return Response{
@@ -48,5 +50,5 @@ func handler(c context.Context, ev Event) (Response, error) {
 }
 
 func main() {
-
+	lambda.Start(handler)
 }
