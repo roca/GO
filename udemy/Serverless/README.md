@@ -44,5 +44,17 @@ aws lambda invoke \
 outfile
 
 
+    Path/to/lambdaup -n login
+
+aws lambda invoke \
+--function-name Chatter_login \
+--payload '{"Username":"Matt", "Password":"mattthemaker"}' \
+outfile
+
+aws lambda update-function-configuration \
+--function-name  Chatter_login \
+--timeout 4
+
+
 
 http://www.desertfoxdev.org
