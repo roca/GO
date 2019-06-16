@@ -56,11 +56,51 @@ func (c Chat) Put(sess *session.Session) error {
 	_, err := dbc.PutItem(&dynamodb.PutItemInput{
 		TableName: aws.String("ch_chats"),
 		Item: map[string]*dynamodb.AttributeValue{
-			"DateID":   aws.String(c.DateID),
-			"Tmstp":    TimetoDB(c.Time),
-			"Username": aws.String(c.Username),
-			"Text":     aws.String(c.Text),
+			"DateID":   {S: aws.String(c.DateID)},
+			"Tmstp":    {S: TimetoDB(c.Time)},
+			"Username": {S: aws.String(c.Username)},
+			"Text":     {S: aws.String(c.Text)},
 		},
 	})
 	return err
+}
+
+func GetChat(sess *session.Session) ([]Chat, error) {
+	dbc := dynamodb.New(sess)
+	// dbres, err := dbc.Query(&dynamodb.QueryInput{
+	// 	TableName:              aws.String("ch_chats"),
+	// 	KeyConditionExpression: aws.String("DateID = :a"),
+	// 	ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
+	// 		":a", {S: aws.String(time.Now().Foramt(DATE_FMT))},
+	// 	},
+	// })
+
+	var queryInput = &dynamodb.QueryInput{
+		Limit:     aws.Int64(1),
+		TableName: aws.String("ch_chats"),
+		KeyConditions: map[string]*dynamodb.Condition{
+			"DateID": {
+				ComparisonOperator: aws.String("EQ"),
+				AttributeValueList: []*dynamodb.AttributeValue{
+					{
+						S: aws.String(time.Now().Format(DATE_FMT)),
+					},
+				},
+			},
+		},
+	}
+
+	dbres, err := dbc.Query(queryInput)
+
+	if err != nil {
+		return []Chat{}, err
+	}
+
+	res := []Chat{}
+	for _, v := range dbres.Items {
+		res = append(res, ChatFromItem(v))
+	}
+
+	return res, nil
+
 }
