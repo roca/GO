@@ -76,7 +76,6 @@ func GetChat(sess *session.Session) ([]Chat, error) {
 	// })
 
 	var queryInput = &dynamodb.QueryInput{
-		Limit:     aws.Int64(1),
 		TableName: aws.String("ch_chats"),
 		KeyConditions: map[string]*dynamodb.Condition{
 			"DateID": {
