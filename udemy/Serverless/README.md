@@ -56,5 +56,11 @@ aws lambda update-function-configuration \
 --timeout 4
 
 
+aws lambda invoke \
+--function-name Chatter_say \
+--payload '{"Sessid":"ffa1df92db890ce67c8acc108201e01f2901178e", "Text0":"Hello to the lambdas"}' \
+outfile
+
+
 
 http://www.desertfoxdev.org
