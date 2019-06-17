@@ -57,7 +57,7 @@ func (c Chat) Put(sess *session.Session) error {
 		TableName: aws.String("ch_chats"),
 		Item: map[string]*dynamodb.AttributeValue{
 			"DateID":   {S: aws.String(c.DateID)},
-			"Tmstp":    {S: TimetoDB(c.Time)},
+			"Tmstp":    {N: TimetoDB(c.Time)},
 			"Username": {S: aws.String(c.Username)},
 			"Text":     {S: aws.String(c.Text)},
 		},
@@ -65,27 +65,53 @@ func (c Chat) Put(sess *session.Session) error {
 	return err
 }
 
+// GetChat ...
 func GetChat(sess *session.Session) ([]Chat, error) {
 	dbc := dynamodb.New(sess)
-	// dbres, err := dbc.Query(&dynamodb.QueryInput{
-	// 	TableName:              aws.String("ch_chats"),
-	// 	KeyConditionExpression: aws.String("DateID = :a"),
-	// 	ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
-	// 		":a", {S: aws.String(time.Now().Foramt(DATE_FMT))},
-	// 	},
-	// })
 
 	var queryInput = &dynamodb.QueryInput{
 		TableName: aws.String("ch_chats"),
-		KeyConditions: map[string]*dynamodb.Condition{
-			"DateID": {
-				ComparisonOperator: aws.String("EQ"),
-				AttributeValueList: []*dynamodb.AttributeValue{
-					{
-						S: aws.String(time.Now().Format(DATE_FMT)),
-					},
-				},
-			},
+		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
+			":a": {S: aws.String(time.Now().Format(DATE_FMT))},
+		},
+		// KeyConditions: map[string]*dynamodb.Condition{
+		// 	"DateID": {
+		// 		ComparisonOperator: aws.String("EQ"),
+		// 		AttributeValueList: []*dynamodb.AttributeValue{
+		// 			{
+		// 				S: aws.String(time.Now().Format(DATE_FMT)),
+		// 			},
+		// 		},
+		// 	},
+		// },
+	}
+
+	dbres, err := dbc.Query(queryInput)
+
+	if err != nil {
+		return []Chat{}, err
+	}
+
+	res := []Chat{}
+	for _, v := range dbres.Items {
+		res = append(res, ChatFromItem(v))
+	}
+
+	return res, nil
+
+}
+
+// GetChatAfter ...
+func GetChatAfter(DateID string, t time.Time, sess *session.Session) ([]Chat, error) {
+	dbc := dynamodb.New(sess)
+	var queryInput = &dynamodb.QueryInput{
+		TableName: aws.String("ch_chats"),
+		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
+			":a": {S: aws.String(time.Now().Format(DATE_FMT))},
+		},
+		ExclusiveStartKey: map[string]*dynamodb.AttributeValue{
+			"DateID": {S: aws.String(DateID)},
+			"Tmstp":  {N: TimetoDB(t)},
 		},
 	}
 
