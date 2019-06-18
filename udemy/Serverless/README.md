@@ -58,7 +58,12 @@ aws lambda update-function-configuration \
 
 aws lambda invoke \
 --function-name Chatter_say \
---payload '{"Sessid":"ffa1df92db890ce67c8acc108201e01f2901178e", "Text0":"Hello to the lambdas"}' \
+--payload '{"Sessid":"ffa1df92db890ce67c8acc108201e01f2901178e", "Text":"Hello to the lambdas"}' \
+outfile
+
+aws lambda invoke \
+--function-name Chatter_read \
+--payload '{"Sessid":"ffa1df92db890ce67c8acc108201e01f2901178e"}' \
 outfile
 
 
