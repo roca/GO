@@ -45,7 +45,7 @@ func ChatFromItem(item map[string]*dynamodb.AttributeValue) Chat {
 		unameav = *v.S
 	}
 
-	if v, ok := item["Username"]; ok {
+	if v, ok := item["Text"]; ok {
 		txav = *v.S
 	}
 
