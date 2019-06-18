@@ -30,24 +30,31 @@ func NewChat(Username, Text string) Chat {
 
 // ChatFromItem ...
 func ChatFromItem(item map[string]*dynamodb.AttributeValue) Chat {
-	chat := Chat{}
-	if dateav, ok := item["DateID"]; ok {
-		chat.DateID = *dateav.S
+	var dateav, unameav, txav string
+	var timeav time.Time
+
+	if v, ok := item["DateID"]; ok {
+		dateav = *v.S
 	}
 
-	if timeav, ok := item["Tmstp"]; ok {
-		chat.Time = DBtoTime(timeav.N)
+	if v, ok := item["Tmstp"]; ok {
+		timeav = DBtoTime(v.N)
 	}
 
-	if unameav, ok := item["Username"]; ok {
-		chat.Username = *unameav.S
+	if v, ok := item["Username"]; ok {
+		unameav = *v.S
 	}
 
-	if txav, ok := item["Username"]; ok {
-		chat.Text = *txav.S
+	if v, ok := item["Username"]; ok {
+		txav = *v.S
 	}
 
-	return chat
+	return Chat{
+		DateID:   dateav,
+		Time:     timeav,
+		Username: unameav,
+		Text:     txav,
+	}
 }
 
 // Put ..
@@ -70,7 +77,8 @@ func GetChat(sess *session.Session) ([]Chat, error) {
 	dbc := dynamodb.New(sess)
 
 	var queryInput = &dynamodb.QueryInput{
-		TableName: aws.String("ch_chats"),
+		TableName:              aws.String("ch_chats"),
+		KeyConditionExpression: aws.String("DateID = :a"),
 		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
 			":a": {S: aws.String(time.Now().Format(DATE_FMT))},
 		},
@@ -105,10 +113,21 @@ func GetChat(sess *session.Session) ([]Chat, error) {
 func GetChatAfter(DateID string, t time.Time, sess *session.Session) ([]Chat, error) {
 	dbc := dynamodb.New(sess)
 	var queryInput = &dynamodb.QueryInput{
-		TableName: aws.String("ch_chats"),
+		TableName:              aws.String("ch_chats"),
+		KeyConditionExpression: aws.String("DateID = :a"),
 		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
 			":a": {S: aws.String(time.Now().Format(DATE_FMT))},
 		},
+		// KeyConditions: map[string]*dynamodb.Condition{
+		// 	"DateID": {
+		// 		ComparisonOperator: aws.String("EQ"),
+		// 		AttributeValueList: []*dynamodb.AttributeValue{
+		// 			{
+		// 				S: aws.String(time.Now().Format(DATE_FMT)),
+		// 			},
+		// 		},
+		// 	},
+		// },
 		ExclusiveStartKey: map[string]*dynamodb.AttributeValue{
 			"DateID": {S: aws.String(DateID)},
 			"Tmstp":  {N: TimetoDB(t)},

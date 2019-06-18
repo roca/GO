@@ -1,1 +1,1 @@
-{"Job":"Read","Err":"ValidationException: ExpressionAttributeValues can only be specified when using expressions: FilterExpression and KeyConditionExpression are null\n\tstatus code: 400, request id: DNR3CJVSTRJV7E5PH85409L0PRVV4KQNSO5AEMVJF66Q9ASUAAJG","Chats":null}
+{"Job":"Read","Err":"","Chats":[]}
