@@ -1,0 +1,5 @@
+{
+    "Name":    "Logger",
+    "Bucket":   "desertfoxdev.org",
+    "Role":     "logger"
+}
