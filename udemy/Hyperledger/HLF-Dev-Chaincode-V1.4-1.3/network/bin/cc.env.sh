@@ -1,4 +1,4 @@
-# Generated: Thu Jun 27 07:58:25 UTC 2019
+# Generated: Fri Jun 28 08:41:45 UTC 2019
 export CC_LANGUAGE=golang
 export CC_PATH=chaincode_example02
 export CC_NAME=gocc
