@@ -67,5 +67,17 @@ aws lambda invoke \
 outfile
 
 
+aws lambda invoke \
+--function-name Chatter_envi \
+outfile
+
+aws lambda update-function-configuration \
+--function-name Chatter_envi \
+--environment 'Variables={MyEnv=all}'
+
+aws lambda invoke \
+--function-name Logger_logger \
+--payload '"Hello people"' \
+outfile
 
 http://www.desertfoxdev.org
