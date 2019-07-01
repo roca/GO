@@ -90,13 +90,18 @@ This is in continuation of the first exercise
 Part-1
 ------
 1. Install a new version of the chaincode by changing the version to 2.0
+    solution: set-chain-env.sh   -n  gocc  -v  2.0
 2. Upgrade the chaincode
+    solution: chain.sh install && chain.sh upgrade
 3. List to confirm that chaincode version has changed
+    solution: chain.sh list
 
 Part-2
 ------
 1. Upgrade the chaincode by executing upgrade-auto 
+    solution: chain.sh upgrade-auto
 2. List to check the version of upgraded chaincode
+    solution: chain.sh list
 
 
 Exercise: Launch Peers in Dev Mode & Test
