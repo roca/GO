@@ -22,8 +22,7 @@ func cleanUp(input string) string {
 	return re.ReplaceAllLiteralString(input, "")
 }
 
-// Format ...
-func Format(input string) (string, error) {
+func validate(input string) (string, error) {
 	output := strings.Split(cleanUp(input), "")
 
 	if len(output) >= 11 && output[0] != "1" {
@@ -33,13 +32,23 @@ func Format(input string) (string, error) {
 	if len(output) >= 11 {
 		output = output[1:]
 	}
-	fmt.Printf("INPUT string: %s\t", input)
-	fmt.Printf("INPUT ARRAY: %s\n", output)
+	// fmt.Printf("INPUT string: %s\t", input)
+	// fmt.Printf("INPUT ARRAY: %s\n", output)
 
 	number := strings.Join(output[:], "")
 
 	if len(number) < 10 || len(number) > 11 {
 		return "", fmt.Errorf("number is inccorect length: %d", len(number))
+	}
+
+	return number, nil
+}
+
+// Format ...
+func Format(input string) (string, error) {
+	number, err := validate(input)
+	if err != nil {
+		return "", err
 	}
 
 	areaCode := number[0:3]
