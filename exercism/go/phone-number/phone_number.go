@@ -14,6 +14,9 @@ func Number(input string) (string, error) {
 		return "", err
 	}
 
+	re := regexp.MustCompile(`\:|\@|\!|\+|[a-z]|[A-Z]|\.|\-|\(|\)|\s*`)
+	number = re.ReplaceAllLiteralString(number, "")
+
 	return number, nil
 }
 
@@ -38,14 +41,18 @@ func Format(input string) (string, error) {
 		return "", fmt.Errorf("number is inccorect length: %d", len(number))
 	}
 
-	areaCode, _ := strconv.Atoi(number[0:3])
-	exchangeCode, _ := strconv.Atoi(number[3:6])
+	areaCode := number[0:3]
+	exchangeCode := number[3:6]
+	subscriberNumber := number[6:]
 
-	if areaCode < 200 || exchangeCode < 200 {
+	intAreaCode, _ := strconv.Atoi(areaCode)
+	intExchangeCode, _ := strconv.Atoi(exchangeCode)
+
+	if intAreaCode < 200 || intExchangeCode < 200 {
 		return "", fmt.Errorf("area or exchange codes < 200 %s %s", number[0:3], number[3:6])
 	}
 
-	return number, nil
+	return fmt.Sprintf("(%s) %s-%s", areaCode, exchangeCode, subscriberNumber), nil
 }
 
 // AreaCode ...
