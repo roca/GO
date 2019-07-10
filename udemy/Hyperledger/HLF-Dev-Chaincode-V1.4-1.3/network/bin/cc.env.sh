@@ -1,6 +1,6 @@
-# Generated: Fri Jul  5 08:55:14 UTC 2019
+# Generated: Sun Jul  7 11:30:50 UTC 2019
 export CC_LANGUAGE=golang
-export CC_PATH=token/v2
+export CC_PATH=exercise/tokenv2
 export CC_NAME=token
 export CC_VERSION=1.0
 export CC_CHANNEL_ID=airlinechannel
