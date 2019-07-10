@@ -14,16 +14,17 @@ func Number(input string) (string, error) {
 		return "", err
 	}
 
-	re := regexp.MustCompile(`\:|\@|\!|\+|[a-z]|[A-Z]|\.|\-|\(|\)|\s*`)
-	number = re.ReplaceAllLiteralString(number, "")
+	return cleanUp(number), nil
+}
 
-	return number, nil
+func cleanUp(input string) string {
+	re := regexp.MustCompile(`\:|\@|\!|\+|[a-z]|[A-Z]|\.|\-|\(|\)|\s*`)
+	return re.ReplaceAllLiteralString(input, "")
 }
 
 // Format ...
 func Format(input string) (string, error) {
-	re := regexp.MustCompile(`\:|\@|\!|\+|[a-z]|[A-Z]|\.|\-|\(|\)|\s*`)
-	output := strings.Split(re.ReplaceAllLiteralString(input, ""), "")
+	output := strings.Split(cleanUp(input), "")
 
 	if len(output) >= 11 && output[0] != "1" {
 		return "", fmt.Errorf("inccorect country code: %s", output[0])
