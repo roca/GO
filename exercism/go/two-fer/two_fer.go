@@ -1,7 +1,6 @@
-package twofer
-
 // Package twofer implements ShareWith for manipulating a twofer phrase.
 // `Two-fer` or `2-fer` is short for two for one. One for you and one for me.
+package twofer
 
 import "fmt"
 
