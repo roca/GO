@@ -3,25 +3,18 @@ package scrabble
 
 import (
 	"strings"
-	"sync"
 )
 
 // Score returns the scrabble number score for a given word
 func Score(input string) int {
-	var wg sync.WaitGroup
-	wg.Add(len(input))
 
 	score := 0
 	word := strings.ToUpper(input)
 
 	for _, c := range word {
-		go func(char byte) {
-			defer wg.Done()
-			score += CharScore(char)
-		}(byte(c))
+		score += CharScore(byte(c))
 	}
 
-	wg.Wait()
 	return score
 }
 
