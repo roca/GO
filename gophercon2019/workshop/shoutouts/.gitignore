@@ -1,0 +1,7 @@
+.envrc
+package.yaml
+build
+vendor
+pkg/shoutouts/commands
+.vscode
+pkg/shoutouts/retrieve*

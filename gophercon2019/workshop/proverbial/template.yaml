@@ -1,0 +1,83 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Proverbial
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 5
+
+Resources:
+  ProverbialFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: build/proverbial.zip
+      Handler: proverbial
+      Runtime: go1.x
+      Tracing: Active # https://docs.aws.amazon.com/lambda/latest/dg/lambda-x-ray.html
+      Events:
+        CatchAll:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /proverb
+            Method: GET
+
+  CheckerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: build/checker.zip
+      Handler: checker
+      Runtime: go1.x
+      Tracing: Active
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: !Ref Checks
+      Events:
+        CatchAll:
+          Type: Api
+          Properties:
+            Path: /check
+            Method: GET
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref Checks
+
+  PickerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: build/picker.zip
+      Handler: picker
+      Runtime: go1.x
+      Tracing: Active
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: !Ref Checks
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref Checks
+
+  Checks:
+    Type: AWS::Serverless::SimpleTable
+
+Outputs:
+  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
+  # Find out more about other implicit resources you can reference within SAM
+  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
+  ProverbialAPI:
+    Description: "Get yourself a proverb"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/proverb/"
+  ProverbialFunction:
+    Description: "Proverbs Lambda Function ARN"
+    Value: !GetAtt ProverbialFunction.Arn
+  ChechkerAPI:
+    Description: "Check an endpoint for its ability to serve proverbs"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/check"
+  CheckerFunction:
+    Description: "Checker Lambda Function ARN"
+    Value: !GetAtt CheckerFunction.Arn
+  PickerFunction:
+    Description: "Picker Lambda Function ARN"
+    Value: !GetAtt PickerFunction.Arn
+  ProverbialFunctionIamRole:
+    Description: "Implicit IAM Role created for Proverbial function"
+    Value: !GetAtt ProverbialFunctionRole.Arn

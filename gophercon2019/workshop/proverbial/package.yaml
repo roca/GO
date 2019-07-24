@@ -1,0 +1,91 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Proverbial
+Globals:
+  Function:
+    Timeout: 5
+Outputs:
+  ChechkerAPI:
+    Description: Check an endpoint for its ability to serve proverbs
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/check
+  CheckerFunction:
+    Description: Checker Lambda Function ARN
+    Value:
+      Fn::GetAtt:
+      - CheckerFunction
+      - Arn
+  PickerFunction:
+    Description: Picker Lambda Function ARN
+    Value:
+      Fn::GetAtt:
+      - PickerFunction
+      - Arn
+  ProverbialAPI:
+    Description: Get yourself a proverb
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/proverb/
+  ProverbialFunction:
+    Description: Proverbs Lambda Function ARN
+    Value:
+      Fn::GetAtt:
+      - ProverbialFunction
+      - Arn
+  ProverbialFunctionIamRole:
+    Description: Implicit IAM Role created for Proverbial function
+    Value:
+      Fn::GetAtt:
+      - ProverbialFunctionRole
+      - Arn
+Resources:
+  CheckerFunction:
+    Properties:
+      CodeUri: s3://romel-proverbs/7528b35d9d6317fcc524dcd1bfaf5131
+      Environment:
+        Variables:
+          TABLE_NAME:
+            Ref: Checks
+      Events:
+        CatchAll:
+          Properties:
+            Method: GET
+            Path: /check
+          Type: Api
+      Handler: checker
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: Checks
+      Runtime: go1.x
+      Tracing: Active
+    Type: AWS::Serverless::Function
+  Checks:
+    Type: AWS::Serverless::SimpleTable
+  PickerFunction:
+    Properties:
+      CodeUri: s3://romel-proverbs/fd5adeba05a1d7ce2e8d74f9e8fc6152
+      Environment:
+        Variables:
+          TABLE_NAME:
+            Ref: Checks
+      Handler: picker
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: Checks
+      Runtime: go1.x
+      Tracing: Active
+    Type: AWS::Serverless::Function
+  ProverbialFunction:
+    Properties:
+      CodeUri: s3://romel-proverbs/f03b64ab5affab02a74e0d7528d7714a
+      Events:
+        CatchAll:
+          Properties:
+            Method: GET
+            Path: /proverb
+          Type: Api
+      Handler: proverbial
+      Runtime: go1.x
+      Tracing: Active
+    Type: AWS::Serverless::Function
+Transform: AWS::Serverless-2016-10-31
