@@ -5,8 +5,11 @@ Site Reliability Engineer
 Heroku
 https://www.linkedin.com/in/jboursiquot/
 
-
+https://www.packtpub.com/application-development/go-standard-library-solutions-video
 https://golangbridge.org
+
+
+https://direnv.net/
 
 
 
