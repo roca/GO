@@ -22,3 +22,9 @@ https://github.com/golang/go/wiki/Modules
 
 2:55 PM - 3:40 PM  ( 45 Min ) 
 Design Command-Line Tools People Love
+
+4:25 PM - 4:50 PM  ( 25 Min ) 
+Contributing to the os Package: How Deep Do You Go? 
+
+
+https://golang.org/doc/contribute.html
