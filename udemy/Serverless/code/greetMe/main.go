@@ -1,13 +1,21 @@
 package main
 
-import "github.com/aws/aws-lambda-go/lambda"
+import (
+	"net/http"
 
-// Event ...
-type Event struct {
-}
+	"github.com/aws/aws-lambda-go/events"
+	"github.com/aws/aws-lambda-go/lambda"
+)
 
-func handler(event Event) (string, error) {
-	return "", nil
+func handler(req *events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	lang, ok := req.QueryStringParameters["lang"]
+	if !ok {
+		return events.APIGatewayProxyResponse{
+			StatusCode: http.StatusBadRequest,
+			Body:       "'lang' is missing in query string.",
+		}, nil
+	}
+	return events.APIGatewayProxyResponse{}, nil
 }
 
 func main() {
