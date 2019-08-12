@@ -7,14 +7,25 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 )
 
+var greeting = map[string]string{
+	"en": "Hello",
+	"fr": "Bonjour",
+}
+
 func handler(req *events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	lang, ok := req.QueryStringParameters["lang"]
-	if !ok {
-		return events.APIGatewayProxyResponse{
-			StatusCode: http.StatusBadRequest,
-			Body:       "'lang' is missing in query string.",
-		}, nil
+	if path, ok := req.PathParameters["proxy"]; ok {
+
 	}
+	for _, v := range req.QueryStringParameters {
+		if greetMessage, ok := greeting[v]; !ok {
+			return events.APIGatewayProxyResponse{
+				StatusCode: http.StatusBadRequest,
+				Body:       greetMessage + "endpoint does not is exist",
+			}, nil
+		}
+
+	}
+
 	return events.APIGatewayProxyResponse{}, nil
 }
 
