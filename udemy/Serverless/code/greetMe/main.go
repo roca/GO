@@ -13,10 +13,14 @@ var greeting = map[string]string{
 }
 
 func handler(req *events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	var (
-		name = req.PathParameters["name"]
-		lang = req.QueryStringParameters["lang"]
-	)
+	name := req.PathParameters["name"]
+	lang := req.QueryStringParameters["lang"]
+	infoParams := make(map[string]string)
+	for key, value := range req.QueryStringParameters {
+		infoParams[key] = value
+	}
+	delete(infoParams, "lang")
+
 	greetMessage, ok := greeting[lang]
 	if !ok {
 		greetMessage = greeting["en"]
