@@ -13,20 +13,19 @@ var greeting = map[string]string{
 }
 
 func handler(req *events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	if path, ok := req.PathParameters["proxy"]; ok {
-
-	}
-	for _, v := range req.QueryStringParameters {
-		if greetMessage, ok := greeting[v]; !ok {
-			return events.APIGatewayProxyResponse{
-				StatusCode: http.StatusBadRequest,
-				Body:       greetMessage + "endpoint does not is exist",
-			}, nil
-		}
-
+	var (
+		name = req.PathParameters["name"]
+		lang = req.QueryStringParameters["lang"]
+	)
+	greetMessage, ok := greeting[lang]
+	if !ok {
+		greetMessage = greeting["en"]
 	}
 
-	return events.APIGatewayProxyResponse{}, nil
+	return events.APIGatewayProxyResponse{
+		StatusCode: http.StatusOK,
+		Body:       greetMessage + name,
+	}, nil
 }
 
 func main() {
