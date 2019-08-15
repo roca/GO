@@ -62,6 +62,9 @@ func main() {
 	//lambda.Start(handler)
 
 	uploadToS3()
+
+	os.Remove("gopher.jpeg")
+	os.Remove("test.png")
 }
 
 func resizeIamge(imageData image.Image) (image.Image, error) {
