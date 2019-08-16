@@ -1,11 +1,14 @@
 package main
 
 import (
-	"fmt"
 	"image"
 	"image/jpeg"
 	"image/png"
 	"log"
+
+	"fmt"
+	"io"
+	"io/ioutil"
 	"os"
 
 	"github.com/disintegration/imaging"
@@ -19,11 +22,27 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 )
 
+var (
+	Trace   *log.Logger
+	Info    *log.Logger
+	Warning *log.Logger
+	Error   *log.Logger
+)
+
 func handler(s3Event *events.S3Event) (string, error) {
 	for _, record := range s3Event.Records {
 		s3 := record.S3
-		fmt.Printf("[%s - %s] Bucket = %s, Key = %s \n", record.EventSource, record.EventTime, s3.Bucket.Name, s3.Object.Key)
+		message := fmt.Sprintf("[%s - %s] Bucket = %s, Key = %s \n", record.EventSource, record.EventTime, s3.Bucket.Name, s3.Object.Key)
+		Info.Println("Special Information" + message)
+		if s3.Bucket.Name == "romelbkt" && s3.Object.Key == "images/gopher.jpeg" {
+			resizeImage()
+		}
 	}
+
+	return "", nil
+}
+
+func resizeImage() {
 	dowloadFromS3()
 
 	existingImageFile, err := os.Open("gopher.jpeg")
@@ -65,10 +84,10 @@ func handler(s3Event *events.S3Event) (string, error) {
 	// Resize the file
 	// Read the new resized file
 	// Upload the new files to s3
-	return "", nil
 }
 
 func main() {
+	initLoggers(ioutil.Discard, os.Stdout, os.Stdout, os.Stderr)
 	lambda.Start(handler)
 
 }
@@ -136,4 +155,27 @@ func uploadToS3() {
 	if err != nil {
 		log.Fatalf("Unable to upload item %q, %v", item, err)
 	}
+}
+
+func initLoggers(
+	traceHandle io.Writer,
+	infoHandle io.Writer,
+	warningHandle io.Writer,
+	errorHandle io.Writer) {
+
+	Trace = log.New(traceHandle,
+		"TRACE: ",
+		log.Ldate|log.Ltime|log.Lshortfile)
+
+	Info = log.New(infoHandle,
+		"INFO: ",
+		log.Ldate|log.Ltime|log.Lshortfile)
+
+	Warning = log.New(warningHandle,
+		"WARNING: ",
+		log.Ldate|log.Ltime|log.Lshortfile)
+
+	Error = log.New(errorHandle,
+		"ERROR: ",
+		log.Ldate|log.Ltime|log.Lshortfile)
 }
