@@ -19,7 +19,11 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 )
 
-func handler(req *events.S3RequestParameters) (string, error) {
+func handler(s3Event *events.S3Event) (string, error) {
+	for _, record := range s3Event.Records {
+		s3 := record.S3
+		fmt.Printf("[%s - %s] Bucket = %s, Key = %s \n", record.EventSource, record.EventTime, s3.Bucket.Name, s3.Object.Key)
+	}
 	dowloadFromS3()
 
 	existingImageFile, err := os.Open("gopher.jpeg")
