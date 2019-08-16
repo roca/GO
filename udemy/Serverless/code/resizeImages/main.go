@@ -5,6 +5,7 @@ import (
 	"image/jpeg"
 	"image/png"
 	"log"
+	"strings"
 
 	"fmt"
 	"io"
@@ -35,17 +36,17 @@ func handler(s3Event *events.S3Event) (string, error) {
 		message := fmt.Sprintf("[%s - %s] Bucket = %s, Key = %s \n", record.EventSource, record.EventTime, s3.Bucket.Name, s3.Object.Key)
 		Info.Println("Special Information" + message)
 		if s3.Bucket.Name == "romelbkt" && s3.Object.Key == "images/gopher.jpeg" {
-			resizeImage()
+			resizeImage(strings.Split(s3.Object.Key, "/")[1])
 		}
 	}
 
 	return "", nil
 }
 
-func resizeImage() {
-	dowloadFromS3()
+func resizeImage(item string) {
+	dowloadFromS3(item)
 
-	existingImageFile, err := os.Open("gopher.jpeg")
+	existingImageFile, err := os.Open(item)
 	if err != nil {
 		// Handle error
 	}
@@ -77,7 +78,7 @@ func resizeImage() {
 
 	uploadToS3()
 
-	os.Remove("gopher.jpeg")
+	os.Remove(item)
 	os.Remove("test.png")
 
 	// Get file from s3
@@ -96,12 +97,11 @@ func resizeIamge(imageData image.Image) (image.Image, error) {
 	return imaging.Resize(imageData, 400, 0, imaging.Lanczos), nil
 }
 
-func dowloadFromS3() {
+func dowloadFromS3(item string) {
 	// NOTE: you need to store your AWS credentials in ~/.aws/credentials
 
 	// 1) Define your bucket and item names
 	bucket := "romelbkt"
-	item := "gopher.jpeg"
 
 	// 2) Create an AWS session
 	sess, _ := session.NewSession(&aws.Config{
