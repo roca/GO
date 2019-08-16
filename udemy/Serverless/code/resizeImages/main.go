@@ -14,21 +14,12 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+
+	"github.com/aws/aws-lambda-go/events"
+	"github.com/aws/aws-lambda-go/lambda"
 )
 
-type Event struct {
-}
-
-func handler(e Event) (string, error) {
-
-	// Get file from s3
-	// Resize the file
-	// Read the new resized file
-	// Upload the new files to s3
-	return "", nil
-}
-
-func main() {
+func handler(req *events.S3RequestParameters) (string, error) {
 	dowloadFromS3()
 
 	existingImageFile, err := os.Open("gopher.jpeg")
@@ -65,6 +56,17 @@ func main() {
 
 	os.Remove("gopher.jpeg")
 	os.Remove("test.png")
+
+	// Get file from s3
+	// Resize the file
+	// Read the new resized file
+	// Upload the new files to s3
+	return "", nil
+}
+
+func main() {
+	lambda.Start(handler)
+
 }
 
 func resizeIamge(imageData image.Image) (image.Image, error) {
