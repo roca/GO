@@ -109,6 +109,7 @@ func dowloadFromS3(bucketName string, key string) (*os.File, error) {
 	// TODO: Make file name unique with uuid
 	file, err := os.Create("/tmp/" + strings.Split(key, "/")[1])
 	if err != nil {
+		Error.Println("Could not create tmp file:", strings.Split(key, "/")[1])
 		return &os.File{}, err
 	}
 
@@ -117,12 +118,12 @@ func dowloadFromS3(bucketName string, key string) (*os.File, error) {
 			Bucket: aws.String(bucketName),
 			Key:    aws.String(key),
 		})
-
 	if err != nil {
+		Error.Println("Could not download file:", key)
 		return &os.File{}, err
 	}
 
-	fmt.Println("Downloaded", file.Name(), numBytes, "bytes")
+	Info.Println("Downloaded", file.Name(), numBytes, "bytes")
 	return file, nil
 }
 
@@ -139,6 +140,7 @@ func uploadToS3(file *os.File, bucketName string, key string) error {
 		})
 
 	if err != nil {
+		Error.Println("Could not upload file:", key)
 		return err
 	}
 	return nil
