@@ -4,6 +4,7 @@ import (
 	"image/jpeg"
 	"image/png"
 	"log"
+	"regexp"
 	"strings"
 	"time"
 
@@ -41,7 +42,8 @@ func handler(s3Event *events.S3Event) (string, error) {
 		s3 := record.S3
 		message := fmt.Sprintf("[%s - %s] Bucket = %s, Key = %s \n", record.EventSource, record.EventTime, s3.Bucket.Name, s3.Object.Key)
 		Info.Println("Special Information" + message)
-		if s3.Bucket.Name == "romelbkt" && s3.Object.Key == "images/gopher.jpeg" {
+		matchedKey, _ := regexp.Match(`images/.*\.jpeg`, []byte(s3.Object.Key))
+		if s3.Bucket.Name == "romelbkt" && matchedKey {
 			err := resizeImage(s3.Bucket.Name, s3.Object.Key)
 			if err != nil {
 				return "", err
@@ -80,6 +82,7 @@ func resizeImage(bucketName string, key string) error {
 	// TODO: Make file name unique with uuid
 	outputFile, err := os.Create("/tmp/" + newImageFileName)
 	if err != nil {
+		Error.Println("Could create tmp file:", err)
 		return err
 	}
 
@@ -88,15 +91,18 @@ func resizeImage(bucketName string, key string) error {
 	png.Encode(outputFile, dstImage)
 
 	// Don't forget to close files
-	// outputFile.Close()
+	outputFile.Close()
 
 	// Upload the new files to s3
-	if err := uploadToS3(outputFile, bucketName, "images/dst/"+newImageFileName); err != nil {
+	err = uploadToS3(newImageFileName, bucketName, "images/dst/"+newImageFileName)
+	if err != nil {
+		Error.Println("Could upload image to s3:", err)
 		return err
 	}
 
 	os.Remove("/tmp/" + strings.Split(key, "/")[1])
 	os.Remove("/tmp/" + newImageFileName)
+	Info.Println("Successfully resized image:", key)
 	return nil
 }
 
@@ -123,16 +129,23 @@ func dowloadFromS3(bucketName string, key string) (*os.File, error) {
 		return &os.File{}, err
 	}
 
-	Info.Println("Downloaded", file.Name(), numBytes, "bytes")
+	Info.Println("Successfully Downloaded", file.Name(), numBytes, "bytes")
 	return file, nil
 }
 
-func uploadToS3(file *os.File, bucketName string, key string) error {
+func uploadToS3(fileName string, bucketName string, key string) error {
+
+	file, err := os.Open("/tmp/" + fileName)
+	if err != nil {
+		Error.Println("Could open tmp file:", err)
+		return err
+	}
+	defer file.Close()
 
 	// Create a new AWS S3 uploader
 	uploader := s3manager.NewUploader(sess)
 
-	_, err := uploader.Upload(
+	_, err = uploader.Upload(
 		&s3manager.UploadInput{
 			Bucket: aws.String(bucketName),
 			Key:    aws.String(key),
@@ -143,6 +156,7 @@ func uploadToS3(file *os.File, bucketName string, key string) error {
 		Error.Println("Could not upload file:", key)
 		return err
 	}
+	Info.Println("Successfully uploaded to S3:", key)
 	return nil
 }
 
