@@ -1,8 +1,11 @@
 package main
 
 import (
-	"image"
+	"image/jpeg"
+	"image/png"
 	"log"
+	"strings"
+	"time"
 
 	"fmt"
 	"io"
@@ -39,11 +42,14 @@ func handler(s3Event *events.S3Event) (string, error) {
 		message := fmt.Sprintf("[%s - %s] Bucket = %s, Key = %s \n", record.EventSource, record.EventTime, s3.Bucket.Name, s3.Object.Key)
 		Info.Println("Special Information" + message)
 		if s3.Bucket.Name == "romelbkt" && s3.Object.Key == "images/gopher.jpeg" {
-			resizeImage(s3.Bucket.Name, s3.Object.Key)
+			err := resizeImage(s3.Bucket.Name, s3.Object.Key)
+			if err != nil {
+				return "", err
+			}
 		}
 	}
-
-	return "", nil
+	Info.Println("Image successfully resized")
+	return "Image successfully resized", nil
 }
 
 func main() {
@@ -52,67 +58,60 @@ func main() {
 
 }
 
-func resizeImage(bucketName string, key string) {
+func resizeImage(bucketName string, key string) error {
 	// Get file from s3
-	_, err := dowloadFromS3(bucketName, key)
+	existingImageFile, err := dowloadFromS3(bucketName, key)
 	if err != nil {
-		Error.Println("Could not download image: " + key)
+		return err
 	}
-	Info.Println("Successfully downloaded image:" + key)
 
-	// existingImageFile, err := os.Open(item)
-	// if err != nil {
-	// 	// Handle error
-	// }
-	// defer existingImageFile.Close()
+	// Calling the generic image.Decode() will tell give us the data
+	// and type of image it is as a string. We expect "png"
+	imageData, err := jpeg.Decode(existingImageFile)
+	if err != nil {
+		return err
+	}
 
-	// // Calling the generic image.Decode() will tell give us the data
-	// // and type of image it is as a string. We expect "png"
-	// imageData, err := jpeg.Decode(existingImageFile)
-	// if err != nil {
-	// 	// Handle error
-	// }
+	dstImage := imaging.Resize(imageData, 400, 0, imaging.Lanczos)
 
-	// dstImage := imaging.Resize(imageData, 400, 0, imaging.Lanczos)
+	newImageFileName := fmt.Sprintf("%d.png", time.Now().UnixNano())
 
-	// // outputFile is a File type which satisfies Writer interface
-	// outputFile, err := os.Create("test.png")
-	// if err != nil {
-	// 	// Handle error
-	// }
+	// outputFile is a File type which satisfies Writer interface
+	// TODO: Make file name unique with uuid
+	outputFile, err := os.Create("/tmp/" + newImageFileName)
+	if err != nil {
+		return err
+	}
 
-	// // Encode takes a writer interface and an image interface
-	// // We pass it the File and the RGBA
-	// png.Encode(outputFile, dstImage)
+	// Encode takes a writer interface and an image interface
+	// We pass it the File and the RGBA
+	png.Encode(outputFile, dstImage)
 
-	// // Don't forget to close files
+	// Don't forget to close files
 	// outputFile.Close()
 
-	// //lambda.Start(handler)
-
-	// uploadToS3()
-
-	// os.Remove(item)
-	// os.Remove("test.png")
-
-	// // Get file from s3
-	// Resize the file
-	// Read the new resized file
 	// Upload the new files to s3
-}
+	if err := uploadToS3(outputFile, bucketName, "images/dst/"+newImageFileName); err != nil {
+		return err
+	}
 
-func resizeIamge(imageData image.Image) (image.Image, error) {
-	return imaging.Resize(imageData, 400, 0, imaging.Lanczos), nil
+	os.Remove("/tmp/" + strings.Split(key, "/")[1])
+	os.Remove("/tmp/" + newImageFileName)
+	return nil
 }
 
 func dowloadFromS3(bucketName string, key string) (*os.File, error) {
-	// NOTE: you need to store your AWS credentials in ~/.aws/credentials
-
-	// 2) Create a new AWS S3 downloader
+	// Create a new AWS S3 downloader
 	downloader := s3manager.NewDownloader(sess)
 
-	// 4) Download the item from the bucket. If an error occurs, log it and exit. Otherwise, notify the user that the download succeeded.
-	file, err := os.Create(key)
+	// 4) Download the item from the bucket. If an error occurs, log it and exit.
+	// Otherwise, notify the user that the download succeeded.
+	// TODO: Make file name unique with uuid
+	file, err := os.Create("/tmp/" + strings.Split(key, "/")[1])
+	if err != nil {
+		return &os.File{}, err
+	}
+
 	numBytes, err := downloader.Download(file,
 		&s3.GetObjectInput{
 			Bucket: aws.String(bucketName),
@@ -120,37 +119,29 @@ func dowloadFromS3(bucketName string, key string) (*os.File, error) {
 		})
 
 	if err != nil {
-		log.Fatalf("Unable to download item %q, %v", key, err)
+		return &os.File{}, err
 	}
 
 	fmt.Println("Downloaded", file.Name(), numBytes, "bytes")
 	return file, nil
 }
 
-func uploadToS3() {
-	// NOTE: you need to store your AWS credentials in ~/.aws/credentials
+func uploadToS3(file *os.File, bucketName string, key string) error {
 
-	// 1) Define your bucket and item names
-	bucket := "romelbkt"
-	item := "test.png"
-
-	// 2) Create a new AWS S3 uploader
+	// Create a new AWS S3 uploader
 	uploader := s3manager.NewUploader(sess)
-
-	// Open the file for use
-	file, _ := os.Open(item)
-	defer file.Close()
 
 	_, err := uploader.Upload(
 		&s3manager.UploadInput{
-			Bucket: aws.String(bucket),
-			Key:    aws.String("images/dst/" + item),
+			Bucket: aws.String(bucketName),
+			Key:    aws.String(key),
 			Body:   file,
 		})
 
 	if err != nil {
-		log.Fatalf("Unable to upload item %q, %v", item, err)
+		return err
 	}
+	return nil
 }
 
 func initLoggers(
