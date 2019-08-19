@@ -76,7 +76,7 @@ func resizeImage(bucketName string, key string) error {
 
 	dstImage := imaging.Resize(imageData, 400, 0, imaging.Lanczos)
 
-	newImageFileName := fmt.Sprintf("%d.png", time.Now().UnixNano())
+	newImageFileName := fmt.Sprintf("%s-%d.png", strings.Split(key, "/")[1], time.Now().UnixNano())
 
 	// outputFile is a File type which satisfies Writer interface
 	// TODO: Make file name unique with uuid
