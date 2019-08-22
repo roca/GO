@@ -13,6 +13,12 @@ import (
 var greeting = map[string]string{
 	"en": "Hello",
 	"fr": "Bonjour",
+	"hi": "Namaste",
+	"es": "Hola",
+	"pt": "Ola",
+	"ur": "Assalamo aleikum",
+	"it": "Ciao",
+	"de": "Hallo",
 }
 
 func handler(req *events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
@@ -46,6 +52,9 @@ func handler(req *events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse
 	return events.APIGatewayProxyResponse{
 		StatusCode: http.StatusOK,
 		Body:       string(b),
+		Headers: map[string]string{
+			"Access-Control-Allow-Origin": "*",
+		},
 	}, nil
 }
 
