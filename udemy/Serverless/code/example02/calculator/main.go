@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"net/http"
 
 	"github.com/aws/aws-lambda-go/events"
 
@@ -12,7 +13,10 @@ type Event struct {
 }
 
 func handler(c context.Context, ev Event) (events.APIGatewayProxyResponse, error) {
-	return events.APIGatewayProxyResponse{}, nil
+	return events.APIGatewayProxyResponse{
+		StatusCode: http.StatusOK,
+		Body:       string(""),
+	}, nil
 }
 
 func main() {
