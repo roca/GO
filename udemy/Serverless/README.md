@@ -81,3 +81,8 @@ aws lambda invoke \
 outfile
 
 http://www.desertfoxdev.org
+
+
+https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html#input-variable-reference
+
+http://velocity.apache.org/engine/devel/vtl-reference-guide.html
