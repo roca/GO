@@ -83,6 +83,10 @@ outfile
 http://www.desertfoxdev.org
 
 
-https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html#input-variable-reference
+From udemy:  AWS lambda & serverless course
 
-http://velocity.apache.org/engine/devel/vtl-reference-guide.html
+    https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html#input-variable-reference
+
+    http://velocity.apache.org/engine/devel/vtl-reference-guide.html
+
+    http://json-schema.org/learn/examples/address.schema.json
