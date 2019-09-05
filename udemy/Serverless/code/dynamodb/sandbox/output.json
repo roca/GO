@@ -1,0 +1,125 @@
+{
+	"Table": {
+		"AttributeDefinitions": [
+			{
+				"AttributeName": "cat",
+				"AttributeType": "S"
+			},
+			{
+				"AttributeName": "note_id",
+				"AttributeType": "S"
+			},
+			{
+				"AttributeName": "timestamp",
+				"AttributeType": "N"
+			},
+			{
+				"AttributeName": "title",
+				"AttributeType": "S"
+			},
+			{
+				"AttributeName": "user_id",
+				"AttributeType": "S"
+			}
+		],
+		"BillingModeSummary": null,
+		"CreationDateTime": "2019-09-03T04:11:17Z",
+		"GlobalSecondaryIndexes": [
+			{
+				"Backfilling": null,
+				"IndexArn": "arn:aws:dynamodb:us-east-1:132172135366:table/td_notes/index/note_id-index",
+				"IndexName": "note_id-index",
+				"IndexSizeBytes": 521,
+				"IndexStatus": "ACTIVE",
+				"ItemCount": 5,
+				"KeySchema": [
+					{
+						"AttributeName": "note_id",
+						"KeyType": "HASH"
+					}
+				],
+				"Projection": {
+					"NonKeyAttributes": null,
+					"ProjectionType": "ALL"
+				},
+				"ProvisionedThroughput": {
+					"LastDecreaseDateTime": null,
+					"LastIncreaseDateTime": null,
+					"NumberOfDecreasesToday": 0,
+					"ReadCapacityUnits": 1,
+					"WriteCapacityUnits": 1
+				}
+			}
+		],
+		"ItemCount": 6,
+		"KeySchema": [
+			{
+				"AttributeName": "user_id",
+				"KeyType": "HASH"
+			},
+			{
+				"AttributeName": "timestamp",
+				"KeyType": "RANGE"
+			}
+		],
+		"LatestStreamArn": null,
+		"LatestStreamLabel": null,
+		"LocalSecondaryIndexes": [
+			{
+				"IndexArn": "arn:aws:dynamodb:us-east-1:132172135366:table/td_notes/index/user_id-cat-index",
+				"IndexName": "user_id-cat-index",
+				"IndexSizeBytes": 516,
+				"ItemCount": 5,
+				"KeySchema": [
+					{
+						"AttributeName": "user_id",
+						"KeyType": "HASH"
+					},
+					{
+						"AttributeName": "cat",
+						"KeyType": "RANGE"
+					}
+				],
+				"Projection": {
+					"NonKeyAttributes": null,
+					"ProjectionType": "ALL"
+				}
+			},
+			{
+				"IndexArn": "arn:aws:dynamodb:us-east-1:132172135366:table/td_notes/index/user_id-title-index",
+				"IndexName": "user_id-title-index",
+				"IndexSizeBytes": 610,
+				"ItemCount": 6,
+				"KeySchema": [
+					{
+						"AttributeName": "user_id",
+						"KeyType": "HASH"
+					},
+					{
+						"AttributeName": "title",
+						"KeyType": "RANGE"
+					}
+				],
+				"Projection": {
+					"NonKeyAttributes": null,
+					"ProjectionType": "ALL"
+				}
+			}
+		],
+		"ProvisionedThroughput": {
+			"LastDecreaseDateTime": null,
+			"LastIncreaseDateTime": null,
+			"NumberOfDecreasesToday": 0,
+			"ReadCapacityUnits": 1,
+			"WriteCapacityUnits": 1
+		},
+		"RestoreSummary": null,
+		"SSEDescription": null,
+		"StreamSpecification": null,
+		"TableArn": "arn:aws:dynamodb:us-east-1:132172135366:table/td_notes",
+		"TableId": "4d80225d-1b3e-455e-98a0-916bb55df51a",
+		"TableName": "td_notes",
+		"TableSizeBytes": 610,
+		"TableStatus": "ACTIVE"
+	}
+}
