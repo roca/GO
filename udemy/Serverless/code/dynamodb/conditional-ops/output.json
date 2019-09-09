@@ -1,0 +1,7 @@
+ConditionalCheckFailedException: The conditional request failed
+	status code: 400, request id: 4H57IL3KV5O9G98NSEV74NK6PFVV4KQNSO5AEMVJF66Q9ASUAAJG
+{
+	"Attributes": null,
+	"ConsumedCapacity": null,
+	"ItemCollectionMetrics": null
+}
