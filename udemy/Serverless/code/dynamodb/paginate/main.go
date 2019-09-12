@@ -44,19 +44,24 @@ func init() {
 
 func main() {
 
-	var allResults *dynamodb.ScanOutput
+	allResults := &dynamodb.ScanOutput{}
 
 	input := &dynamodb.ScanInput{
 		TableName: aws.String("td_notes"),
 		Limit:     aws.Int64(3),
 	}
 
-	for allResults.LastEvaluatedKey != nil {
-		result, err := svc.Scan(input)
+	for {
+		results, err := svc.Scan(input)
 		if err != nil {
 			fmt.Println(err.Error())
 		}
-		allResults.Items = append(allResults.Items, result.Items...)
+		fmt.Printf("Items length: %d\n", len(results.LastEvaluatedKey))
+		input.ExclusiveStartKey = results.LastEvaluatedKey
+		allResults.Items = append(allResults.Items, results.Items...)
+		if len(results.LastEvaluatedKey) == 0 {
+			break
+		}
 	}
 
 	str, err := json.MarshalIndent(allResults, "", "\t")
