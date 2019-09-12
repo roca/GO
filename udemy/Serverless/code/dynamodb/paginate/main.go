@@ -44,22 +44,22 @@ func init() {
 
 func main() {
 
+	var allResults *dynamodb.ScanOutput
+
 	input := &dynamodb.ScanInput{
 		TableName: aws.String("td_notes"),
-		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
-			":cat": {
-				S: aws.String("general"),
-			},
-		},
-		FilterExpression: aws.String("cat = :cat"),
+		Limit:     aws.Int64(3),
 	}
 
-	result, err := svc.Scan(input)
-	if err != nil {
-		fmt.Println(err.Error())
+	for allResults.LastEvaluatedKey != nil {
+		result, err := svc.Scan(input)
+		if err != nil {
+			fmt.Println(err.Error())
+		}
+		allResults.Items = append(allResults.Items, result.Items...)
 	}
 
-	str, err := json.MarshalIndent(result, "", "\t")
+	str, err := json.MarshalIndent(allResults, "", "\t")
 	if err != nil {
 		fmt.Printf(err.Error())
 		return
