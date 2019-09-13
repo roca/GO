@@ -50,15 +50,16 @@ func main() {
 		TableName: aws.String("td_notes"),
 		Limit:     aws.Int64(3),
 	}
-
+	pages := 0
 	for {
 		results, err := svc.Scan(input)
 		if err != nil {
 			fmt.Println(err.Error())
 		}
-		fmt.Printf("Items length: %d\n", len(results.LastEvaluatedKey))
+		//fmt.Printf("Items length: %d\n", len(results.LastEvaluatedKey))
 		input.ExclusiveStartKey = results.LastEvaluatedKey
 		allResults.Items = append(allResults.Items, results.Items...)
+		pages++
 		if len(results.LastEvaluatedKey) == 0 {
 			break
 		}
@@ -71,5 +72,6 @@ func main() {
 	}
 
 	fmt.Println(string(str))
+	fmt.Printf("Pages scanned: %d", pages)
 
 }

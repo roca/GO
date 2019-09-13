@@ -1,7 +1,3 @@
-Items length: 2
-Items length: 2
-Items length: 2
-Items length: 0
 {
 	"ConsumedCapacity": null,
 	"Count": null,
@@ -834,3 +830,4 @@ Items length: 0
 	"LastEvaluatedKey": null,
 	"ScannedCount": null
 }
+Pages scanned: 4
