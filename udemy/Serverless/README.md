@@ -92,3 +92,15 @@ From udemy:  AWS lambda & serverless course
     http://json-schema.org/learn/examples/address.schema.json
 
     https://app.swaggerhub.com
+
+    aws lambda add-permission    \
+    --function-name "arn:aws:lambda:us-east-1:132172135366:function:eventLogger:test"    \
+    --source-arn "arn:aws:execute-api:us-east-1:132172135366:qii3o7ex23/*/GET/"    \
+    --principal apigateway.amazonaws.com    --statement-id c9bc8c99-dd58-468b-98ee-32829b4e267c    \
+    --action lambda:InvokeFunction
+
+     aws lambda add-permission    \
+    --function-name "arn:aws:lambda:us-east-1:132172135366:function:eventLogger:prod"    \
+    --source-arn "arn:aws:execute-api:us-east-1:132172135366:qii3o7ex23/*/GET/"    \
+    --principal apigateway.amazonaws.com    --statement-id c9bc8c99-dd58-468b-98ee-32829b4e267c    \
+    --action lambda:InvokeFunction
