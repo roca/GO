@@ -17,6 +17,10 @@ type Event struct {
 }
 
 func handler(ctx context.Context, event Event) (Event, error) {
+
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
 	// Comment
 	event.LambdaFunction = lambdacontext.FunctionName
 	event.LambdaVersion = lambdacontext.FunctionVersion
