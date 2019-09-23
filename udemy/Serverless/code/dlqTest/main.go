@@ -12,12 +12,10 @@ import (
 type Event struct {
 }
 
-func handler(ctx context.Context, event Event) (Event, error) {
-
+func handler(ctx context.Context, event Event) (string, error) {
+	log.Println(event)
 	time.Sleep(3 * time.Second)
-
-	log.Println("Hello World")
-	return event, nil
+	return "Hello World", nil
 }
 
 func main() {
