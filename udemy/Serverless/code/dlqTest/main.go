@@ -9,8 +9,7 @@ import (
 )
 
 // Event ...
-type Event struct {
-}
+type Event interface{}
 
 func handler(ctx context.Context, event Event) (string, error) {
 	log.Println(event)
