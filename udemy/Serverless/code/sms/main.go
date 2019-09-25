@@ -31,7 +31,8 @@ func handler(ev Event) (events.APIGatewayProxyResponse, error) {
 	Info.Println("service created")
 
 	params := &sns.PublishInput{
-		Message:     aws.String("testing 123"),
+		// Hello Sunil. This is a message from Amazon Lambda
+		Message:     aws.String("Hello Sunil. This is a message from Amazon Lambda"),
 		PhoneNumber: aws.String("+12017458446"),
 	}
 	resp, err := svc.Publish(params)
