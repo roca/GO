@@ -32,7 +32,7 @@ func handler(ev Event) (events.APIGatewayProxyResponse, error) {
 
 	params := &sns.PublishInput{
 		// Hello Sunil. This is a message from Amazon Lambda
-		Message:     aws.String("Hello Sunil. This is a message from Amazon Lambda"),
+		Message:     aws.String("Hello. This is a message from Amazon Lambda"),
 		PhoneNumber: aws.String("+12017458446"),
 	}
 	resp, err := svc.Publish(params)
