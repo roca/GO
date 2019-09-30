@@ -20,11 +20,7 @@ func init() {
 }
 
 type Event struct {
-	Operation string
-	Input     struct {
-		Operand1 int
-		Operand2 int
-	}
+	Number int
 }
 
 type svcEvent struct {
@@ -38,9 +34,9 @@ type svcEvent struct {
 func handler(ctx context.Context, event Event) (events.APIGatewayProxyResponse, error) {
 	svc := svclambda.New(sess)
 
-	payload := svcEvent{Operation: event.Operation}
-	payload.Input.Operand1 = event.Input.Operand1
-	payload.Input.Operand2 = event.Input.Operand2
+	payload := svcEvent{Operation: "multiply"}
+	payload.Input.Operand1 = event.Number
+	payload.Input.Operand2 = event.Number
 
 	b, _ := json.Marshal(&payload)
 
