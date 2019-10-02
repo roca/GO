@@ -104,3 +104,6 @@ From udemy:  AWS lambda & serverless course
     --source-arn "arn:aws:execute-api:us-east-1:132172135366:qii3o7ex23/*/GET/"    \
     --principal apigateway.amazonaws.com    --statement-id c9bc8c99-dd58-468b-98ee-32829b4e267c    \
     --action lambda:InvokeFunction
+
+
+    https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-authorization-flow.html
