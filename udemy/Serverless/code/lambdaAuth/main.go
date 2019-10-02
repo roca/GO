@@ -1,21 +1,55 @@
 package main
 
 import (
-	"github.com/aws/aws-sdk-go/aws/session"
+	"log"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 )
 
-var sess *session.Session
+// Help function to generate an IAM policy
+func generatePolicy(principalId, effect, resource string) events.APIGatewayCustomAuthorizerResponse {
+	authResponse := events.APIGatewayCustomAuthorizerResponse{PrincipalID: principalId}
 
-func init() {
-	sess = session.Must(session.NewSession())
+	if effect != "" && resource != "" {
+		authResponse.PolicyDocument = events.APIGatewayCustomAuthorizerPolicy{
+			Version: "2012-10-17",
+			Statement: []events.IAMPolicyStatement{
+				{
+					Action:   []string{"execute-api:Invoke"},
+					Effect:   effect,
+					Resource: []string{resource},
+				},
+			},
+		}
+	}
+
+	// Optional output with custom properties of the String, Number or Boolean type.
+	authResponse.Context = map[string]interface{}{
+		"stringKey":  "stringval",
+		"numberKey":  123,
+		"booleanKey": true,
+	}
+	return authResponse
 }
 
-func handler(authEvent *events.APIGatewayCustomAuthorizerRequest) (string, error) {
+func handler(event *events.APIGatewayCustomAuthorizerRequest) (events.APIGatewayCustomAuthorizerResponse, error) {
 
-	return "Image successfully resized", nil
+	token := event.AuthorizationToken
+	log.Printf("AuthorizationToken: %s", token)
+
+	// switch strings.ToLower(token) {
+	// case "allow":
+	// 	return generatePolicy("user", "Allow", event.MethodArn), nil
+	// case "deny":
+	// 	return generatePolicy("user", "Deny", event.MethodArn), nil
+	// case "unauthorized":
+	// 	return events.APIGatewayCustomAuthorizerResponse{}, errors.New("Unauthorized") // Return a 401 Unauthorized response
+	// default:
+	// 	return events.APIGatewayCustomAuthorizerResponse{}, errors.New("Error: Invalid token")
+	// }
+
+	return events.APIGatewayCustomAuthorizerResponse{}, nil
 }
 
 func main() {
