@@ -70,7 +70,7 @@ func handler(event *events.APIGatewayCustomAuthorizerRequest) (events.APIGateway
 		return generatePolicy("user1", "Deny", event.MethodArn, claims), nil
 	}
 
-	return generatePolicy("user1", "Allow", event.MethodArn, claims), nil
+	return generatePolicy("user1", "AllowAll", event.MethodArn, claims), nil
 
 }
 
