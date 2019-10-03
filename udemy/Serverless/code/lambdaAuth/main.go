@@ -1,14 +1,16 @@
 package main
 
 import (
+	"errors"
 	"log"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/dgrijalva/jwt-go"
 )
 
 // Help function to generate an IAM policy
-func generatePolicy(principalId, effect, resource string) events.APIGatewayCustomAuthorizerResponse {
+func generatePolicy(principalId, effect, resource string, claims jwt.MapClaims) events.APIGatewayCustomAuthorizerResponse {
 	authResponse := events.APIGatewayCustomAuthorizerResponse{PrincipalID: principalId}
 
 	if effect != "" && resource != "" {
@@ -26,30 +28,50 @@ func generatePolicy(principalId, effect, resource string) events.APIGatewayCusto
 
 	// Optional output with custom properties of the String, Number or Boolean type.
 	authResponse.Context = map[string]interface{}{
-		"stringKey":  "stringval",
-		"numberKey":  123,
-		"booleanKey": true,
+		"sub":  claims["sub"],
+		"name": claims["name"],
+		"data": claims["data"],
 	}
 	return authResponse
 }
 
+func ExtractClaims(jwtStr string) (jwt.MapClaims, error) {
+	key := "your-256-bit-secret"
+
+	token, err := jwt.Parse(jwtStr, func(token *jwt.Token) (interface{}, error) {
+		return []byte(key), nil
+	})
+
+	if err != nil {
+		return jwt.MapClaims{}, err
+	}
+
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		return claims, nil
+	} else {
+		return jwt.MapClaims{}, errors.New("Claims could not be extracted")
+	}
+
+}
+
 func handler(event *events.APIGatewayCustomAuthorizerRequest) (events.APIGatewayCustomAuthorizerResponse, error) {
 
-	token := event.AuthorizationToken
-	log.Printf("AuthorizationToken: %s", token)
+	tokenString := event.AuthorizationToken
+	log.Printf("AuthorizationToken: %s", tokenString)
 
-	// switch strings.ToLower(token) {
-	// case "allow":
-	// 	return generatePolicy("user", "Allow", event.MethodArn), nil
-	// case "deny":
-	// 	return generatePolicy("user", "Deny", event.MethodArn), nil
-	// case "unauthorized":
-	// 	return events.APIGatewayCustomAuthorizerResponse{}, errors.New("Unauthorized") // Return a 401 Unauthorized response
-	// default:
-	// 	return events.APIGatewayCustomAuthorizerResponse{}, errors.New("Error: Invalid token")
-	// }
+	claims, err := ExtractClaims(tokenString)
+	if err != nil {
+		return events.APIGatewayCustomAuthorizerResponse{}, err
+	}
 
-	return events.APIGatewayCustomAuthorizerResponse{}, nil
+	log.Println(claims)
+
+	if claims["sub"] != "user1" {
+		return generatePolicy("user1", "Deny", event.MethodArn, claims), nil
+	}
+
+	return generatePolicy("user1", "Allow", event.MethodArn, claims), nil
+
 }
 
 func main() {
