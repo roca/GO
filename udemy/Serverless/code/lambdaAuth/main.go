@@ -3,15 +3,25 @@ package main
 import (
 	"errors"
 	"log"
+	"regexp"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/aws/aws-sdk-go/aws/arn"
 	"github.com/dgrijalva/jwt-go"
 )
 
 // Help function to generate an IAM policy
 func generatePolicy(principalId, effect, resource string, claims jwt.MapClaims) events.APIGatewayCustomAuthorizerResponse {
 	authResponse := events.APIGatewayCustomAuthorizerResponse{PrincipalID: principalId}
+
+	arn, _ := arn.Parse(resource)
+
+	if effect == "AllowAll" {
+		re := regexp.MustCompile(`\/.*`)
+		arn.Resource = re.ReplaceAllString(arn.Resource, "/*/*/*")
+		effect = "Allow"
+	}
 
 	if effect != "" && resource != "" {
 		authResponse.PolicyDocument = events.APIGatewayCustomAuthorizerPolicy{
@@ -20,7 +30,7 @@ func generatePolicy(principalId, effect, resource string, claims jwt.MapClaims) 
 				{
 					Action:   []string{"execute-api:Invoke"},
 					Effect:   effect,
-					Resource: []string{resource},
+					Resource: []string{arn.String()},
 				},
 			},
 		}
@@ -70,7 +80,7 @@ func handler(event *events.APIGatewayCustomAuthorizerRequest) (events.APIGateway
 		return generatePolicy("user1", "Deny", event.MethodArn, claims), nil
 	}
 
-	return generatePolicy("user1", "Allow", event.MethodArn, claims), nil
+	return generatePolicy("user1", "AllowAll", event.MethodArn, claims), nil
 
 }
 
