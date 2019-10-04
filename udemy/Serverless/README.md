@@ -107,3 +107,12 @@ From udemy:  AWS lambda & serverless course
 
 
     https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-authorization-flow.html
+
+
+
+jwt - {
+  "sub": "user1",
+  "name": "Romel",
+  "iat": 1516239022,
+  "data": "My custom data"
+}
