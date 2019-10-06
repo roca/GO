@@ -116,3 +116,5 @@ jwt - {
   "iat": 1516239022,
   "data": "My custom data"
 }
+
+https://docs.aws.amazon.com/cli/latest/reference/cognito-idp/index.html

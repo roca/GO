@@ -18,6 +18,7 @@ type Event struct {
 	Stage          string
 	LambdaFunction string
 	LambdaVersion  string
+	UserData       interface{} `json:"userData`
 }
 
 var encrypted = os.Getenv("APP_SECRET")
