@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"log"
 
-	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -31,7 +30,19 @@ type svcEvent struct {
 	} `json:"Input"`
 }
 
-func handler(ctx context.Context, event Event) (events.APIGatewayProxyResponse, error) {
+type Result struct {
+	StatusCode int               `json:"statusCode"`
+	Headers    map[string]string `json:"headers"`
+	Body       struct {
+		Answer int `json:"answer"`
+	} `json:"body"`
+}
+
+type Response struct {
+	Answer int `json:"answer"`
+}
+
+func handler(ctx context.Context, event Event) (Response, error) {
 	svc := svclambda.New(sess)
 
 	payload := svcEvent{Operation: "multiply"}
@@ -47,16 +58,19 @@ func handler(ctx context.Context, event Event) (events.APIGatewayProxyResponse, 
 		Payload:        b,
 	}
 
-	res := events.APIGatewayProxyResponse{}
+	res := Response{}
+	result := Result{}
 
-	result, err := svc.Invoke(input)
+	rslt, err := svc.Invoke(input)
 	if err != nil {
 		return res, err
 	}
 
-	if err := json.Unmarshal(result.Payload, &res); err != nil {
+	if err := json.Unmarshal(rslt.Payload, &result); err != nil {
 		return res, err
 	}
+
+	res.Answer = result.Body.Answer
 
 	log.Println(event)
 	log.Println(result)
