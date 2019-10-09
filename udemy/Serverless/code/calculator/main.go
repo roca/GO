@@ -1,12 +1,10 @@
 package main
 
 import (
-	"encoding/json"
 	"io/ioutil"
 	"net/http"
 	"os"
 
-	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 )
 
@@ -18,11 +16,19 @@ type Event struct {
 	}
 }
 
+// type Response struct {
+// 	Answer int `json:"answer"`
+// }
+
 type Response struct {
-	Answer int `json:"answer"`
+	StatusCode int               `json:"statusCode"`
+	Headers    map[string]string `json:"headers"`
+	Body       struct {
+		Answer int `json:"answer"`
+	} `json:"body"`
 }
 
-func handler(ev Event) (events.APIGatewayProxyResponse, error) {
+func handler(ev Event) (Response, error) {
 	Info.Println("Event", ev)
 	var answer int
 
@@ -39,16 +45,19 @@ func handler(ev Event) (events.APIGatewayProxyResponse, error) {
 		answer = 0
 	}
 
-	response := Response{
-		Answer: answer,
-	}
+	// response := Response{
+	// 	Answer: answer,
+	// }
 
-	b, _ := json.Marshal(&response)
+	// b, _ := json.Marshal(&response)
 
-	return events.APIGatewayProxyResponse{
+	res := Response{
 		StatusCode: http.StatusOK,
-		Body:       string(b),
-	}, nil
+		Headers:    map[string]string{"Content-Type": "application/json"},
+	}
+	res.Body.Answer = answer
+
+	return res, nil
 }
 
 func main() {
