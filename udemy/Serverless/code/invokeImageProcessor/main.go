@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"os"
 
 	"encoding/json"
 
@@ -23,12 +24,7 @@ func init() {
 	sf = sfn.New(sess)
 }
 
-type Event struct {
-	Comment string `json:"Comment"`
-	Number  int    `json:"Number"`
-}
-
-func handler(ctx context.Context, event Event) (events.APIGatewayProxyResponse, error) {
+func handler(ctx context.Context, event *events.S3Event) (events.APIGatewayProxyResponse, error) {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
@@ -38,7 +34,7 @@ func handler(ctx context.Context, event Event) (events.APIGatewayProxyResponse, 
 	log.Printf("Processing %s", lambdacontext.FunctionName)
 
 	in := sfn.StartExecutionInput{
-		StateMachineArn: aws.String("arn:aws:states:us-east-1:132172135366:stateMachine:Helloworld"),
+		StateMachineArn: aws.String(os.Getenv("STATE_MACHINE_ARN")),
 		Input:           aws.String(string(b)),
 	}
 
