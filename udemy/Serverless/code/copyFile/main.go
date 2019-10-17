@@ -4,8 +4,6 @@ import (
 	"context"
 	"os"
 
-	"path/filepath"
-
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/aws"
@@ -25,28 +23,21 @@ func handler(ctx context.Context, event *events.S3Event) (events.APIGatewayProxy
 
 	res := events.APIGatewayProxyResponse{}
 
-	
-
-	_, err := svc.CopyObject(
-		&s3.CopyObjectInput{
-			Bucket:     aws.String(os.Getenv("DESTINATION_BUCKET")),
-			CopySource: aws.String(svc.Bucket.Name),
-			Key:        aws.String(item),
-		},
-	)
-	if err != nil {
-
-	}
-
 	for _, record := range event.Records {
 		s3 := record.S3
-		filename := s3.Object.Key
-		suffix := filepath.Ext(filename)
-		if suffix != "" {
-			return suffix[1:], nil
+
+		_, err := svc.CopyObject(
+			&s3.CopyObjectInput{
+				Bucket:     aws.String(os.Getenv("DESTINATION_BUCKET")),
+				CopySource: aws.String(s3.Bucket.Name),
+				Key:        aws.String(item),
+			},
+		)
+		if err != nil {
+
 		}
-		return res, nil
 	}
+
 	return res, nil
 }
 
