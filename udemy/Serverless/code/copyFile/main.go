@@ -24,8 +24,9 @@ func init() {
 
 func handler(ctx context.Context, event *events.S3Event) (events.APIGatewayProxyResponse, error) {
 
-	b, _ := json.Marshal(event)
 	res := events.APIGatewayProxyResponse{}
+
+	i := 0
 
 	for _, record := range event.Records {
 		s3Record := record.S3
@@ -40,9 +41,17 @@ func handler(ctx context.Context, event *events.S3Event) (events.APIGatewayProxy
 		if err != nil {
 			return res, err
 		}
+
+		event.Records[i].S3.Bucket.Name = os.Getenv("DESTINATION_BUCKET")
+		event.Records[i].S3.Object.Key = s3Record.Object.Key
+		i++
+
+		b, _ := json.Marshal(event)
 		res.StatusCode = http.StatusOK
 		res.Body = string(b)
+
 		return res, nil
+
 	}
 
 	return res, errors.New("No file copied")
