@@ -2,9 +2,7 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
-	"net/http"
 	"os"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -17,14 +15,20 @@ import (
 var sess *session.Session
 var svc *s3.S3
 
+type Response struct {
+	Region string `json:"region"`
+	Bucket string `json:"bucket"`
+	Key    string `json:"key"`
+}
+
 func init() {
 	sess = session.Must(session.NewSession())
 	svc = s3.New(sess)
 }
 
-func handler(ctx context.Context, event *events.S3Event) (events.APIGatewayProxyResponse, error) {
+func handler(ctx context.Context, event *events.S3Event) (Response, error) {
 
-	res := events.APIGatewayProxyResponse{}
+	res := Response{}
 
 	i := 0
 
@@ -46,9 +50,9 @@ func handler(ctx context.Context, event *events.S3Event) (events.APIGatewayProxy
 		event.Records[i].S3.Object.Key = s3Record.Object.Key
 		i++
 
-		b, _ := json.Marshal(event)
-		res.StatusCode = http.StatusOK
-		res.Body = string(b)
+		res.Region = "us-east-1"
+		res.Bucket = os.Getenv("DESTINATION_BUCKET")
+		res.Key = s3Record.Object.Key
 
 		return res, nil
 
