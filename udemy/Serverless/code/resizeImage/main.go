@@ -4,7 +4,7 @@ import (
 	"image/jpeg"
 	"image/png"
 	"log"
-	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -33,25 +33,41 @@ var (
 
 var sess *session.Session
 
+type Response struct {
+	Region string `json:"region"`
+	Bucket string `json:"bucket"`
+	Key    string `json:"key"`
+}
+
 func init() {
 	sess = session.Must(session.NewSession())
 }
 
-func handler(s3Event *events.S3Event) (string, error) {
+func handler(s3Event *events.S3Event) (Response, error) {
+
+	res := Response{}
+
 	for _, record := range s3Event.Records {
 		s3 := record.S3
 		message := fmt.Sprintf("[%s - %s] Bucket = %s, Key = %s \n", record.EventSource, record.EventTime, s3.Bucket.Name, s3.Object.Key)
 		Info.Println("Special Information" + message)
-		matchedKey, _ := regexp.Match(`images/.*\.jpeg`, []byte(s3.Object.Key))
-		if s3.Bucket.Name == "romelbkt" && matchedKey {
-			err := resizeImage(s3.Bucket.Name, s3.Object.Key)
-			if err != nil {
-				return "", err
-			}
+
+		key := s3.Object.Key
+		newImageFileName := fmt.Sprintf("%s-%d.png", strings.Split(key, "/")[1], time.Now().UnixNano())
+
+		err := resizeImage(s3.Bucket.Name, key, newImageFileName)
+		if err != nil {
+			return res, err
 		}
+		Info.Println("Image successfully resized")
+
+		res.Region = "us-east-1"
+		res.Bucket = os.Getenv("DESTINATION_BUCKET")
+		res.Key = newImageFileName
+
+		return res, nil
 	}
-	Info.Println("Image successfully resized")
-	return "Image successfully resized", nil
+	return res, nil
 }
 
 func main() {
@@ -60,7 +76,7 @@ func main() {
 
 }
 
-func resizeImage(bucketName string, key string) error {
+func resizeImage(bucketName string, key string, newImageFileName string) error {
 	// Get file from s3
 	existingImageFile, err := dowloadFromS3(bucketName, key)
 	if err != nil {
@@ -74,9 +90,9 @@ func resizeImage(bucketName string, key string) error {
 		return err
 	}
 
-	dstImage := imaging.Resize(imageData, 400, 0, imaging.Lanczos)
+	imageWidthPx, _ := strconv.Atoi(os.Getenv("IMAGE_WIDTH_PX"))
 
-	newImageFileName := fmt.Sprintf("%s-%d.png", strings.Split(key, "/")[1], time.Now().UnixNano())
+	dstImage := imaging.Resize(imageData, imageWidthPx, 0, imaging.Lanczos)
 
 	// outputFile is a File type which satisfies Writer interface
 	// TODO: Make file name unique with uuid
@@ -94,7 +110,7 @@ func resizeImage(bucketName string, key string) error {
 	outputFile.Close()
 
 	// Upload the new files to s3
-	err = uploadToS3(newImageFileName, bucketName, "images/dst/"+newImageFileName)
+	err = uploadToS3(newImageFileName, os.Getenv("DESTINATION_BUCKET"), newImageFileName)
 	if err != nil {
 		Error.Println("Could upload image to s3:", err)
 		return err
