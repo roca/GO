@@ -12,6 +12,12 @@ import (
 var sess *session.Session
 var svc *dynamodb.DynamoDB
 
+type Response struct {
+	Region string `json:"region"`
+	Bucket string `json:"bucket"`
+	Key    string `json:"key"`
+}
+
 type Input struct {
 	Comment string `json:"Comment"`
 	Results struct {
