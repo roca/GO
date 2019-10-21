@@ -16,11 +16,11 @@ type Origin int
 
 const (
 	Original Origin = iota
-	Copy
+	Thunbnail
 )
 
 func (d Origin) String() string {
-	return [...]string{"originl", "thunbnail"}[d]
+	return [...]string{"original", "thunbnail"}[d]
 }
 
 type Image struct {
@@ -58,7 +58,7 @@ func handler(ctx context.Context, event Event) (string, error) {
 		switch image.Origin {
 		case Original:
 			break
-		case Copy:
+		case Thunbnail:
 			break
 		default:
 			break
