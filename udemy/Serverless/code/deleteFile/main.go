@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"errors"
-	"os"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -27,7 +26,7 @@ func handler(ctx context.Context, event *events.S3Event) (bool, error) {
 
 		_, err := svc.DeleteObject(
 			&s3.DeleteObjectInput{
-				Bucket: aws.String(os.Getenv("DESTINATION_BUCKET")),
+				Bucket: aws.String(s3Record.Bucket.Name),
 				Key:    aws.String(s3Record.Object.Key),
 			},
 		)
