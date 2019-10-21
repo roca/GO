@@ -2,7 +2,8 @@ package main
 
 import (
 	"context"
-	"errors"
+	"encoding/json"
+	"log"
 
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -12,61 +13,36 @@ import (
 var sess *session.Session
 var svc *dynamodb.DynamoDB
 
-type Origin int
-
-const (
-	Original Origin = iota
-	Thunbnail
-)
-
-func (d Origin) String() string {
-	return [...]string{"original", "thunbnail"}[d]
-}
-
-type Image struct {
-	Origin `json:"origin"`
-	Region string `json:"region"`
-	Bucket string `json:"bucket"`
-	Key    string `json:"key"`
-}
-
-type Event struct {
-	Comment string `json:"Comment"`
-	Results struct {
-		Images []Image `json:"images"`
-	} `json:"results"`
-}
-
-type Response struct {
-	Region string `json:"region"`
-	Bucket string `json:"bucket"`
-	Key    string `json:"key"`
-}
-
-func init() {
-	sess = session.Must(session.NewSession())
-	svc = dynamodb.New(sess)
-}
+// Event ...
+type Event []byte
 
 func handler(ctx context.Context, event Event) (string, error) {
 
-	images := event.Results.Images
+	images := make(map[string]interface{})
 
-	res := ""
+	// unmarschal JSON
+	e := json.Unmarshal(event, &images)
 
-	for _, image := range images {
-		switch image.Origin {
-		case Original:
-			break
-		case Thunbnail:
-			break
-		default:
-			break
-
-		}
+	// panic on error
+	if e != nil {
+		panic(e)
 	}
 
-	return res, errors.New("No file copied")
+	// a string slice to hold the keys
+	k := make([]string, len(images))
+
+	// iteration counter
+	i := 0
+
+	// copy c's keys into k
+	for s, _ := range images {
+		k[i] = s
+		i++
+	}
+
+	log.Println(k)
+
+	return "Hello World", nil
 }
 
 func main() {
