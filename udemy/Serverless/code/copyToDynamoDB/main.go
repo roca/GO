@@ -12,20 +12,18 @@ import (
 var sess *session.Session
 var svc *dynamodb.DynamoDB
 
-type Response struct {
+type Image struct {
 	Region string `json:"region"`
 	Bucket string `json:"bucket"`
 	Key    string `json:"key"`
 }
 
-type Input struct {
+type Event struct {
 	Comment string `json:"Comment"`
 	Results struct {
-		FileType string `json:"fileType"`
+		Images []Image `json:"images"`
 	} `json:"results"`
 }
-
-type Event []Input
 
 type Response struct {
 	Region string `json:"region"`
@@ -38,9 +36,18 @@ func init() {
 	svc = dynamodb.New(sess)
 }
 
-func handler(ctx context.Context, event Event) (Response, error) {
+func handler(ctx context.Context, event Event) (string, error) {
 
-	res := Response{}
+	images := event.Results.Images
+
+	res := ""
+
+	for _, image := range images {
+		switch image.Key {
+		case "original":
+
+		}
+	}
 
 	return res, errors.New("No file copied")
 }
