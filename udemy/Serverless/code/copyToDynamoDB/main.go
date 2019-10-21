@@ -12,7 +12,19 @@ import (
 var sess *session.Session
 var svc *dynamodb.DynamoDB
 
+type Origin int
+
+const (
+	Original Origin = iota
+	Copy
+)
+
+func (d Origin) String() string {
+	return [...]string{"originl", "thunbnail"}[d]
+}
+
 type Image struct {
+	Origin `json:"origin"`
 	Region string `json:"region"`
 	Bucket string `json:"bucket"`
 	Key    string `json:"key"`
@@ -43,8 +55,13 @@ func handler(ctx context.Context, event Event) (string, error) {
 	res := ""
 
 	for _, image := range images {
-		switch image.Key {
-		case "original":
+		switch image.Origin {
+		case Original:
+			break
+		case Copy:
+			break
+		default:
+			break
 
 		}
 	}
