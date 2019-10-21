@@ -20,7 +20,7 @@ type Image struct {
 }
 
 type Event struct {
-	images map[string]Image `json:"images"`
+	Images map[string]Image `json:"images"`
 }
 
 func init() {
@@ -30,7 +30,7 @@ func init() {
 
 func handler(ctx context.Context, event Event) (string, error) {
 
-	images := event.images
+	images := event.Images
 
 	res := ""
 
@@ -38,12 +38,11 @@ func handler(ctx context.Context, event Event) (string, error) {
 		switch key {
 		case "original":
 			log.Println("original:", image.Bucket)
-			break
+			return "original", nil
 		case "resized":
 			log.Println("resized:", image.Bucket)
-			break
+			return "resized", nil
 		default:
-			break
 
 		}
 	}
