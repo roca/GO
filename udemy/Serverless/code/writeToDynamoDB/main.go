@@ -2,9 +2,7 @@ package main
 
 import (
 	"context"
-	"errors"
 	"fmt"
-	"log"
 
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/aws"
@@ -19,6 +17,13 @@ type Image struct {
 	Region string `json:"region"`
 	Bucket string `json:"bucket"`
 	Key    string `json:"key"`
+}
+
+func (image Image) String() string {
+	if image.Key != "" {
+		return ""
+	}
+	return fmt.Sprintf("%s|%s|%s", image.Region, image.Bucket, image.Key)
 }
 
 type Event struct {
@@ -36,21 +41,25 @@ func handler(ctx context.Context, event Event) (string, error) {
 
 	res := ""
 
-	for key, image := range images {
-		s3Local := fmt.Sprintf("%s%s%s", image.Region, image.Bucket, image.Key)
-		switch key {
-		case "original":
-			log.Println("original:", s3Local)
-			return s3Local, nil
-		case "resized":
-			log.Println("resized:", s3Local)
-			return s3Local, nil
-		default:
+	// for key, image := range images {
+	// 	switch key {
+	// 	case "original":
+	// 		log.Println("original:", image.String())
+	// 		return image.String(), nil
+	// 	case "resized":
+	// 		log.Println("resized:", image.String())
+	// 		return image.String(), nil
+	// 	default:
 
-		}
+	// 	}
+	// }
+
+	err := Put(images)
+	if err != nil {
+		return res, err
 	}
 
-	return res, errors.New("No file recorded to dynamodb")
+	return "DynamoDB item added", nil
 }
 
 // Put into Database
@@ -59,8 +68,8 @@ func Put(images map[string]Image) error {
 	_, err := svc.PutItem(&dynamodb.PutItemInput{
 		TableName: aws.String("thumbnails"),
 		Item: map[string]*dynamodb.AttributeValue{
-			"original":  {S: aws.String(images["original"])},
-			"thumbnail": {S: aws.String(images["resized"])},
+			"original":  {S: aws.String(images["original"].String())},
+			"thumbnail": {S: aws.String(images["resized"].String())},
 		},
 	})
 
