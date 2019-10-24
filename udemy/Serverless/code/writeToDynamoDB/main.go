@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/aws"
@@ -20,7 +21,7 @@ type Image struct {
 }
 
 func (image Image) String() string {
-	if image.Key != "" {
+	if image.Key == "" {
 		return ""
 	}
 	return fmt.Sprintf("%s|%s|%s", image.Region, image.Bucket, image.Key)
@@ -53,6 +54,8 @@ func handler(ctx context.Context, event Event) (string, error) {
 
 	// 	}
 	// }
+
+	log.Println(images)
 
 	err := Put(images)
 	if err != nil {
