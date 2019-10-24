@@ -21,12 +21,19 @@ type Response struct {
 	Key    string `json:"key"`
 }
 
+type Event struct {
+	Records []*events.S3EventRecord `json:"Records"`
+	Results struct {
+		FileType string `json:"fileType"`
+	} `json:"results"`
+}
+
 func init() {
 	sess = session.Must(session.NewSession())
 	svc = s3.New(sess)
 }
 
-func handler(ctx context.Context, event *events.S3Event) (Response, error) {
+func handler(ctx context.Context, event Event) (Response, error) {
 
 	res := Response{}
 

@@ -5,8 +5,6 @@ import (
 	"image/png"
 	"log"
 	"strconv"
-	"strings"
-	"time"
 
 	"fmt"
 	"io"
@@ -39,23 +37,29 @@ type Response struct {
 	Key    string `json:"key"`
 }
 
+type Event struct {
+	Records []*events.S3EventRecord `json:"Records"`
+	Results struct {
+		FileType string `json:"fileType"`
+	} `json:"results"`
+}
+
 func init() {
 	sess = session.Must(session.NewSession())
 }
 
-func handler(s3Event *events.S3Event) (Response, error) {
+func handler(event Event) (Response, error) {
 
 	res := Response{}
 
-	for _, record := range s3Event.Records {
+	for _, record := range event.Records {
 		s3 := record.S3
 		message := fmt.Sprintf("[%s - %s] Bucket = %s, Key = %s \n", record.EventSource, record.EventTime, s3.Bucket.Name, s3.Object.Key)
 		Info.Println("Special Information" + message)
 
-		key := s3.Object.Key
-		newImageFileName := fmt.Sprintf("%s-%d.png", strings.Split(key, "/")[1], time.Now().UnixNano())
+		newImageFileName := fmt.Sprintf("small-%s", s3.Object.Key)
 
-		err := resizeImage(s3.Bucket.Name, key, newImageFileName)
+		err := resizeImage(s3.Bucket.Name, s3.Object.Key, newImageFileName)
 		if err != nil {
 			return res, err
 		}
@@ -116,7 +120,7 @@ func resizeImage(bucketName string, key string, newImageFileName string) error {
 		return err
 	}
 
-	os.Remove("/tmp/" + strings.Split(key, "/")[1])
+	os.Remove("/tmp/" + key)
 	os.Remove("/tmp/" + newImageFileName)
 	Info.Println("Successfully resized image:", key)
 	return nil
@@ -129,9 +133,9 @@ func dowloadFromS3(bucketName string, key string) (*os.File, error) {
 	// 4) Download the item from the bucket. If an error occurs, log it and exit.
 	// Otherwise, notify the user that the download succeeded.
 	// TODO: Make file name unique with uuid
-	file, err := os.Create("/tmp/" + strings.Split(key, "/")[1])
+	file, err := os.Create("/tmp/" + key)
 	if err != nil {
-		Error.Println("Could not create tmp file:", strings.Split(key, "/")[1])
+		Error.Println("Could not create tmp file:", key)
 		return &os.File{}, err
 	}
 

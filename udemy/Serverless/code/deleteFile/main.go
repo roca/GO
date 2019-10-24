@@ -19,7 +19,14 @@ func init() {
 	svc = s3.New(sess)
 }
 
-func handler(ctx context.Context, event *events.S3Event) (bool, error) {
+type Event struct {
+	Records []*events.S3EventRecord `json:"Records"`
+	Results struct {
+		FileType string `json:"fileType"`
+	} `json:"results"`
+}
+
+func handler(ctx context.Context, event Event) (bool, error) {
 
 	for _, record := range event.Records {
 		s3Record := record.S3

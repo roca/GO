@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -28,7 +29,14 @@ func (image Image) String() string {
 }
 
 type Event struct {
-	Images map[string]Image `json:"images"`
+	Records []*events.S3EventRecord `json:"Records"`
+	Results struct {
+		FileType string `json:"fileType"`
+		Images   struct {
+			Original Image `json:"original"`
+			Resized  Image `json:"resized"`
+		} `json:"images"`
+	} `json:"results"`
 }
 
 func init() {
@@ -38,7 +46,7 @@ func init() {
 
 func handler(ctx context.Context, event Event) (string, error) {
 
-	images := event.Images
+	images := event.Results.Images
 
 	res := ""
 
@@ -57,7 +65,7 @@ func handler(ctx context.Context, event Event) (string, error) {
 
 	log.Println(images)
 
-	err := Put(images)
+	err := Put(images.Original, images.Resized)
 	if err != nil {
 		return res, err
 	}
@@ -66,13 +74,13 @@ func handler(ctx context.Context, event Event) (string, error) {
 }
 
 // Put into Database
-func Put(images map[string]Image) error {
+func Put(original Image, resized Image) error {
 
 	_, err := svc.PutItem(&dynamodb.PutItemInput{
 		TableName: aws.String("thumbnails"),
 		Item: map[string]*dynamodb.AttributeValue{
-			"original":  {S: aws.String(images["original"].String())},
-			"thumbnail": {S: aws.String(images["resized"].String())},
+			"original":  {S: aws.String(original.String())},
+			"thumbnail": {S: aws.String(resized.String())},
 		},
 	})
 
