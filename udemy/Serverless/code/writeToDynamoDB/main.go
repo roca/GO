@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -31,11 +32,8 @@ func (image Image) String() string {
 type Event struct {
 	Records []*events.S3EventRecord `json:"Records"`
 	Results struct {
-		FileType string `json:"fileType"`
-		Images   struct {
-			Original Image `json:"original"`
-			Resized  Image `json:"resized"`
-		} `json:"images"`
+		FileType string             `json:"fileType"`
+		Images   []map[string]Image `json:"images"`
 	} `json:"results"`
 }
 
@@ -45,27 +43,26 @@ func init() {
 }
 
 func handler(ctx context.Context, event Event) (string, error) {
+	var original, resized Image
 
 	images := event.Results.Images
 
 	res := ""
-
-	// for key, image := range images {
-	// 	switch key {
-	// 	case "original":
-	// 		log.Println("original:", image.String())
-	// 		return image.String(), nil
-	// 	case "resized":
-	// 		log.Println("resized:", image.String())
-	// 		return image.String(), nil
-	// 	default:
-
-	// 	}
-	// }
+	for _, imageMap := range images {
+		for key, image := range imageMap {
+			switch key {
+			case "original":
+				original = image
+			case "resized":
+				resized = image
+			default:
+			}
+		}
+	}
 
 	log.Println(images)
 
-	err := Put(images.Original, images.Resized)
+	err := Put(original, resized)
 	if err != nil {
 		return res, err
 	}
@@ -81,6 +78,7 @@ func Put(original Image, resized Image) error {
 		Item: map[string]*dynamodb.AttributeValue{
 			"original":  {S: aws.String(original.String())},
 			"thumbnail": {S: aws.String(resized.String())},
+			"timestamp": {S: aws.String(fmt.Sprintf("%d",time.Now().UnixNano()))},
 		},
 	})
 
