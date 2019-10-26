@@ -1,9 +1,42 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: 'AWS::Serverless-2016-10-31'
+
+Globals:
+  Function:
+    MemorySize: 128
+    Runtime: go1.x
+    Timeout: 5
+
 Resources:
   eventLogger:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: logger/main.zip
+      CodeUri: logger/
       Handler: main
-      Runtime: go1.x
+      Timeout: 3
+      Events:
+        GetLogs:
+          Type: Api 
+          Properties:
+            Path: /logs
+            Method: get 
+        FileUpload:
+          Type: S3 
+          Properties:
+            Bucket: !Ref MyBucket
+            Events: s3:ObjectCreated:*
+
+  MyBucket:
+    Type: AWS::S3::Bucket
+    
+  addNumbers:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: add/
+      Handler: main
+      Events:
+        PostAdd:
+          Type: Api 
+          Properties:
+            Path: /add
+            Method: post

@@ -1,0 +1,39 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Globals:
+  Function:
+    MemorySize: 128
+    Runtime: go1.x
+    Timeout: 5
+Resources:
+  MyBucket:
+    Type: AWS::S3::Bucket
+  addNumbers:
+    Properties:
+      CodeUri: s3://romel-sam/f97a23770bafac61c9356c34627f065f
+      Events:
+        PostAdd:
+          Properties:
+            Method: post
+            Path: /add
+          Type: Api
+      Handler: main
+    Type: AWS::Serverless::Function
+  eventLogger:
+    Properties:
+      CodeUri: s3://romel-sam/fdead2958009b803c79c7720b139b3c8
+      Events:
+        FileUpload:
+          Properties:
+            Bucket:
+              Ref: MyBucket
+            Events: s3:ObjectCreated:*
+          Type: S3
+        GetLogs:
+          Properties:
+            Method: get
+            Path: /logs
+          Type: Api
+      Handler: main
+      Timeout: 3
+    Type: AWS::Serverless::Function
+Transform: AWS::Serverless-2016-10-31

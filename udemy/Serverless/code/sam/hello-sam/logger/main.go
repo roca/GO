@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -11,10 +12,12 @@ import (
 func handler(event interface{}) (events.APIGatewayProxyResponse, error) {
 
 	b, _ := json.Marshal(event)
+	eventJSON := string(b)
+	log.Println(eventJSON)
 
 	return events.APIGatewayProxyResponse{
 		StatusCode: http.StatusOK,
-		Body:       string(b),
+		Body:       eventJSON,
 	}, nil
 }
 
