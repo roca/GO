@@ -5,6 +5,7 @@ Globals:
   Function:
     MemorySize: 128
     Runtime: go1.x
+    Handler: main
     Timeout: 5
 
 Resources:
@@ -12,7 +13,6 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: logger/
-      Handler: main
       Timeout: 3
       Events:
         GetLogs:
@@ -33,7 +33,6 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: add/
-      Handler: main
       Events:
         PostAdd:
           Type: Api 

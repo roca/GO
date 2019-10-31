@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -9,7 +10,7 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 )
 
-func handler(event interface{}) (events.APIGatewayProxyResponse, error) {
+func handler(ctx context.Context, event interface{}) (events.APIGatewayProxyResponse, error) {
 
 	b, _ := json.Marshal(event)
 	eventJSON := string(b)

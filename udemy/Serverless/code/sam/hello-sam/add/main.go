@@ -1,7 +1,9 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -21,9 +23,10 @@ type Response struct {
 	} `json:"body"`
 }
 
-func handler(ev Event) (events.APIGatewayProxyResponse, error) {
+func handler(ctx context.Context, ev Event) (events.APIGatewayProxyResponse, error) {
 	var answer int
 
+	log.Println(ev)
 	answer = ev.Operand1 + ev.Operand2
 
 	res := Response{
