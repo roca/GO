@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -17,7 +18,22 @@ func init() {
 	svc = dynamodb.New(sess)
 }
 
+type Item struct {
+	UserID    string `json:"userid"`
+	FirstName string `json:"firstname"`
+	LastName  string `json:"lastname"`
+	Email     string `json:"email"`
+	Website   string `json:"website"`
+}
+
 func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+
+	userid := request.PathParameters["userid"]
+
+	item := Item{}
+
+	_ = json.Unmarshal([]byte(request.Body), &item)
+	item.UserID = userid
 
 	return events.APIGatewayProxyResponse{
 		Body:       fmt.Sprintf("Hello", ""),
