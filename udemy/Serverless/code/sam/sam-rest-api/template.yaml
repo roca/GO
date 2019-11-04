@@ -33,37 +33,4 @@ Resources:
             Path: /user/{userid}
             Method: get 
   PostUser:
-      Type: AWS::Serverless::Function
-      Properties:
-        CodeUri: logger/
-        Timeout: 3
-        Events:
-          GetLogs:
-            Type: Api 
-            Properties:
-              Path: /logs
-              Method: get 
-          FileUpload:
-            Type: S3 
-            Properties:
-              Bucket: !Ref MyBucket
-              Events: s3:ObjectCreated:*
   DeleteUser:
-      Type: AWS::Serverless::Function
-      Properties:
-        CodeUri: logger/
-        Timeout: 3
-        Events:
-          GetLogs:
-            Type: Api 
-            Properties:
-              Path: /logs
-              Method: get 
-          FileUpload:
-            Type: S3 
-            Properties:
-              Bucket: !Ref MyBucket
-              Events: s3:ObjectCreated:*
-
-  MyBucket:
-    Type: AWS::S3::Bucket
