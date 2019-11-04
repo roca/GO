@@ -1,0 +1,69 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+
+Globals:
+  Function:
+    MemorySize: 128
+    Runtime: go1.x
+    Handler: main
+    Timeout: 5
+    Environment:
+      Variables:
+        TABLE_NAME: !Ref Table
+
+Resources:
+  Table:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      PrimaryKey:
+        Name: userid
+        Type: string
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+  GetUser:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: get/
+      Policies: AmazonDynamoDBReadOnlyAccess
+      Events:
+        GetUser:
+          Type: Api 
+          Properties:
+            Path: /user/{userid}
+            Method: get 
+  PostUser:
+      Type: AWS::Serverless::Function
+      Properties:
+        CodeUri: logger/
+        Timeout: 3
+        Events:
+          GetLogs:
+            Type: Api 
+            Properties:
+              Path: /logs
+              Method: get 
+          FileUpload:
+            Type: S3 
+            Properties:
+              Bucket: !Ref MyBucket
+              Events: s3:ObjectCreated:*
+  DeleteUser:
+      Type: AWS::Serverless::Function
+      Properties:
+        CodeUri: logger/
+        Timeout: 3
+        Events:
+          GetLogs:
+            Type: Api 
+            Properties:
+              Path: /logs
+              Method: get 
+          FileUpload:
+            Type: S3 
+            Properties:
+              Bucket: !Ref MyBucket
+              Events: s3:ObjectCreated:*
+
+  MyBucket:
+    Type: AWS::S3::Bucket

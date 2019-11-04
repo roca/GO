@@ -36,11 +36,17 @@ func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 
 	item := Item{}
 
-	_ = json.Unmarshal([]byte(request.Body), &item)
+	if err := json.Unmarshal([]byte(request.Body), &item); err != nil {
+		return events.APIGatewayProxyResponse{}, err
+	}
 	item.UserID = userid
 
+	if err := Put(item); err != nil {
+		return events.APIGatewayProxyResponse{}, err
+	}
+
 	return events.APIGatewayProxyResponse{
-		Body:       fmt.Sprintf("Hello", ""),
+		Body:       "Data inserted/updated successfully",
 		StatusCode: 200,
 	}, nil
 }
