@@ -17,7 +17,7 @@ Resources:
     Properties:
       PrimaryKey:
         Name: userid
-        Type: string
+        Type: String
       ProvisionedThroughput:
         ReadCapacityUnits: 1
         WriteCapacityUnits: 1
@@ -33,4 +33,24 @@ Resources:
             Path: /user/{userid}
             Method: get 
   PostUser:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: post/
+      Policies: AmazonDynamoDBFullAccess
+      Events:
+        GetUser:
+          Type: Api 
+          Properties:
+            Path: /user/{userid}
+            Method: put 
   DeleteUser:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: delete/
+      Policies: AmazonDynamoDBFullAccess
+      Events:
+        GetUser:
+          Type: Api 
+          Properties:
+            Path: /user/{userid}
+            Method: delete 
