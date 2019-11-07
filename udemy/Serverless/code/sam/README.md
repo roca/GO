@@ -23,3 +23,6 @@ sam deploy \
 
 
 sam logs -n GetUser --stack-name sam-rest-api-stack --tail
+
+
+npm install -g serverless
