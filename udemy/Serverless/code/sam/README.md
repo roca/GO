@@ -9,3 +9,14 @@ aws cloudformation deploy \
 --template-file sam-template.yaml \
 --stack-name hello-sam-stack \
 --capabilities CAPABILITY_IAM
+
+
+sam package \
+--template-file template.yaml \
+--output-template-file sam-template.yaml \
+--s3-bucket romel-sam
+
+sam deploy \
+--template-file sam-template.yaml \
+--stack-name sam-rest-api-stack \
+--capabilities CAPABILITY_IAM
