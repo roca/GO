@@ -12,7 +12,7 @@ Globals:
 Resources:
   DeleteUser:
     Properties:
-      CodeUri: s3://romel-sam/5078f17d0aa12fb0eb26571d59df7d41
+      CodeUri: s3://romel-sam/8fed7285dbcefa7f17754ac40ba583c4
       Events:
         GetUser:
           Properties:
@@ -23,7 +23,7 @@ Resources:
     Type: AWS::Serverless::Function
   GetUser:
     Properties:
-      CodeUri: s3://romel-sam/df5fff35ddeee242e0c28e5c950d28b1
+      CodeUri: s3://romel-sam/087c89039169012bfb2707b4088b2192
       Events:
         GetUser:
           Properties:
@@ -34,11 +34,11 @@ Resources:
     Type: AWS::Serverless::Function
   PostUser:
     Properties:
-      CodeUri: s3://romel-sam/934bbaba2a3d8f432c4175199fb6da03
+      CodeUri: s3://romel-sam/b8934b30efb4d477824ed1d9ba8f6e87
       Events:
         GetUser:
           Properties:
-            Method: put
+            Method: post
             Path: /user/{userid}
           Type: Api
       Policies: AmazonDynamoDBFullAccess

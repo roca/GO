@@ -31,7 +31,7 @@ func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 
 	userid := request.PathParameters["userid"]
 
-	_, err := Delete(userid)
+	err := Delete(userid)
 	if err != nil {
 		return events.APIGatewayProxyResponse{}, err
 	}
@@ -47,31 +47,18 @@ func main() {
 }
 
 // Delete deletes a user from the database
-func Delete(userID string) (Item, error) {
+func Delete(userID string) error {
 
-	item := Item{}
-
-	record, err := svc.DeleteItem(&dynamodb.DeleteItemInput{
+	_, err := svc.DeleteItem(&dynamodb.DeleteItemInput{
 		TableName: aws.String(tableName),
 		Key: map[string]*dynamodb.AttributeValue{
 			"userid": {S: aws.String(userID)},
 		},
 	})
 	if err != nil {
-		return item, err
+		return err
 	}
 
-	firstname := record.Attributes["firstname"]
-	lastname := record.Attributes["lastname"]
-	email := record.Attributes["email"]
-	website := record.Attributes["website"]
-
-	return Item{
-		UserID:    userID,
-		FirstName: *(firstname.S),
-		LastName:  *(lastname.S),
-		Email:     *(email.S),
-		Website:   *(website.S),
-	}, nil
+	return nil
 
 }
