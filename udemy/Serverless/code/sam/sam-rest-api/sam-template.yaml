@@ -12,7 +12,7 @@ Globals:
 Resources:
   DeleteUser:
     Properties:
-      CodeUri: s3://romel-sam/8fed7285dbcefa7f17754ac40ba583c4
+      CodeUri: s3://romel-sam/9eb6e245a0810575607950bb6abe7c04
       Events:
         GetUser:
           Properties:
@@ -23,7 +23,7 @@ Resources:
     Type: AWS::Serverless::Function
   GetUser:
     Properties:
-      CodeUri: s3://romel-sam/087c89039169012bfb2707b4088b2192
+      CodeUri: s3://romel-sam/9bfa7d9c4fd620d6b2f5cd93546b2de3
       Events:
         GetUser:
           Properties:
@@ -34,7 +34,7 @@ Resources:
     Type: AWS::Serverless::Function
   PostUser:
     Properties:
-      CodeUri: s3://romel-sam/b8934b30efb4d477824ed1d9ba8f6e87
+      CodeUri: s3://romel-sam/8f644448dced7d68f307cd3832987ff4
       Events:
         GetUser:
           Properties:

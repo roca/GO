@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"os"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -35,7 +36,10 @@ func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 
 	item, err := Get(userid)
 	if err != nil {
-		return events.APIGatewayProxyResponse{}, err
+		return events.APIGatewayProxyResponse{
+			StatusCode: http.StatusBadRequest,
+			Body:       err.Error(),
+		}, nil
 	}
 
 	b, _ := json.Marshal(&item)
