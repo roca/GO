@@ -20,3 +20,6 @@ sam deploy \
 --template-file sam-template.yaml \
 --stack-name sam-rest-api-stack \
 --capabilities CAPABILITY_IAM
+
+
+sam logs -n GetUser --stack-name sam-rest-api-stack --tail

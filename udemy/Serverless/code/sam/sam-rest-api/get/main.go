@@ -37,7 +37,7 @@ func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	item, err := Get(userid)
 	if err != nil {
 		return events.APIGatewayProxyResponse{
-			StatusCode: http.StatusBadRequest,
+			StatusCode: http.StatusNotFound,
 			Body:       err.Error(),
 		}, nil
 	}
