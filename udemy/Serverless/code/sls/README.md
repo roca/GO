@@ -9,3 +9,10 @@ cd hello-serverless ; SLS_DEBUG=* sls invoke local -f hello -d '{\"key\":\"value
 sls deploy --verbose
 
 sls remove
+
+sls deploy -s prod -f add
+
+npm init
+npm install --save-dev serverless-offline
+
+sls offline

@@ -1,5 +1,8 @@
 service: hello-serverless
 
+plugins:
+  - serverless-offline
+
 frameworkVersion: '>=1.28.0 <2.0.0'
 
 provider:
@@ -7,6 +10,8 @@ provider:
   runtime: go1.x
   region: us-east-1
   stage: dev
+  memorySize: 256
+  timeout: 10
 
 package:
   exclude:
@@ -17,6 +22,15 @@ package:
 functions:
   hello:
     handler: bin/hello
+    memorySize: 128
+    timeout: 3
+    vpc:
+      securityGroupIds:
+        - sg-ae7fd7ca
+      subnetIds:
+        - subnet-2cb12f20
+        - subnet-2cb12f20
+        - subnet-7f57e426
     events:
       - http:
           path: hello

@@ -25,9 +25,8 @@ func handler(req *events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse
 	}
 
 	response := struct {
-		Message   string            `json:"message"`
-		Info      map[string]string `json:"info"`
-		Timestamp int64             `json:"timestamp"`
+		Message   string `json:"message"`
+		Timestamp int64  `json:"timestamp"`
 	}{
 		Message:   fmt.Sprintf("%d + %d =  %d", input.Num1, input.Num2, (input.Num1 + input.Num2)),
 		Timestamp: time.Now().Unix(),
