@@ -16,3 +16,7 @@ npm init
 npm install --save-dev serverless-offline
 
 sls offline
+
+
+sls logs -f add -s prod --startTime 5m
+sls logs -f add -s prod --tail
