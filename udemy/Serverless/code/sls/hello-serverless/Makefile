@@ -5,6 +5,7 @@ build: gomodgen
 	env GOOS=linux go build -ldflags="-s -w" -o bin/hello hello/main.go
 	env GOOS=linux go build -ldflags="-s -w" -o bin/world world/main.go
 	env GOOS=linux go build -ldflags="-s -w" -o bin/add add/main.go
+	env GOOS=linux go build -ldflags="-s -w" -o bin/add-bm add-bm/main.go
 
 clean:
 	rm -rf ./bin ./vendor Gopkg.lock

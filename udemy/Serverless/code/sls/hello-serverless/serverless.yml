@@ -48,3 +48,19 @@ functions:
           path: math/add
           method: post
           cors: true
+  addBm:
+    handler: bin/add-bm
+    events:
+      - http:
+          path: math/add-bm
+          method: post
+          integration: lambda
+          request:
+            template:
+              application/json: > 
+                #set($inputRoot = $input.path('$'))
+                {
+                  "num1": $inputRoot.input.operand1,
+                  "num2": $inputRoot.input.operand2
+                }
+          cors: true
