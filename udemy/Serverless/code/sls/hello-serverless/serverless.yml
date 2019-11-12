@@ -63,4 +63,12 @@ functions:
                   "num1": $inputRoot.input.operand1,
                   "num2": $inputRoot.input.operand2
                 }
-          cors: true
+          response:
+            headers:
+              Access-Control-Allow-Origin: "'*'"
+              Content-Type: "'application/json'"
+            template: > 
+              #set($inputRoot = $input.path('$'))
+              {
+                "result": $inputRoot
+              }
