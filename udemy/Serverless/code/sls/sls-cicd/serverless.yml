@@ -13,11 +13,11 @@ package:
   exclude:
     - ./**
   include:
-    - ./bin/**
+    - ./build/**
 
 functions:
-  hello:
-    handler: bin/logger
+  logger:
+    handler: build/logger
     events:
       - http:
           path: message
