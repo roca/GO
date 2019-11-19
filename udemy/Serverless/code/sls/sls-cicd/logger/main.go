@@ -23,7 +23,7 @@ func Handler(ctx context.Context) (Response, error) {
 
 	body, err := json.Marshal(map[string]interface{}{
 		"message": "Serverless CI/CD Demo",
-		"version": "v3.0",
+		"version": "v4.0",
 		"input":   fmt.Sprintf("%d", time.Now().Unix()),
 	})
 	if err != nil {
