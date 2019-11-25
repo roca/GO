@@ -1,7 +1,14 @@
 package main
 
+/*
+	POST note
+*/
+
 import (
 	"context"
+	"net/http"
+
+	"os"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -12,18 +19,24 @@ import (
 
 var sess *session.Session
 var svc *dynamodb.DynamoDB
+var tableName string
 
 func init() {
 	sess = session.Must(session.NewSession())
 	svc = dynamodb.New(sess)
+	tableName = os.Getenv("NOTES_TABLE")
 }
 
 // Handler is our lambda handler invoked by the `lambda.Start` function call
 func Handler(ctx context.Context, event events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 
-	return events.APIGatewayProxyResponse{
-		Headers: utils.GetResponseHeaders(),
-	}, nil
+	response := events.APIGatewayProxyResponse{
+		StatusCode: http.StatusOK,
+		Headers:    utils.GetResponseHeaders(),
+		Body:       "Success",
+	}
+
+	return response, nil
 }
 
 func main() {
