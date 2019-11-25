@@ -1,14 +1,12 @@
 package utils
 
-import "net/http"
-
 // GetResponseHeaders return default response headers
-func GetResponseHeaders() http.Header {
+func GetResponseHeaders() map[string]string {
 
-	headers := http.Header{}
+	header := make(map[string]string)
 
-	headers.Add("key string", "value string")
+	header["key string"] = "value string"
 
-	return headers
+	return header
 
 }
