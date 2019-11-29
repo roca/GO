@@ -42,7 +42,7 @@ func Handler(ctx context.Context, event events.APIGatewayProxyRequest) (events.A
 	limit, _ := strconv.ParseInt(infoParams["limit"], 10, 64)
 	userID := utils.GetUserID(event.Headers)
 
-	_, err := svc.Query(&dynamodb.QueryInput{
+	queryInput := dynamodb.QueryInput{
 		TableName:              aws.String(tableName),
 		KeyConditionExpression: aws.String("user_id= :id"),
 		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
@@ -50,7 +50,9 @@ func Handler(ctx context.Context, event events.APIGatewayProxyRequest) (events.A
 		},
 		Limit:            aws.Int64(limit),
 		ScanIndexForward: aws.Bool(false),
-	})
+	}
+
+	_, err := svc.Query(&queryInput)
 	if err != nil {
 		return events.APIGatewayProxyResponse{}, err
 	}
