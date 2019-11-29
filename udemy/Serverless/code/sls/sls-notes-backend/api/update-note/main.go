@@ -35,22 +35,22 @@ func init() {
 // Handler is our lambda handler invoked by the `lambda.Start` function call
 func Handler(ctx context.Context, event events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 
-	item := models.Item{}
+	note := models.Note{}
 
-	if err := json.Unmarshal([]byte(event.Body), &item); err != nil {
+	if err := json.Unmarshal([]byte(event.Body), &note); err != nil {
 		return events.APIGatewayProxyResponse{}, err
 	}
 
-	item.UserID = utils.GetUserID(event.Headers)
-	item.UserName = utils.GetUserName(event.Headers)
-	item.Expires = time.Now().AddDate(0, 0, 90).Unix()
+	note.UserID = utils.GetUserID(event.Headers)
+	note.UserName = utils.GetUserName(event.Headers)
+	note.Expires = time.Now().AddDate(0, 0, 90).Unix()
 
 	_, err := svc.PutItem(&dynamodb.PutItemInput{
 		TableName: aws.String(tableName),
 		Item: map[string]*dynamodb.AttributeValue{
-			"user_id":   {S: aws.String(item.UserID)},
-			"user_name": {S: aws.String(item.UserName)},
-			"expires":   {N: aws.String(fmt.Sprintf("%d", item.Expires))},
+			"user_id":   {S: aws.String(note.UserID)},
+			"user_name": {S: aws.String(note.UserName)},
+			"expires":   {N: aws.String(fmt.Sprintf("%d", note.Expires))},
 		},
 		ConditionExpression: aws.String("#t == :t"),
 		ExpressionAttributeNames: map[string]*string{
@@ -58,7 +58,7 @@ func Handler(ctx context.Context, event events.APIGatewayProxyRequest) (events.A
 		},
 		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
 			":t": {
-				N: aws.String(fmt.Sprintf("%d", item.TimeStamp)),
+				N: aws.String(fmt.Sprintf("%d", note.TimeStamp)),
 			},
 		},
 	})
@@ -67,7 +67,7 @@ func Handler(ctx context.Context, event events.APIGatewayProxyRequest) (events.A
 		return events.APIGatewayProxyResponse{}, err
 	}
 
-	b, err := json.Marshal(&item)
+	b, err := json.Marshal(&note)
 	if err != nil {
 		return events.APIGatewayProxyResponse{}, err
 	}

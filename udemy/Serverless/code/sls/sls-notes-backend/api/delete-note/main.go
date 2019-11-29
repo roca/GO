@@ -6,12 +6,16 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"net/http"
+	"net/url"
+	"strconv"
 
 	"os"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"udemy.com/sls/sls-notes-backend/api/utils"
@@ -30,10 +34,36 @@ func init() {
 // Handler is our lambda handler invoked by the `lambda.Start` function call
 func Handler(ctx context.Context, event events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 
+	pathParams := make(map[string]string)
+
+	for key, value := range event.PathParameters {
+		pathParams[key] = value
+	}
+
+	timestamp, err := url.QueryUnescape(pathParams["timestamp"])
+	if err != nil {
+		return events.APIGatewayProxyResponse{}, err
+	}
+
+	timeStampAv, _ := strconv.ParseInt(timestamp, 10, 64)
+
+	userID := utils.GetUserID(event.Headers)
+
+	_, err = svc.DeleteItem(&dynamodb.DeleteItemInput{
+		TableName: aws.String(tableName),
+		Key: map[string]*dynamodb.AttributeValue{
+			"userid":    {S: aws.String(userID)},
+			"timestamp": {N: aws.String(fmt.Sprintf("%d", timeStampAv))},
+		},
+	})
+	if err != nil {
+		return events.APIGatewayProxyResponse{}, err
+	}
+
 	response := events.APIGatewayProxyResponse{
 		StatusCode: http.StatusOK,
 		Headers:    utils.GetResponseHeaders(),
-		Body:       "Success",
+		Body:       fmt.Sprintf("Successfully deleted item for user/timestamp: %s/%s", userID, timestamp),
 	}
 
 	return response, nil

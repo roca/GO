@@ -37,27 +37,27 @@ func init() {
 // Handler is our lambda handler invoked by the `lambda.Start` function call
 func Handler(ctx context.Context, event events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 
-	item := models.Item{}
+	note := models.Note{}
 	uuid := uuid.NewV4()
 
-	if err := json.Unmarshal([]byte(event.Body), &item); err != nil {
+	if err := json.Unmarshal([]byte(event.Body), &note); err != nil {
 		return events.APIGatewayProxyResponse{}, err
 	}
 
-	item.UserID = utils.GetUserID(event.Headers)
-	item.UserName = utils.GetUserName(event.Headers)
-	item.NoteID = fmt.Sprintf("%s:%s", item.UserID, uuid)
-	item.TimeStamp = time.Now().Unix()
-	item.Expires = time.Now().AddDate(0, 0, 90).Unix()
+	note.UserID = utils.GetUserID(event.Headers)
+	note.UserName = utils.GetUserName(event.Headers)
+	note.NoteID = fmt.Sprintf("%s:%s", note.UserID, uuid)
+	note.TimeStamp = time.Now().Unix()
+	note.Expires = time.Now().AddDate(0, 0, 90).Unix()
 
 	_, err := svc.PutItem(&dynamodb.PutItemInput{
 		TableName: aws.String(tableName),
 		Item: map[string]*dynamodb.AttributeValue{
-			"user_id":   {S: aws.String(item.UserID)},
-			"user_name": {S: aws.String(item.UserName)},
-			"note_id":   {S: aws.String(item.NoteID)},
-			"timestamp": {N: aws.String(fmt.Sprintf("%d", item.TimeStamp))},
-			"expires":   {N: aws.String(fmt.Sprintf("%d", item.Expires))},
+			"user_id":   {S: aws.String(note.UserID)},
+			"user_name": {S: aws.String(note.UserName)},
+			"note_id":   {S: aws.String(note.NoteID)},
+			"timestamp": {N: aws.String(fmt.Sprintf("%d", note.TimeStamp))},
+			"expires":   {N: aws.String(fmt.Sprintf("%d", note.Expires))},
 		},
 	})
 
@@ -65,7 +65,7 @@ func Handler(ctx context.Context, event events.APIGatewayProxyRequest) (events.A
 		return events.APIGatewayProxyResponse{}, err
 	}
 
-	b, err := json.Marshal(&item)
+	b, err := json.Marshal(&note)
 	if err != nil {
 		return events.APIGatewayProxyResponse{}, err
 	}

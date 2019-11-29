@@ -2,6 +2,7 @@ package main
 
 /*
 	GET /note
+	GET /note/{note_id}
 */
 
 import (
@@ -9,6 +10,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 	"strconv"
 
 	"os"
@@ -35,16 +37,20 @@ func init() {
 // Handler is our lambda handler invoked by the `lambda.Start` function call
 func Handler(ctx context.Context, event events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 
-	infoParams := make(map[string]string)
+	queryParams := make(map[string]string)
+	pathParams := make(map[string]string)
 
-	infoParams["limit"] = "5"
-	infoParams["start"] = "0"
+	queryParams["limit"] = "5"
+	queryParams["start"] = "0"
 	for key, value := range event.QueryStringParameters {
-		infoParams[key] = value
+		queryParams[key] = value
+	}
+	for key, value := range event.PathParameters {
+		pathParams[key] = value
 	}
 
-	limit, _ := strconv.ParseInt(infoParams["limit"], 10, 64)
-	startTimeStamp, _ := strconv.ParseInt(infoParams["start"], 10, 64)
+	limit, _ := strconv.ParseInt(queryParams["limit"], 10, 64)
+	startTimeStamp, _ := strconv.ParseInt(queryParams["start"], 10, 64)
 	userID := utils.GetUserID(event.Headers)
 
 	queryInput := dynamodb.QueryInput{
@@ -64,17 +70,62 @@ func Handler(ctx context.Context, event events.APIGatewayProxyRequest) (events.A
 		}
 	}
 
-	records, err := svc.Query(&queryInput)
+	if v, ok := pathParams["note_id"]; ok {
+		decodedValue, err := url.QueryUnescape(v)
+		if err != nil {
+			return events.APIGatewayProxyResponse{}, err
+		}
+		queryInput.IndexName = aws.String("note_id-index")
+		queryInput.KeyConditionExpression = aws.String("note_id= :id")
+		queryInput.ExpressionAttributeValues = map[string]*dynamodb.AttributeValue{
+			":id": {S: aws.String(decodedValue)},
+		}
+		queryInput.Limit = aws.Int64(1)
+
+		data, err := svc.Query(&queryInput)
+		if err != nil {
+			return events.APIGatewayProxyResponse{}, err
+		}
+
+		if len(data.Items) == 0 {
+			response := events.APIGatewayProxyResponse{
+				StatusCode: http.StatusFound,
+				Headers:    utils.GetResponseHeaders(),
+			}
+			return response, nil
+		}
+
+		note := models.Note{}
+		for _, v := range data.Items {
+			note = models.ExtractNote(v)
+			break
+		}
+
+		b, err := json.Marshal(&note)
+		if err != nil {
+			return events.APIGatewayProxyResponse{}, err
+		}
+
+		response := events.APIGatewayProxyResponse{
+			StatusCode: http.StatusOK,
+			Headers:    utils.GetResponseHeaders(),
+			Body:       string(b),
+		}
+
+		return response, nil
+	}
+
+	data, err := svc.Query(&queryInput)
 	if err != nil {
 		return events.APIGatewayProxyResponse{}, err
 	}
 
-	items := []models.Item{}
-	for _, v := range records.Items {
-		items = append(items, models.ExtractItem(v))
+	notes := []models.Note{}
+	for _, v := range data.Items {
+		notes = append(notes, models.ExtractNote(v))
 	}
 
-	b, err := json.Marshal(&items)
+	b, err := json.Marshal(&notes)
 	if err != nil {
 		return events.APIGatewayProxyResponse{}, err
 	}

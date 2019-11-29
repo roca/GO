@@ -6,7 +6,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 )
 
-type Item struct {
+type Note struct {
 	UserID    string `json:"user_id"`
 	UserName  string `json:"user_name"`
 	NoteID    string `json:"note_id"`
@@ -14,8 +14,8 @@ type Item struct {
 	Expires   int64  `json:"expires"`
 }
 
-// ExtractItem extracts a DynamoDB record and create a Item object from it
-func ExtractItem(record map[string]*dynamodb.AttributeValue) Item {
+// ExtractNote extracts a DynamoDB record and create a Note object from it
+func ExtractNote(record map[string]*dynamodb.AttributeValue) Note {
 	var userIDAv, userNameAv, noteIDAv string
 	var timeStampAv, expiresAv int64
 
@@ -39,7 +39,7 @@ func ExtractItem(record map[string]*dynamodb.AttributeValue) Item {
 		expiresAv, _ = strconv.ParseInt(*v.N, 10, 64)
 	}
 
-	return Item{
+	return Note{
 		UserID:    userIDAv,
 		UserName:  userNameAv,
 		NoteID:    noteIDAv,
