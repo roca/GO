@@ -6,6 +6,8 @@ package main
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -16,6 +18,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"udemy.com/sls/sls-notes-backend/api/models"
 	"udemy.com/sls/sls-notes-backend/api/utils"
 )
 
@@ -35,11 +38,13 @@ func Handler(ctx context.Context, event events.APIGatewayProxyRequest) (events.A
 	infoParams := make(map[string]string)
 
 	infoParams["limit"] = "5"
+	infoParams["start"] = "0"
 	for key, value := range event.QueryStringParameters {
 		infoParams[key] = value
 	}
 
 	limit, _ := strconv.ParseInt(infoParams["limit"], 10, 64)
+	startTimeStamp, _ := strconv.ParseInt(infoParams["start"], 10, 64)
 	userID := utils.GetUserID(event.Headers)
 
 	queryInput := dynamodb.QueryInput{
@@ -52,7 +57,24 @@ func Handler(ctx context.Context, event events.APIGatewayProxyRequest) (events.A
 		ScanIndexForward: aws.Bool(false),
 	}
 
-	_, err := svc.Query(&queryInput)
+	if startTimeStamp > 0 {
+		queryInput.ExclusiveStartKey = map[string]*dynamodb.AttributeValue{
+			"user_id":   {S: aws.String(userID)},
+			"timestamp": {N: aws.String(fmt.Sprintf("%d", startTimeStamp))},
+		}
+	}
+
+	records, err := svc.Query(&queryInput)
+	if err != nil {
+		return events.APIGatewayProxyResponse{}, err
+	}
+
+	items := []models.Item{}
+	for _, v := range records.Items {
+		items = append(items, models.ExtractItem(v))
+	}
+
+	b, err := json.Marshal(&items)
 	if err != nil {
 		return events.APIGatewayProxyResponse{}, err
 	}
@@ -60,7 +82,7 @@ func Handler(ctx context.Context, event events.APIGatewayProxyRequest) (events.A
 	response := events.APIGatewayProxyResponse{
 		StatusCode: http.StatusOK,
 		Headers:    utils.GetResponseHeaders(),
-		Body:       "Success",
+		Body:       string(b),
 	}
 
 	return response, nil
