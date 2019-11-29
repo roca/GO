@@ -20,20 +20,13 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"udemy.com/sls/sls-notes-backend/api/models"
 	"udemy.com/sls/sls-notes-backend/api/utils"
 )
 
 var sess *session.Session
 var svc *dynamodb.DynamoDB
 var tableName string
-
-type Item struct {
-	UserID    string `json:"user_id"`
-	UserName  string `json:"user_name"`
-	NoteID    string `json:"note_id"`
-	TimeStamp int64  `json:"timestamp"`
-	Expires   int64  `json:"expires"`
-}
 
 func init() {
 	sess = session.Must(session.NewSession())
@@ -44,7 +37,7 @@ func init() {
 // Handler is our lambda handler invoked by the `lambda.Start` function call
 func Handler(ctx context.Context, event events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 
-	item := Item{}
+	item := models.Item{}
 	uuid := uuid.NewV4()
 
 	if err := json.Unmarshal([]byte(event.Body), &item); err != nil {
