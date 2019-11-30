@@ -1,6 +1,22 @@
 service: sls-notes-backend
 frameworkVersion: '>=1.28.0 <2.0.0'
 
+plugins:
+  - serverless-offline
+
+custom:
+  allowedHeaders:
+    - Accept
+    - Content-Type
+    - Content-Length
+    - Authorization
+    - X-Amz-Date
+    - X-Api-Key
+    - X-Amx-Security-Token
+    - X-Amz-User-Agent
+    - app_user_id
+    - app_user_name
+
 provider:
   name: aws
   runtime: go1.x
@@ -11,6 +27,35 @@ provider:
   endpointType: regional
   environment:
     NOTES_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:PutItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.NOTES_TABLE}"
+
+package:
+  exclude:
+    - ./**
+  include:
+    - ./build/**
+
+functions:
+  add-note:
+    handler: build/add-note
+    description: POST /note
+    events:
+      - http:
+          path: note
+          method: post
+          cors:
+            origin: '*'
+            headers: ${self:custom.allowedHeaders}
+  update-note:
+  get-notes:
+  get-note:
+  delete-note:
 
 resources:
   Resources:

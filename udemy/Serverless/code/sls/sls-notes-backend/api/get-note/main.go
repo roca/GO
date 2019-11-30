@@ -40,8 +40,6 @@ func Handler(ctx context.Context, event events.APIGatewayProxyRequest) (events.A
 	queryParams := make(map[string]string)
 	pathParams := make(map[string]string)
 
-	queryParams["limit"] = "5"
-	queryParams["start"] = "0"
 	for key, value := range event.QueryStringParameters {
 		queryParams[key] = value
 	}
@@ -49,6 +47,16 @@ func Handler(ctx context.Context, event events.APIGatewayProxyRequest) (events.A
 		pathParams[key] = value
 	}
 
+	if v, ok := pathParams["note_id"]; ok {
+		response, err := GetNote(v)
+		if err != nil {
+			return events.APIGatewayProxyResponse{}, err
+		}
+		return response, nil
+	}
+
+	queryParams["limit"] = "5"
+	queryParams["start"] = "0"
 	limit, _ := strconv.ParseInt(queryParams["limit"], 10, 64)
 	startTimeStamp, _ := strconv.ParseInt(queryParams["start"], 10, 64)
 	userID := utils.GetUserID(event.Headers)
@@ -70,51 +78,6 @@ func Handler(ctx context.Context, event events.APIGatewayProxyRequest) (events.A
 		}
 	}
 
-	if v, ok := pathParams["note_id"]; ok {
-		decodedValue, err := url.QueryUnescape(v)
-		if err != nil {
-			return events.APIGatewayProxyResponse{}, err
-		}
-		queryInput.IndexName = aws.String("note_id-index")
-		queryInput.KeyConditionExpression = aws.String("note_id= :id")
-		queryInput.ExpressionAttributeValues = map[string]*dynamodb.AttributeValue{
-			":id": {S: aws.String(decodedValue)},
-		}
-		queryInput.Limit = aws.Int64(1)
-
-		data, err := svc.Query(&queryInput)
-		if err != nil {
-			return events.APIGatewayProxyResponse{}, err
-		}
-
-		if len(data.Items) == 0 {
-			response := events.APIGatewayProxyResponse{
-				StatusCode: http.StatusFound,
-				Headers:    utils.GetResponseHeaders(),
-			}
-			return response, nil
-		}
-
-		note := models.Note{}
-		for _, v := range data.Items {
-			note = models.ExtractNote(v)
-			break
-		}
-
-		b, err := json.Marshal(&note)
-		if err != nil {
-			return events.APIGatewayProxyResponse{}, err
-		}
-
-		response := events.APIGatewayProxyResponse{
-			StatusCode: http.StatusOK,
-			Headers:    utils.GetResponseHeaders(),
-			Body:       string(b),
-		}
-
-		return response, nil
-	}
-
 	data, err := svc.Query(&queryInput)
 	if err != nil {
 		return events.APIGatewayProxyResponse{}, err
@@ -126,6 +89,57 @@ func Handler(ctx context.Context, event events.APIGatewayProxyRequest) (events.A
 	}
 
 	b, err := json.Marshal(&notes)
+	if err != nil {
+		return events.APIGatewayProxyResponse{}, err
+	}
+
+	response := events.APIGatewayProxyResponse{
+		StatusCode: http.StatusOK,
+		Headers:    utils.GetResponseHeaders(),
+		Body:       string(b),
+	}
+
+	return response, nil
+}
+
+// GetNote get a single Note
+func GetNote(note_id string) (events.APIGatewayProxyResponse, error) {
+	decodedValue, err := url.QueryUnescape(note_id)
+	if err != nil {
+		return events.APIGatewayProxyResponse{}, err
+	}
+
+	queryInput := dynamodb.QueryInput{
+		TableName:              aws.String(tableName),
+		IndexName:              aws.String("note_id-index"),
+		KeyConditionExpression: aws.String("note_id= :id"),
+		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
+			":id": {S: aws.String(decodedValue)},
+		},
+		Limit:            aws.Int64(1),
+		ScanIndexForward: aws.Bool(false),
+	}
+
+	data, err := svc.Query(&queryInput)
+	if err != nil {
+		return events.APIGatewayProxyResponse{}, err
+	}
+
+	if len(data.Items) == 0 {
+		response := events.APIGatewayProxyResponse{
+			StatusCode: http.StatusFound,
+			Headers:    utils.GetResponseHeaders(),
+		}
+		return response, nil
+	}
+
+	note := models.Note{}
+	for _, v := range data.Items {
+		note = models.ExtractNote(v)
+		break
+	}
+
+	b, err := json.Marshal(&note)
 	if err != nil {
 		return events.APIGatewayProxyResponse{}, err
 	}
