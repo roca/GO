@@ -53,9 +53,45 @@ functions:
             origin: '*'
             headers: ${self:custom.allowedHeaders}
   update-note:
+    handler: build/update-note
+    description: PATCH /note
+    events:
+      - http:
+          path: note
+          method: patch
+          cors:
+            origin: '*'
+            headers: ${self:custom.allowedHeaders}
   get-notes:
+    handler: build/get-note
+    description: GET /note
+    events:
+      - http:
+          path: note
+          method: get
+          cors:
+            origin: '*'
+            headers: ${self:custom.allowedHeaders}
   get-note:
+    handler: build/get-note
+    description: GET /note/{note_id}
+    events:
+      - http:
+          path: note{note_id}
+          method: get
+          cors:
+            origin: '*'
+            headers: ${self:custom.allowedHeaders}
   delete-note:
+    handler: build/delete-note
+    description: DELETE /note/{timestamp}
+    events:
+      - http:
+          path: note/{timestamp}
+          method: delete
+          cors:
+            origin: '*'
+            headers: ${self:custom.allowedHeaders}
 
 resources:
   Resources:

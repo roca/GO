@@ -12,6 +12,9 @@ type Note struct {
 	NoteID    string `json:"note_id"`
 	TimeStamp int64  `json:"timestamp"`
 	Expires   int64  `json:"expires"`
+	Cat       string `json:"cat"`
+	Title     string `json:"title"`
+	Content   string `json:"content"`
 }
 
 // ExtractNote extracts a DynamoDB record and create a Note object from it
