@@ -10,7 +10,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"net/url"
 	"strconv"
 
 	"os"
@@ -103,21 +102,16 @@ func Handler(ctx context.Context, event events.APIGatewayProxyRequest) (events.A
 }
 
 // GetNote get a single Note
-func GetNote(note_id string) (events.APIGatewayProxyResponse, error) {
-	decodedValue, err := url.QueryUnescape(note_id)
-	if err != nil {
-		return events.APIGatewayProxyResponse{}, err
-	}
+func GetNote(noteID string) (events.APIGatewayProxyResponse, error) {
 
 	queryInput := dynamodb.QueryInput{
 		TableName:              aws.String(tableName),
 		IndexName:              aws.String("note_id-index"),
-		KeyConditionExpression: aws.String("note_id= :id"),
+		KeyConditionExpression: aws.String("note_id = :note_id"),
 		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
-			":id": {S: aws.String(decodedValue)},
+			":node_id": {S: aws.String(noteID)},
 		},
-		Limit:            aws.Int64(1),
-		ScanIndexForward: aws.Bool(false),
+		Limit: aws.Int64(1),
 	}
 
 	data, err := svc.Query(&queryInput)

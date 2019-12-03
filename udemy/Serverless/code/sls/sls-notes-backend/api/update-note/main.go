@@ -51,8 +51,11 @@ func Handler(ctx context.Context, event events.APIGatewayProxyRequest) (events.A
 			"user_id":   {S: aws.String(note.UserID)},
 			"user_name": {S: aws.String(note.UserName)},
 			"expires":   {N: aws.String(fmt.Sprintf("%d", note.Expires))},
+			"cat":       {S: aws.String(note.Cat)},
+			"title":     {S: aws.String(note.Title)},
+			"content":   {S: aws.String(note.Content)},
 		},
-		ConditionExpression: aws.String("#t == :t"),
+		ConditionExpression: aws.String("#t = :t"),
 		ExpressionAttributeNames: map[string]*string{
 			"#t": aws.String("timestamp"),
 		},

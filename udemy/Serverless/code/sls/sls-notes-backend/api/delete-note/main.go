@@ -8,8 +8,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"net/url"
-	"strconv"
 
 	"os"
 
@@ -40,20 +38,19 @@ func Handler(ctx context.Context, event events.APIGatewayProxyRequest) (events.A
 		pathParams[key] = value
 	}
 
-	timestamp, err := url.QueryUnescape(pathParams["timestamp"])
-	if err != nil {
-		return events.APIGatewayProxyResponse{}, err
-	}
-
-	timeStampAv, _ := strconv.ParseInt(timestamp, 10, 64)
+	//timestamp, err := url.QueryUnescape(pathParams["timestamp"])
+	timestamp := pathParams["timestamp"]
+	// if err != nil {
+	// 	return events.APIGatewayProxyResponse{}, err
+	// }
 
 	userID := utils.GetUserID(event.Headers)
 
-	_, err = svc.DeleteItem(&dynamodb.DeleteItemInput{
+	_, err := svc.DeleteItem(&dynamodb.DeleteItemInput{
 		TableName: aws.String(tableName),
 		Key: map[string]*dynamodb.AttributeValue{
-			"userid":    {S: aws.String(userID)},
-			"timestamp": {N: aws.String(fmt.Sprintf("%d", timeStampAv))},
+			"user_id":   {S: aws.String(userID)},
+			"timestamp": {N: aws.String(timestamp)},
 		},
 	})
 	if err != nil {

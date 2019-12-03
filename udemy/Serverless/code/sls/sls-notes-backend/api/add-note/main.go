@@ -58,6 +58,9 @@ func Handler(ctx context.Context, event events.APIGatewayProxyRequest) (events.A
 			"note_id":   {S: aws.String(note.NoteID)},
 			"timestamp": {N: aws.String(fmt.Sprintf("%d", note.TimeStamp))},
 			"expires":   {N: aws.String(fmt.Sprintf("%d", note.Expires))},
+			"cat":       {S: aws.String(note.Cat)},
+			"title":     {S: aws.String(note.Title)},
+			"content":   {S: aws.String(note.Content)},
 		},
 	})
 
