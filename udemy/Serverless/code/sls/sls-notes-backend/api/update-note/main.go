@@ -50,6 +50,8 @@ func Handler(ctx context.Context, event events.APIGatewayProxyRequest) (events.A
 		Item: map[string]*dynamodb.AttributeValue{
 			"user_id":   {S: aws.String(note.UserID)},
 			"user_name": {S: aws.String(note.UserName)},
+			"note_id":   {S: aws.String(note.NoteID)},
+			"timestamp": {N: aws.String(fmt.Sprintf("%d", note.TimeStamp))},
 			"expires":   {N: aws.String(fmt.Sprintf("%d", note.Expires))},
 			"cat":       {S: aws.String(note.Cat)},
 			"title":     {S: aws.String(note.Title)},
