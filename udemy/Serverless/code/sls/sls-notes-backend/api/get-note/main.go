@@ -106,6 +106,7 @@ func Handler(ctx context.Context, event events.APIGatewayProxyRequest) (events.A
 // GetNote get a single Note
 func GetNote(noteID string) (events.APIGatewayProxyResponse, error) {
 
+	log.Println("NoteID:", noteID)
 	queryInput := dynamodb.QueryInput{
 		TableName:              aws.String(tableName),
 		IndexName:              aws.String("note_id-index"),
