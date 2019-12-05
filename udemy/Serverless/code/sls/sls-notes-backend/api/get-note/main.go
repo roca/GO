@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"log"
 	"os"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -45,6 +46,7 @@ func Handler(ctx context.Context, event events.APIGatewayProxyRequest) (events.A
 	for key, value := range event.PathParameters {
 		pathParams[key] = value
 	}
+	log.Println(pathParams)
 
 	if v, ok := pathParams["note_id"]; ok {
 		response, err := GetNote(v)
