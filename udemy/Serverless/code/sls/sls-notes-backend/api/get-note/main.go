@@ -109,8 +109,8 @@ func GetNote(noteID string) (events.APIGatewayProxyResponse, error) {
 
 	log.Println("NoteID:", noteID)
 
-	filt := expression.Name("note_id").Equal(expression.Value(noteID))
-	expr, err := expression.NewBuilder().WithFilter(filt).Build()
+	keyCond := expression.Key("note_id").Equal(expression.Value(noteID))
+	expr, err := expression.NewBuilder().WithKeyCondition(keyCond).Build()
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -119,6 +119,7 @@ func GetNote(noteID string) (events.APIGatewayProxyResponse, error) {
 		TableName:                 aws.String(tableName),
 		IndexName:                 aws.String("note_id-index"),
 		KeyConditionExpression:    expr.KeyCondition(),
+		ExpressionAttributeNames:  expr.Names(),
 		ExpressionAttributeValues: expr.Values(),
 		Limit:                     aws.Int64(1),
 	}
