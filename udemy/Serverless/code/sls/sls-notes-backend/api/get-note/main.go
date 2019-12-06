@@ -20,6 +20,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"github.com/aws/aws-sdk-go/service/dynamodb/expression"
 	"udemy.com/sls/sls-notes-backend/api/models"
 	"udemy.com/sls/sls-notes-backend/api/utils"
 )
@@ -107,14 +108,19 @@ func Handler(ctx context.Context, event events.APIGatewayProxyRequest) (events.A
 func GetNote(noteID string) (events.APIGatewayProxyResponse, error) {
 
 	log.Println("NoteID:", noteID)
+
+	filt := expression.Name("note_id").Equal(expression.Value(noteID))
+	expr, err := expression.NewBuilder().WithFilter(filt).Build()
+	if err != nil {
+		fmt.Println(err)
+	}
+
 	queryInput := dynamodb.QueryInput{
-		TableName:              aws.String(tableName),
-		IndexName:              aws.String("note_id-index"),
-		KeyConditionExpression: aws.String("note_id = :note_id"),
-		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
-			":node_id": {S: aws.String(noteID)},
-		},
-		Limit: aws.Int64(1),
+		TableName:                 aws.String(tableName),
+		IndexName:                 aws.String("note_id-index"),
+		KeyConditionExpression:    expr.KeyCondition(),
+		ExpressionAttributeValues: expr.Values(),
+		Limit:                     aws.Int64(1),
 	}
 
 	data, err := svc.Query(&queryInput)
