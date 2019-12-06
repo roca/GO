@@ -12,7 +12,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"log"
 	"os"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -41,14 +40,15 @@ func Handler(ctx context.Context, event events.APIGatewayProxyRequest) (events.A
 	queryParams := make(map[string]string)
 	pathParams := make(map[string]string)
 
+	// Default values for limit and start
+	queryParams["limit"] = "5"
+	queryParams["start"] = "0"
 	for key, value := range event.QueryStringParameters {
 		queryParams[key] = value
 	}
 	for key, value := range event.PathParameters {
 		pathParams[key] = value
 	}
-	log.Println(pathParams)
-
 	if v, ok := pathParams["note_id"]; ok {
 		response, err := GetNote(v)
 		if err != nil {
@@ -57,8 +57,6 @@ func Handler(ctx context.Context, event events.APIGatewayProxyRequest) (events.A
 		return response, nil
 	}
 
-	queryParams["limit"] = "5"
-	queryParams["start"] = "0"
 	limit, _ := strconv.ParseInt(queryParams["limit"], 10, 64)
 	startTimeStamp, _ := strconv.ParseInt(queryParams["start"], 10, 64)
 	userID := utils.GetUserID(event.Headers)
@@ -106,9 +104,6 @@ func Handler(ctx context.Context, event events.APIGatewayProxyRequest) (events.A
 
 // GetNote get a single Note
 func GetNote(noteID string) (events.APIGatewayProxyResponse, error) {
-
-	log.Println("NoteID:", noteID)
-
 	keyCond := expression.Key("note_id").Equal(expression.Value(noteID))
 	expr, err := expression.NewBuilder().WithKeyCondition(keyCond).Build()
 	if err != nil {
