@@ -27,6 +27,7 @@ provider:
   endpointType: regional
   environment:
     NOTES_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+    NOTE_INDEX01: note_id-index
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -34,6 +35,10 @@ provider:
         - dynamodb:PutItem
         - dynamodb:DeleteItem
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.NOTES_TABLE}"
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.NOTES_TABLE}/index/${self:provider.environment.NOTE_INDEX01}"
 
 package:
   exclude:
