@@ -39,10 +39,10 @@ func Handler(ctx context.Context, event events.APIGatewayProxyRequest) (events.A
 
 	queryParams := make(map[string]string)
 	pathParams := make(map[string]string)
-
 	// Default values for limit and start
 	queryParams["limit"] = "5"
 	queryParams["start"] = "0"
+
 	for key, value := range event.QueryStringParameters {
 		queryParams[key] = value
 	}
@@ -60,6 +60,16 @@ func Handler(ctx context.Context, event events.APIGatewayProxyRequest) (events.A
 	limit, _ := strconv.ParseInt(queryParams["limit"], 10, 64)
 	startTimeStamp, _ := strconv.ParseInt(queryParams["start"], 10, 64)
 	userID := utils.GetUserID(event.Headers)
+
+	response, err := GetNotes(queryParams, limit, startTimeStamp, userID)
+	if err != nil {
+		return events.APIGatewayProxyResponse{}, err
+	}
+	return response, nil
+}
+
+// GetNotes gets all the Notes
+func GetNotes(queryParams map[string]string, limit int64, startTimeStamp int64, userID string) (events.APIGatewayProxyResponse, error) {
 
 	queryInput := dynamodb.QueryInput{
 		TableName:              aws.String(tableName),
@@ -83,10 +93,7 @@ func Handler(ctx context.Context, event events.APIGatewayProxyRequest) (events.A
 		return events.APIGatewayProxyResponse{}, err
 	}
 
-	notes := []models.Note{}
-	for _, v := range data.Items {
-		notes = append(notes, models.ExtractNote(v))
-	}
+	notes := models.ExtractNotes(data)
 
 	b, err := json.Marshal(&notes)
 	if err != nil {
@@ -102,7 +109,7 @@ func Handler(ctx context.Context, event events.APIGatewayProxyRequest) (events.A
 	return response, nil
 }
 
-// GetNote get a single Note
+// GetNote gets single Note
 func GetNote(noteID string) (events.APIGatewayProxyResponse, error) {
 	keyCond := expression.Key("note_id").Equal(expression.Value(noteID))
 	expr, err := expression.NewBuilder().WithKeyCondition(keyCond).Build()

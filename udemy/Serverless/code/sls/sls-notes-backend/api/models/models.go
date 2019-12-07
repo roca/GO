@@ -17,6 +17,39 @@ type Note struct {
 	Content   string `json:"content"`
 }
 
+type LastEvaluatedKey struct {
+	UserID    string `json:"user_id"`
+	TimeStamp int64  `json:"timestamp"`
+}
+
+type Notes struct {
+	Notes            []Note `json:"notes"`
+	Count            int64  `json:"Count"`
+	ScannedCount     int64  `json:"ScannerCount"`
+	LastEvaluatedKey `json:"LastEvaluatedKey"`
+}
+
+// ExtractNotes extracts a Notes object from DynamoDB QueryOutput
+func ExtractNotes(data *dynamodb.QueryOutput) Notes {
+	timestamp, _ := strconv.ParseInt(*(data.LastEvaluatedKey["timestamp"]).S, 10, 64)
+	notes := Notes{
+		Count:        *(data.Count),
+		ScannedCount: *(data.ScannedCount),
+		LastEvaluatedKey: LastEvaluatedKey{
+			UserID:    *(data.LastEvaluatedKey["user_id"]).S,
+			TimeStamp: timestamp,
+		},
+	}
+
+	items := []Note{}
+	for _, v := range data.Items {
+		items = append(items, ExtractNote(v))
+	}
+	notes.Notes = items
+
+	return notes
+}
+
 // ExtractNote extracts a DynamoDB record and create a Note object from it
 func ExtractNote(record map[string]*dynamodb.AttributeValue) Note {
 	var userIDAv, userNameAv, noteIDAv, catAv, titleAv, contentAv string
