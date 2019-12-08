@@ -34,20 +34,20 @@ func ExtractNotes(data *dynamodb.QueryOutput) Notes {
 	var userIDAv string
 	var timeStampAv int64
 
-	if v, ok := data.LastEvaluatedKey["user_id"]; ok {
-		userIDAv = *v.S
-	}
-	if v, ok := data.LastEvaluatedKey["timestamp"]; ok {
-		timeStampAv, _ = strconv.ParseInt(*v.N, 10, 64)
-	}
-
 	notes := Notes{
 		Count:        *(data.Count),
 		ScannedCount: *(data.ScannedCount),
-		LastEvaluatedKey: LastEvaluatedKey{
+	}
+
+	if v, ok := data.LastEvaluatedKey["user_id"]; ok {
+		userIDAv = *v.S
+	}
+	if v, ok := data.LastEvaluatedKey["timestamp"]; ok && userIDAv != "" {
+		timeStampAv, _ = strconv.ParseInt(*v.N, 10, 64)
+		notes.LastEvaluatedKey = LastEvaluatedKey{
 			UserID:    userIDAv,
 			TimeStamp: timeStampAv,
-		},
+		}
 	}
 
 	items := []Note{}
