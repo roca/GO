@@ -25,7 +25,7 @@ type LastEvaluatedKey struct {
 type Notes struct {
 	Notes            []Note `json:"notes"`
 	Count            int64  `json:"Count"`
-	ScannedCount     int64  `json:"ScannerCount"`
+	ScannedCount     int64  `json:"ScannedCount"`
 	LastEvaluatedKey `json:"LastEvaluatedKey"`
 }
 
