@@ -1,8 +1,9 @@
 service: sls-notes-backend
 frameworkVersion: '>=1.28.0 <2.0.0'
 
-# plugins:
-#   - serverless-offline
+plugins:
+  - serverless-offline
+  - serverless-domain-manager
 
 custom:
   allowedHeaders:
@@ -16,6 +17,12 @@ custom:
     - X-Amz-User-Agent
     - app_user_id
     - app_user_name
+  customDomain:
+      domainName: notesapi.desertfoxdev.org
+      basePath: 'v1'
+      stage: ${self:provider.stage}
+      certificateName: notesapi
+      createRoute53Record: true
 
 provider:
   name: aws

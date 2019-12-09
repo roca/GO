@@ -22,3 +22,5 @@ sls logs -f add -s prod --startTime 5m
 sls logs -f add -s prod --tail
 
 git push --set-upstream aws-origin dev
+
+npm install --save-dev serverless-domain-manager
