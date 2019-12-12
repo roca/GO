@@ -1,0 +1,17 @@
+version: 0.2
+
+phases: 
+  pre_build:
+    commands:
+      - echo Deployment started on `date`
+      - echo Syncing S3 Content
+      # REPLACE yourwebsite.com WITH THE NAME OF YOUR S3 BUCKET THAT HOSTS YOUR APP'S STATIC WEBSITE
+      - aws s3 sync ./public/ s3://yourwebsite.com
+  build:
+    commands:
+      - echo Invalidating CloudFront Cache
+      # REPLACE XXXXXXXX WITH THE CLOUDFRONT DISTRIBUTION ID OF YOUR STATIC WEBSITE AND UNCOMMENT THE LINE
+      # - aws cloudfront create-invalidation --distribution-id XXXXXXXX --paths "/*"
+  post_build:
+    commands:
+      - echo Deployment completed on `date`
