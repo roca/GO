@@ -13,6 +13,7 @@ sls remove
 sls deploy -s prod -f add
 
 npm init
+
 npm install --save-dev serverless-offline
 
 sls offline

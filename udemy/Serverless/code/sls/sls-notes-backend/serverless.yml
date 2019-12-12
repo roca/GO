@@ -137,23 +137,3 @@ resources:
             ProvisionedThroughput:
               ReadCapacityUnits: 1
               WriteCapacityUnits: 1
-
-# package:
-#   exclude:
-#     - ./**
-#   include:
-#     - ./build/**
-
-# functions:
-#   hello:
-#     handler: build/hello
-#     events:
-#       - http:
-#           path: hello
-#           method: get
-#   world:
-#     handler: build/world
-#     events:
-#       - http:
-#           path: world
-#           method: get
