@@ -15,6 +15,7 @@ sls deploy -s prod -f add
 npm init
 
 npm install --save-dev serverless-offline
+npm install --save-dev serverless-dotenv-plugin
 
 sls offline
 sls deploy -s prod

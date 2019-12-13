@@ -1,9 +1,10 @@
 service: sls-notes-backend
 frameworkVersion: '>=1.28.0 <2.0.0'
 
-plugins:
-  - serverless-offline
-  - serverless-domain-manager
+# plugins:
+#   - serverless-offline
+#   - serverless-dotenv-plugin
+#   - serverless-domain-manager
 
 custom:
   allowedHeaders:
