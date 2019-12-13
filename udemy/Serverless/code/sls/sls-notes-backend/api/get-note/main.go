@@ -7,6 +7,7 @@ package main
 
 import (
 	"context"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -29,7 +30,23 @@ var svc *dynamodb.DynamoDB
 var tableName string
 
 func init() {
-	sess = session.Must(session.NewSession())
+	// sess = session.Must(session.NewSession())
+
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	client := &http.Client{Transport: tr}
+
+	awsConfig := &aws.Config{
+		Region:     aws.String("us-east-1"),
+		HTTPClient: client,
+	}
+
+	sess, err := session.NewSession(awsConfig)
+	if err != nil {
+		panic(err)
+	}
+
 	svc = dynamodb.New(sess)
 	tableName = os.Getenv("NOTES_TABLE")
 }
