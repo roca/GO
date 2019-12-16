@@ -55,9 +55,10 @@ export class NotesApiService {
         if (item.title != "") {
             itemData.title = item.title;
         }
+        console.log(itemData);
 
         let reqBody = {
-            Item: itemData
+            itemData
         };
         this.setOptions();
         return this.httpClient.patch(endpoint, reqBody, this.options);
