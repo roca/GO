@@ -45,7 +45,6 @@ export class NotesComponent implements OnInit {
         this.notesApiService.getNotes().subscribe(
             res => {
                 let data = res;
-                console.log(data);
                 if(_.has(res, 'LastEvaluatedKey')) {
                     this.startKey = res.LastEvaluatedKey.timestamp;
                 } else {
