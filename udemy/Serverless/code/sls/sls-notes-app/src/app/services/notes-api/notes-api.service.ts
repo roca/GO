@@ -56,13 +56,12 @@ export class NotesApiService {
         if (item.title != "") {
             itemData.title = item.title;
         }
-        console.log(itemData);
 
-        let reqBody = {
-            itemData
-        };
+        // let reqBody = {
+        //     note: itemData
+        // };
         this.setOptions();
-        return this.httpClient.patch(endpoint, reqBody, this.options);
+        return this.httpClient.patch(endpoint, itemData, this.options);
     }
 
     deleteNote(timestamp) {
