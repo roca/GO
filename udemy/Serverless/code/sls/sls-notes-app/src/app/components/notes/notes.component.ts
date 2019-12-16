@@ -45,14 +45,15 @@ export class NotesComponent implements OnInit {
         this.notesApiService.getNotes().subscribe(
             res => {
                 let data = res;
+                console.log(data);
                 if(_.has(res, 'LastEvaluatedKey')) {
                     this.startKey = res.LastEvaluatedKey.timestamp;
                 } else {
                     this.startKey = 0;
                 }
 
-                if(_.has(res, 'Items')) {
-                    this.userNotes = _.union(this.userNotes, res.Items);
+                if(_.has(res, 'notes')) {
+                    this.userNotes = _.union(this.userNotes, res.notes);
                     if(this.userNotes.length == 0) {
                         this.noNotesFound = true;
                     } else {

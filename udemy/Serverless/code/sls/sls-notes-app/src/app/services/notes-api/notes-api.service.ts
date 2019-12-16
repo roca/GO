@@ -13,8 +13,8 @@ export class NotesApiService {
     setOptions() {
         this.options = {
             headers: {
-                app_user_id: 'test_user',
-                app_user_name: 'Test User'
+                app_user_id: 'test-user',
+                app_user_name: 'TestUser'
             }
         };
     }
@@ -71,7 +71,7 @@ export class NotesApiService {
     }
 
     getNotes(start?): Observable<any> {
-        let path = STAGE + '/notes?limit=8';
+        let path = STAGE + '/note?limit=8';
         
         if (start > 0) {
             path += '&start=' + start;
