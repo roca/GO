@@ -34,11 +34,11 @@ export class NotesApiService {
             itemData.title = item.title;
         }
 
-        let reqBody = {
-            Item: itemData
-        };
+        // let reqBody = {
+        //     Item: itemData
+        // };
         this.setOptions();
-        return this.httpClient.post(endpoint, reqBody, this.options);
+        return this.httpClient.post(endpoint, itemData, this.options);
     }
 
     updateNote(item) {
