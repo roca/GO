@@ -30,11 +30,10 @@ export class NotesApiService {
             cat: item.cat
         };
 
-        itemData.title =  item.title != "" ?  item.title : item.content;
-
-        // let reqBody = {
-        //     Item: itemData
-        // };
+        if (item.title != "") {
+            itemData.title = item.title;
+        }
+        
         this.setOptions();
         return this.httpClient.post(endpoint, itemData, this.options);
     }
@@ -51,14 +50,10 @@ export class NotesApiService {
             note_id: item.note_id
         };
 
-        // if (item.title != "") {
-        //     itemData.title = item.title;
-        // }
-        itemData.title =  item.title != "" ?  item.title : item.content;
+        if (item.title != "") {
+            itemData.title = item.title;
+        }
 
-        // let reqBody = {
-        //     note: itemData
-        // };
         this.setOptions();
         return this.httpClient.patch(endpoint, itemData, this.options);
     }
