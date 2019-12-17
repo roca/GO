@@ -30,9 +30,7 @@ export class NotesApiService {
             cat: item.cat
         };
 
-        if(item.title != "") {
-            itemData.title = item.title;
-        }
+        itemData.title =  item.title != "" ?  item.title : item.content;
 
         // let reqBody = {
         //     Item: itemData
@@ -53,9 +51,10 @@ export class NotesApiService {
             note_id: item.note_id
         };
 
-        if (item.title != "") {
-            itemData.title = item.title;
-        }
+        // if (item.title != "") {
+        //     itemData.title = item.title;
+        // }
+        itemData.title =  item.title != "" ?  item.title : item.content;
 
         // let reqBody = {
         //     note: itemData
