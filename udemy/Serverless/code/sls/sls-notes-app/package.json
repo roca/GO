@@ -7,7 +7,7 @@
     "start": "node local-server.js",
     "build": "del-cli public && webpack --config webpack.config.dev.js --progress --profile",
     "build:watch": "npm run build -- --watch",
-    "build:prod": "del-cli public && ngc -p tsconfig.aot.json && ngc -p tsconfig.aot.json && webpack --config webpack.config.prod.js --progress --profile --bail"
+    "build:prod": "del-cli public && ngc -p tsconfig.aot.json && ngc -p tsconfig.aot.json && webpack --config webpack.config.prod.js --progress --profile --bail && ./cleanup.sh && ./cleanup.sh"
   },
   "author": "Riyaz Sayyad",
   "license": "ISC",
