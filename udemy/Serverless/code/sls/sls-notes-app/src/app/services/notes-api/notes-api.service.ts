@@ -13,6 +13,7 @@ export class NotesApiService {
     setOptions() {
         this.options = {
             headers: {
+                'Content-Type': 'application/json',
                 app_user_id: 'test-user',
                 app_user_name: 'TestUser'
             }
@@ -29,15 +30,12 @@ export class NotesApiService {
             cat: item.cat
         };
 
-        if(item.title != "") {
+        if (item.title != "") {
             itemData.title = item.title;
         }
-
-        let reqBody = {
-            Item: itemData
-        };
+        
         this.setOptions();
-        return this.httpClient.post(endpoint, reqBody, this.options);
+        return this.httpClient.post(endpoint, itemData, this.options);
     }
 
     updateNote(item) {
@@ -55,13 +53,9 @@ export class NotesApiService {
         if (item.title != "") {
             itemData.title = item.title;
         }
-        console.log(itemData);
 
-        let reqBody = {
-            itemData
-        };
         this.setOptions();
-        return this.httpClient.patch(endpoint, reqBody, this.options);
+        return this.httpClient.patch(endpoint, itemData, this.options);
     }
 
     deleteNote(timestamp) {
