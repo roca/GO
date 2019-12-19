@@ -11,7 +11,7 @@ phases:
     commands:
       - echo Invalidating CloudFront Cache
       # REPLACE XXXXXXXX WITH THE CLOUDFRONT DISTRIBUTION ID OF YOUR STATIC WEBSITE AND UNCOMMENT THE LINE
-      # - aws cloudfront create-invalidation --distribution-id XXXXXXXX --paths "/*"
+      - aws cloudfront create-invalidation --distribution-id E2QD6S3VFLP9QJ --paths "/*"
   post_build:
     commands:
       - echo Deployment completed on `date`
