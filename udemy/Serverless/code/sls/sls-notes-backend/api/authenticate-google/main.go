@@ -17,18 +17,14 @@ import (
 	"udemy.com/sls/sls-notes-backend/api/utils"
 )
 
-type CognitoIdentity struct {
+type CognitoResponse struct {
 	CognitoData *cognitoidentity.GetCredentialsForIdentityOutput `json:"cognito_data"`
 	UserName    interface{}                                      `json:"user_name"`
 }
 
 func JwtDecode(jwtStr string) (*jwt.Token, error) {
-	key := "your-256-bit-secret"
 
-	token, err := jwt.Parse(jwtStr, func(token *jwt.Token) (interface{}, error) {
-		return []byte(key), nil
-	})
-
+	token, _, err := new(jwt.Parser).ParseUnverified(jwtStr, jwt.MapClaims{})
 	if err != nil {
 		return &jwt.Token{}, err
 	}
@@ -67,7 +63,7 @@ func handler(event *events.APIGatewayProxyRequest) (events.APIGatewayProxyRespon
 		return events.APIGatewayProxyResponse{}, err
 	}
 
-	cognitoResponse := CognitoIdentity{
+	cognitoResponse := CognitoResponse{
 		CognitoData: cognitoData,
 		UserName:    decoded.Header["name"],
 	}
