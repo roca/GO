@@ -8,12 +8,10 @@ import (
 	"encoding/json"
 	"net/http"
 	"os"
-	"regexp"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/arn"
 	"github.com/aws/aws-sdk-go/service/cognitoidentity"
 	"github.com/dgrijalva/jwt-go"
 	"udemy.com/sls/sls-notes-backend/api/utils"
@@ -22,40 +20,6 @@ import (
 type CognitoIdentity struct {
 	CognitoData *cognitoidentity.GetCredentialsForIdentityOutput `json:"cognito_data"`
 	UserName    interface{}                                      `json:"user_name"`
-}
-
-// Help function to generate an IAM policy
-func generatePolicy(principalId, effect, resource string, claims jwt.MapClaims) events.APIGatewayCustomAuthorizerResponse {
-	authResponse := events.APIGatewayCustomAuthorizerResponse{PrincipalID: principalId}
-
-	arn, _ := arn.Parse(resource)
-
-	if effect == "AllowAll" {
-		re := regexp.MustCompile(`\/.*`)
-		arn.Resource = re.ReplaceAllString(arn.Resource, "/*/*/*")
-		effect = "Allow"
-	}
-
-	if effect != "" && resource != "" {
-		authResponse.PolicyDocument = events.APIGatewayCustomAuthorizerPolicy{
-			Version: "2012-10-17",
-			Statement: []events.IAMPolicyStatement{
-				{
-					Action:   []string{"execute-api:Invoke"},
-					Effect:   effect,
-					Resource: []string{arn.String()},
-				},
-			},
-		}
-	}
-
-	// Optional output with custom properties of the String, Number or Boolean type.
-	authResponse.Context = map[string]interface{}{
-		"sub":  claims["sub"],
-		"name": claims["name"],
-		"data": claims["data"],
-	}
-	return authResponse
 }
 
 func JwtDecode(jwtStr string) (*jwt.Token, error) {
@@ -70,7 +34,6 @@ func JwtDecode(jwtStr string) (*jwt.Token, error) {
 	}
 
 	return token, nil
-
 }
 
 func handler(event *events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
@@ -108,7 +71,6 @@ func handler(event *events.APIGatewayProxyRequest) (events.APIGatewayProxyRespon
 		CognitoData: cognitoData,
 		UserName:    decoded.Header["name"],
 	}
-
 	b, err := json.Marshal(&cognitoResponse)
 	if err != nil {
 		return events.APIGatewayProxyResponse{}, err
