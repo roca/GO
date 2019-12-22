@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AuthService } from '../../services/auth/auth.service';
 import { NotesDataService } from '../../services/notes-data/notes-data.service';
 
 @Component({
@@ -9,7 +10,8 @@ export class HomeComponent implements OnInit {
 
     showNoteModal = false;
     newNote;
-    constructor(private notesDataService: NotesDataService
+    constructor(private notesDataService: NotesDataService,
+        private authService: AuthService
     ) {  }
 
     ngOnInit() { 
@@ -26,6 +28,7 @@ export class HomeComponent implements OnInit {
     }
 
     onSignOut() {
+        this.authService.logout();
     }
 
 }
