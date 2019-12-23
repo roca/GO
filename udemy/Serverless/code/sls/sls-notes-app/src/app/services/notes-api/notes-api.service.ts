@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { AuthService } from '../auth/auth.service';
+
+import { RequestSigner } from 'aws4';
 
 declare const API_ROOT: string;
 declare const STAGE: string;
@@ -8,16 +11,51 @@ declare const STAGE: string;
 @Injectable()
 export class NotesApiService {
     options;
-    constructor(private httpClient: HttpClient) {}
+    constructor(private httpClient: HttpClient,
+        private authService: AuthService) {}
 
-    setOptions() {
-        this.options = {
+    setOptions(path = '/', method = '', body = '') {
+        const host = new URL(API_ROOT);
+
+        let args = {
+            service: 'execute-api',
+            region: 'us-east-1',
+            hostname: host.hostname,
+            path: path,
+            method: method,
+            body: body,
             headers: {
                 'Content-Type': 'application/json',
-                app_user_id: 'test-user',
-                app_user_name: 'TestUser'
+                'Accept': 'application/json',
             }
         };
+
+        if (method == 'GET') {
+            delete args.body;
+        }
+
+        this.options = {};
+        try {
+            let savedCredJson = this.authService.getCredentials();
+
+            if(savedCredJson) {
+                let savedCreds = JSON.parse(savedCredJson);
+                let creds = {
+                    accessKeyId: savedCreds.cognito_data.AccessKeyId,
+                    secretAccessKey: savedCreds.cognito_data.SecretAccessKey,
+                    sessionToken: savedCreds.cognito_data.SessionToken
+                };
+
+                let signer = new RequestSigner(args, creds);
+                let signed = signer.sign();
+
+                this.options.headers.app_user_id = savedCreds.IdentityId;
+                this.options.headers.app_user_name = savedCreds.user_name
+            }
+        } catch (error) {
+           // do nothing 
+        }
+
     }
 
     addNote(item) {
@@ -34,7 +72,7 @@ export class NotesApiService {
             itemData.title = item.title;
         }
         
-        this.setOptions();
+        this.setOptions(path, 'POST', JSON.stringify(itemData));
         return this.httpClient.post(endpoint, itemData, this.options);
     }
 
@@ -54,14 +92,14 @@ export class NotesApiService {
             itemData.title = item.title;
         }
 
-        this.setOptions();
+        this.setOptions(path, 'PATCH', JSON.stringify(itemData));
         return this.httpClient.patch(endpoint, itemData, this.options);
     }
 
     deleteNote(timestamp) {
         let path = STAGE + '/note/t/' + timestamp;
         let endpoint = API_ROOT + path;
-        this.setOptions();
+        this.setOptions(path, 'DELETE');
         return this.httpClient.delete(endpoint, this.options);
     }
 
@@ -72,7 +110,7 @@ export class NotesApiService {
             path += '&start=' + start;
         }
         let endpoint = API_ROOT + path;
-        this.setOptions();
+        this.setOptions(path,'GET');
         return this.httpClient.get(endpoint, this.options);
     }
 }
