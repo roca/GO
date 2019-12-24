@@ -12,6 +12,7 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/cognitoidentity"
 	"github.com/dgrijalva/jwt-go"
 	"udemy.com/sls/sls-notes-backend/api/utils"
@@ -20,6 +21,14 @@ import (
 type CognitoResponse struct {
 	CognitoData *cognitoidentity.GetCredentialsForIdentityOutput `json:"cognito_data"`
 	UserName    interface{}                                      `json:"user_name"`
+}
+
+var sess *session.Session
+var svc *cognitoidentity.CognitoIdentity
+
+func init() {
+	sess = session.Must(session.NewSession())
+	svc = cognitoidentity.New(sess)
 }
 
 func JwtDecode(jwtStr string) (*jwt.Token, error) {
@@ -35,10 +44,9 @@ func JwtDecode(jwtStr string) (*jwt.Token, error) {
 func handler(event *events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 
 	idToken := event.Headers["Authorization"]
-	cognitoIdentity := cognitoidentity.CognitoIdentity{}
 	identityPoolID := os.Getenv("COGNITO_IDENTITY_POOL_ID")
 
-	idData, err := cognitoIdentity.GetId(&cognitoidentity.GetIdInput{
+	idData, err := svc.GetId(&cognitoidentity.GetIdInput{
 		IdentityPoolId: aws.String(identityPoolID),
 		Logins: map[string]*string{
 			"accounts.google.com": aws.String(idToken),
@@ -48,7 +56,7 @@ func handler(event *events.APIGatewayProxyRequest) (events.APIGatewayProxyRespon
 		return events.APIGatewayProxyResponse{}, err
 	}
 
-	cognitoData, err := cognitoIdentity.GetCredentialsForIdentity(&cognitoidentity.GetCredentialsForIdentityInput{
+	cognitoData, err := svc.GetCredentialsForIdentity(&cognitoidentity.GetCredentialsForIdentityInput{
 		IdentityId: idData.IdentityId,
 		Logins: map[string]*string{
 			"accounts.google.com": aws.String(idToken),
@@ -63,9 +71,11 @@ func handler(event *events.APIGatewayProxyRequest) (events.APIGatewayProxyRespon
 		return events.APIGatewayProxyResponse{}, err
 	}
 
+    claims, _ := decoded.Claims.(jwt.MapClaims)
+
 	cognitoResponse := CognitoResponse{
 		CognitoData: cognitoData,
-		UserName:    decoded.Header["name"],
+		UserName:    claims["name"],
 	}
 	b, err := json.Marshal(&cognitoResponse)
 	if err != nil {

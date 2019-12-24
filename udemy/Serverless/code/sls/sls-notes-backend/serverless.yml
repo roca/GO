@@ -14,7 +14,7 @@ custom:
     - Authorization
     - X-Amz-Date
     - X-Api-Key
-    - X-Amx-Security-Token
+    - X-Amz-Security-Token
     - X-Amz-User-Agent
     - app_user_id
     - app_user_name

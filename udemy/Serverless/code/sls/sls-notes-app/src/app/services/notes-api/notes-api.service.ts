@@ -41,15 +41,18 @@ export class NotesApiService {
             if(savedCredJson) {
                 let savedCreds = JSON.parse(savedCredJson);
                 let creds = {
-                    accessKeyId: savedCreds.cognito_data.AccessKeyId,
-                    secretAccessKey: savedCreds.cognito_data.SecretAccessKey,
-                    sessionToken: savedCreds.cognito_data.SessionToken
+                    accessKeyId: savedCreds.cognito_data.Credentials.AccessKeyId,
+                    secretAccessKey: savedCreds.cognito_data.Credentials.SecretKey,
+                    sessionToken: savedCreds.cognito_data.Credentials.SessionToken
                 };
 
                 let signer = new RequestSigner(args, creds);
                 let signed = signer.sign();
 
-                this.options.headers.app_user_id = savedCreds.IdentityId;
+                this.options.headers = signed.headers;
+                delete this.options.headers.Host;
+
+                this.options.headers.app_user_id = savedCreds.cognito_data.IdentityId;
                 this.options.headers.app_user_name = savedCreds.user_name
             }
         } catch (error) {
@@ -72,7 +75,10 @@ export class NotesApiService {
             itemData.title = item.title;
         }
         
+        console.log(itemData);
+
         this.setOptions(path, 'POST', JSON.stringify(itemData));
+        console.log(this.options);
         return this.httpClient.post(endpoint, itemData, this.options);
     }
 
