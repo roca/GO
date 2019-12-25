@@ -21,7 +21,7 @@
     <ion-item-sliding *ngFor="let note of userNotes" (click)="openNote(note)">
       <button ion-item>
         <ion-icon name="paper" item-left></ion-icon>
-        <h2>{{note?.title}}</h2>
+        <h2>{{ note | extractTitle: 24 }}</h2>
         <p>{{note?.timestamp * 1000 | date: 'MMM d, yyyy, h:m a'}}</p>
       </button>
       <ion-item-options side="right">

@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { NavController } from 'ionic-angular';
+import { NavController, ToastController } from 'ionic-angular';
+
 import { NotesPage } from '../notes/notes';
 
 @Component({
@@ -7,14 +8,30 @@ import { NotesPage } from '../notes/notes';
   templateUrl: 'home.html'
 })
 export class HomePage {
+  res: any;
+  err: any;
+  
 
-  constructor(public navCtrl: NavController) {
-
+  constructor(public navCtrl: NavController,
+              public toastCtrl: ToastController) {
   }
 
-  onGoToNotes() {
-    // this.navCtrl.push(NotesPage);
+  presentToast(message) {
+		let toast = this.toastCtrl.create({
+			message: message,
+			duration: 5000,
+			position: 'top',
+			cssClass: 'toast-danger'
+		});
+		toast.present();
+	}
+
+  goToNotes() {
     this.navCtrl.setRoot(NotesPage);
+  }
+
+  onLogin() {
+    this.goToNotes();
   }
 
 }

@@ -1,29 +1,40 @@
 <ion-header>
+  <div class="spacer"></div>
   <ion-navbar>
     <ion-title>Notes</ion-title>
   </ion-navbar>
 </ion-header>
 
 <ion-content>
-  <ion-list>
-    <ion-item>
-      <ion-textarea class="note-title" autosize rows="1" placeholder="Title" value="{{note?.title}}"></ion-textarea>
-    </ion-item>
+  <div class="spacer"></div>
+  <form [formGroup]="noteForm" (ngSubmit)="onSubmit()">
+    <ion-list>
+      <ion-item>
+        <ion-textarea autosize rows="1" formControlName="title" placeholder="Title" value="{{note?.title}}" class="note-title"></ion-textarea>
+      </ion-item>
 
-    <ion-item>
-      <ion-textarea autosize rows="4" placeholder="Take a note..." value="{{note?.content}}"></ion-textarea>
-    </ion-item>
+      <ion-item>
+        <ion-textarea autosize rows="4" formControlName="content" placeholder="Take a note..." value="{{note?.content}}"></ion-textarea>
+      </ion-item>
 
-    <ion-item *ngIf="note?.timestamp">
-      <p>
-        Created {{ note?.timestamp * 1000 | date: 'MMM d, yyyy, h:m a' }}
-      </p>
-    </ion-item>
-  </ion-list>
-  <div padding>
-    <button ion-button block icon-left (click)="onSaveNote()">
-      <ion-icon name="create"></ion-icon>
-      <span>Save Note</span>
-    </button>
-  </div>
+      <ion-item no-lines *ngIf="noteForm.controls['content'].touched && !noteForm.controls['content'].valid">
+          <p class="text-danger">Please type in a note.</p>
+      </ion-item>
+
+      <ion-item *ngIf="note?.timestamp">
+        <p>
+          Created {{ note?.timestamp * 1000 | date: 'MMM d, yyyy, h:m a' }}
+        </p>
+      </ion-item>
+      <ion-input type="hidden" name="cat" id="cat" formControlName="cat" value="{{note?.cat || defaultCat }}"></ion-input>
+      <ion-input type="hidden" name="timestamp" id="timestamp" formControlName="timestamp" value="{{note?.timestamp}}"></ion-input>
+      <ion-input type="hidden" name="note_id" id="note_id" formControlName="note_id" value="{{note?.note_id}}"></ion-input>
+    </ion-list>
+    <div padding>
+      <button ion-button block icon-left type="submit" [disabled]="!noteForm.valid || disableSubmit">
+        <ion-icon name="create"></ion-icon>
+        <span>Save Note</span>
+      </button>
+    </div>
+  </form>
 </ion-content>
