@@ -1,0 +1,29 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>Notes</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item>
+      <ion-textarea class="note-title" autosize rows="1" placeholder="Title" value="{{note?.title}}"></ion-textarea>
+    </ion-item>
+
+    <ion-item>
+      <ion-textarea autosize rows="4" placeholder="Take a note..." value="{{note?.content}}"></ion-textarea>
+    </ion-item>
+
+    <ion-item *ngIf="note?.timestamp">
+      <p>
+        Created {{ note?.timestamp * 1000 | date: 'MMM d, yyyy, h:m a' }}
+      </p>
+    </ion-item>
+  </ion-list>
+  <div padding>
+    <button ion-button block icon-left (click)="onSaveNote()">
+      <ion-icon name="create"></ion-icon>
+      <span>Save Note</span>
+    </button>
+  </div>
+</ion-content>

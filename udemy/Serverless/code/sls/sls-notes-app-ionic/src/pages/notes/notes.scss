@@ -1,0 +1,23 @@
+page-notes {
+    .full-height {
+        height: 100%
+    }
+
+    .bar-button-ios,
+    .bar-button {
+        font-size: 2.4rem;
+    }
+
+    .header-ios .spacer {
+        height: 2rem;
+        background: #f8f8f8;
+    }
+
+    .content-ios .spacer {
+        height: 2rem;
+    }
+}
+
+.toast-danger .toast-wrapper {
+    background: map-get($colors, danger);
+}

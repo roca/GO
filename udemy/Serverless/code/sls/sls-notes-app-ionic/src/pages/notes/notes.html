@@ -1,0 +1,61 @@
+<ion-header>
+  <div class="spacer"></div>
+  <ion-navbar>
+    <ion-buttons start>
+      <button ion-button large (click)="onLogout()">
+        <ion-icon name="log-out"></ion-icon>
+      </button>
+    </ion-buttons>
+    <ion-buttons end>
+      <button ion-button large (click)="onCreateNote()">
+        <ion-icon name="add-circle"></ion-icon>
+      </button>
+    </ion-buttons>
+    <ion-title>Notes</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <div class="spacer"></div>
+  <ion-list *ngIf="userNotes && userNotes.length > 0">
+    <ion-item-sliding *ngFor="let note of userNotes" (click)="openNote(note)">
+      <button ion-item>
+        <ion-icon name="paper" item-left></ion-icon>
+        <h2>{{note?.title}}</h2>
+        <p>{{note?.timestamp * 1000 | date: 'MMM d, yyyy, h:m a'}}</p>
+      </button>
+      <ion-item-options side="right">
+        <button ion-button color="danger" (click)="deleteNote(note)">
+          <ion-icon name="trash"></ion-icon>
+          Delete</button>
+      </ion-item-options>
+    </ion-item-sliding>
+    <ion-infinite-scroll (ionInfinite)="onScrollDown($event)">
+      <ion-infinite-scroll-content></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+  </ion-list>
+
+  <ion-grid class="full-height" *ngIf="userNotes && userNotes.length == 0 && !isLoading">
+    <ion-row justify-content-center align-items-center class="full-height">
+      <ion-card>
+        <ion-card-header text-center>
+          Hey there!
+        </ion-card-header>
+        <ion-card-content>
+          <p text-center>Welcome to Serverless Notes App!</p>
+          <br>
+          <ion-grid>
+            <ion-row>
+              <ion-col text-center>
+                <button ion-button icon-left (click)="onCreateNote()">
+                  <ion-icon name="create"></ion-icon>
+                  <span>Create your first note</span>
+                </button>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-card-content>
+      </ion-card>
+    </ion-row>
+  </ion-grid>
+</ion-content>

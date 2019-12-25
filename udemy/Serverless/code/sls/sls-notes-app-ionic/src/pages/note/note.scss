@@ -1,0 +1,18 @@
+page-note {
+    .note-title {
+        font-weight: bold;
+    }
+
+    .text-danger {
+        color: map-get($colors, danger)
+    }
+
+    .header-ios .spacer {
+        height: 2rem;
+        background: #f8f8f8;
+    }
+
+    .content-ios .spacer {
+        height: 2rem;
+    }
+}

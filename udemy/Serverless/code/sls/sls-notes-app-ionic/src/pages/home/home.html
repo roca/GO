@@ -1,0 +1,24 @@
+<ion-content padding  class="outer-content">
+  <ion-grid class="full-height">
+    <ion-row justify-content-center align-items-center class="full-height">
+      <ion-card>
+        <ion-card-header text-center>
+          Welcome to Serverless Notes App.
+        </ion-card-header>
+        <ion-card-content>
+          <p text-center>Sign in to continue.</p>
+          <br>
+          <ion-grid>
+            <ion-row>
+              <ion-col text-center>
+                <button ion-button icon-left (click)="onGoToNotes()">
+                  <ion-icon name="logo-google"></ion-icon><span>Login with Google</span>
+                </button>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-card-content>
+      </ion-card>
+    </ion-row>
+  </ion-grid>
+</ion-content>

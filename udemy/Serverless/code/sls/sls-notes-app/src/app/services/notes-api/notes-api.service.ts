@@ -75,10 +75,7 @@ export class NotesApiService {
             itemData.title = item.title;
         }
         
-        console.log(itemData);
-
         this.setOptions(path, 'POST', JSON.stringify(itemData));
-        console.log(this.options);
         return this.httpClient.post(endpoint, itemData, this.options);
     }
 
