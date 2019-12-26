@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { NavController, ToastController } from 'ionic-angular';
 
 import { NotesPage } from '../notes/notes';
+import { AuthService } from '../../app/services/auth/auth.service';
 
 @Component({
   selector: 'page-home',
@@ -13,6 +14,7 @@ export class HomePage {
   
 
   constructor(public navCtrl: NavController,
+              private authService: AuthService,
               public toastCtrl: ToastController) {
   }
 
@@ -31,7 +33,14 @@ export class HomePage {
   }
 
   onLogin() {
-    this.goToNotes();
+    this.authService.login().then(
+      (res)=> {
+        this.goToNotes();
+      },
+      (err) => {
+        this.presentToast("We encounted an error while logging you in. Please try again.");
+      }
+    );
   }
 
 }

@@ -4,6 +4,7 @@ import { NotePage } from '../note/note';
 import { HomePage } from '../home/home';
 import { NotesApiService } from '../../app/services/notes-api/notes-api.services';
 import * as _ from "lodash";
+import { AuthService } from '../../app/services/auth/auth.service';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/mergeMap';
 
@@ -22,7 +23,8 @@ export class NotesPage implements OnInit {
     public navParams: NavParams,
     public loadingCtrl: LoadingController,
     private notesApiService: NotesApiService,
-    public toastCtrl: ToastController) {
+    public toastCtrl: ToastController,
+    private authService: AuthService) {
   }
 
   notePageCallback = (params) => {
@@ -100,6 +102,11 @@ export class NotesPage implements OnInit {
 
     this.notesApiService.getNotes(this.startKey).subscribe(
       res => {
+        if (this.startKey == 0) {
+          infiniteScroll.complete();
+          return;
+        }
+
         if (_.has(res, 'LastEvaluatedKey')) {
           this.startKey = res.LastEvaluatedKey.timestamp;
         } else {
@@ -159,8 +166,13 @@ export class NotesPage implements OnInit {
   }
 
   onLogout() {
-    this.userNotes = [];
-    this.navCtrl.setRoot(HomePage);
+    this.authService.logout().then(() => {
+      this.userNotes = [];
+      this.navCtrl.setRoot(HomePage);
+    }).catch(() => {
+      this.userNotes = [];
+      this.navCtrl.setRoot(HomePage);
+    });
   }
 
 }

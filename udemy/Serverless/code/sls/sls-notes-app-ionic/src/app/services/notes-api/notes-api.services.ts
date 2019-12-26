@@ -2,6 +2,10 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 
+import { RequestSigner } from 'aws4';
+
+import { AuthService } from '../auth/auth.service';
+
 @Injectable()
 export class NotesApiService {
 
@@ -9,21 +13,57 @@ export class NotesApiService {
     STAGE;
     options;
 
-    constructor(private httpClient: HttpClient) {
-        this.API_ROOT = 'http://localhost:3000';
-        this.STAGE = ''
+    constructor(private httpClient: HttpClient,
+        private authService: AuthService) {
+        this.API_ROOT = 'PUT_YOUR_API_ROOT_URL_HERE';
+        this.STAGE = '/v1' // Put your API Stage path here
         this.setOptions();
     }
 
-    setOptions() {
-        this.options = {
+    setOptions(path = '/', method = '', body = '') {
+
+        const host = new URL(this.API_ROOT);
+
+        let args = {
+            service: 'execute-api',
+            region: 'us-west-2',
+            hostname: host.hostname,
+            path: path,
+            method: method,
+            body: body,
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': 'application/json',
-                app_user_id: 'test_user',
-                app_user_name: 'Test User'
+                'Accept': 'application/json'
             }
-        };  
+        }; 
+
+        if(method == 'GET') {
+            delete args.body;
+        }
+
+        this.options = {};
+        try {
+            let savedCredsJson = this.authService.getCredentials();
+
+            if(savedCredsJson) {
+                let savedCreds = JSON.parse(savedCredsJson);
+                let creds = {
+                    accessKeyId: savedCreds.cognito_data.Credentials.AccessKeyId,
+                    secretAccessKey: savedCreds.cognito_data.Credentials.SecretKey,
+                    sessionToken: savedCreds.cognito_data.Credentials.SessionToken
+                };
+                
+                let signer = new RequestSigner(args, creds);
+                let signed = signer.sign();
+                
+                this.options.headers = signed.headers;
+                delete this.options.headers.Host;
+                this.options.headers.app_user_id = savedCreds.cognito_data.IdentityId;
+                this.options.headers.app_user_name = savedCreds.user_name;
+            }
+        } catch (error) {
+            // do nothing
+        }        
     }
 
     addNote(item) {
@@ -40,7 +80,7 @@ export class NotesApiService {
             itemData.title = item.title;
         }
 
-        this.setOptions();
+        this.setOptions(path, 'POST', JSON.stringify(itemData));
         return this.httpClient.post(endpoint, itemData, this.options);
     }
 
@@ -61,7 +101,7 @@ export class NotesApiService {
             itemData.title = item.title;
         }
 
-        this.setOptions();
+        this.setOptions(path, 'PATCH', JSON.stringify(itemData));
         return this.httpClient.patch(endpoint, itemData, this.options);
     }
 
@@ -69,7 +109,7 @@ export class NotesApiService {
         let path = this.STAGE + '/note/t/' + timestamp;
         let endpoint = this.API_ROOT + path;
 
-        this.setOptions();
+        this.setOptions(path, 'DELETE');
         return this.httpClient.delete(endpoint, this.options);
     }
 
@@ -80,7 +120,7 @@ export class NotesApiService {
         if (start > 0) {
             endpoint += '&start=' + start;
         }
-        this.setOptions();
+        this.setOptions(path, 'GET');
         return this.httpClient.get(endpoint, this.options);
     }
 

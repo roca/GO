@@ -33,3 +33,9 @@ $RECYCLE.BIN/
 .DS_Store
 Thumbs.db
 UserInterfaceState.xcuserstate
+
+secret
+GoogleService-Info.plist
+google-services.json
+certificate.crt
+fingerprint.txt
