@@ -24,7 +24,6 @@ export class AuthService {
             let credentials = await this.httpClient.get(endpoint, options).toPromise();
             localStorage.setItem('id_token', id_token);
             localStorage.setItem('aws', JSON.stringify(credentials));
-            console.log(JSON.stringify(credentials));
             return;
         } catch(err) {
             localStorage.removeItem('id_token');
@@ -47,7 +46,6 @@ export class AuthService {
                 scope: 'profile email',
                 webClientId: '808648518409-hj2d7c5gk1fc57d4dtulucg6a8qsuhh6.apps.googleusercontent.com'
             });
-            console.log("RESPONSE", JSON.stringify(res));
             await this.setCredentials(res.idToken);
             return res;
         } catch (err) {

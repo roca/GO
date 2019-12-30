@@ -70,7 +70,6 @@ export class NotesPage implements OnInit {
     this.userNotes = [];
     this.notesApiService.getNotes().subscribe(
       res => {
-        console.log("RES: " + JSON.stringify(res));
         if (_.has(res, 'LastEvaluatedKey')) {
           this.startKey = res.LastEvaluatedKey.timestamp;
         } else {
@@ -103,7 +102,6 @@ export class NotesPage implements OnInit {
 
     this.notesApiService.getNotes(this.startKey).subscribe(
       res => {
-      console.log("RES: " + res);
         if (this.startKey == 0) {
           infiniteScroll.complete();
           return;
