@@ -9,6 +9,7 @@ export class AuthService {
     constructor(private httpClient: HttpClient,
         private googlePlus: GooglePlus) {
         this.API_ROOT = 'https://notesapi.desertfoxdev.org';
+        //this.API_ROOT = 'http://localhost:3000';
         this.STAGE = '/v1' // Put your API Stage path here
     }
 
@@ -44,7 +45,7 @@ export class AuthService {
         try {
             let res = await this.googlePlus.login({
                 scope: 'profile email',
-                webClientId: 'PUT_YOUR_GOOGLE_API_WEB_CLIENT_ID_HERE'
+                webClientId: '808648518409-hj2d7c5gk1fc57d4dtulucg6a8qsuhh6.apps.googleusercontent.com'
             });
             console.log("RESPONSE", JSON.stringify(res));
             await this.setCredentials(res.idToken);

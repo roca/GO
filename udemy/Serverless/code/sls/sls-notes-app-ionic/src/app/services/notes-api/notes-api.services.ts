@@ -16,6 +16,7 @@ export class NotesApiService {
     constructor(private httpClient: HttpClient,
         private authService: AuthService) {
         this.API_ROOT = 'https://notesapi.desertfoxdev.org';
+        //this.API_ROOT = 'http://localhost:3000';
         this.STAGE = '/v1' // Put your API Stage path here
         this.setOptions();
     }
@@ -26,7 +27,7 @@ export class NotesApiService {
 
         let args = {
             service: 'execute-api',
-            region: 'us-west-2',
+            region: 'us-east-1',
             hostname: host.hostname,
             path: path,
             method: method,
