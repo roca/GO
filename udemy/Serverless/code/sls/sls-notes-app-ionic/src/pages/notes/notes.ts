@@ -70,14 +70,15 @@ export class NotesPage implements OnInit {
     this.userNotes = [];
     this.notesApiService.getNotes().subscribe(
       res => {
+        console.log("RES: " + JSON.stringify(res));
         if (_.has(res, 'LastEvaluatedKey')) {
           this.startKey = res.LastEvaluatedKey.timestamp;
         } else {
           this.startKey = 0;
         }
 
-        if (_.has(res, 'Items')) {
-          this.userNotes = _.union(this.userNotes, res.Items);
+        if (_.has(res, 'notes')) {
+          this.userNotes = _.union(this.userNotes, res.notes);
         }
       }, err => {
         if (err.error && err.error.message) {
@@ -102,6 +103,7 @@ export class NotesPage implements OnInit {
 
     this.notesApiService.getNotes(this.startKey).subscribe(
       res => {
+      console.log("RES: " + res);
         if (this.startKey == 0) {
           infiniteScroll.complete();
           return;
@@ -113,8 +115,8 @@ export class NotesPage implements OnInit {
           this.startKey = 0;
         }
 
-        if (_.has(res, 'Items')) {
-          this.userNotes = _.union(this.userNotes, res.Items);
+        if (_.has(res, 'notes')) {
+          this.userNotes = _.union(this.userNotes, res.notes);
         }
       }, err => {
         if (err.error && err.error.message) {

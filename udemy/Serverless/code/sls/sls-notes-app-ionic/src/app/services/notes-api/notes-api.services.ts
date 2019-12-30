@@ -115,7 +115,7 @@ export class NotesApiService {
     }
 
     getNotes(start?): Observable<any> {
-        let path = this.STAGE + '/note?limit=24';
+        let path = this.STAGE + '/note?limit=8';
         let endpoint = this.API_ROOT + path;
 
         if (start > 0) {
