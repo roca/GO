@@ -19,5 +19,7 @@ https://accounts.google.com/.well-known/openid-configuration
 openssl s_client -showcerts -connect www.googleapis.com:443
 openssl x509 -in certificate.crt -fingerprint -noout
 
+ionic cordova remove ios
+ionic cordova add ios
 ionic cordova build ios -- --buildFlag="-UseModernBuildSystem=0"
 
