@@ -15,5 +15,7 @@
     "to": "^0.2.9",
     "update": "^0.7.4"
   },
-  "dependencies": {}
+  "dependencies": {
+    "serverless-dynamodb-ttl": "^0.1.1"
+  }
 }

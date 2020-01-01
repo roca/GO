@@ -1,12 +1,17 @@
 service: sls-notes-backend
 frameworkVersion: '>=1.28.0 <2.0.0'
 
-# plugins:
-#   - serverless-offline
-#   - serverless-dotenv-plugin
-#   - serverless-domain-manager
+plugins:
+  - serverless-offline
+  - serverless-dotenv-plugin
+  - serverless-domain-manager
+  - serverless-dynamodb-ttl
 
 custom:
+  dynamodb:
+    ttl:
+      - table: ${self:provider.environment.NOTES_TABLE}
+        field: expires
   allowedHeaders:
     - Accept
     - Content-Type
@@ -40,6 +45,13 @@ provider:
   iamRoleStatements:
     - Effect: Allow
       Action:
+        - dynamodb:DescribeStream
+        - dynamodb:GetRecords
+        - dynamodb:GetShardIterator
+        - dynamodb:ListStreams
+      Resource: arn:aws:dynamodb:*:*:table/my_table
+    - Effect: Allow
+      Action:
         - dynamodb:Query
         - dynamodb:PutItem
         - dynamodb:DeleteItem
@@ -56,6 +68,19 @@ package:
     - ./build/**
 
 functions:
+  archive:
+    handler: build/archive
+    description: STREAM to archive
+    events:
+      - stream:
+          type: dynamodb
+          batchSize: 5
+          startingPosition: TRIM_HORIZON
+          enabled: true
+          arn: 
+            Fn::GetAtt:
+              - NotesTable
+              - StreamArn
   authenticate-google:
     handler: build/authenticate-google
     description: Google IDP Authentication
@@ -154,6 +179,8 @@ resources:
             ProvisionedThroughput:
               ReadCapacityUnits: 1
               WriteCapacityUnits: 1
+        StreamSpecification:
+          StreamViewType: NEW_AND_OLD_IMAGES
     GatewayResponseDefault4XX:
       Type: 'AWS::ApiGateway::GatewayResponse'
       Properties:
