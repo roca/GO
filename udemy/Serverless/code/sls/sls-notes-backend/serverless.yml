@@ -40,6 +40,7 @@ provider:
   endpointType: regional
   environment:
     NOTES_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+    NOTES_ARCHIVE_TABLE: ${self:service}-archive-${opt:stage, self:provider.stage}
     NOTE_INDEX01: note_id-index
     COGNITO_IDENTITY_POOL_ID: us-east-1:7297a0fa-17c9-4968-8bb0-3626924bb1eb
   iamRoleStatements:
@@ -146,9 +147,26 @@ functions:
           cors:
             origin: '*'
             headers: ${self:custom.allowedHeaders}
-
 resources:
   Resources:
+    NotesArchiveTable:
+      Type: AWS::DynamoDB::Table
+      DeletionPolicy: Retain
+      Properties:
+        TableName: ${self:provider.environment.NOTES_ARCHIVE_TABLE}
+        AttributeDefinitions:
+          - AttributeName: user_id
+            AttributeType: S
+          - AttributeName: timestamp
+            AttributeType: N
+        KeySchema:
+          - AttributeName: user_id
+            KeyType: HASH
+          - AttributeName: timestamp
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
     NotesTable:
       Type: AWS::DynamoDB::Table
       DeletionPolicy: Retain
