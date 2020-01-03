@@ -25,29 +25,26 @@ func init() {
 }
 
 func handler(ctx context.Context, event events.DynamoDBEvent) error {
-	log.Println(event)
-	// for _, record := range event.Records {
+	for _, record := range event.Records {
 
-	// 	if record.EventName == "REMOVE" {
+		if record.EventName == "REMOVE" {
 
-	// 		log.Println(record)
-	// 		b, _ := json.Marshal(&record)
-	// 		log.Println(string(b))
+			log.Println(record)
 
-	// 		// av, err := dynamodbattribute.MarshalMap(record.Change.OldImage)
-	// 		// if err != nil {
-	// 		// 	return err
-	// 		// }
+			// av, err := dynamodbattribute.MarshalMap(record.Change.OldImage)
+			// if err != nil {
+			// 	return err
+			// }
 
-	// 		// _, err = svc.PutItem(&dynamodb.PutItemInput{
-	// 		// 	TableName: aws.String(tableName),
-	// 		// 	Item:      av,
-	// 		// })
-	// 		// if err != nil {
-	// 		// 	return err
-	// 		// }
-	// 	}
-	// }
+			// _, err = svc.PutItem(&dynamodb.PutItemInput{
+			// 	TableName: aws.String(tableName),
+			// 	Item:      av,
+			// })
+			// if err != nil {
+			// 	return err
+			// }
+		}
+	}
 	return nil
 }
 
