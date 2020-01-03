@@ -8,8 +8,10 @@ import (
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 )
 
 var sess *session.Session
@@ -34,23 +36,21 @@ func handler(ctx context.Context, event events.DynamoDBEvent) error {
 
 			// Print new values for attributes of type String
 			for name, value := range record.Change.OldImage {
-				if value.DataType() == events.DataTypeString {
-					fmt.Printf("Attribute name: %s, value: %s\n", name, value.String())
-				}
+				fmt.Printf("Attribute name: %s, value: %v\n", name, value)
 			}
 
-			// av, err := dynamodbattribute.MarshalMap(record.Change.OldImage)
-			// if err != nil {
-			// 	return err
-			// }
+			av, err := dynamodbattribute.MarshalMap(record.Change.OldImage)
+			if err != nil {
+				return err
+			}
 
-			// _, err = svc.PutItem(&dynamodb.PutItemInput{
-			// 	TableName: aws.String(tableName),
-			// 	Item:      av,
-			// })
-			// if err != nil {
-			// 	return err
-			// }
+			_, err = svc.PutItem(&dynamodb.PutItemInput{
+				TableName: aws.String(tableName),
+				Item:      av,
+			})
+			if err != nil {
+				return err
+			}
 		}
 	}
 	return nil
