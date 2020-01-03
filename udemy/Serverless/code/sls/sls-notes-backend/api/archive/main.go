@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"os"
+	"encoding/json"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -28,9 +29,12 @@ func init() {
 
 func handler(ctx context.Context, event events.DynamoDBEvent) error {
 	for _, record := range event.Records {
-		log.Println(record.EventName)
 
 		if record.EventName == "REMOVE" {
+
+			log.Println(record)
+			b, _ := json.Marshal(&record)
+			log.Println(string(b))
 
 			av, err := dynamodbattribute.MarshalMap(record.Change.OldImage)
 			if err != nil {
