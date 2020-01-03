@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 
@@ -29,7 +30,14 @@ func handler(ctx context.Context, event events.DynamoDBEvent) error {
 
 		if record.EventName == "REMOVE" {
 
-			log.Println(record)
+			log.Printf("Processing request data for event ID %s, type %s.\n", record.EventID, record.EventName)
+
+			// Print new values for attributes of type String
+			for name, value := range record.Change.OldImage {
+				if value.DataType() == events.DataTypeString {
+					fmt.Printf("Attribute name: %s, value: %s\n", name, value.String())
+				}
+			}
 
 			// av, err := dynamodbattribute.MarshalMap(record.Change.OldImage)
 			// if err != nil {
