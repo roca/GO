@@ -41,17 +41,13 @@ provider:
   environment:
     NOTES_TABLE: ${self:service}-${opt:stage, self:provider.stage}
     NOTES_ARCHIVE_TABLE: ${self:service}-archive-${opt:stage, self:provider.stage}
-    BATCH_TABLE: ${self:service}-batch-${opt:stage, self:provider.stage}
     NOTE_INDEX01: note_id-index
     COGNITO_IDENTITY_POOL_ID: us-east-1:7297a0fa-17c9-4968-8bb0-3626924bb1eb
   iamRoleStatements:
     - Effect: Allow
       Action:
       - dynamodb:BatchWrite
-      Resource:
-        Fn::GetAtt: 
-        - BatchTable
-        - Arn
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.NOTES_TABLE}"
     - Effect: Allow 
       Action: 
         - kinesis:GetRecords 
@@ -191,11 +187,6 @@ resources:
       Properties: 
         Name: ServerlessNotesStream
         ShardCount: 1
-    BatchTable:
-      Type: AWS::DynamoDB::Table
-      DeletionPolicy: Retain
-      Properties:
-        TableName: ${self:provider.environment.BATCH_TABLE}
     NotesArchiveTable:
       Type: AWS::DynamoDB::Table
       DeletionPolicy: Retain

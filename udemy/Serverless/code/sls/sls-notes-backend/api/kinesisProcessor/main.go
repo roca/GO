@@ -21,11 +21,16 @@ type Event interface{}
 func init() {
 	sess = session.Must(session.NewSession())
 	svc = dynamodb.New(sess)
-	tableName = os.Getenv("BATCH_TABLE")
+	tableName = os.Getenv("NOTES_TABLE")
 }
 
 func handler(ctx context.Context, event events.KinesisEvent) error {
 	log.Println(event)
+
+	for _, record := range event.Records {
+		dataText := string(record.Kinesis.Data)
+		log.Printf("%s Data = %s \n", record.EventName, dataText)
+	}
 
 	return nil
 }
