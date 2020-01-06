@@ -48,18 +48,18 @@ provider:
       Action:
       - dynamodb:BatchWrite
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.NOTES_TABLE}"
-    - Effect: Allow 
-      Action: 
-        - kinesis:GetRecords 
-        - kinesis:GetShardIterator 
-        - kinesis:DescribeStream 
-        - kinesis:ListStreams 
-        - kinesis:PutRecord 
-        - kinesis:PutRecords 
-      Resource: 
-        Fn::GetAtt: 
-          - WorkStream  
-          - Arn
+    # - Effect: Allow 
+    #   Action: 
+    #     - kinesis:GetRecords 
+    #     - kinesis:GetShardIterator 
+    #     - kinesis:DescribeStream 
+    #     - kinesis:ListStreams 
+    #     - kinesis:PutRecord 
+    #     - kinesis:PutRecords 
+    #   Resource: 
+    #     Fn::GetAtt: 
+    #       - WorkStream  
+    #       - Arn
     - Effect: Allow
       Action:
         - dynamodb:DescribeStream
@@ -89,19 +89,19 @@ package:
     - ./build/**
 
 functions:
-  kinesisProcessor:
-    handler: build/kinesisProcessor
-    description: kinesisProcessor
-    events:
-      - stream:
-          type: kinesis
-          batchSize: 25
-          startingPosition: TRIM_HORIZON
-          enabled: true
-          arn:
-            Fn::GetAtt:
-              - WorkStream
-              - Arn
+  # kinesisProcessor:
+  #   handler: build/kinesisProcessor
+  #   description: kinesisProcessor
+  #   events:
+  #     - stream:
+  #         type: kinesis
+  #         batchSize: 25
+  #         startingPosition: TRIM_HORIZON
+  #         enabled: true
+  #         arn:
+  #           Fn::GetAtt:
+  #             - WorkStream
+  #             - Arn
   archive:
     handler: build/archive
     description: STREAM to archive
@@ -182,11 +182,11 @@ functions:
             headers: ${self:custom.allowedHeaders}
 resources:
   Resources:
-    WorkStream: 
-      Type: AWS::Kinesis::Stream
-      Properties: 
-        Name: ServerlessNotesStream
-        ShardCount: 1
+    # WorkStream: 
+    #   Type: AWS::Kinesis::Stream
+    #   Properties: 
+    #     Name: ServerlessNotesStream
+    #     ShardCount: 1
     NotesArchiveTable:
       Type: AWS::DynamoDB::Table
       DeletionPolicy: Retain
