@@ -1,11 +1,11 @@
 service: sls-notes-backend
 frameworkVersion: '>=1.28.0 <2.0.0'
 
-plugins:
-  - serverless-offline
-  - serverless-dotenv-plugin
-  - serverless-domain-manager
-  - serverless-dynamodb-ttl
+# plugins:
+#   - serverless-offline
+#   - serverless-dotenv-plugin
+#   - serverless-domain-manager
+#   - serverless-dynamodb-ttl
 
 custom:
   dynamodb:
@@ -43,6 +43,7 @@ provider:
     NOTES_ARCHIVE_TABLE: ${self:service}-archive-${opt:stage, self:provider.stage}
     NOTE_INDEX01: note_id-index
     COGNITO_IDENTITY_POOL_ID: us-east-1:7297a0fa-17c9-4968-8bb0-3626924bb1eb
+    STREAM_NAME: ServerlessNotesStream
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -56,10 +57,7 @@ provider:
     #     - kinesis:ListStreams 
     #     - kinesis:PutRecord 
     #     - kinesis:PutRecords 
-    #   Resource: 
-    #     Fn::GetAtt: 
-    #       - WorkStream  
-    #       - Arn
+    #   Resource: "arn:aws:kinesis:us-east-1:132172135366:stream/${self:provider.environment.STREAM_NAME}"
     - Effect: Allow
       Action:
         - dynamodb:DescribeStream
@@ -185,7 +183,7 @@ resources:
     # WorkStream: 
     #   Type: AWS::Kinesis::Stream
     #   Properties: 
-    #     Name: ServerlessNotesStream
+    #     Name: ${self:provider.environment.STREAM_NAME}
     #     ShardCount: 1
     NotesArchiveTable:
       Type: AWS::DynamoDB::Table

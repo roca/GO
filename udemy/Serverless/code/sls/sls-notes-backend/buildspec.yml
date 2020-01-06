@@ -5,10 +5,10 @@ phases:
     commands:
       - echo Installing Serverless
       - npm install -g serverless
-      - npm install serverless-offline --save-dev
-      - npm i -D serverless-dotenv-plugin
-      - npm install serverless-domain-manager --save-dev
-      - npm install serverless-dynamodb-ttl --save
+      # - npm install serverless-offline --save-dev
+      # - npm i -D serverless-dotenv-plugin
+      # - npm install serverless-domain-manager --save-dev
+      # - npm install serverless-dynamodb-ttl --save
   pre_build:
     commands:
       - echo No more dependincies
