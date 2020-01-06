@@ -13,7 +13,11 @@ var svc *kinesis.Kinesis
 var streamName *string
 
 func init() {
-	sess = session.Must(session.NewSession())
+
+	sess = session.Must(session.NewSession(&aws.Config{
+		Region: aws.String("us-east-1"),
+	}))
+
 	svc = kinesis.New(sess)
 	streamName = aws.String("ServerlessNotesStream")
 }

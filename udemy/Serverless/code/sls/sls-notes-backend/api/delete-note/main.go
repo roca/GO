@@ -24,7 +24,9 @@ var svc *dynamodb.DynamoDB
 var tableName string
 
 func init() {
-	sess = session.Must(session.NewSession())
+	sess = session.Must(session.NewSession(&aws.Config{
+		Region: aws.String("us-east-1"),
+	}))
 	svc = dynamodb.New(sess)
 	tableName = os.Getenv("NOTES_TABLE")
 }
