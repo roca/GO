@@ -34,7 +34,7 @@ func init() {
 func handler(ctx context.Context, event events.KinesisEvent) error {
 	log.Println(event)
 
-	var writeRequests map[string][]*dynamodb.WriteRequest
+	writeRequests := make(map[string][]*dynamodb.WriteRequest)
 
 	for _, record := range event.Records {
 		dataText := string(record.Kinesis.Data)
@@ -46,6 +46,7 @@ func handler(ctx context.Context, event events.KinesisEvent) error {
 			return err
 		}
 
+		//for _, note := range notes {
 		writeRequests[tableName] = append(writeRequests[tableName], &dynamodb.WriteRequest{
 			PutRequest: &dynamodb.PutRequest{
 				Item: map[string]*dynamodb.AttributeValue{
@@ -60,6 +61,7 @@ func handler(ctx context.Context, event events.KinesisEvent) error {
 				},
 			},
 		})
+		//}
 	}
 	_, err := svc.BatchWriteItem(&dynamodb.BatchWriteItemInput{
 		RequestItems: writeRequests,

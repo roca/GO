@@ -37,6 +37,10 @@ func createRandomNote() string {
 	note.NoteID = fmt.Sprintf("%s:%s", note.UserID, uuid)
 	note.TimeStamp = time.Now().Unix()
 	note.Expires = time.Now().AddDate(0, 0, 90).Unix()
+	note.Cat = "general"
+	note.Title = "Kinesis TEST"
+	note.Content = "Kinesis TEST"
+
 
 	b, err := json.Marshal(&note)
 	if err != nil {
