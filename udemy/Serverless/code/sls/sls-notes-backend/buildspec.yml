@@ -8,10 +8,10 @@ phases:
   pre_build:
     commands:
       - echo 'Additional plugins serverless-offline, serverless-dotenv-plugin, serverless-domain-manager and serverless-dynamodb-ttl'
-      - npm install serverless-offline --save-dev
-      - npm i -D serverless-dotenv-plugin
-      - npm install serverless-domain-manager --save-dev
-      - npm install serverless-dynamodb-ttl --save
+      # - npm install serverless-offline --save-dev
+      # - npm i -D serverless-dotenv-plugin
+      # - npm install serverless-domain-manager --save-dev
+      # - npm install serverless-dynamodb-ttl --save
   build:
     commands:
       - echo Deployment started on `date`

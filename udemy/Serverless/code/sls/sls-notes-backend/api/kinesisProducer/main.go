@@ -1,11 +1,16 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/kinesis"
+	"udemy.com/sls/sls-notes-backend/api/models"
+	uuid "github.com/satori/go.uuid"
+
 )
 
 var sess *session.Session
@@ -22,25 +27,44 @@ func init() {
 	streamName = aws.String("ServerlessNotesStream")
 }
 
+func createRandomNote() string {
+
+	note := models.Note{}
+	uuid := uuid.NewV4()
+
+	note.UserID = "KinesisUser"
+	note.UserName = "Kinesis User"
+	note.NoteID = fmt.Sprintf("%s:%s", note.UserID, uuid)
+	note.TimeStamp = time.Now().Unix()
+	note.Expires = time.Now().AddDate(0, 0, 90).Unix()
+
+	b, err := json.Marshal(&note)
+	if err != nil {
+		panic(err)
+	}
+
+	return string(b)
+}
+
 func main() {
 
-	out, err := svc.CreateStream(&kinesis.CreateStreamInput{
-		ShardCount: aws.Int64(1),
+	// put 10 records using PutRecords API
+	entries := make([]*kinesis.PutRecordsRequestEntry, 10)
+	for i := 0; i < len(entries); i++ {
+		entries[i] = &kinesis.PutRecordsRequestEntry{
+			Data:         []byte(createRandomNote()),
+			PartitionKey: aws.String("key2"),
+		}
+	}
+	fmt.Printf("%v\n", entries)
+	putsOutput, err := svc.PutRecords(&kinesis.PutRecordsInput{
+		Records:    entries,
 		StreamName: streamName,
 	})
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("%v\n", out)
-
-	if err := svc.WaitUntilStreamExists(&kinesis.DescribeStreamInput{StreamName: streamName}); err != nil {
-		panic(err)
-	}
-
-	streams, err := svc.DescribeStream(&kinesis.DescribeStreamInput{StreamName: streamName})
-	if err != nil {
-		panic(err)
-	}
-	fmt.Printf("%v\n", streams)
+	// putsOutput has Records, and its shard id and sequece enumber.
+	fmt.Printf("%v\n", putsOutput)
 
 }
