@@ -45,10 +45,6 @@ provider:
     COGNITO_IDENTITY_POOL_ID: us-east-1:7297a0fa-17c9-4968-8bb0-3626924bb1eb
     STREAM_NAME: ServerlessNotesStream
   iamRoleStatements:
-    - Effect: Allow
-      Action:
-      - dynamodb:BatchWrite
-      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.NOTES_TABLE}"
     - Effect: Allow 
       Action: 
         - kinesis:GetRecords 
@@ -64,17 +60,15 @@ provider:
         - dynamodb:GetRecords
         - dynamodb:GetShardIterator
         - dynamodb:ListStreams
+        - dynamodb:BatchWriteItem 
+        - dynamodb:Query
+        - dynamodb:PutItem
+        - dynamodb:DeleteItem
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.NOTES_TABLE}"
     - Effect: Allow
       Action:
         - dynamodb:PutItem
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.NOTES_ARCHIVE_TABLE}"
-    - Effect: Allow
-      Action:
-        - dynamodb:Query
-        - dynamodb:PutItem
-        - dynamodb:DeleteItem
-      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.NOTES_TABLE}"
     - Effect: Allow
       Action:
         - dynamodb:Query
