@@ -35,7 +35,7 @@ func init() {
 func handler(ctx context.Context, event events.KinesisEvent) error {
 	log.Println(event)
 
-	writeRequests := make(map[string][]*dynamodb.WriteRequest)
+	writeRequests :=[]*dynamodb.WriteRequest{}
 
 	for _, record := range event.Records {
 		dataText := string(record.Kinesis.Data)
@@ -47,7 +47,7 @@ func handler(ctx context.Context, event events.KinesisEvent) error {
 		log.Printf("%s Data = %v \n", record.EventName, note)
 
 
-		writeRequests[tableName] = append(writeRequests[tableName], &dynamodb.WriteRequest{
+		writeRequests = append(writeRequests, &dynamodb.WriteRequest{
 			PutRequest: &dynamodb.PutRequest{
 				Item: map[string]*dynamodb.AttributeValue{
 					"user_id":   {S: aws.String(note.UserID)},
@@ -62,8 +62,11 @@ func handler(ctx context.Context, event events.KinesisEvent) error {
 			},
 		})
 	}
+	batch := make(map[string][]*dynamodb.WriteRequest)
+	batch[tableName] = writeRequests
+
 	_, err := svc.BatchWriteItem(&dynamodb.BatchWriteItemInput{
-		RequestItems: writeRequests,
+		RequestItems: batch,
 	})
 	if err != nil {
 		return nil
