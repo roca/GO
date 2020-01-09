@@ -35,10 +35,13 @@ func init() {
 func handler(ctx context.Context, event events.KinesisEvent) error {
 	log.Println(event)
 
-	writeRequests :=[]*dynamodb.WriteRequest{}
+	writeRequests := []*dynamodb.WriteRequest{}
+
+	epoc := time.Now().Unix()
 
 	for _, record := range event.Records {
 		dataText := string(record.Kinesis.Data)
+		epoc = epoc + 1
 
 		note := models.Note{}
 		if err := json.Unmarshal([]byte(dataText), &note); err != nil {
@@ -46,15 +49,14 @@ func handler(ctx context.Context, event events.KinesisEvent) error {
 		}
 		log.Printf("%s Data = %v \n", record.EventName, note)
 
-
 		writeRequests = append(writeRequests, &dynamodb.WriteRequest{
 			PutRequest: &dynamodb.PutRequest{
 				Item: map[string]*dynamodb.AttributeValue{
 					"user_id":   {S: aws.String(note.UserID)},
 					"user_name": {S: aws.String(note.UserName)},
 					"note_id":   {S: aws.String(note.NoteID)},
-					"timestamp": {N: aws.String(fmt.Sprintf("%d", time.Now().Unix()))},
-					"expires":   {N: aws.String(fmt.Sprintf("%d", time.Now().Unix()))},
+					"timestamp": {N: aws.String(fmt.Sprintf("%d", epoc))},
+					"expires":   {N: aws.String(fmt.Sprintf("%d", epoc))},
 					"cat":       {S: aws.String(note.Cat)},
 					"title":     {S: aws.String(note.Title)},
 					"content":   {S: aws.String(note.Content)},
@@ -69,7 +71,7 @@ func handler(ctx context.Context, event events.KinesisEvent) error {
 		RequestItems: batch,
 	})
 	if err != nil {
-		return nil
+		return err
 	}
 
 	return nil
