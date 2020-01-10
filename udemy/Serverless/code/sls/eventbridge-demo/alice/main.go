@@ -1,43 +1,71 @@
 package main
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
+	"log"
+	"time"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/eventbridge"
 )
 
-// Response is of type APIGatewayProxyResponse since we're leveraging the
-// AWS Lambda Proxy Request functionality (default behavior)
-//
-// https://serverless.com/framework/docs/providers/aws/events/apigateway/#lambda-proxy-integration
-type Response events.APIGatewayProxyResponse
+var sess *session.Session
+var svc *eventbridge.EventBridge
 
-// Handler is our lambda handler invoked by the `lambda.Start` function call
-func Handler(ctx context.Context) (Response, error) {
-	var buf bytes.Buffer
+func init() {
+	sess = session.Must(session.NewSession(&aws.Config{
+		Region: aws.String("us-east-1"),
+	}))
+	svc = eventbridge.New(sess)
+}
 
-	body, err := json.Marshal(map[string]interface{}{
-		"message": "Go Serverless v1.0! Your function executed successfully!",
+func putEvent(jsonData interface{}) error {
+
+	var entries []*eventbridge.PutEventsRequestEntry
+
+	log.Println(jsonData)
+	b, err := json.Marshal(&jsonData)
+	if err != nil {
+		return err
+	}
+
+	now := time.Now()
+	entries = append(entries, &eventbridge.PutEventsRequestEntry{
+		Detail: aws.String(string(b)),
+		Source: aws.String("bob.wakeUp"),
+		Time:   &now,
+	})
+
+	_, err = svc.PutEvents(&eventbridge.PutEventsInput{
+		Entries: entries,
 	})
 	if err != nil {
-		return Response{StatusCode: 404}, err
-	}
-	json.HTMLEscape(&buf, body)
-
-	resp := Response{
-		StatusCode:      200,
-		IsBase64Encoded: false,
-		Body:            buf.String(),
-		Headers: map[string]string{
-			"Content-Type":           "application/json",
-			"X-MyCompany-Func-Reply": "hello-handler",
-		},
+		return err
 	}
 
-	return resp, nil
+	return nil
+
+}
+
+// Handler is our lambda handler invoked by the `lambda.Start` function call
+func Handler(ctx context.Context, event events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+
+	var jsonData interface{}
+
+	if err := json.Unmarshal([]byte(event.Body), &jsonData); err != nil {
+		return events.APIGatewayProxyResponse{}, err
+	}
+
+	err := putEvent(jsonData)
+	if err != nil {
+		return events.APIGatewayProxyResponse{}, err
+	}
+
+	return events.APIGatewayProxyResponse{}, nil
 }
 
 func main() {

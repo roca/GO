@@ -8,13 +8,18 @@ provider:
   memorySize: 128
   timeout: 5
   endpointType: regional
+  iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - "events:PutEvents"
+        Resource: "*"
 
 
 package:
   exclude:
     - ./**
   include:
-    - ./bin/**
+    - ./build/**
 
 functions:
   alice:
