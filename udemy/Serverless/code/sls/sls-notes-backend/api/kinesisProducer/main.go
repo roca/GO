@@ -8,9 +8,8 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/kinesis"
-	"udemy.com/sls/sls-notes-backend/api/models"
 	uuid "github.com/satori/go.uuid"
-
+	"udemy.com/sls/sls-notes-backend/api/models"
 )
 
 var sess *session.Session
@@ -41,7 +40,6 @@ func createRandomNote() string {
 	note.Title = "Kinesis TEST"
 	note.Content = "Kinesis TEST"
 
-
 	b, err := json.Marshal(&note)
 	if err != nil {
 		panic(err)
@@ -55,6 +53,7 @@ func main() {
 	// put 10 records using PutRecords API
 	entries := make([]*kinesis.PutRecordsRequestEntry, 10)
 	for i := 0; i < len(entries); i++ {
+		time.Sleep(1 * time.Second)
 		entries[i] = &kinesis.PutRecordsRequestEntry{
 			Data:         []byte(createRandomNote()),
 			PartitionKey: aws.String("key2"),

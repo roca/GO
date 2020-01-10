@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"time"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -37,11 +36,8 @@ func handler(ctx context.Context, event events.KinesisEvent) error {
 
 	writeRequests := []*dynamodb.WriteRequest{}
 
-	epoc := time.Now().Unix()
-
 	for _, record := range event.Records {
 		dataText := string(record.Kinesis.Data)
-		epoc = epoc + 1
 
 		note := models.Note{}
 		if err := json.Unmarshal([]byte(dataText), &note); err != nil {
@@ -55,8 +51,8 @@ func handler(ctx context.Context, event events.KinesisEvent) error {
 					"user_id":   {S: aws.String(note.UserID)},
 					"user_name": {S: aws.String(note.UserName)},
 					"note_id":   {S: aws.String(note.NoteID)},
-					"timestamp": {N: aws.String(fmt.Sprintf("%d", epoc))},
-					"expires":   {N: aws.String(fmt.Sprintf("%d", epoc))},
+					"timestamp": {N: aws.String(fmt.Sprintf("%d", note.TimeStamp))},
+					"expires":   {N: aws.String(fmt.Sprintf("%d", note.Expires))},
 					"cat":       {S: aws.String(note.Cat)},
 					"title":     {S: aws.String(note.Title)},
 					"content":   {S: aws.String(note.Content)},
