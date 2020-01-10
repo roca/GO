@@ -1,0 +1,240 @@
+service: sls-notes-backend
+frameworkVersion: '>=1.28.0 <2.0.0'
+
+plugins:
+  - serverless-offline
+  - serverless-dotenv-plugin
+  - serverless-domain-manager
+  - serverless-dynamodb-ttl
+
+custom:
+  dynamodb:
+    ttl:
+      - table: ${self:provider.environment.NOTES_TABLE}
+        field: expires
+  allowedHeaders:
+    - Accept
+    - Content-Type
+    - Content-Length
+    - Authorization
+    - X-Amz-Date
+    - X-Api-Key
+    - X-Amz-Security-Token
+    - X-Amz-User-Agent
+    - app_user_id
+    - app_user_name
+  customDomain:
+      domainName: notesapi.desertfoxdev.org
+      basePath: 'v1'
+      stage: ${self:provider.stage}
+      certificateName: desertfoxdev.org
+      createRoute53Record: true
+
+provider:
+  name: aws
+  runtime: go1.x
+  stage: prod
+  region: us-east-1
+  memorySize: 128
+  timeout: 5
+  endpointType: regional
+  environment:
+    NOTES_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+    NOTES_ARCHIVE_TABLE: ${self:service}-archive-${opt:stage, self:provider.stage}
+    NOTE_INDEX01: note_id-index
+    COGNITO_IDENTITY_POOL_ID: us-east-1:7297a0fa-17c9-4968-8bb0-3626924bb1eb
+    STREAM_NAME: ServerlessNotesStream
+  iamRoleStatements:
+    - Effect: Allow 
+      Action: 
+        - kinesis:GetRecords 
+        - kinesis:GetShardIterator 
+        - kinesis:DescribeStream 
+        - kinesis:ListStreams 
+        - kinesis:PutRecord 
+        - kinesis:PutRecords 
+      Resource: "arn:aws:kinesis:us-east-1:132172135366:stream/${self:provider.environment.STREAM_NAME}"
+    - Effect: Allow
+      Action:
+        - dynamodb:DescribeStream
+        - dynamodb:GetRecords
+        - dynamodb:GetShardIterator
+        - dynamodb:ListStreams
+        - dynamodb:BatchWriteItem 
+        - dynamodb:Query
+        - dynamodb:PutItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.NOTES_TABLE}"
+    - Effect: Allow
+      Action:
+        - dynamodb:PutItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.NOTES_ARCHIVE_TABLE}"
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.NOTES_TABLE}/index/${self:provider.environment.NOTE_INDEX01}"
+
+package:
+  exclude:
+    - ./**
+  include:
+    - ./build/**
+
+functions:
+  kinesisProcessor:
+    handler: build/kinesisProcessor
+    description: kinesisProcessor
+    events:
+      - stream:
+          type: kinesis
+          batchSize: 25
+          startingPosition: TRIM_HORIZON
+          enabled: true
+          arn:
+            Fn::GetAtt:
+              - WorkStream
+              - Arn
+  archive:
+    handler: build/archive
+    description: STREAM to archive
+    events:
+      - stream:
+          type: dynamodb
+          batchSize: 5
+          startingPosition: TRIM_HORIZON
+          enabled: true
+          arn: 
+            Fn::GetAtt:
+              - NotesTable
+              - StreamArn
+  authenticate-google:
+    handler: build/authenticate-google
+    description: Google IDP Authentication
+    events:
+      - http:
+          path: auth
+          method: get
+          cors:
+            origin: '*'
+            headers: ${self:custom.allowedHeaders}
+  add-note:
+    handler: build/add-note
+    description: POST /note
+    events:
+      - http:
+          path: note
+          method: post
+          authorizer: aws_iam
+          cors:
+            origin: '*'
+            headers: ${self:custom.allowedHeaders}
+  update-note:
+    handler: build/update-note
+    description: PATCH /note
+    events:
+      - http:
+          path: note
+          method: patch
+          authorizer: aws_iam
+          cors:
+            origin: '*'
+            headers: ${self:custom.allowedHeaders}
+  get-notes:
+    handler: build/get-note
+    description: GET /note
+    events:
+      - http:
+          path: note
+          method: get
+          authorizer: aws_iam
+          cors:
+            origin: '*'
+            headers: ${self:custom.allowedHeaders}
+  get-note:
+    handler: build/get-note
+    description: GET /note/n/{note_id}
+    events:
+      - http:
+          path: note/n/{note_id}
+          method: get
+          authorizer: aws_iam
+          cors:
+            origin: '*'
+            headers: ${self:custom.allowedHeaders}
+  delete-note:
+    handler: build/delete-note
+    description: DELETE /note/t/{timestamp}
+    events:
+      - http:
+          path: note/t/{timestamp}
+          method: delete
+          authorizer: aws_iam
+          cors:
+            origin: '*'
+            headers: ${self:custom.allowedHeaders}
+resources:
+  Resources:
+    WorkStream: 
+      Type: AWS::Kinesis::Stream
+      Properties: 
+        Name: ${self:provider.environment.STREAM_NAME}
+        ShardCount: 1
+    NotesArchiveTable:
+      Type: AWS::DynamoDB::Table
+      DeletionPolicy: Retain
+      Properties:
+        TableName: ${self:provider.environment.NOTES_ARCHIVE_TABLE}
+        AttributeDefinitions:
+          - AttributeName: user_id
+            AttributeType: S
+          - AttributeName: timestamp
+            AttributeType: N
+        KeySchema:
+          - AttributeName: user_id
+            KeyType: HASH
+          - AttributeName: timestamp
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+    NotesTable:
+      Type: AWS::DynamoDB::Table
+      DeletionPolicy: Retain
+      Properties:
+        TableName: ${self:provider.environment.NOTES_TABLE}
+        AttributeDefinitions:
+          - AttributeName: user_id
+            AttributeType: S
+          - AttributeName: timestamp
+            AttributeType: N
+          - AttributeName: note_id
+            AttributeType: S 
+        KeySchema:
+          - AttributeName: user_id
+            KeyType: HASH
+          - AttributeName: timestamp
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        GlobalSecondaryIndexes:
+          - IndexName: note_id-index
+            KeySchema:
+              - AttributeName: note_id
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+            ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1
+        StreamSpecification:
+          StreamViewType: NEW_AND_OLD_IMAGES
+    GatewayResponseDefault4XX:
+      Type: 'AWS::ApiGateway::GatewayResponse'
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
+        ResponseType: DEFAULT_4XX
+        RestApiId:
+          Ref: 'ApiGatewayRestApi'
