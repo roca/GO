@@ -1,0 +1,21 @@
+{
+  "name": "sls-notes-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "serverless-domain-manager": "^3.3.0",
+    "serverless-dotenv-plugin": "^2.1.1",
+    "serverless-offline": "^5.12.1",
+    "to": "^0.2.9",
+    "update": "^0.7.4"
+  },
+  "dependencies": {
+    "serverless-dynamodb-ttl": "^0.1.1"
+  }
+}
