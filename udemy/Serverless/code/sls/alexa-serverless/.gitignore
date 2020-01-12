@@ -1,6 +1,6 @@
 # Serverless directories
 .serverless
-secrete
+secret
 node_modules
 
 # golang output binary directory
