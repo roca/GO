@@ -2,8 +2,9 @@ package main
 
 import (
 	"context"
-	"encoding/json"
+	"fmt"
 	"log"
+	"net/http"
 	"time"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -23,30 +24,29 @@ func init() {
 	svc = eventbridge.New(sess)
 }
 
-func putEvent(jsonData interface{}) error {
+func putEvent(message string) error {
 
 	var entries []*eventbridge.PutEventsRequestEntry
 
-	log.Println(jsonData)
-	b, err := json.Marshal(&jsonData)
-	if err != nil {
-		return err
-	}
+	log.Println(message)
 
 	now := time.Now()
 	entries = append(entries, &eventbridge.PutEventsRequestEntry{
-		Detail: aws.String(string(b)),
-		Source: aws.String("bob.wakeUp"),
-		Time:   &now,
+		Detail:       aws.String(fmt.Sprintf("{\"message\": \"%s\"}", message)),
+		Source:       aws.String("bob.wakeUp"),
+		Time:         &now,
+		EventBusName: aws.String("default"),
+		DetailType:   aws.String("appRequestSubmitted"),
 	})
 
-	_, err = svc.PutEvents(&eventbridge.PutEventsInput{
+	output, err := svc.PutEvents(&eventbridge.PutEventsInput{
 		Entries: entries,
 	})
 	if err != nil {
 		return err
 	}
 
+	log.Println((output))
 	return nil
 
 }
@@ -54,18 +54,27 @@ func putEvent(jsonData interface{}) error {
 // Handler is our lambda handler invoked by the `lambda.Start` function call
 func Handler(ctx context.Context, event events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 
-	var jsonData interface{}
-
-	if err := json.Unmarshal([]byte(event.Body), &jsonData); err != nil {
-		return events.APIGatewayProxyResponse{}, err
+	queryParams := make(map[string]string)
+	for key, value := range event.QueryStringParameters {
+		queryParams[key] = value
 	}
 
-	err := putEvent(jsonData)
+	err := putEvent(queryParams["message"])
 	if err != nil {
 		return events.APIGatewayProxyResponse{}, err
 	}
 
-	return events.APIGatewayProxyResponse{}, nil
+	headers := make(map[string]string)
+
+	headers["Access-Control-Allow-Origin"] = "*"
+
+	response := events.APIGatewayProxyResponse{
+		StatusCode: http.StatusOK,
+		Headers:    headers,
+		Body:       string(queryParams["message"]),
+	}
+
+	return response, nil
 }
 
 func main() {

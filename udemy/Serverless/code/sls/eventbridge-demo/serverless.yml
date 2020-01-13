@@ -9,10 +9,10 @@ provider:
   timeout: 5
   endpointType: regional
   iamRoleStatements:
-      - Effect: "Allow"
-        Action:
-          - "events:PutEvents"
-        Resource: "*"
+    - Effect: "Allow"
+      Action:
+        - "events:PutEvents"
+      Resource: "*"
 
 
 package:
@@ -32,7 +32,3 @@ functions:
   bob:
     handler: build/bob
     description: Receives events from the EventBridge
-    events:
-      - http:
-          path: bob
-          method: get
