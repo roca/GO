@@ -18,6 +18,7 @@ import (
 var sess *session.Session
 var svc *dynamodb.DynamoDB
 var tableName string
+var intents map[string]func(alexa.Request) alexa.Response
 
 func init() {
 	sess = session.Must(session.NewSession(&aws.Config{
@@ -31,33 +32,49 @@ func HandleFrontpageDealIntent(request alexa.Request) alexa.Response {
 	return alexa.NewSimpleResponse("Frontpage Deals", "Frontpage deal data here")
 }
 
-func HandlePopularDealIntent(request alexa.Request) alexa.Response {
+func HandleFallbackIntent(request alexa.Request) alexa.Response {
 	return alexa.NewSimpleResponse("Popular Deals", "Popular deal data here")
+}
+
+func HandleStopIntent(request alexa.Request) alexa.Response {
+	return alexa.NewSimpleResponse("Help", "Help regarding the available commands here")
 }
 
 func HandleHelpIntent(request alexa.Request) alexa.Response {
 	return alexa.NewSimpleResponse("Help", "Help regarding the available commands here")
 }
 
-func HandleAboutIntent(request alexa.Request) alexa.Response {
+func HandleCancelIntent(request alexa.Request) alexa.Response {
+	return alexa.NewSimpleResponse("Help", "Help regarding the available commands here")
+}
+
+func HandleNavigateHomeIntent(request alexa.Request) alexa.Response {
 	return alexa.NewSimpleResponse("About", "Slick Dealer was created by Nic Raboy in Tracy, California as an unofficial Slick Deals application.")
 }
 
 func IntentDispatcher(request alexa.Request) alexa.Response {
 	var response alexa.Response
-	switch request.Body.Intent.Name {
-	case "FrontpageDealIntent":
-		response = HandleFrontpageDealIntent(request)
-	case "PopularDealIntent":
-		response = HandlePopularDealIntent(request)
-	case alexa.HelpIntent:
-		response = HandleHelpIntent(request)
-	case "AboutIntent":
-		response = HandleAboutIntent(request)
-	default:
-		response = HandleAboutIntent(request)
+
+	intents = make(map[string]func(alexa.Request) alexa.Response)
+	intentName := request.Body.Intent.Name
+
+	intents[alexa.HelpIntent] = HandleHelpIntent
+	intents[alexa.CancelIntent] = HandleCancelIntent
+	intents[alexa.StopIntent] = HandleStopIntent
+
+	intents["NavigateHomeIntent"] = HandleNavigateHomeIntent
+	intents["FallbackIntent"] = HandleFallbackIntent
+	intents["GetNewFactIntent"] = HandleGetNewFactIntent
+	intents["AnotherFactIntent"] = HandleAnotherFactIntent
+	intents["RepeatIntent"] = HandleRepeatIntent
+	intents["YesIntent"] = HandleYesIntent
+	intents["NoIntent"] = HandleNoIntent
+
+	if intent, ok := intents[intentName] ; ok {
+		return intent(request)
 	}
-	return response
+
+	return HandleAboutIntent(request)
 }
 
 func Handler(request alexa.Request) (alexa.Response, error) {
