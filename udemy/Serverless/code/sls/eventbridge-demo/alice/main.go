@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -16,12 +17,14 @@ import (
 
 var sess *session.Session
 var svc *eventbridge.EventBridge
+var eventBusName string
 
 func init() {
 	sess = session.Must(session.NewSession(&aws.Config{
 		Region: aws.String("us-east-1"),
 	}))
 	svc = eventbridge.New(sess)
+	eventBusName = os.Getenv("EVENTBUS_NAME")
 }
 
 func putEvent(message string) error {
@@ -35,7 +38,7 @@ func putEvent(message string) error {
 		Detail:       aws.String(fmt.Sprintf("{\"message\": \"%s\"}", message)),
 		Source:       aws.String("bob.wakeUp"),
 		Time:         &now,
-		EventBusName: aws.String("default"),
+		EventBusName: aws.String(eventBusName),
 		DetailType:   aws.String("appRequestSubmitted"),
 	})
 

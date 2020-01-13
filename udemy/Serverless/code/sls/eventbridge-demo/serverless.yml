@@ -8,6 +8,8 @@ provider:
   memorySize: 128
   timeout: 5
   endpointType: regional
+  environment:
+    EVENTBUS_NAME: AliceBob
   iamRoleStatements:
     - Effect: "Allow"
       Action:
@@ -32,3 +34,9 @@ functions:
   bob:
     handler: build/bob
     description: Receives events from the EventBridge
+    events:
+      - eventBridge:
+          eventBus: "${self:provider.environment.EVENTBUS_NAME}"
+          pattern:
+            source:
+              - bob.wakeUp
