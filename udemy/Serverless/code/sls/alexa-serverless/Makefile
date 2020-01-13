@@ -2,7 +2,7 @@
 
 build: gomodgen
 	export GO111MODULE=on
-	env GOOS=linux go build -ldflags="-s -w" -o build/alexa alexa/main.go
+	env GOOS=linux go build -ldflags="-s -w" -o build/alexa lambda/main.go
 
 clean:
 	rm -rf ./build ./vendor Gopkg.lock
