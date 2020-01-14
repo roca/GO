@@ -52,8 +52,31 @@ func HandleNavigateHomeIntent(request alexa.Request) alexa.Response {
 	return alexa.NewSimpleResponse("About", "Slick Dealer was created by Nic Raboy in Tracy, California as an unofficial Slick Deals application.")
 }
 
+func HandleGetNewFactIntent(request alexa.Request) alexa.Response {
+	return alexa.NewSimpleResponse("About", "Slick Dealer was created by Nic Raboy in Tracy, California as an unofficial Slick Deals application.")
+}
+
+func HandleAnotherFactIntent(request alexa.Request) alexa.Response {
+	return alexa.NewSimpleResponse("About", "Slick Dealer was created by Nic Raboy in Tracy, California as an unofficial Slick Deals application.")
+}
+
+func HandleRepeatIntent(request alexa.Request) alexa.Response {
+	return alexa.NewSimpleResponse("About", "Slick Dealer was created by Nic Raboy in Tracy, California as an unofficial Slick Deals application.")
+}
+
+func HandleYesIntent(request alexa.Request) alexa.Response {
+	return alexa.NewSimpleResponse("About", "Slick Dealer was created by Nic Raboy in Tracy, California as an unofficial Slick Deals application.")
+}
+
+func HandleNoIntent(request alexa.Request) alexa.Response {
+	return alexa.NewSimpleResponse("About", "Slick Dealer was created by Nic Raboy in Tracy, California as an unofficial Slick Deals application.")
+}
+
+func HandleAboutIntent(request alexa.Request) alexa.Response {
+	return alexa.NewSimpleResponse("About", "Slick Dealer was created by Nic Raboy in Tracy, California as an unofficial Slick Deals application.")
+}
+
 func IntentDispatcher(request alexa.Request) alexa.Response {
-	var response alexa.Response
 
 	intents = make(map[string]func(alexa.Request) alexa.Response)
 	intentName := request.Body.Intent.Name
@@ -70,7 +93,7 @@ func IntentDispatcher(request alexa.Request) alexa.Response {
 	intents["YesIntent"] = HandleYesIntent
 	intents["NoIntent"] = HandleNoIntent
 
-	if intent, ok := intents[intentName] ; ok {
+	if intent, ok := intents[intentName]; ok {
 		return intent(request)
 	}
 
