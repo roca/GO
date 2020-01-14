@@ -28,76 +28,29 @@ func init() {
 	tableName = os.Getenv("NOTES_TABLE")
 }
 
-func HandleFrontpageDealIntent(request alexa.Request) alexa.Response {
-	return alexa.NewSimpleResponse("Frontpage Deals", "Frontpage deal data here")
-}
-
-func HandleFallbackIntent(request alexa.Request) alexa.Response {
-	return alexa.NewSimpleResponse("Popular Deals", "Popular deal data here")
-}
-
-func HandleStopIntent(request alexa.Request) alexa.Response {
-	return alexa.NewSimpleResponse("Help", "Help regarding the available commands here")
-}
-
-func HandleHelpIntent(request alexa.Request) alexa.Response {
-	return alexa.NewSimpleResponse("Help", "Help regarding the available commands here")
-}
-
-func HandleCancelIntent(request alexa.Request) alexa.Response {
-	return alexa.NewSimpleResponse("Help", "Help regarding the available commands here")
-}
-
-func HandleNavigateHomeIntent(request alexa.Request) alexa.Response {
-	return alexa.NewSimpleResponse("About", "Slick Dealer was created by Nic Raboy in Tracy, California as an unofficial Slick Deals application.")
-}
-
-func HandleGetNewFactIntent(request alexa.Request) alexa.Response {
-	return alexa.NewSimpleResponse("About", "Slick Dealer was created by Nic Raboy in Tracy, California as an unofficial Slick Deals application.")
-}
-
-func HandleAnotherFactIntent(request alexa.Request) alexa.Response {
-	return alexa.NewSimpleResponse("About", "Slick Dealer was created by Nic Raboy in Tracy, California as an unofficial Slick Deals application.")
-}
-
-func HandleRepeatIntent(request alexa.Request) alexa.Response {
-	return alexa.NewSimpleResponse("About", "Slick Dealer was created by Nic Raboy in Tracy, California as an unofficial Slick Deals application.")
-}
-
-func HandleYesIntent(request alexa.Request) alexa.Response {
-	return alexa.NewSimpleResponse("About", "Slick Dealer was created by Nic Raboy in Tracy, California as an unofficial Slick Deals application.")
-}
-
-func HandleNoIntent(request alexa.Request) alexa.Response {
-	return alexa.NewSimpleResponse("About", "Slick Dealer was created by Nic Raboy in Tracy, California as an unofficial Slick Deals application.")
-}
-
-func HandleAboutIntent(request alexa.Request) alexa.Response {
-	return alexa.NewSimpleResponse("About", "Slick Dealer was created by Nic Raboy in Tracy, California as an unofficial Slick Deals application.")
-}
 
 func IntentDispatcher(request alexa.Request) alexa.Response {
 
 	intents = make(map[string]func(alexa.Request) alexa.Response)
 	intentName := request.Body.Intent.Name
 
-	intents[alexa.HelpIntent] = HandleHelpIntent
-	intents[alexa.CancelIntent] = HandleCancelIntent
-	intents[alexa.StopIntent] = HandleStopIntent
+	intents[alexa.HelpIntent] = alexa.HandleHelpIntent
+	intents[alexa.CancelIntent] = alexa.HandleCancelIntent
+	intents[alexa.StopIntent] = alexa.HandleStopIntent
 
-	intents["NavigateHomeIntent"] = HandleNavigateHomeIntent
-	intents["FallbackIntent"] = HandleFallbackIntent
-	intents["GetNewFactIntent"] = HandleGetNewFactIntent
-	intents["AnotherFactIntent"] = HandleAnotherFactIntent
-	intents["RepeatIntent"] = HandleRepeatIntent
-	intents["YesIntent"] = HandleYesIntent
-	intents["NoIntent"] = HandleNoIntent
+	intents["NavigateHomeIntent"] = alexa.HandleNavigateHomeIntent
+	intents["FallbackIntent"] = alexa.HandleFallbackIntent
+	intents["GetNewFactIntent"] = alexa.HandleGetNewFactIntent
+	intents["AnotherFactIntent"] = alexa.HandleAnotherFactIntent
+	intents["RepeatIntent"] = alexa.HandleRepeatIntent
+	intents["YesIntent"] = alexa.HandleYesIntent
+	intents["NoIntent"] = alexa.HandleNoIntent
 
 	if intent, ok := intents[intentName]; ok {
 		return intent(request)
 	}
 
-	return HandleAboutIntent(request)
+	return alexa.HandleAboutIntent(request)
 }
 
 func Handler(request alexa.Request) (alexa.Response, error) {
