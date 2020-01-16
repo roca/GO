@@ -1,5 +1,6 @@
 package alexa
 
+// NewSimpleResponse ..
 func NewSimpleResponse(title string, text string) Response {
 	r := Response{
 		Version: "1.0",
@@ -19,6 +20,7 @@ func NewSimpleResponse(title string, text string) Response {
 	return r
 }
 
+// Response ..
 type Response struct {
 	Version           string                 `json:"version"`
 	SessionAttributes map[string]interface{} `json:"sessionAttributes,omitempty"`

@@ -6,6 +6,7 @@ const (
 	StopIntent   = "AMAZON.StopIntent"
 )
 
+// Request ...
 type Request struct {
 	Version string  `json:"version"`
 	Session Session `json:"session"`
@@ -13,6 +14,7 @@ type Request struct {
 	Context Context `json:"context"`
 }
 
+// Session ..
 type Session struct {
 	New         bool   `json:"new"`
 	SessionID   string `json:"sessionId"`
@@ -26,6 +28,7 @@ type Session struct {
 	} `json:"user"`
 }
 
+// Context ...
 type Context struct {
 	System struct {
 		APIAccessToken string `json:"apiAccessToken"`
@@ -38,6 +41,7 @@ type Context struct {
 	} `json:"System,omitempty"`
 }
 
+// ReqBody ...
 type ReqBody struct {
 	Type        string `json:"type"`
 	RequestID   string `json:"requestId"`
@@ -48,23 +52,26 @@ type ReqBody struct {
 	DialogState string `json:"dialogState,omitempty"`
 }
 
+// Intent ..
 type Intent struct {
 	Name  string          `json:"name"`
 	Slots map[string]Slot `json:"slots"`
 }
 
+// Slot ..
 type Slot struct {
 	Name        string      `json:"name"`
 	Value       string      `json:"value"`
 	Resolutions Resolutions `json:"resolutions"`
 }
 
+// Resolutions ..
 type Resolutions struct {
 	ResolutionPerAuthority []struct {
 		Values []struct {
 			Value struct {
 				Name string `json:"name"`
-				Id   string `json:"id"`
+				ID   string `json:"id"`
 			} `json:"value"`
 		} `json:"values"`
 	} `json:"resolutionsPerAuthority"`
