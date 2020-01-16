@@ -1,15 +1,20 @@
 package alexa
 
+import (
+	"math/rand"
+	"time"
+)
+
 func HandleFallbackIntent(request Request) Response {
-	return NewSimpleResponse("Fallback", "Popular deal data here")
+	return NewSimpleResponse("Fallback", FALLBACKMESSAGE)
 }
 
 func HandleStopIntent(request Request) Response {
-	return NewSimpleResponse("Stop", "Help regarding the available commands here")
+	return NewSimpleResponse("Stop", STOPMESSAGE)
 }
 
 func HandleHelpIntent(request Request) Response {
-	return NewSimpleResponse("Help", "Help regarding the available commands here")
+	return NewSimpleResponse("Help", HELPMESSAGE)
 }
 
 func HandleCancelIntent(request Request) Response {
@@ -21,15 +26,17 @@ func HandleNavigateHomeIntent(request Request) Response {
 }
 
 func HandleGetNewFactIntent(request Request) Response {
-	return NewSimpleResponse("Get New Fact", "Slick Dealer was created by Nic Raboy in Tracy, California as an unofficial Slick Deals application.")
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	return NewSimpleResponse("Get New Fact", DATA[r.Intn(len(DATA))])
 }
 
 func HandleAnotherFactIntent(request Request) Response {
-	return NewSimpleResponse("Another Fact", "Slick Dealer was created by Nic Raboy in Tracy, California as an unofficial Slick Deals application.")
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	return NewSimpleResponse("Another Fact", DATA[r.Intn(len(DATA))])
 }
 
 func HandleRepeatIntent(request Request) Response {
-	return NewSimpleResponse("Repeat", "Slick Dealer was created by Nic Raboy in Tracy, California as an unofficial Slick Deals application.")
+	return NewSimpleResponse("Repeat", REPEATMESSAGE)
 }
 
 func HandleYesIntent(request Request) Response {
