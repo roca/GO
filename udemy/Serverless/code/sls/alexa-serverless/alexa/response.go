@@ -1,6 +1,6 @@
 package alexa
 
-func NewSimpleResponse(title string, text string) Response {
+func NewSimpleResponse(title string, text string, reprompt string) Response {
 	r := Response{
 		Version: "1.0",
 		Body: ResBody{
@@ -12,6 +12,13 @@ func NewSimpleResponse(title string, text string) Response {
 				Type:    "Simple",
 				Title:   title,
 				Content: text,
+			},
+			Reprompt: &Reprompt{
+				OutputSpeech: Payload{
+					Type:    "Simple",
+					Title:   title,
+					Content: reprompt,
+				},
 			},
 			ShouldEndSession: true,
 		},
