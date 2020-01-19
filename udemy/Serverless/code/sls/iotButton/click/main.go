@@ -45,9 +45,7 @@ type ButtonEvent struct {
 
 func handler(event *iotevents.Event) (events.APIGatewayProxyResponse, error) {
 
-	b, _ := json.Marshal(event)
-
-	log.Printf("ClickType: %s", string(b))
+	log.Printf("Event: %v", event)
 
 	/*
 		if err := json.Unmarshal([]byte(event.Body), &note); err != nil {
