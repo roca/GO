@@ -15,6 +15,7 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/iotevents"
 	"github.com/aws/aws-sdk-go/service/sns"
 )
 
@@ -42,9 +43,17 @@ type ButtonEvent struct {
 	StdEvent StdEvent `json:"stdEvent"`
 }
 
-func handler(event ButtonEvent) (events.APIGatewayProxyResponse, error) {
+func handler(event *iotevents.Event) (events.APIGatewayProxyResponse, error) {
 
-	log.Printf("ClickType: %s",event.StdEvent.ClickType)
+	b, _ := json.Marshal(event)
+
+	log.Printf("ClickType: %s", string(b))
+
+	/*
+		if err := json.Unmarshal([]byte(event.Body), &note); err != nil {
+			return events.APIGatewayProxyResponse{}, err
+		}
+	*/
 
 	log.Println("creating session")
 	sess := session.Must(session.NewSession())
