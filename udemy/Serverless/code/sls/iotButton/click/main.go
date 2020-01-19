@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"fmt"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -80,19 +81,22 @@ map[
 ]
 */
 
+
+var sess *session.Session
+var svc *sns.SNS
+
+func init() {
+	sess = session.Must(session.NewSession(&aws.Config{
+		Region: aws.String("us-east-1"),
+	}))
+	svc = sns.New(sess)
+}
+
+
 func handler(iotButtonEvent IoTButtonEvent) (events.APIGatewayProxyResponse, error) {
 
-	log.Printf("ClickType: %s", iotButtonEvent.DeviceEvent.ButtonClicked.ClickType)
-	log.Println("creating session")
-	sess := session.Must(session.NewSession())
-	log.Println("session created")
-
-	svc := sns.New(sess)
-	log.Println("service created")
-
 	params := &sns.PublishInput{
-		// Hello Sunil. This is a message from Amazon Lambda
-		Message:     aws.String("Hello. This is a message from Amazon Lambda"),
+		Message:     aws.String(fmt.Sprintf("Hello. This is a message from your Iot 1-Click device. ClickType: %s",iotButtonEvent.DeviceEvent.ButtonClicked.ClickType)),
 		PhoneNumber: aws.String("+12017458446"),
 	}
 	resp, err := svc.Publish(params)
