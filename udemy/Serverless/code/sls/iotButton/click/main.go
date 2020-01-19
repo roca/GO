@@ -15,7 +15,6 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/iotevents"
 	"github.com/aws/aws-sdk-go/service/sns"
 )
 
@@ -23,36 +22,67 @@ const (
 	DATE_FMT = "02-01-2006"
 )
 
-type Device struct {
-	Type       string            `json:"type"`
-	DeviceID   string            `json:"deviceId"`
-	Attributes map[string]string `json:"attributes"`
-	DeviceArn  string            `json:"deviceArn"`
+type ButtonClicked struct {
+	ClickType    string `json:"clickType"`
+	ReportedTime string `json:"reportedTime"`
 }
 
-type StdEvent struct {
-	ClickType     string  `json:"clickType"`
-	ReportedTime  string  `json:"reportedTime"`
-	CertificateID string  `json:"certificateId"`
-	RemainingLife float64 `json:"remainingLife"`
-	TestMode      bool    `json:"testMode"`
+type DeviceEvent struct {
+	ButtonClicked ButtonClicked `json:"buttonClicked"`
 }
 
-type ButtonEvent struct {
-	Device   Device   `json:"device"`
-	StdEvent StdEvent `json:"stdEvent"`
+type DeviceInfo struct {
+	Attributes    map[string]string `json:"attributes"`
+	DeviceID      string            `json:"deviceId"`
+	RemainingLife float32           `json:"remainingLife"`
+	Type          string            `json:"type"`
 }
 
-func handler(event *iotevents.Event) (events.APIGatewayProxyResponse, error) {
+type PlacementInfo struct {
+	Attributes    map[string]string `json:"attributes"`
+	Devices       map[string]string `json:"devices"`
+	PlacementName string            `json:"placementName"`
+	ProjectName   string            `json:"projectName"`
+}
 
-	log.Printf("Event: %v", event)
+type IoTButtonEvent struct {
+	DeviceEvent   DeviceEvent   `json:"deviceEvent"`
+	DeviceInfo    DeviceInfo    `json:"deviceInfo"`
+	PlacementInfo PlacementInfo `json:"placementInfo`
+}
 
-	/*
-		if err := json.Unmarshal([]byte(event.Body), &note); err != nil {
-			return events.APIGatewayProxyResponse{}, err
-		}
-	*/
+/*
+map[
+	deviceEvent:map[
+		buttonClicked:map[
+			clickType:SINGLE
+			reportedTime:2020-01-19T17:38:45.362Z
+		]
+	]
+	deviceInfo:map[
+		attributes:map[
+			deviceTemplateName:lambda-trigger
+			placementName:AT-Work
+			projectName:IOT-1-Click-demo
+			projectRegion:us-west-2
+		]
+		deviceId:G030PM039134U3AT
+		remainingLife:97.65 type:button
+	]
+	placementInfo:map[
+		attributes:map[]
+		devices:map[
+			lambda-trigger:G030PM039134U3AT
+		]
+		placementName:AT-Work
+		projectName:IOT-1-Click-demo
+	]
+]
+*/
 
+func handler(iotButtonEvent IoTButtonEvent) (events.APIGatewayProxyResponse, error) {
+
+	log.Printf("ClickType: %s", iotButtonEvent.DeviceEvent.ButtonClicked.ClickType)
 	log.Println("creating session")
 	sess := session.Must(session.NewSession())
 	log.Println("session created")
