@@ -15,6 +15,7 @@ provider:
       Action:
         - "events:PutEvents"
       Resource: "*"
+  profile: saml
 
 
 package:
@@ -28,9 +29,10 @@ functions:
     handler: build/alice
     description: Receives http GET requests and sends to EventBridge
     events:
-      - http:
-          path: alice
-          method: get
+      - s3: eventbridge-files
+      # - http:
+      #     path: alice
+      #     method: get
   bob:
     handler: build/bob
     description: Receives events from the EventBridge

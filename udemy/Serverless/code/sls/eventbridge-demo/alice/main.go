@@ -27,6 +27,16 @@ func init() {
 	eventBusName = os.Getenv("EVENTBUS_NAME")
 }
 
+func GetResponseHeaders() map[string]string {
+
+	headers := make(map[string]string)
+
+	headers["Access-Control-Allow-Origin"] = "*"
+
+	return headers
+
+}
+
 func putEvent(message string) error {
 
 	var entries []*eventbridge.PutEventsRequestEntry
@@ -55,29 +65,26 @@ func putEvent(message string) error {
 }
 
 // Handler is our lambda handler invoked by the `lambda.Start` function call
-func Handler(ctx context.Context, event events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+func Handler(ctx context.Context, event *events.S3Event) (events.APIGatewayProxyResponse, error) {
 
-	queryParams := make(map[string]string)
-	for key, value := range event.QueryStringParameters {
-		queryParams[key] = value
+	for _, record := range event.Records {
+		s3 := record.S3
+		message := fmt.Sprintf("%s", s3.Object.Key)
+		log.Println("Special Information" + message)
+		err := putEvent(message)
+		if err != nil {
+			return events.APIGatewayProxyResponse{}, err
+		}
+		response := events.APIGatewayProxyResponse{
+			StatusCode: http.StatusOK,
+			Headers:    GetResponseHeaders(),
+			Body:       string(message),
+		}
+
+		return response, nil
 	}
 
-	err := putEvent(queryParams["message"])
-	if err != nil {
-		return events.APIGatewayProxyResponse{}, err
-	}
-
-	headers := make(map[string]string)
-
-	headers["Access-Control-Allow-Origin"] = "*"
-
-	response := events.APIGatewayProxyResponse{
-		StatusCode: http.StatusOK,
-		Headers:    headers,
-		Body:       string(queryParams["message"]),
-	}
-
-	return response, nil
+	return events.APIGatewayProxyResponse{}, nil
 }
 
 func main() {
