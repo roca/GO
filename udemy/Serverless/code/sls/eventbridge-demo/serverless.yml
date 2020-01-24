@@ -10,11 +10,27 @@ provider:
   endpointType: regional
   environment:
     EVENTBUS_NAME: AliceBob
+    ALICES_BUCKET_NAME: alices-files
+    BOBS_BUCKET_ARN:
+      Fn::Join:
+        - ''
+        - - 'arn:aws:s3:::'
+          - Ref: BobsBucket
+          - '/*'
   iamRoleStatements:
     - Effect: "Allow"
       Action:
         - "events:PutEvents"
       Resource: "*"
+    - Effect: 'Allow'
+      Action:
+        - 's3:PutObject'
+      Resource: 
+        Fn::Join:
+          - ''
+          - - 'arn:aws:s3:::'
+            - Ref: BobsBucket
+            - '/*'
   profile: saml
 
 
@@ -29,18 +45,20 @@ functions:
     handler: build/alice
     description: Receives S3 events and sends to EventBridge
     events:
-      - s3: alices-files
-        events: 
-          - s3:ObjectCreated:*
-      # - http:
-      #     path: alice
-      #     method: get
+      - s3: ${self:provider.environment.ALICES_BUCKET_NAME}
+        event: s3:ObjectCreated:*
+        rules:
+          - suffix: .xlsx
   bob:
     handler: build/bob
     description: Receives events from the EventBridge
     events:
       - eventBridge:
-          eventBus: "${self:provider.environment.EVENTBUS_NAME}"
+          eventBus: ${self:provider.environment.EVENTBUS_NAME}
           pattern:
             source:
               - bob.wakeUp
+resources:
+  Resources:
+    BobsBucket:
+      Type: AWS::S3::Bucket
