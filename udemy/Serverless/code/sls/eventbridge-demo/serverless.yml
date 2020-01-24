@@ -22,9 +22,13 @@ provider:
       Action:
         - "events:PutEvents"
       Resource: "*"
+    - Effect: "Allow"
+      Action:
+       - "s3:*"
+      Resource: { "Fn::Join": ["", ["arn:aws:s3:::${self:provider.environment.ALICES_BUCKET_NAME}", "/*" ] ] }
     - Effect: 'Allow'
       Action:
-        - 's3:PutObject'
+        - 's3:*'
       Resource: 
         Fn::Join:
           - ''
