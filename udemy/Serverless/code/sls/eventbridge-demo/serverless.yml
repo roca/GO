@@ -27,9 +27,11 @@ package:
 functions:
   alice:
     handler: build/alice
-    description: Receives http GET requests and sends to EventBridge
+    description: Receives S3 events and sends to EventBridge
     events:
-      - s3: eventbridge-files
+      - s3: alices-files
+        events: 
+          - s3:ObjectCreated:*
       # - http:
       #     path: alice
       #     method: get

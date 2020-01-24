@@ -16,6 +16,7 @@
     "update": "^0.7.4"
   },
   "dependencies": {
-    "serverless-dynamodb-ttl": "^0.1.1"
+    "serverless-dynamodb-ttl": "^0.1.1",
+    "serverless-plugin-existing-s3": "^2.4.0"
   }
 }

@@ -2,10 +2,13 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
+
+	"path/filepath"
+
+	"encoding/json"
 	"time"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -45,7 +48,7 @@ func putEvent(message string) error {
 
 	now := time.Now()
 	entries = append(entries, &eventbridge.PutEventsRequestEntry{
-		Detail:       aws.String(fmt.Sprintf("{\"message\": \"%s\"}", message)),
+		Detail:       aws.String(message),
 		Source:       aws.String("bob.wakeUp"),
 		Time:         &now,
 		EventBusName: aws.String(eventBusName),
@@ -64,21 +67,40 @@ func putEvent(message string) error {
 
 }
 
+type Message struct {
+	EventSource string    `json:"eventSource"`
+	EventTime   time.Time `json:"eventName"`
+	BucketName  string    `json:"bucketName"`
+	ObjectKey   string    `json:"objectKey"`
+}
+
 // Handler is our lambda handler invoked by the `lambda.Start` function call
 func Handler(ctx context.Context, event *events.S3Event) (events.APIGatewayProxyResponse, error) {
 
 	for _, record := range event.Records {
 		s3 := record.S3
-		message := fmt.Sprintf("%s", s3.Object.Key)
-		log.Println("Special Information" + message)
-		err := putEvent(message)
+
+		message := Message{record.EventSource, record.EventTime, s3.Bucket.Name, s3.Object.Key}
+		filename := s3.Object.Key
+		suffix := filepath.Ext(filename)
+
+		b, err := json.Marshal(&message)
 		if err != nil {
 			return events.APIGatewayProxyResponse{}, err
 		}
+
+		log.Println(string(b))
+		if suffix == ".xlsx" {
+			err = putEvent(string(b))
+			if err != nil {
+				return events.APIGatewayProxyResponse{}, err
+			}
+		}
+
 		response := events.APIGatewayProxyResponse{
 			StatusCode: http.StatusOK,
 			Headers:    GetResponseHeaders(),
-			Body:       string(message),
+			Body:       string(b),
 		}
 
 		return response, nil
