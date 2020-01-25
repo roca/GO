@@ -10,7 +10,7 @@ provider:
   endpointType: regional
   environment:
     EVENTBUS_NAME: AliceBob
-    ALICES_BUCKET_NAME: alices-files
+    ALICES_BUCKET_NAME: alices-files-bucket
     BOBS_BUCKET_ARN:
       Fn::Join:
         - ''
@@ -22,10 +22,6 @@ provider:
       Action:
         - "events:PutEvents"
       Resource: "*"
-    - Effect: "Allow"
-      Action:
-       - "s3:*"
-      Resource: { "Fn::Join": ["", ["arn:aws:s3:::${self:provider.environment.ALICES_BUCKET_NAME}", "/*" ] ] }
     - Effect: 'Allow'
       Action:
         - 's3:*'
@@ -35,7 +31,7 @@ provider:
           - - 'arn:aws:s3:::'
             - Ref: BobsBucket
             - '/*'
-  profile: saml
+  # profile: saml
 
 
 package:
