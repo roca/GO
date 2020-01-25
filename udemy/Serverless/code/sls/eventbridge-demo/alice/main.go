@@ -44,8 +44,6 @@ func putEvent(message string) error {
 
 	var entries []*eventbridge.PutEventsRequestEntry
 
-	log.Println(message)
-
 	now := time.Now()
 	entries = append(entries, &eventbridge.PutEventsRequestEntry{
 		Detail:       aws.String(message),
@@ -62,7 +60,10 @@ func putEvent(message string) error {
 		return err
 	}
 
-	log.Println((output))
+	b, err := json.MarshalIndent(&output, "", "\t")
+	if err != nil {
+		log.Println(string(b))
+	}
 	return nil
 
 }
@@ -77,6 +78,12 @@ type Message struct {
 // Handler is our lambda handler invoked by the `lambda.Start` function call
 func Handler(ctx context.Context, event *events.S3Event) (events.APIGatewayProxyResponse, error) {
 
+	fileTypes := make(map[string]string)
+	fileTypes["xls"] = "Microsoft Excel 97-2003 Worksheet"
+	fileTypes["xlt"] = "Microsoft Excel 97-2003 Template"
+	fileTypes["xlsx"] = "Excel WorkBook"
+	fileTypes["xltx"] = "Excel Template"
+
 	for _, record := range event.Records {
 		s3 := record.S3
 
@@ -84,13 +91,14 @@ func Handler(ctx context.Context, event *events.S3Event) (events.APIGatewayProxy
 		filename := s3.Object.Key
 		suffix := filepath.Ext(filename)
 
-		b, err := json.Marshal(&message)
+		b, err := json.MarshalIndent(&message, "", "\t")
 		if err != nil {
 			return events.APIGatewayProxyResponse{}, err
 		}
 
 		log.Println(string(b))
-		if suffix == ".xlsx" {
+
+		if _,ok := fileTypes[suffix] ; ok {
 			err = putEvent(string(b))
 			if err != nil {
 				return events.APIGatewayProxyResponse{}, err
