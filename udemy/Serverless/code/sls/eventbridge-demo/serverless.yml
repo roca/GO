@@ -11,26 +11,16 @@ provider:
   environment:
     EVENTBUS_NAME: AliceBob
     ALICES_BUCKET_NAME: alices-files-bucket
-    BOBS_BUCKET_ARN:
-      Fn::Join:
-        - ''
-        - - 'arn:aws:s3:::'
-          - Ref: BobsBucket
-          - '/*'
+    BOBS_BUCKET_NAME: bobs-files-bucket
   iamRoleStatements:
-    - Effect: "Allow"
+    - Effect: 'Allow'
       Action:
-        - "events:PutEvents"
+        - 'events:PutEvents'
       Resource: "*"
     - Effect: 'Allow'
       Action:
         - 's3:*'
-      Resource: 
-        Fn::Join:
-          - ''
-          - - 'arn:aws:s3:::'
-            - Ref: BobsBucket
-            - '/*'
+      Resource: '*'
   # profile: saml
 
 
@@ -62,3 +52,5 @@ resources:
   Resources:
     BobsBucket:
       Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:provider.environment.BOBS_BUCKET_NAME}

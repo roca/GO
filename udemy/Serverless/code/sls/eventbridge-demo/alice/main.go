@@ -70,7 +70,7 @@ func putEvent(message string) error {
 
 type Message struct {
 	EventSource string    `json:"eventSource"`
-	EventTime   time.Time `json:"eventName"`
+	EventTime   time.Time `json:"eventTime"`
 	BucketName  string    `json:"bucketName"`
 	ObjectKey   string    `json:"objectKey"`
 }
@@ -79,10 +79,10 @@ type Message struct {
 func Handler(ctx context.Context, event *events.S3Event) (events.APIGatewayProxyResponse, error) {
 
 	fileTypes := make(map[string]string)
-	fileTypes["xls"] = "Microsoft Excel 97-2003 Worksheet"
-	fileTypes["xlt"] = "Microsoft Excel 97-2003 Template"
-	fileTypes["xlsx"] = "Excel WorkBook"
-	fileTypes["xltx"] = "Excel Template"
+	fileTypes[".xls"] = "Microsoft Excel 97-2003 Worksheet"
+	fileTypes[".xlt"] = "Microsoft Excel 97-2003 Template"
+	fileTypes[".xlsx"] = "Excel WorkBook"
+	fileTypes[".xltx"] = "Excel Template"
 
 	for _, record := range event.Records {
 		s3 := record.S3
@@ -98,7 +98,7 @@ func Handler(ctx context.Context, event *events.S3Event) (events.APIGatewayProxy
 
 		log.Println(string(b))
 
-		if _,ok := fileTypes[suffix] ; ok {
+		if _, ok := fileTypes[suffix]; ok {
 			err = putEvent(string(b))
 			if err != nil {
 				return events.APIGatewayProxyResponse{}, err
