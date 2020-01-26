@@ -1,6 +1,15 @@
 service: eventbridge-demo
 frameworkVersion: '>=1.28.0 <2.0.0'
 
+plugins:
+  - serverless-dynamodb-ttl
+
+custom:
+  dynamodb:
+    ttl:
+      - table: ${self:provider.environment.FILES_TABLE}
+        field: expires
+
 provider:
   name: aws
   runtime: go1.x
@@ -12,6 +21,9 @@ provider:
     EVENTBUS_NAME: AliceBob
     ALICES_BUCKET_NAME: alices-files-bucket
     BOBS_BUCKET_NAME: bobs-files-bucket
+    FILES_TABLE: BobsFilesTable
+    FILES_ARCHIVE_TABLE: BobsFilesArchiveTable
+    FILE_INDEX01: file_name-index
   iamRoleStatements:
     - Effect: 'Allow'
       Action:
@@ -21,6 +33,26 @@ provider:
       Action:
         - 's3:*'
       Resource: '*'
+    - Effect: Allow
+      Action:
+        - dynamodb:DescribeStream
+        - dynamodb:GetRecords
+        - dynamodb:GetShardIterator
+        - dynamodb:ListStreams
+        - dynamodb:BatchWriteItem 
+        - dynamodb:Query
+        - dynamodb:PutItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.FILES_TABLE}"
+    - Effect: Allow
+      Action:
+        - dynamodb:PutItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.FILES_ARCHIVE_TABLE}"
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.FILES_TABLE}/index/${self:provider.environment.FILE_INDEX01}"
+
   # profile: saml
 
 
@@ -48,9 +80,72 @@ functions:
           pattern:
             source:
               - bob.wakeUp
+  archive:
+    handler: build/archive
+    description: STREAM to archive
+    events:
+      - stream:
+          type: dynamodb
+          batchSize: 5
+          startingPosition: TRIM_HORIZON
+          enabled: true
+          arn: 
+            Fn::GetAtt:
+              - FilesTable
+              - StreamArn
 resources:
   Resources:
     BobsBucket:
       Type: AWS::S3::Bucket
       Properties:
         BucketName: ${self:provider.environment.BOBS_BUCKET_NAME}
+    FilesTable:
+      Type: AWS::DynamoDB::Table
+      DeletionPolicy: Retain
+      Properties:
+        TableName: ${self:provider.environment.FILES_TABLE}
+        AttributeDefinitions:
+          - AttributeName: file_id
+            AttributeType: S
+          - AttributeName: timestamp
+            AttributeType: N
+          - AttributeName: file_name
+            AttributeType: S
+        KeySchema:
+          - AttributeName: file_id
+            KeyType: HASH
+          - AttributeName: timestamp
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        GlobalSecondaryIndexes:
+          - IndexName: ${self:provider.environment.FILE_INDEX01}
+            KeySchema:
+              - AttributeName: file_name
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+            ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1
+        StreamSpecification:
+          StreamViewType: NEW_AND_OLD_IMAGES
+    FilesArchiveTable:
+      Type: AWS::DynamoDB::Table
+      DeletionPolicy: Retain
+      Properties:
+        TableName: ${self:provider.environment.FILES_ARCHIVE_TABLE}
+        AttributeDefinitions:
+          - AttributeName: file_id
+            AttributeType: S
+          - AttributeName: timestamp
+            AttributeType: N
+        KeySchema:
+          - AttributeName: file_id
+            KeyType: HASH
+          - AttributeName: timestamp
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
