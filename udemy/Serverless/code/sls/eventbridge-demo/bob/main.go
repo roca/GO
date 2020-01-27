@@ -16,6 +16,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/s3"
 
+	svclambda "github.com/aws/aws-sdk-go/service/lambda"
 	uuid "github.com/satori/go.uuid"
 )
 
@@ -37,6 +38,7 @@ type FileItem struct {
 var sess *session.Session
 var svc *s3.S3
 var dbSvc *dynamodb.DynamoDB
+var lambdaSvc *svclambda.Lambda
 var bobsBucketName string
 var tableName string
 
@@ -46,6 +48,8 @@ func init() {
 	}))
 	svc = s3.New(sess)
 	dbSvc = dynamodb.New(sess)
+	lambdaSvc = svclambda.New(sess)
+
 	bobsBucketName = os.Getenv("BOBS_BUCKET_NAME")
 	tableName = os.Getenv("FILES_TABLE")
 }
@@ -80,6 +84,17 @@ func Handler(ctx context.Context, event events.CloudWatchEvent) (Message, error)
 	dbErr := processFile(message)
 	if dbErr != nil {
 		return Message{}, dbErr
+	}
+
+	input := &svclambda.InvokeInput{
+		FunctionName:   aws.String("parser"),
+		InvocationType: aws.String("RequestResponse"),
+		Payload:        b,
+	}
+
+	_, err = lambdaSvc.Invoke(input)
+	if err != nil {
+		return Message{}, err
 	}
 
 	return message, nil

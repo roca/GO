@@ -53,7 +53,7 @@ provider:
         - dynamodb:Query
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.FILES_TABLE}/index/${self:provider.environment.FILE_INDEX01}"
 
-  # profile: saml
+  profile: saml
 
 
 package:
@@ -93,6 +93,10 @@ functions:
             Fn::GetAtt:
               - FilesTable
               - StreamArn
+  parser: 
+    handler: build/parser
+    name: parser
+    description: Parses Excel files
 resources:
   Resources:
     BobsBucket:
