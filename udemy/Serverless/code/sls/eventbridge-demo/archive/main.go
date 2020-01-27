@@ -20,11 +20,11 @@ var svc *dynamodb.DynamoDB
 var tableName string
 
 type FileItem struct {
-	FileID          string            `json:"file_id"`
-	FileName        string            `json:"file_name"`
-	TimeStamp       int64             `json:"timestamp"`
-	Expires         int64             `json:"expires"`
-	AttributeValues map[string]string `json:"attribute_values"`
+	FileID          string `json:"file_id"`
+	FileName        string `json:"file_name"`
+	TimeStamp       int64  `json:"timestamp"`
+	Expires         int64  `json:"expires"`
+	AttributeValues string `json:"attribute_values"`
 }
 
 func init() {
@@ -57,7 +57,7 @@ func UnmarshalStreamImage(attribute map[string]events.DynamoDBAttributeValue, ou
 }
 
 func handler(ctx context.Context, event events.DynamoDBEvent) error {
-	var fileItem  FileItem
+	var fileItem FileItem
 
 	for _, record := range event.Records {
 
@@ -70,20 +70,14 @@ func handler(ctx context.Context, event events.DynamoDBEvent) error {
 				return err
 			}
 
-			b, err := json.Marshal(&fileItem.AttributeValues)
-		if err != nil {
-			return err
-		}
-
-
 			_, err = svc.PutItem(&dynamodb.PutItemInput{
 				TableName: aws.String(tableName),
 				Item: map[string]*dynamodb.AttributeValue{
-					"file_id":   {S: aws.String(fileItem.FileID)},
-					"file_name": {S: aws.String(fileItem.FileName)},
-					"timestamp": {N: aws.String(fmt.Sprintf("%d", fileItem.TimeStamp))},
-					"expires":   {N: aws.String(fmt.Sprintf("%d", fileItem.Expires))},
-				    "attributes_values":   {S: aws.String(string(b))},
+					"file_id":           {S: aws.String(fileItem.FileID)},
+					"file_name":         {S: aws.String(fileItem.FileName)},
+					"timestamp":         {N: aws.String(fmt.Sprintf("%d", fileItem.TimeStamp))},
+					"expires":           {N: aws.String(fmt.Sprintf("%d", fileItem.Expires))},
+					"attributes_values": {S: aws.String(fileItem.AttributeValues)},
 				},
 			})
 			if err != nil {
