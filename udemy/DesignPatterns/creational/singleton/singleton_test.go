@@ -2,7 +2,7 @@ package singleton
 
 import "testing"
 
-func TestSum(t *testing.T) {
+func TestGetInstance(t *testing.T) {
 	counter1 := GetInstance()
 	if counter1 == nil {
 		// Test of acceptance criteria 1 failed

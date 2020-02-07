@@ -8,12 +8,16 @@ type singleton struct {
 	count int
 }
 
-var instance *singleton
-
-func GetInstance() Singleton {
-	return nil
+func (s *singleton) AddOne() int {
+	s.count++
+	return s.count
 }
 
-func (s *singleton) AddOne() int {
-	return 0
+var instance *singleton
+
+func GetInstance() Singleton { // Return object must match interface
+	if instance == nil {
+		instance = new(singleton) // new() returns a pointer
+	}
+	return instance
 }
