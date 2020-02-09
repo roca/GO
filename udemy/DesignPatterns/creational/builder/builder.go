@@ -7,16 +7,30 @@ type BuildProcess interface {
 	GetVehicle() VehicleProduct
 }
 
-//Director
-type ManufacturingDirector struct {
+type ManufacturingDirector interface {
+	Construct()
+	SetBuilder(b BuildProcess)
+}
+
+//Director using the Singleton Pattern
+type manufacturingDirector struct {
 	builder BuildProcess
 }
 
-func (f *ManufacturingDirector) Construct() {
+func (f *manufacturingDirector) Construct() {
 	f.builder.SetSeats().SetStructure().SetWheels()
 }
-func (f *ManufacturingDirector) SetBuilder(b BuildProcess) {
+func (f *manufacturingDirector) SetBuilder(b BuildProcess) {
 	f.builder = b
+}
+
+var instance *manufacturingDirector
+
+func GetManufacturerDirector() ManufacturingDirector {
+	if instance == nil {
+		instance = new(manufacturingDirector) // new() returns a pointer
+	}
+	return instance
 }
 
 //Product
@@ -65,5 +79,26 @@ func (b *BikeBuilder) SetStructure() BuildProcess {
 	return b
 }
 func (b *BikeBuilder) GetVehicle() VehicleProduct {
+	return b.v
+}
+
+//A Builder of type motorbike
+type BusBuilder struct {
+	v VehicleProduct
+}
+
+func (b *BusBuilder) SetWheels() BuildProcess {
+	b.v.Wheels = 8
+	return b
+}
+func (b *BusBuilder) SetSeats() BuildProcess {
+	b.v.Seats = 30
+	return b
+}
+func (b *BusBuilder) SetStructure() BuildProcess {
+	b.v.Structure = "Bus"
+	return b
+}
+func (b *BusBuilder) GetVehicle() VehicleProduct {
 	return b.v
 }
