@@ -37,3 +37,12 @@ func (c *CashPM) Pay(amount float32) string {
 func (c *DebitCardPM) Pay(amount float32) string {
 	return fmt.Sprintf("payed using debit card. amount: %#0.2f", amount)
 }
+
+type NewDebitCardPM struct{}
+func (c *NewDebitCardPM) Pay(amount float32) string {
+	return fmt.Sprintf("payed using debit card (new). amount: %#0.2f", amount)
+}
+type CreditCardPM struct{}
+func (c *CreditCardPM) Pay(amount float32) string {
+	return fmt.Sprintf("payed using debit card (cash). amount: %#0.2f", amount)
+}
