@@ -22,3 +22,4 @@ type PrinterImpl2 struct {
 func (d *PrinterImpl2) PrintMessage(msg string) error {
 	return errors.New("Not implemented yet")
 }
+
