@@ -43,7 +43,7 @@ func (u *UserListProxy) FindUser(id int32) (User, error) {
 	}
 	user, err = u.MockedDatabase.FindUser(id)
 	if err != nil {
-		return User{}, nil
+		return User{}, err
 	}
 	u.addUserToStack(user)
 	fmt.Println("Returning user from database")
