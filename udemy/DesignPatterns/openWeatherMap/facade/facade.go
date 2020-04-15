@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"net/http"
 )
 
@@ -61,10 +60,10 @@ type Weather struct {
 }
 
 func (c *CurrentWeatherData) GetByGeoCoordinates(lat, lon float32) (weather *Weather, err error) {
-	return c.doRequest(fmt.Sprintf("http://api.openweathermap.org/data/2.5/weatherq=%fID=%f&APPID%s", lat, lon, c.APIkey))
+	return c.doRequest(fmt.Sprintf("http://api.openweathermap.org/data/2.5/weather?lat=%f&lon=%f&appid=%s", lat, lon, c.APIkey))
 }
 func (c *CurrentWeatherData) GetByCityAndCountryCode(city, countryCode string) (weather *Weather, err error) {
-	return c.doRequest(fmt.Sprintf("http://api.openweathermap.org/data/2.5/weatherq=%s,%s&APPID=%s", city, countryCode, c.APIkey))
+	return c.doRequest(fmt.Sprintf("http://api.openweathermap.org/data/2.5/weather?q=%s,%s&appid=%s", city, countryCode, c.APIkey))
 }
 
 func (p *CurrentWeatherData) responseParser(body io.Reader) (*Weather, error) {
@@ -104,4 +103,3 @@ func (c *CurrentWeatherData) doRequest(uri string) (weather *Weather, err error)
 	return
 
 }
-
