@@ -1,4 +1,4 @@
-package openWeatherMap
+package facade
 
 import (
 	"bytes"
