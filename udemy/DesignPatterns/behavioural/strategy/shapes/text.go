@@ -1,8 +1,18 @@
 package shapes
 
-type ConsoleSquare struct{}
+import (
+	"bytes"
+	"io"
+
+	"example.com/strategy"
+)
+
+type ConsoleSquare struct {
+	strategy.PrintOutPut
+}
 
 func (c *ConsoleSquare) Print() error {
-	println("Square")
+	r := bytes.NewReader([]byte("Square\n"))
+	io.Copy(c.Writer, r)
 	return nil
 }
