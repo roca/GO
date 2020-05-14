@@ -1,0 +1,23 @@
+service: sls-state-machine
+frameworkVersion: '>=1.28.0 <2.0.0'
+
+plugins:
+  - serverless-step-functions
+
+provider:
+  name: aws
+  stage: dev 
+  region: us-east-1
+  endpointType: regional
+
+stepFunctions:
+  stateMachines:
+    hellostepfunc:
+        definition:
+          Comment: "HelloWorld example"
+          StartAt: HelloWorld
+          States:
+            HelloWorld:
+              Type: Pass
+              Result: "Hello World"
+              End: true
