@@ -91,7 +91,7 @@
     "HellostepfuncStepFunctionsStateMachine": {
       "Type": "AWS::StepFunctions::StateMachine",
       "Properties": {
-        "DefinitionString": "{\n  \"Comment\": \"HelloWorld example\",\n  \"StartAt\": \"WaitFormSomeTime\",\n  \"States\": {\n    \"WaitFormSomeTime\": {\n      \"Comment\": \"Wait state\",\n      \"Type\": \"Wait\",\n      \"Seconds\": 5,\n      \"Next\": \"HelloWorld\"\n    },\n    \"HelloWorld\": {\n      \"Comment\": \"Hello World Step\",\n      \"Type\": \"Pass\",\n      \"Result\": \"Hello World\",\n      \"End\": true\n    }\n  }\n}",
+        "DefinitionString": "{\n  \"Comment\": \"HelloWorld example\",\n  \"StartAt\": \"WaitFormSomeTime\",\n  \"States\": {\n    \"WaitFormSomeTime\": {\n      \"Comment\": \"Wait state\",\n      \"Type\": \"Wait\",\n      \"SecondsPath\": \"$.WaitTime\",\n      \"Next\": \"HelloWorld\"\n    },\n    \"HelloWorld\": {\n      \"Comment\": \"Hello World Step\",\n      \"Type\": \"Pass\",\n      \"Result\": \"Hello World\",\n      \"End\": true\n    }\n  }\n}",
         "RoleArn": {
           "Fn::GetAtt": [
             "HellostepfuncStepFunctionsStateMachineRole",

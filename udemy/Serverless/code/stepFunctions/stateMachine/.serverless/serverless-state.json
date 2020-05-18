@@ -6,7 +6,7 @@
     },
     "provider": {
       "stage": "dev",
-      "variableSyntax": "\\${([ ~:a-zA-Z0-9._@'\",\\-\\/\\(\\)*?]+?)}",
+      "variableSyntax": "\\${([^{}]+?)}",
       "name": "aws",
       "region": "us-east-1",
       "endpointType": "regional",
@@ -105,7 +105,7 @@
           "HellostepfuncStepFunctionsStateMachine": {
             "Type": "AWS::StepFunctions::StateMachine",
             "Properties": {
-              "DefinitionString": "{\n  \"Comment\": \"HelloWorld example\",\n  \"StartAt\": \"WaitFormSomeTime\",\n  \"States\": {\n    \"WaitFormSomeTime\": {\n      \"Comment\": \"Wait state\",\n      \"Type\": \"Wait\",\n      \"Seconds\": 5,\n      \"Next\": \"HelloWorld\"\n    },\n    \"HelloWorld\": {\n      \"Comment\": \"Hello World Step\",\n      \"Type\": \"Pass\",\n      \"Result\": \"Hello World\",\n      \"End\": true\n    }\n  }\n}",
+              "DefinitionString": "{\n  \"Comment\": \"HelloWorld example\",\n  \"StartAt\": \"WaitFormSomeTime\",\n  \"States\": {\n    \"WaitFormSomeTime\": {\n      \"Comment\": \"Wait state\",\n      \"Type\": \"Wait\",\n      \"SecondsPath\": \"$.WaitTime\",\n      \"Next\": \"HelloWorld\"\n    },\n    \"HelloWorld\": {\n      \"Comment\": \"Hello World Step\",\n      \"Type\": \"Pass\",\n      \"Result\": \"Hello World\",\n      \"End\": true\n    }\n  }\n}",
               "RoleArn": {
                 "Fn::GetAtt": [
                   "HellostepfuncStepFunctionsStateMachineRole",
@@ -218,7 +218,7 @@
               "WaitFormSomeTime": {
                 "Comment": "Wait state",
                 "Type": "Wait",
-                "Seconds": 5,
+                "SecondsPath": "$.WaitTime",
                 "Next": "HelloWorld"
               },
               "HelloWorld": {
@@ -235,7 +235,7 @@
     }
   },
   "package": {
-    "artifactDirectoryName": "serverless/sls-state-machine/dev/1589791782715-2020-05-18T08:49:42.715Z",
+    "artifactDirectoryName": "serverless/sls-state-machine/dev/1589810288957-2020-05-18T13:58:08.957Z",
     "artifact": ""
   }
 }

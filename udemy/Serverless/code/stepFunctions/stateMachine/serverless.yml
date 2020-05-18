@@ -20,7 +20,7 @@ stepFunctions:
             WaitFormSomeTime:
               Comment: "Wait state"
               Type: Wait
-              Seconds: 5
+              SecondsPath: $.WaitTime
               Next: HelloWorld
             HelloWorld:
               Comment: "Hello World Step"
