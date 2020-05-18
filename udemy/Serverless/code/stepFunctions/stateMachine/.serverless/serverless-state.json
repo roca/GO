@@ -6,7 +6,7 @@
     },
     "provider": {
       "stage": "dev",
-      "variableSyntax": "\\${([^{}]+?)}",
+      "variableSyntax": "\\${([ ~:a-zA-Z0-9._@'\",\\-\\/\\(\\)*?]+?)}",
       "name": "aws",
       "region": "us-east-1",
       "endpointType": "regional",
@@ -105,7 +105,7 @@
           "HellostepfuncStepFunctionsStateMachine": {
             "Type": "AWS::StepFunctions::StateMachine",
             "Properties": {
-              "DefinitionString": "{\n  \"Comment\": \"HelloWorld example\",\n  \"StartAt\": \"HelloWorld\",\n  \"States\": {\n    \"HelloWorld\": {\n      \"Type\": \"Pass\",\n      \"Result\": \"Hello World\",\n      \"End\": true\n    }\n  }\n}",
+              "DefinitionString": "{\n  \"Comment\": \"HelloWorld example\",\n  \"StartAt\": \"WaitFormSomeTime\",\n  \"States\": {\n    \"WaitFormSomeTime\": {\n      \"Comment\": \"Wait state\",\n      \"Type\": \"Wait\",\n      \"Seconds\": 5,\n      \"Next\": \"HelloWorld\"\n    },\n    \"HelloWorld\": {\n      \"Comment\": \"Hello World Step\",\n      \"Type\": \"Pass\",\n      \"Result\": \"Hello World\",\n      \"End\": true\n    }\n  }\n}",
               "RoleArn": {
                 "Fn::GetAtt": [
                   "HellostepfuncStepFunctionsStateMachineRole",
@@ -213,9 +213,16 @@
         "hellostepfunc": {
           "definition": {
             "Comment": "HelloWorld example",
-            "StartAt": "HelloWorld",
+            "StartAt": "WaitFormSomeTime",
             "States": {
+              "WaitFormSomeTime": {
+                "Comment": "Wait state",
+                "Type": "Wait",
+                "Seconds": 5,
+                "Next": "HelloWorld"
+              },
               "HelloWorld": {
+                "Comment": "Hello World Step",
                 "Type": "Pass",
                 "Result": "Hello World",
                 "End": true
@@ -228,7 +235,7 @@
     }
   },
   "package": {
-    "artifactDirectoryName": "serverless/sls-state-machine/dev/1589483741155-2020-05-14T19:15:41.155Z",
+    "artifactDirectoryName": "serverless/sls-state-machine/dev/1589791782715-2020-05-18T08:49:42.715Z",
     "artifact": ""
   }
 }

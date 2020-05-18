@@ -1,0 +1,144 @@
+{
+  "StartAt": "GetFileType",
+  "States": {
+    "GetFileType": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:132172135366:function:getFileType",
+      "TimeoutSeconds": 3,
+      "ResultPath": "$.results.fileType",
+     "Next": "CheckFileType",
+      "Catch": [
+        { 
+        "ErrorEquals": ["States.ALL"],
+          "Next": "QuitMain"
+        }
+      ]
+    },
+    "CheckFileType": {
+      "Type": "Choice",
+      "Choices": [
+        {
+        "Variable": "$.results.fileType",
+        "StringEquals": "jpg",
+        "Next": "ProcessFile"
+        }
+      ],
+      "Default": "DeleteSourceFile"
+    },
+    "DeleteSourceFile": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:132172135366:function:deleteFile",
+      "TimeoutSeconds": 3,
+      "ResultPath": "$.results.deletionStatus",
+      "OutputPath": "$.results",
+      "End": true,
+      "Catch": [
+        { 
+        "ErrorEquals": ["States.ALL"],
+          "Next": "QuitMain"
+        }
+      ]
+    },
+    "ProcessFile": {
+      "Type" : "Parallel",
+      "ResultPath": "$.results.images",
+      "Next": "WriteToDynamaDB",
+      "Branches": [
+        {
+          "StartAt": "CopyToDestination",
+          "States": {
+            "CopyToDestination": {
+              "Type": "Task",
+              "Resource": "arn:aws:lambda:us-east-1:132172135366:function:copyFile",
+              "TimeoutSeconds": 3,
+              "ResultPath": "$.image.original",
+              "OutputPath": "$.image",
+              "End": true,
+              "Retry": [
+                {
+                  "ErrorEquals": ["States.TaskFailed","States.Timeout"],
+                  "IntervalSeconds":5,
+                  "MaxAttempts":2,
+                  "BackoffRate":2.0
+                },
+                {
+                  "ErrorEquals": ["States.All"],
+                  "IntervalSeconds":2,
+                  "MaxAttempts":2,
+                  "BackoffRate":2.0
+                }
+              ],
+              "Catch": [
+                { 
+                "ErrorEquals": ["States.ALL"],
+                "Next": "QuitCopy"
+                }
+              ]
+            },
+            "QuitCopy": {
+              "Type": "Fail",
+                "Error": "CopyError",
+                "Cause": "An error occurred while executing the CopyToDestination task"
+             }
+          }
+        },
+        {
+          "StartAt": "ResizeImage",
+          "States": {
+            "ResizeImage": {
+              "Type": "Task",
+              "Resource": "arn:aws:lambda:us-east-1:132172135366:function:resizeImage",
+              "TimeoutSeconds": 3,
+              "ResultPath": "$.image.resized",
+              "OutputPath": "$.image",
+              "End": true,
+              "Retry": [
+                {
+                  "ErrorEquals": ["States.TaskFailed","States.Timeout"],
+                  "IntervalSeconds":5,
+                  "MaxAttempts":2,
+                  "BackoffRate":2.0
+                },
+                {
+                  "ErrorEquals": ["States.All"],
+                  "IntervalSeconds":2,
+                  "MaxAttempts":2,
+                  "BackoffRate":2.0
+                }
+              ],
+              "Catch": [
+                { 
+                "ErrorEquals": ["States.ALL"],
+                 "Next": "QuitResize"
+                }
+              ]
+            },
+            "QuitResize": {
+              "Type": "Fail",
+                "Error": "ResizedError",
+                "Cause": "An error occurred while executing the ResizeImage task"
+             }
+          }
+        }
+      ]
+    },
+    "WriteToDynamaDB": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:132172135366:function:writeToDynamoDB",
+      "TimeoutSeconds": 3,
+      "ResultPath": "$.results.writeStatus",
+      "Next": "DeleteSourceFile",
+      "Catch": [
+        { 
+        "ErrorEquals": ["States.ALL"],
+          "Next": "QuitMain"
+        }
+      ]
+   },
+    "QuitMain": {
+    "Type": "Fail",
+      "Error": "GenericError",
+      "Cause": "An error occurred while executing the state machine"
+   }
+  }
+}

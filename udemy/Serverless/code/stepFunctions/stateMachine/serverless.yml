@@ -15,9 +15,15 @@ stepFunctions:
     hellostepfunc:
         definition:
           Comment: "HelloWorld example"
-          StartAt: HelloWorld
+          StartAt: WaitFormSomeTime
           States:
+            WaitFormSomeTime:
+              Comment: "Wait state"
+              Type: Wait
+              Seconds: 5
+              Next: HelloWorld
             HelloWorld:
+              Comment: "Hello World Step"
               Type: Pass
               Result: "Hello World"
               End: true
