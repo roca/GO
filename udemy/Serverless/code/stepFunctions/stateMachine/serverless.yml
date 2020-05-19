@@ -12,7 +12,7 @@ provider:
 
 stepFunctions:
   stateMachines:
-    hellostepfunc:
+    HelloStepFunc:
         definition:
           Comment: "HelloWorld example"
           StartAt: WaitFormSomeTime
@@ -21,9 +21,15 @@ stepFunctions:
               Comment: "Wait state"
               Type: Wait
               SecondsPath: $.WaitTime
+              Next: SquareNumber
+            SquareNumber:
+              Comment: "return square of the number"
+              Type: Task
+              Resource: arn:aws:lambda:us-east-1:132172135366:function:calculateSquare
+              TimeoutSeconds: 10
               Next: HelloWorld
             HelloWorld:
               Comment: "Hello World Step"
               Type: Pass
-              Result: "Hello World"
+              # InputPath: $.answer
               End: true

@@ -56,7 +56,7 @@
         }
       }
     },
-    "HellostepfuncStepFunctionsStateMachineRole": {
+    "HelloStepFuncStepFunctionsStateMachineRole": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -78,9 +78,21 @@
               "Version": "2012-10-17",
               "Statement": [
                 {
-                  "Effect": "Deny",
-                  "Action": "*",
-                  "Resource": "*"
+                  "Effect": "Allow",
+                  "Action": [
+                    "lambda:InvokeFunction"
+                  ],
+                  "Resource": [
+                    "arn:aws:lambda:us-east-1:132172135366:function:calculateSquare",
+                    {
+                      "Fn::Sub": [
+                        "${functionArn}:*",
+                        {
+                          "functionArn": "arn:aws:lambda:us-east-1:132172135366:function:calculateSquare"
+                        }
+                      ]
+                    }
+                  ]
                 }
               ]
             }
@@ -88,19 +100,19 @@
         ]
       }
     },
-    "HellostepfuncStepFunctionsStateMachine": {
+    "HelloStepFuncStepFunctionsStateMachine": {
       "Type": "AWS::StepFunctions::StateMachine",
       "Properties": {
-        "DefinitionString": "{\n  \"Comment\": \"HelloWorld example\",\n  \"StartAt\": \"WaitFormSomeTime\",\n  \"States\": {\n    \"WaitFormSomeTime\": {\n      \"Comment\": \"Wait state\",\n      \"Type\": \"Wait\",\n      \"SecondsPath\": \"$.WaitTime\",\n      \"Next\": \"HelloWorld\"\n    },\n    \"HelloWorld\": {\n      \"Comment\": \"Hello World Step\",\n      \"Type\": \"Pass\",\n      \"Result\": \"Hello World\",\n      \"End\": true\n    }\n  }\n}",
+        "DefinitionString": "{\n  \"Comment\": \"HelloWorld example\",\n  \"StartAt\": \"WaitFormSomeTime\",\n  \"States\": {\n    \"WaitFormSomeTime\": {\n      \"Comment\": \"Wait state\",\n      \"Type\": \"Wait\",\n      \"SecondsPath\": \"$.WaitTime\",\n      \"Next\": \"SquareNumber\"\n    },\n    \"SquareNumber\": {\n      \"Comment\": \"return square of the number\",\n      \"Type\": \"Task\",\n      \"Resource\": \"arn:aws:lambda:us-east-1:132172135366:function:calculateSquare\",\n      \"TimeoutSeconds\": 10,\n      \"Next\": \"HelloWorld\"\n    },\n    \"HelloWorld\": {\n      \"Comment\": \"Hello World Step\",\n      \"Type\": \"Pass\",\n      \"End\": true\n    }\n  }\n}",
         "RoleArn": {
           "Fn::GetAtt": [
-            "HellostepfuncStepFunctionsStateMachineRole",
+            "HelloStepFuncStepFunctionsStateMachineRole",
             "Arn"
           ]
         }
       },
       "DependsOn": [
-        "HellostepfuncStepFunctionsStateMachineRole"
+        "HelloStepFuncStepFunctionsStateMachineRole"
       ]
     }
   },
@@ -110,10 +122,10 @@
         "Ref": "ServerlessDeploymentBucket"
       }
     },
-    "HellostepfuncStepFunctionsStateMachineArn": {
+    "HelloStepFuncStepFunctionsStateMachineArn": {
       "Description": "Current StateMachine Arn",
       "Value": {
-        "Ref": "HellostepfuncStepFunctionsStateMachine"
+        "Ref": "HelloStepFuncStepFunctionsStateMachine"
       }
     }
   }
