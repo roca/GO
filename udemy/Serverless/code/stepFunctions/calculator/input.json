@@ -1,0 +1,10 @@
+{
+    "lambda": {
+        "Operation": "add",
+        "Input": {
+        "Operand1": 5,
+        "Operand2": 3
+        }
+    },
+    "moreData": "abcd"
+  }
