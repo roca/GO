@@ -3,7 +3,6 @@ frameworkVersion: '>=1.28.0 <2.0.0'
 
 plugins:
   - serverless-step-functions
-
 provider:
   name: aws
   stage: dev 
@@ -13,6 +12,10 @@ provider:
 stepFunctions:
   stateMachines:
     HelloStepFunc:
+        events:
+          - http:
+              path: /math/square
+              method: POST
         definition:
           Comment: "HelloWorld example"
           StartAt: WaitFormSomeTime
