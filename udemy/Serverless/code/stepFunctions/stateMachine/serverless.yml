@@ -5,9 +5,23 @@ plugins:
   - serverless-step-functions
 provider:
   name: aws
+  runtime: go1.x
+  memorySize: 128
+  timeout: 5
   stage: dev 
   region: us-east-1
   endpointType: regional
+
+package:
+  exclude:
+    - ./**
+  include:
+    - ./build/**
+
+functions:
+  stateInvoke:
+    handler: build/stateInvoke
+    description: "This lambda invokes a state machine"
 
 stepFunctions:
   stateMachines:
