@@ -129,6 +129,64 @@
               "HelloStepFuncStepFunctionsStateMachineRole"
             ]
           },
+          "HelloStepFuncStepFunctionsEventsRuleSchedule1": {
+            "Type": "AWS::Events::Rule",
+            "Properties": {
+              "ScheduleExpression": "rate(5 minutes)",
+              "State": "DISABLED",
+              "Targets": [
+                {
+                  "Input": "{\"Comment\":\"CloudWatch Event\",\"Number\":12,\"WaitTime\":5}",
+                  "Arn": {
+                    "Ref": "HelloStepFuncStepFunctionsStateMachine"
+                  },
+                  "Id": "HelloStepFuncStepFunctionsSchedule",
+                  "RoleArn": {
+                    "Fn::GetAtt": [
+                      "HelloStepFuncScheduleToStepFunctionsRole",
+                      "Arn"
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          "HelloStepFuncScheduleToStepFunctionsRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+              "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": {
+                      "Service": "events.amazonaws.com"
+                    },
+                    "Action": "sts:AssumeRole"
+                  }
+                ]
+              },
+              "Policies": [
+                {
+                  "PolicyName": "dev-us-east-1-sls-state-machine-HelloStepFunc-schedule",
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "states:StartExecution"
+                        ],
+                        "Resource": {
+                          "Ref": "HelloStepFuncStepFunctionsStateMachine"
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
           "ApiGatewayRestApi": {
             "Type": "AWS::ApiGateway::RestApi",
             "Properties": {
@@ -291,7 +349,7 @@
               ]
             }
           },
-          "ApiGatewayDeployment1590086863434": {
+          "ApiGatewayDeployment1590172518282": {
             "Type": "AWS::ApiGateway::Deployment",
             "Properties": {
               "RestApiId": {
@@ -426,6 +484,17 @@
                 "path": "math/square",
                 "method": "post"
               }
+            },
+            {
+              "schedule": {
+                "rate": "rate(5 minutes)",
+                "enabled": false,
+                "input": {
+                  "Comment": "CloudWatch Event",
+                  "Number": 12,
+                  "WaitTime": 5
+                }
+              }
             }
           ],
           "definition": {
@@ -458,7 +527,7 @@
     }
   },
   "package": {
-    "artifactDirectoryName": "serverless/sls-state-machine/dev/1590086864799-2020-05-21T18:47:44.799Z",
+    "artifactDirectoryName": "serverless/sls-state-machine/dev/1590172521035-2020-05-22T18:35:21.035Z",
     "artifact": ""
   }
 }

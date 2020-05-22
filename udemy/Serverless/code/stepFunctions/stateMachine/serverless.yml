@@ -16,6 +16,13 @@ stepFunctions:
           - http:
               path: /math/square
               method: POST
+          - schedule:
+              rate: rate(5 minutes)
+              enabled: false
+              input:
+                Comment: "CloudWatch Event"
+                Number: 12
+                WaitTime: 5
         definition:
           Comment: "HelloWorld example"
           StartAt: WaitFormSomeTime
