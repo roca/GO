@@ -6,7 +6,7 @@
     },
     "provider": {
       "stage": "dev",
-      "variableSyntax": "\\${([ ~:a-zA-Z0-9._@'\",\\-\\/\\(\\)*?]+?)}",
+      "variableSyntax": "\\${([^{}]+?)}",
       "name": "aws",
       "region": "us-east-1",
       "endpointType": "regional",
@@ -117,7 +117,7 @@
           "CalculatorStepFuncStepFunctionsStateMachine": {
             "Type": "AWS::StepFunctions::StateMachine",
             "Properties": {
-              "DefinitionString": "{\n  \"Comment\": \"Calculator example\",\n  \"StartAt\": \"Calculate\",\n  \"States\": {\n    \"Calculate\": {\n      \"Type\": \"Task\",\n      \"Resource\": \"arn:aws:lambda:us-east-1:132172135366:function:calculator\",\n      \"InputPath\": \"$.lambda\",\n      \"End\": true\n    }\n  }\n}",
+              "DefinitionString": "{\n  \"Comment\": \"Calculator example\",\n  \"StartAt\": \"Calculate\",\n  \"States\": {\n    \"Calculate\": {\n      \"Type\": \"Task\",\n      \"Resource\": \"arn:aws:lambda:us-east-1:132172135366:function:calculator\",\n      \"InputPath\": \"$.lambda\",\n      \"ResultPath\": \"$.lambda.lambdaResult\",\n      \"OutputPath\": \"$.lambda\",\n      \"End\": true\n    }\n  }\n}",
               "RoleArn": {
                 "Fn::GetAtt": [
                   "CalculatorStepFuncStepFunctionsStateMachineRole",
@@ -231,6 +231,8 @@
                 "Type": "Task",
                 "Resource": "arn:aws:lambda:us-east-1:132172135366:function:calculator",
                 "InputPath": "$.lambda",
+                "ResultPath": "$.lambda.lambdaResult",
+                "OutputPath": "$.lambda",
                 "End": true
               }
             }
@@ -241,7 +243,7 @@
     }
   },
   "package": {
-    "artifactDirectoryName": "serverless/calculator-state-machine/dev/1589965425490-2020-05-20T09:03:45.490Z",
+    "artifactDirectoryName": "serverless/calculator-state-machine/dev/1590000506164-2020-05-20T18:48:26.164Z",
     "artifact": ""
   }
 }
