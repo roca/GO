@@ -11,6 +11,11 @@ provider:
   stage: dev 
   region: us-east-1
   endpointType: regional
+  iamRoleStatements:
+    - Effect: Allow 
+      Action: 
+        - states:StartExecution
+      Resource: arn:aws:states:us-east-1:132172135366:stateMachine:HelloStepFunc
 
 package:
   exclude:
@@ -21,11 +26,14 @@ package:
 functions:
   stateInvoke:
     handler: build/stateInvoke
+    environment:
+      STATE_MACHINE_ARN: ${self:resources.Outputs.HelloStepFunc.Value}
     description: "This lambda invokes a state machine"
 
 stepFunctions:
   stateMachines:
     HelloStepFunc:
+        name: HelloStepFunc
         events:
           - http:
               path: /math/square
@@ -57,3 +65,9 @@ stepFunctions:
               Type: Pass
               # InputPath: $.answer
               End: true
+resources:
+  Outputs:
+    HelloStepFunc:
+      Description: The ARN of the example state machine
+      Value:
+        Ref: HelloStepFunc

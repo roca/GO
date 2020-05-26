@@ -8,8 +8,20 @@
       "stage": "dev",
       "variableSyntax": "\\${([ ~:a-zA-Z0-9._@'\",\\-\\/\\(\\)*?]+?)}",
       "name": "aws",
+      "runtime": "go1.x",
+      "memorySize": 128,
+      "timeout": 5,
       "region": "us-east-1",
       "endpointType": "regional",
+      "iamRoleStatements": [
+        {
+          "Effect": "Allow",
+          "Action": [
+            "states:StartExecution"
+          ],
+          "Resource": "arn:aws:states:us-east-1:132172135366:stateMachine:HelloStepFunc"
+        }
+      ],
       "versionFunctions": true,
       "remoteFunctionData": null,
       "compiledCloudFormationTemplate": {
@@ -70,7 +82,138 @@
               }
             }
           },
-          "HelloStepFuncStepFunctionsStateMachineRole": {
+          "StateInvokeLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/sls-state-machine-dev-stateInvoke"
+            }
+          },
+          "IamRoleLambdaExecution": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+              "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": {
+                      "Service": [
+                        "lambda.amazonaws.com"
+                      ]
+                    },
+                    "Action": [
+                      "sts:AssumeRole"
+                    ]
+                  }
+                ]
+              },
+              "Policies": [
+                {
+                  "PolicyName": {
+                    "Fn::Join": [
+                      "-",
+                      [
+                        "dev",
+                        "sls-state-machine",
+                        "lambda"
+                      ]
+                    ]
+                  },
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:CreateLogStream",
+                          "logs:CreateLogGroup"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/sls-state-machine-dev*:*"
+                          }
+                        ]
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:PutLogEvents"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/sls-state-machine-dev*:*:*"
+                          }
+                        ]
+                      },
+                      {
+                        "$ref": "$[\"service\"][\"provider\"][\"iamRoleStatements\"][0]"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "Path": "/",
+              "RoleName": {
+                "Fn::Join": [
+                  "-",
+                  [
+                    "sls-state-machine",
+                    "dev",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    "lambdaRole"
+                  ]
+                ]
+              }
+            }
+          },
+          "StateInvokeLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/sls-state-machine/dev/1590514481932-2020-05-26T17:34:41.932Z/sls-state-machine.zip"
+              },
+              "FunctionName": "sls-state-machine-dev-stateInvoke",
+              "Handler": "build/stateInvoke",
+              "MemorySize": 128,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              },
+              "Runtime": "go1.x",
+              "Timeout": 5,
+              "Description": "This lambda invokes a state machine",
+              "Environment": {
+                "Variables": {
+                  "STATE_MACHINE_ARN": {
+                    "Ref": "HelloStepFunc"
+                  }
+                }
+              }
+            },
+            "DependsOn": [
+              "StateInvokeLogGroup",
+              "IamRoleLambdaExecution"
+            ]
+          },
+          "StateInvokeLambdaVersionf7KqX4A6CQGAjoa9LPb1zN71eTkaeHw2PTXIpDlcw0": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "StateInvokeLambdaFunction"
+              },
+              "CodeSha256": "yZRBllazpA4jJptt2JpsAIbnZ2C8n+sccyLc7uPfVaM=",
+              "Description": "This lambda invokes a state machine"
+            }
+          },
+          "HelloStepFuncRole": {
             "Type": "AWS::IAM::Role",
             "Properties": {
               "AssumeRolePolicyDocument": {
@@ -114,19 +257,20 @@
               ]
             }
           },
-          "HelloStepFuncStepFunctionsStateMachine": {
+          "HelloStepFunc": {
             "Type": "AWS::StepFunctions::StateMachine",
             "Properties": {
               "DefinitionString": "{\n  \"Comment\": \"HelloWorld example\",\n  \"StartAt\": \"WaitFormSomeTime\",\n  \"States\": {\n    \"WaitFormSomeTime\": {\n      \"Comment\": \"Wait state\",\n      \"Type\": \"Wait\",\n      \"SecondsPath\": \"$.WaitTime\",\n      \"Next\": \"SquareNumber\"\n    },\n    \"SquareNumber\": {\n      \"Comment\": \"return square of the number\",\n      \"Type\": \"Task\",\n      \"Resource\": \"arn:aws:lambda:us-east-1:132172135366:function:calculateSquare\",\n      \"TimeoutSeconds\": 10,\n      \"Next\": \"HelloWorld\"\n    },\n    \"HelloWorld\": {\n      \"Comment\": \"Hello World Step\",\n      \"Type\": \"Pass\",\n      \"End\": true\n    }\n  }\n}",
               "RoleArn": {
                 "Fn::GetAtt": [
-                  "HelloStepFuncStepFunctionsStateMachineRole",
+                  "HelloStepFuncRole",
                   "Arn"
                 ]
-              }
+              },
+              "StateMachineName": "HelloStepFunc"
             },
             "DependsOn": [
-              "HelloStepFuncStepFunctionsStateMachineRole"
+              "HelloStepFuncRole"
             ]
           },
           "HelloStepFuncStepFunctionsEventsRuleSchedule1": {
@@ -138,7 +282,7 @@
                 {
                   "Input": "{\"Comment\":\"CloudWatch Event\",\"Number\":12,\"WaitTime\":5}",
                   "Arn": {
-                    "Ref": "HelloStepFuncStepFunctionsStateMachine"
+                    "Ref": "HelloStepFunc"
                   },
                   "Id": "HelloStepFuncStepFunctionsSchedule",
                   "RoleArn": {
@@ -178,7 +322,7 @@
                           "states:StartExecution"
                         ],
                         "Resource": {
-                          "Ref": "HelloStepFuncStepFunctionsStateMachine"
+                          "Ref": "HelloStepFunc"
                         }
                       }
                     ]
@@ -270,7 +414,7 @@
                       "\n#set( $body = $util.escapeJavaScript($input.json('$')).replaceAll(\"\\\\'\", \"'\") )\n{\"input\": \"$body\", \"name\": \"$context.requestId\", \"stateMachineArn\":\"${StateMachineArn}\"}",
                       {
                         "StateMachineArn": {
-                          "Ref": "HelloStepFuncStepFunctionsStateMachine"
+                          "Ref": "HelloStepFunc"
                         }
                       }
                     ]
@@ -280,7 +424,7 @@
                       "\n#set( $body = $util.escapeJavaScript($input.json('$')).replaceAll(\"\\\\'\", \"'\") )\n{\"input\": \"$body\", \"name\": \"$context.requestId\", \"stateMachineArn\":\"${StateMachineArn}\"}",
                       {
                         "StateMachineArn": {
-                          "Ref": "HelloStepFuncStepFunctionsStateMachine"
+                          "Ref": "HelloStepFunc"
                         }
                       }
                     ]
@@ -349,7 +493,7 @@
               ]
             }
           },
-          "ApiGatewayDeployment1590172518282": {
+          "ApiGatewayDeployment1590514451399": {
             "Type": "AWS::ApiGateway::Deployment",
             "Properties": {
               "RestApiId": {
@@ -368,10 +512,16 @@
               "Ref": "ServerlessDeploymentBucket"
             }
           },
-          "HelloStepFuncStepFunctionsStateMachineArn": {
+          "StateInvokeLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "StateInvokeLambdaVersionf7KqX4A6CQGAjoa9LPb1zN71eTkaeHw2PTXIpDlcw0"
+            }
+          },
+          "HelloStepFuncArn": {
             "Description": "Current StateMachine Arn",
             "Value": {
-              "Ref": "HelloStepFuncStepFunctionsStateMachine"
+              "Ref": "HelloStepFunc"
             }
           },
           "ServiceEndpoint": {
@@ -395,6 +545,12 @@
                   "/dev"
                 ]
               ]
+            }
+          },
+          "HelloStepFunc": {
+            "Description": "The ARN of the example state machine",
+            "Value": {
+              "Ref": "HelloStepFunc"
             }
           }
         }
@@ -465,19 +621,50 @@
             }
           }
         }
-      }
+      },
+      "vpc": {}
     },
     "plugins": [
       "serverless-step-functions"
     ],
     "pluginsData": {},
-    "functions": {},
+    "functions": {
+      "stateInvoke": {
+        "handler": "build/stateInvoke",
+        "environment": {
+          "STATE_MACHINE_ARN": {
+            "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"StateInvokeLambdaFunction\"][\"Properties\"][\"Environment\"][\"Variables\"][\"STATE_MACHINE_ARN\"]"
+          }
+        },
+        "description": "This lambda invokes a state machine",
+        "events": [],
+        "name": "sls-state-machine-dev-stateInvoke",
+        "package": {},
+        "memory": 128,
+        "timeout": 5,
+        "runtime": "go1.x",
+        "vpc": {},
+        "versionLogicalId": "StateInvokeLambdaVersionf7KqX4A6CQGAjoa9LPb1zN71eTkaeHw2PTXIpDlcw0"
+      }
+    },
+    "resources": {
+      "Outputs": {
+        "HelloStepFunc": {
+          "Description": "The ARN of the example state machine",
+          "Value": {
+            "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"StateInvokeLambdaFunction\"][\"Properties\"][\"Environment\"][\"Variables\"][\"STATE_MACHINE_ARN\"]"
+          }
+        }
+      },
+      "Resources": {}
+    },
     "serviceFilename": "serverless.yml",
     "layers": {},
     "isDashboardMonitoringPreconfigured": false,
     "stepFunctions": {
       "stateMachines": {
         "HelloStepFunc": {
+          "name": "HelloStepFunc",
           "events": [
             {
               "http": {
@@ -524,10 +711,11 @@
         }
       },
       "activities": []
-    }
+    },
+    "artifact": "/Users/romelcampbell/GOCODE/udemy/Serverless/code/stepFunctions/stateMachine/.serverless/sls-state-machine.zip"
   },
   "package": {
-    "artifactDirectoryName": "serverless/sls-state-machine/dev/1590172521035-2020-05-22T18:35:21.035Z",
-    "artifact": ""
+    "artifactDirectoryName": "serverless/sls-state-machine/dev/1590514481932-2020-05-26T17:34:41.932Z",
+    "artifact": "sls-state-machine.zip"
   }
 }
