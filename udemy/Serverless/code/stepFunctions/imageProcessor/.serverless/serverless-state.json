@@ -1,0 +1,244 @@
+{
+  "service": {
+    "service": "state-machine-image-processor",
+    "serviceObject": {
+      "name": "state-machine-image-processor"
+    },
+    "provider": {
+      "stage": "dev",
+      "variableSyntax": "\\${([ ~:a-zA-Z0-9._@'\",\\-\\/\\(\\)*?]+?)}",
+      "name": "aws",
+      "runtime": "go1.x",
+      "memorySize": 128,
+      "timeout": 5,
+      "region": "us-east-1",
+      "endpointType": "regional",
+      "versionFunctions": true,
+      "remoteFunctionData": null,
+      "compiledCloudFormationTemplate": {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "The AWS CloudFormation template for this Serverless application",
+        "Resources": {
+          "ServerlessDeploymentBucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+              "BucketEncryption": {
+                "ServerSideEncryptionConfiguration": [
+                  {
+                    "ServerSideEncryptionByDefault": {
+                      "SSEAlgorithm": "AES256"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "ServerlessDeploymentBucketPolicy": {
+            "Type": "AWS::S3::BucketPolicy",
+            "Properties": {
+              "Bucket": {
+                "Ref": "ServerlessDeploymentBucket"
+              },
+              "PolicyDocument": {
+                "Statement": [
+                  {
+                    "Action": "s3:*",
+                    "Effect": "Deny",
+                    "Principal": "*",
+                    "Resource": [
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":s3:::",
+                            {
+                              "Ref": "ServerlessDeploymentBucket"
+                            },
+                            "/*"
+                          ]
+                        ]
+                      }
+                    ],
+                    "Condition": {
+                      "Bool": {
+                        "aws:SecureTransport": false
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "ImageProcessorRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+              "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": {
+                      "Service": "states.us-east-1.amazonaws.com"
+                    },
+                    "Action": "sts:AssumeRole"
+                  }
+                ]
+              },
+              "Policies": [
+                {
+                  "PolicyName": "dev-us-east-1-state-machine-image-processor-statemachine",
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                      {
+                        "Effect": "Deny",
+                        "Action": "*",
+                        "Resource": "*"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          "ImageProcessor": {
+            "Type": "AWS::StepFunctions::StateMachine",
+            "Properties": {
+              "DefinitionString": "{\n  \"Comment\": \"ImageProcessor\",\n  \"StartAt\": \"GetFileType\",\n  \"States\": {\n    \"GetFileType\": {\n      \"Comment\": \"GetFileType\",\n      \"Type\": \"Pass\",\n      \"Next\": \"CheckFileType\"\n    },\n    \"CheckFileType\": {\n      \"Comment\": \"CheckFileType\",\n      \"Type\": \"Pass\",\n      \"End\": true\n    }\n  }\n}",
+              "RoleArn": {
+                "Fn::GetAtt": [
+                  "ImageProcessorRole",
+                  "Arn"
+                ]
+              },
+              "StateMachineName": "ImageProcessor"
+            },
+            "DependsOn": [
+              "ImageProcessorRole"
+            ]
+          }
+        },
+        "Outputs": {
+          "ServerlessDeploymentBucketName": {
+            "Value": {
+              "Ref": "ServerlessDeploymentBucket"
+            }
+          },
+          "ImageProcessorArn": {
+            "Description": "Current StateMachine Arn",
+            "Value": {
+              "Ref": "ImageProcessor"
+            }
+          }
+        }
+      },
+      "coreCloudFormationTemplate": {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "The AWS CloudFormation template for this Serverless application",
+        "Resources": {
+          "ServerlessDeploymentBucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+              "BucketEncryption": {
+                "ServerSideEncryptionConfiguration": [
+                  {
+                    "ServerSideEncryptionByDefault": {
+                      "SSEAlgorithm": "AES256"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "ServerlessDeploymentBucketPolicy": {
+            "Type": "AWS::S3::BucketPolicy",
+            "Properties": {
+              "Bucket": {
+                "Ref": "ServerlessDeploymentBucket"
+              },
+              "PolicyDocument": {
+                "Statement": [
+                  {
+                    "Action": "s3:*",
+                    "Effect": "Deny",
+                    "Principal": "*",
+                    "Resource": [
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":s3:::",
+                            {
+                              "Ref": "ServerlessDeploymentBucket"
+                            },
+                            "/*"
+                          ]
+                        ]
+                      }
+                    ],
+                    "Condition": {
+                      "Bool": {
+                        "aws:SecureTransport": false
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "Outputs": {
+          "ServerlessDeploymentBucketName": {
+            "Value": {
+              "Ref": "ServerlessDeploymentBucket"
+            }
+          }
+        }
+      }
+    },
+    "plugins": [
+      "serverless-step-functions"
+    ],
+    "pluginsData": {},
+    "functions": {},
+    "serviceFilename": "serverless.yml",
+    "layers": {},
+    "isDashboardMonitoringPreconfigured": false,
+    "stepFunctions": {
+      "stateMachines": {
+        "ImageProcessor": {
+          "name": "ImageProcessor",
+          "definition": {
+            "Comment": "ImageProcessor",
+            "StartAt": "GetFileType",
+            "States": {
+              "GetFileType": {
+                "Comment": "GetFileType",
+                "Type": "Pass",
+                "Next": "CheckFileType"
+              },
+              "CheckFileType": {
+                "Comment": "CheckFileType",
+                "Type": "Pass",
+                "End": true
+              }
+            }
+          }
+        }
+      },
+      "activities": []
+    }
+  },
+  "package": {
+    "artifactDirectoryName": "serverless/state-machine-image-processor/dev/1590570552530-2020-05-27T09:09:12.530Z",
+    "artifact": ""
+  }
+}
