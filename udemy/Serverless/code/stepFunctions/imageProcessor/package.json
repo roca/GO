@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "serverless-pseudo-parameters": "^2.5.0",
     "serverless-step-functions": "^2.19.0"
   }
 }

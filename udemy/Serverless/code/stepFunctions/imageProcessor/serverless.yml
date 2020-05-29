@@ -3,6 +3,8 @@ frameworkVersion: '>=1.28.0 <2.0.0'
 
 plugins:
   - serverless-step-functions
+  - serverless-pseudo-parameters
+
 provider:
   name: aws
   runtime: go1.x
@@ -11,24 +13,38 @@ provider:
   stage: dev 
   region: us-east-1
   endpointType: regional
-  # iamRoleStatements:
-  #   - Effect: Allow 
-  #     Action: 
-  #       - states:StartExecution
-  #     Resource: arn:aws:states:us-east-1:132172135366:stateMachine:HelloStepFunc
+  environment:
+    IMAGE_UPLOAD_BUCKET_NAME: romel-images
+  iamRoleStatements:
+    - Effect: Allow 
+      Action: 
+        - states:StartExecution
+      Resource: ${self:resources.Outputs.ImageProcessor.Value}
+    - Effect: Allow
+      Action:
+        - s3:./*
+      Resource: "arn:aws:s3:::${self:provider.environment.IMAGE_UPLOAD_BUCKET_NAME}"
 
-# package:
-#   exclude:
-#     - ./**
-#   include:
-#     - ./build/**
+package:
+  exclude:
+    - ./**
+  include:
+    - ./build/**
 
-# functions:
-#   stateInvoke:
-#     handler: build/stateInvoke
-#     environment:
-#       STATE_MACHINE_ARN: ${self:resources.Outputs.HelloStepFunc.Value}
-#     description: "This lambda invokes a state machine"
+functions:
+  invokeImageProcessor:
+    handler: build/invokeImageProcessor
+    environment:
+      STATE_MACHINE_ARN: ${self:resources.Outputs.ImageProcessor.Value}
+    description: "This lambda invokes a image processor state machine"
+    events:
+      - s3:
+        bucket: ${self:provider.environment.IMAGE_UPLOAD_BUCKET_NAME}
+        event: s3:ObjectCreated:*
+        existing: true
+  getFileType:
+    handler: build/getFileType
+    description: "This lambda get the type of a file from its extension suffix"
 
 stepFunctions:
   stateMachines:
@@ -40,15 +56,44 @@ stepFunctions:
           States:
             GetFileType:
               Comment: GetFileType
-              Type: Pass
+              Type: Task
+              Resource: "arn:aws:lambda:${self:provider.region}:#{AWS::AccountId}:function:${self:service}-${self:provider.stage}-getFileType"
+              TimeoutSeconds: 3
+              ResultPath: $.results.fileType
               Next: CheckFileType
             CheckFileType:
               Comment: CheckFileType
+              Type: Choice
+              Choices:
+                - Variable: $.results.fileType
+                  StringEquals: jpg
+                  Next: ProcessFile
+              Default: DeleteSourceFile
+            DeleteSourceFile:
+              Comment: DeleteSourceFile
               Type: Pass
               End: true
-# resources:
-#   Outputs:
-#     HelloStepFunc:
-#       Description: The ARN of the example state machine
-#       Value:
-#         Ref: HelloStepFunc
+            ProcessFile:
+              Comment: ProcessFile
+              Type: Parallel
+              Next: WriteToDynamoDB
+              Branches:
+                - StartAt: CopyToDestination
+                  States:
+                    CopyToDestination:
+                      Type: Pass
+                      End: true
+                - StartAt: ResizeImage
+                  States:
+                    ResizeImage:
+                      Type: Pass
+                      End: true
+            WriteToDynamoDB:
+              Type: Pass
+              Next: DeleteSourceFile
+resources:
+  Outputs:
+    ImageProcessor:
+      Description: The ARN of the ImageProcessor state machine
+      Value:
+        Ref: ImageProcessor

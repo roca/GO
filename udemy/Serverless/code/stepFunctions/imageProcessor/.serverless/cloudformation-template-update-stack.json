@@ -56,6 +56,200 @@
         }
       }
     },
+    "InvokeImageProcessorLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/state-machine-image-processor-dev-invokeImageProcessor"
+      }
+    },
+    "GetFileTypeLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/state-machine-image-processor-dev-getFileType"
+      }
+    },
+    "IamRoleLambdaExecution": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "lambda.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ]
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": {
+              "Fn::Join": [
+                "-",
+                [
+                  "dev",
+                  "state-machine-image-processor",
+                  "lambda"
+                ]
+              ]
+            },
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:CreateLogStream",
+                    "logs:CreateLogGroup"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/state-machine-image-processor-dev*:*"
+                    }
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:PutLogEvents"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/state-machine-image-processor-dev*:*:*"
+                    }
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "states:StartExecution"
+                  ],
+                  "Resource": {
+                    "Ref": "ImageProcessor"
+                  }
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3:./*"
+                  ],
+                  "Resource": "arn:aws:s3:::romel-images"
+                }
+              ]
+            }
+          }
+        ],
+        "Path": "/",
+        "RoleName": {
+          "Fn::Join": [
+            "-",
+            [
+              "state-machine-image-processor",
+              "dev",
+              {
+                "Ref": "AWS::Region"
+              },
+              "lambdaRole"
+            ]
+          ]
+        }
+      }
+    },
+    "InvokeImageProcessorLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/state-machine-image-processor/dev/1590776373616-2020-05-29T18:19:33.616Z/state-machine-image-processor.zip"
+        },
+        "FunctionName": "state-machine-image-processor-dev-invokeImageProcessor",
+        "Handler": "build/invokeImageProcessor",
+        "MemorySize": 128,
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "Runtime": "go1.x",
+        "Timeout": 5,
+        "Description": "This lambda invokes a image processor state machine",
+        "Environment": {
+          "Variables": {
+            "IMAGE_UPLOAD_BUCKET_NAME": "romel-images",
+            "STATE_MACHINE_ARN": {
+              "Ref": "ImageProcessor"
+            }
+          }
+        }
+      },
+      "DependsOn": [
+        "InvokeImageProcessorLogGroup",
+        "IamRoleLambdaExecution"
+      ]
+    },
+    "InvokeImageProcessorLambdaVersionAkf2DDXlziCTuCKv8iqvOchTNl2pOHoYw5pITFB6E": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "InvokeImageProcessorLambdaFunction"
+        },
+        "CodeSha256": "HaPxN8d9l/el29FDJTCKkRWwpCSOrw88GH4+tMJpykk=",
+        "Description": "This lambda invokes a image processor state machine"
+      }
+    },
+    "GetFileTypeLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/state-machine-image-processor/dev/1590776373616-2020-05-29T18:19:33.616Z/state-machine-image-processor.zip"
+        },
+        "FunctionName": "state-machine-image-processor-dev-getFileType",
+        "Handler": "build/getFileType",
+        "MemorySize": 128,
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "Runtime": "go1.x",
+        "Timeout": 5,
+        "Description": "This lambda get the type of a file from its extension suffix",
+        "Environment": {
+          "Variables": {
+            "IMAGE_UPLOAD_BUCKET_NAME": "romel-images"
+          }
+        }
+      },
+      "DependsOn": [
+        "GetFileTypeLogGroup",
+        "IamRoleLambdaExecution"
+      ]
+    },
+    "GetFileTypeLambdaVersionUVGwUOJqMa4Y9Yo1r6M8BcLBawJqusuc6wpAJCaKb4": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "GetFileTypeLambdaFunction"
+        },
+        "CodeSha256": "HaPxN8d9l/el29FDJTCKkRWwpCSOrw88GH4+tMJpykk=",
+        "Description": "This lambda get the type of a file from its extension suffix"
+      }
+    },
     "ImageProcessorRole": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -78,9 +272,25 @@
               "Version": "2012-10-17",
               "Statement": [
                 {
-                  "Effect": "Deny",
-                  "Action": "*",
-                  "Resource": "*"
+                  "Effect": "Allow",
+                  "Action": [
+                    "lambda:InvokeFunction"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::Sub": "arn:aws:lambda:us-east-1:${AWS::AccountId}:function:state-machine-image-processor-dev-getFileType"
+                    },
+                    {
+                      "Fn::Sub": [
+                        "${functionArn}:*",
+                        {
+                          "functionArn": {
+                            "Fn::Sub": "arn:aws:lambda:us-east-1:${AWS::AccountId}:function:state-machine-image-processor-dev-getFileType"
+                          }
+                        }
+                      ]
+                    }
+                  ]
                 }
               ]
             }
@@ -91,7 +301,9 @@
     "ImageProcessor": {
       "Type": "AWS::StepFunctions::StateMachine",
       "Properties": {
-        "DefinitionString": "{\n  \"Comment\": \"ImageProcessor\",\n  \"StartAt\": \"GetFileType\",\n  \"States\": {\n    \"GetFileType\": {\n      \"Comment\": \"GetFileType\",\n      \"Type\": \"Pass\",\n      \"Next\": \"CheckFileType\"\n    },\n    \"CheckFileType\": {\n      \"Comment\": \"CheckFileType\",\n      \"Type\": \"Pass\",\n      \"End\": true\n    }\n  }\n}",
+        "DefinitionString": {
+          "Fn::Sub": "{\n  \"Comment\": \"ImageProcessor\",\n  \"StartAt\": \"GetFileType\",\n  \"States\": {\n    \"GetFileType\": {\n      \"Comment\": \"GetFileType\",\n      \"Type\": \"Task\",\n      \"Resource\": \"arn:aws:lambda:us-east-1:${AWS::AccountId}:function:state-machine-image-processor-dev-getFileType\",\n      \"TimeoutSeconds\": 3,\n      \"ResultPath\": \"$.results.fileType\",\n      \"Next\": \"CheckFileType\"\n    },\n    \"CheckFileType\": {\n      \"Comment\": \"CheckFileType\",\n      \"Type\": \"Choice\",\n      \"Choices\": [\n        {\n          \"Variable\": \"$.results.fileType\",\n          \"StringEquals\": \"jpg\",\n          \"Next\": \"ProcessFile\"\n        }\n      ],\n      \"Default\": \"DeleteSourceFile\"\n    },\n    \"DeleteSourceFile\": {\n      \"Comment\": \"DeleteSourceFile\",\n      \"Type\": \"Pass\",\n      \"End\": true\n    },\n    \"ProcessFile\": {\n      \"Comment\": \"ProcessFile\",\n      \"Type\": \"Parallel\",\n      \"Next\": \"WriteToDynamoDB\",\n      \"Branches\": [\n        {\n          \"StartAt\": \"CopyToDestination\",\n          \"States\": {\n            \"CopyToDestination\": {\n              \"Type\": \"Pass\",\n              \"End\": true\n            }\n          }\n        },\n        {\n          \"StartAt\": \"ResizeImage\",\n          \"States\": {\n            \"ResizeImage\": {\n              \"Type\": \"Pass\",\n              \"End\": true\n            }\n          }\n        }\n      ]\n    },\n    \"WriteToDynamoDB\": {\n      \"Type\": \"Pass\",\n      \"Next\": \"DeleteSourceFile\"\n    }\n  }\n}"
+        },
         "RoleArn": {
           "Fn::GetAtt": [
             "ImageProcessorRole",
@@ -111,8 +323,26 @@
         "Ref": "ServerlessDeploymentBucket"
       }
     },
+    "InvokeImageProcessorLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "InvokeImageProcessorLambdaVersionAkf2DDXlziCTuCKv8iqvOchTNl2pOHoYw5pITFB6E"
+      }
+    },
+    "GetFileTypeLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "GetFileTypeLambdaVersionUVGwUOJqMa4Y9Yo1r6M8BcLBawJqusuc6wpAJCaKb4"
+      }
+    },
     "ImageProcessorArn": {
       "Description": "Current StateMachine Arn",
+      "Value": {
+        "Ref": "ImageProcessor"
+      }
+    },
+    "ImageProcessor": {
+      "Description": "The ARN of the ImageProcessor state machine",
       "Value": {
         "Ref": "ImageProcessor"
       }
