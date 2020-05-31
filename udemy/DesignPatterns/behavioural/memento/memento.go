@@ -1,8 +1,6 @@
 package memento
 
-import (
-	"errors"
-)
+import "errors"
 
 type State struct {
 	Description string
@@ -15,10 +13,10 @@ type originator struct {
 }
 
 func (o *originator) NewMemento() memento {
-	return memento{}
+	return memento{state: o.state}
 }
 func (o *originator) ExtractAndStoreState(m memento) {
-	//Does nothing
+	o.state = m.state
 }
 
 type careTaker struct {
@@ -27,7 +25,11 @@ type careTaker struct {
 
 func (c *careTaker) Add(m memento) {
 	// Does nothing
+	c.mementoList = append(c.mementoList, m)
 }
 func (c *careTaker) Memento(i int) (memento, error) {
-	return memento{}, errors.New("Not implemented yet")
+	if len(c.mementoList) != 0 && i >= 0 {
+		return c.mementoList[i],nil
+	}
+	return memento{}, errors.New("State noy found")
 }
