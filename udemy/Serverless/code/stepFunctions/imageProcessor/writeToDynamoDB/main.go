@@ -79,7 +79,7 @@ func Put(original Image, resized Image) error {
 		Item: map[string]*dynamodb.AttributeValue{
 			"original":  {S: aws.String(original.String())},
 			"thumbnail": {S: aws.String(resized.String())},
-			"timestamp": {S: aws.String(fmt.Sprintf("%d", time.Now().UnixNano()))},
+			"timestamp": {N: aws.String(fmt.Sprintf("%d", time.Now().UnixNano()))},
 		},
 	})
 

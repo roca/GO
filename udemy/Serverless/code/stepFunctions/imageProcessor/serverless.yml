@@ -112,6 +112,7 @@ stepFunctions:
             ProcessFile:
               Comment: ProcessFile
               Type: Parallel
+              ResultPath: $.results.images
               Next: WriteToDynamoDB
               Branches:
                 - StartAt: CopyToDestination
