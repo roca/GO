@@ -15,6 +15,7 @@ provider:
   endpointType: regional
   environment:
     IMAGE_UPLOAD_BUCKET_NAME: romel-images
+    IMAGE_TABLE_NAME: thumbnails
   iamRoleStatements:
     - Effect: Allow 
       Action: 
@@ -22,8 +23,19 @@ provider:
       Resource: ${self:resources.Outputs.ImageProcessor.Value}
     - Effect: Allow
       Action:
-        - s3:./*
-      Resource: "arn:aws:s3:::${self:provider.environment.IMAGE_UPLOAD_BUCKET_NAME}"
+        - s3:*
+      Resource: "*"
+    - Effect: Allow
+      Action:
+        - dynamodb:DescribeStream
+        - dynamodb:GetRecords
+        - dynamodb:GetShardIterator
+        - dynamodb:ListStreams
+        - dynamodb:BatchWriteItem 
+        - dynamodb:Query
+        - dynamodb:PutItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.IMAGE_TABLE_NAME}"
 
 package:
   exclude:
@@ -44,7 +56,24 @@ functions:
         existing: true
   getFileType:
     handler: build/getFileType
-    description: "This lambda get the type of a file from its extension suffix"
+    description: "This lambda gets the type of a file from its extension suffix"
+  deleteFile:
+    handler: build/deleteFile
+    description: "This lambda deletes a file on s3"
+  copyFile:
+    handler: build/copyFile
+    environment:
+      DESTINATION_BUCKET: romel-images-dest
+    description: "This lambda copies a file to a new bucket"
+  resizeImage:
+    handler: build/resizeImage
+    environment:
+      DESTINATION_BUCKET: romel-images-dest
+      IMAGE_WIDTH_PX: 123
+    description: "This lambda resizes image in dest bucket"
+  writeToDynamoDB:
+    handler: build/writeToDynamoDB
+    description: "This lambda writes to DynamoDB"
 
 stepFunctions:
   stateMachines:
@@ -71,8 +100,15 @@ stepFunctions:
               Default: DeleteSourceFile
             DeleteSourceFile:
               Comment: DeleteSourceFile
-              Type: Pass
+              Type: Task
+              Resource: "arn:aws:lambda:${self:provider.region}:#{AWS::AccountId}:function:${self:service}-${self:provider.stage}-deleteFile"
+              ResultPath: $.results.deletionStatus
+              OutputPath: $.results
               End: true
+              Catch:
+                - ErrorEquals: 
+                    - States.All
+                  Next: QuitMain
             ProcessFile:
               Comment: ProcessFile
               Type: Parallel
@@ -81,19 +117,99 @@ stepFunctions:
                 - StartAt: CopyToDestination
                   States:
                     CopyToDestination:
-                      Type: Pass
+                      Type: Task
+                      Resource: "arn:aws:lambda:${self:provider.region}:#{AWS::AccountId}:function:${self:service}-${self:provider.stage}-copyFile"
+                      TimeoutSeconds: 3
+                      ResultPath: $.image.original
+                      OutputPath: $.image
                       End: true
+                      Retry:
+                        - ErrorEquals:
+                            - States.TaskFailed
+                            - States.Timeout
+                          IntervalSeconds: 5
+                          MaxAttempts: 2
+                          BackoffRate: 2.0
+                        - ErrorEquals:
+                            - States.All
+                          IntervalSeconds: 2
+                          MaxAttempts: 2
+                          BackoffRate: 2.0
+                      Catch:
+                        - ErrorEquals: 
+                            - States.All
+                          Next: QuitCopy
+                    QuitCopy:
+                      Type: Fail
+                      Error: CopyError
+                      Cause: "An error occurred while executing the CopyToDestination task"
                 - StartAt: ResizeImage
                   States:
                     ResizeImage:
-                      Type: Pass
+                      Type: Task
+                      Resource: "arn:aws:lambda:${self:provider.region}:#{AWS::AccountId}:function:${self:service}-${self:provider.stage}-resizeImage"
+                      TimeoutSeconds: 3
+                      ResultPath: $.image.resized
+                      OutputPath: $.image
                       End: true
+                      Retry:
+                        - ErrorEquals:
+                            - States.TaskFailed
+                            - States.Timeout
+                          IntervalSeconds: 5
+                          MaxAttempts: 2
+                          BackoffRate: 2.0
+                        - ErrorEquals:
+                            - States.All
+                          IntervalSeconds: 2
+                          MaxAttempts: 2
+                          BackoffRate: 2.0
+                      Catch:
+                        - ErrorEquals: 
+                            - States.All
+                          Next: QuitResize
+                    QuitResize:
+                      Type: Fail
+                      Error: ResizeError
+                      Cause: "An error occurred while executing the ResizeImage task"
             WriteToDynamoDB:
-              Type: Pass
+              Type: Task
+              Resource: "arn:aws:lambda:${self:provider.region}:#{AWS::AccountId}:function:${self:service}-${self:provider.stage}-writeToDynamoDB"
+              TimeoutSeconds: 3
+              ResultPath: $.results.writeStatus
               Next: DeleteSourceFile
+              Catch:
+                - ErrorEquals: 
+                    - States.All
+                  Next: QuitMain
+            QuitMain:
+              Type: Fail
+              Error: GenericError
+              Cause: "An error occurred while executing the state machine"
 resources:
+  Resources:
+    ThumbnailsTable:
+      Type: AWS::DynamoDB::Table
+      DeletionPolicy: Retain
+      Properties:
+        TableName: ${self:provider.environment.IMAGE_TABLE_NAME}
+        AttributeDefinitions:
+          - AttributeName: original
+            AttributeType: S
+          - AttributeName: timestamp
+            AttributeType: N
+        KeySchema:
+          - AttributeName: original
+            KeyType: HASH
+          - AttributeName: timestamp
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+
   Outputs:
     ImageProcessor:
-      Description: The ARN of the ImageProcessor state machine
+      Description: "The ARN of the ImageProcessor state machine"
       Value:
         Ref: ImageProcessor
+
