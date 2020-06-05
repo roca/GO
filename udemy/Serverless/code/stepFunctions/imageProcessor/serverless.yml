@@ -90,6 +90,10 @@ stepFunctions:
               TimeoutSeconds: 3
               ResultPath: $.results.fileType
               Next: CheckFileType
+              Catch:
+                - ErrorEquals: 
+                    - States.All
+                  Next: QuitMain
             CheckFileType:
               Comment: CheckFileType
               Type: Choice
@@ -102,6 +106,7 @@ stepFunctions:
               Comment: DeleteSourceFile
               Type: Task
               Resource: "arn:aws:lambda:${self:provider.region}:#{AWS::AccountId}:function:${self:service}-${self:provider.stage}-deleteFile"
+              TimeoutSeconds: 3
               ResultPath: $.results.deletionStatus
               OutputPath: $.results
               End: true
