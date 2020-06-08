@@ -3,7 +3,7 @@ package interpreter
 import "testing"
 
 func TestCalculate(t *testing.T) {
-	tempOperation := "5 3 sub 8 mul 4 sum 5 div"
+	tempOperation := "3 3 sum 2 sub"
 	res, err := Calculate(tempOperation)
 	if err != nil {
 		t.Error(err)
