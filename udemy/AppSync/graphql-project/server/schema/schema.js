@@ -15,11 +15,11 @@ var userData = [
 ];
 
 var hobbyData = [
-   {id: '1', title: 'Programing', description: 'Using computer to make the world a better place'},
-   {id: '2', title: 'Rowing', description: 'Sweat and feel better before eating donuts'},
-   {id: '3', title: 'Swimming', description: 'Get in the water and learn to become the water'},
-   {id: '4', title: 'Fencing', description: 'A hobby for fancy people'},
-   {id: '5', title: 'Hiking', description: 'Wear hiking boot and explore the world'}
+   {id: '1', title: 'Programing', description: 'Using computer to make the world a better place', userId: '150'},
+   {id: '2', title: 'Rowing', description: 'Sweat and feel better before eating donuts', userId: '211'},
+   {id: '3', title: 'Swimming', description: 'Get in the water and learn to become the water', userId: '211'},
+   {id: '4', title: 'Fencing', description: 'A hobby for fancy people', userId: '13'},
+   {id: '5', title: 'Hiking', description: 'Wear hiking boot and explore the world', userId: '150'}
 ]
 
 var postData = [
@@ -56,7 +56,11 @@ const HobbyType = new GraphQLObjectType({
     fields: () => ({
         id: {type: GraphQLID},
         title: {type: GraphQLString},
-        description: {type: GraphQLString}
+        description: {type: GraphQLString},
+        user: {
+            type: UserType,
+            resolve: (parent, args) =>  getItemByID(userData,parent.userId)
+        }
     })
 });
 

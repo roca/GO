@@ -20,6 +20,13 @@ func (r *mutationResolver) CreatePost(ctx context.Context, input model.NewPost) 
 		UserID:  input.UserID,
 	}
 	r.posts = append(r.posts, post)
+
+	for _, user := range r.users {
+		if user.ID == input.UserID {
+			user.Posts = append(user.Posts, post)
+		}
+	}
+
 	return post, nil
 }
 
@@ -35,7 +42,6 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) 
 }
 
 func (r *postResolver) User(ctx context.Context, obj *model.Post) (*model.User, error) {
-
 	for _, user := range r.users {
 		if user.ID == obj.UserID {
 			return user, nil
@@ -51,6 +57,24 @@ func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
 
 func (r *queryResolver) Posts(ctx context.Context) ([]*model.Post, error) {
 	return r.posts, nil
+}
+
+func (r *queryResolver) User(ctx context.Context, id string) (*model.User, error) {
+	for _, user := range r.users {
+		if user.ID == id {
+			return user, nil
+		}
+	}
+	return nil, errors.New("Post not found")
+}
+
+func (r *queryResolver) Post(ctx context.Context, id string) (*model.Post, error) {
+	for _, post := range r.posts {
+		if post.ID == id {
+			return post, nil
+		}
+	}
+	return nil, errors.New("Post not found")
 }
 
 // Mutation returns generated.MutationResolver implementation.

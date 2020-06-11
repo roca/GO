@@ -10,4 +10,5 @@ type Resolver struct {
 	posts []*model.Post
 	users []*model.User
 	user  *model.User
+	post  *model.Post
 }

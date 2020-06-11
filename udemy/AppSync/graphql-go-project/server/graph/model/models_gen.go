@@ -20,8 +20,9 @@ type NewUser struct {
 }
 
 type User struct {
-	ID         string `json:"id"`
-	Name       string `json:"name"`
-	Age        int    `json:"age"`
-	Profession string `json:"profession"`
+	ID         string  `json:"id"`
+	Name       string  `json:"name"`
+	Age        int     `json:"age"`
+	Profession string  `json:"profession"`
+	Posts      []*Post `json:"posts"`
 }
