@@ -7,11 +7,11 @@ var getItemByID = (objArray,id) => {
 
 // dummy data
 var userData = [
-    {id: '1', name: 'Bond', age:36, profession: 'Secret Agent'},
-    {id: '13', name: 'Anna', age:26},
+    {id: '1', name: 'Bond', age:36, profession: 'Programmer'},
+    {id: '13', name: 'Anna', age:26, profession: 'Baker'},
     {id: '211', name: 'Bella', age:16, profession: 'Medical Doctor'},
-    {id: '19', name: 'Gina', age:26},
-    {id: '150', name: 'Georgina', age:36}
+    {id: '19', name: 'Gina', age:26, profession: 'Painter'},
+    {id: '150', name: 'Georgina', age:36, profession: 'Teacher'}
 ];
 
 var hobbyData = [
@@ -23,9 +23,11 @@ var hobbyData = [
 ]
 
 var postData = [
-    {id: '1', comment: 'Building a Mind'},
-    {id: '2', comment: 'GraphQL is Amazing'},
-    {id: '3', comment: 'How to Change the World'}
+    {id: '1', comment: 'Building a Mind', userId: '1'},
+    {id: '2', comment: 'GraphQL is Amazing', userId: '1'},
+    {id: '3', comment: 'How to Change the World', userId: '19'},
+    {id: '4', comment: 'How to Change the World', userId: '211'},
+    {id: '5', comment: 'How to Change the World', userId: '1'}
 ]
 
 const {
@@ -63,7 +65,11 @@ const PostType = new GraphQLObjectType({
     description: 'Post description',
     fields: () => ({
         id: {type: GraphQLID},
-        comment: {type: GraphQLString}
+        comment: {type: GraphQLString},
+        user: {
+            type: UserType,
+            resolve: (parent, args) =>  getItemByID(userData,parent.userId)
+        }
     })
 });
 
@@ -117,8 +123,17 @@ query q1{
 }
 
 query q2{
-  hobby(id: 1){
+  hobby(id: 3){
     title
+  }
+}
+
+query q3{
+  post(id: "1"){
+    comment
+    user{
+      name
+    }
   }
 }
 */
