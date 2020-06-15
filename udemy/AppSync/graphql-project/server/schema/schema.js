@@ -8,6 +8,32 @@ var getItemByID = (objArray,id) => {
 var getItemsByKey = (objArray,key) => {
     return _.filter(objArray,key)
 }
+var createNewUserItem = (objArray,args) => {
+    let user = {
+        name: args.name,
+        age: args.age,
+        profession: args.profession
+    }
+    objArray[objArray.length] = user
+    return user
+}
+var createNewPostItem = (objArray,args) => {
+    let post = {
+        comment: args.comment,
+        userId: args.userId
+    }
+    objArray[objArray.length] = post
+    return post
+}
+var createNewHobbyItem = (objArray,args) => {
+    let hobby = {
+        title: args.title,
+        description: args.description,
+        userId: args.userId
+    }
+    objArray[objArray.length] = hobby
+    return hobby
+}
 
 // dummy data
 var userData = [
@@ -124,8 +150,45 @@ const RootQuery = new GraphQLObjectType({
     })
 });
 
+//Mutations
+const Mutation = new GraphQLObjectType({
+    name: 'Mutation',
+    fields: {
+        createUser: {
+            type: UserType,
+            args: {
+                // id: {type: GraphQLID},
+                name: {type: GraphQLString},
+                age: {type: GraphQLInt},
+                profession: {type: GraphQLString}
+            },
+            resolve: (parent,args) => createNewUserItem(userData,args)
+        },
+        createPosts: {
+            type: PostType,
+            args: {
+                // id: {type: GraphQLID},
+                comment: {type: GraphQLString},
+                userId: {type: GraphQLID}
+            },
+            resolve: (parent,args) => createNewPostItem(postData,args)
+        },
+        createHobbies: {
+            type: HobbyType,
+            args: {
+                // id: {type: GraphQLID},
+                title: {type: GraphQLString},
+                description: {type: GraphQLString},
+                userId: {type: GraphQLID}
+            },
+            resolve: (parent,args) => createNewHobbyItem(hobbyData,args)
+        }
+    }
+});
+
 module.exports = new GraphQLSchema({
-    query: RootQuery   
+    query: RootQuery,
+    mutation: Mutation   
 });
 
 /*
@@ -150,6 +213,18 @@ query q3{
     comment
     user{
       name
+    }
+  }
+}
+
+mutation m1{
+  createUser(name: "John",age: 25,profession: "Barber"){
+    id
+    name
+    age
+    profession
+    hobbies {
+      title
     }
   }
 }
