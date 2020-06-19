@@ -4,13 +4,6 @@ const User = require('../models/user');
 const Post = require('../models/post');
 const Hobby = require('../models/hobby');
 
-var getItemByID = (objArray,id) => {
-    return _.find(objArray,{id})
-}
-
-var getItemsByKey = (objArray,key) => {
-    return _.filter(objArray,key)
-}
 var createNewUserItem = (args) => {
     let user = new User({
         name: args.name,
@@ -84,11 +77,11 @@ const UserType = new GraphQLObjectType({
        profession: {type: GraphQLString},
        posts: {
            type: new GraphQLList(PostType),
-           //resolve: (parent, args) =>  getItemsByKey(postData,{userId: parent.id})
+           resolve: (parent, args) =>  Post.find({userId: parent.id})
        },
        hobbies: {
            type: new GraphQLList(HobbyType),
-           //resolve: (parent, args) =>  getItemsByKey(hobbyData,{userId: parent.id})
+           resolve: (parent, args) =>  Hobby.find({userId: parent.id})
        }
    })
 });
@@ -102,7 +95,7 @@ const HobbyType = new GraphQLObjectType({
         description: {type: GraphQLString},
         user: {
             type: UserType,
-            //resolve: (parent, args) =>  getItemByID(userData,parent.userId)
+            resolve: (parent, args) =>  User.findById(parent.userId)
         }
     })
 });
@@ -115,7 +108,7 @@ const PostType = new GraphQLObjectType({
         comment: {type: GraphQLString},
         user: {
             type: UserType,
-            //resolve: (parent, args) =>  getItemByID(userData,parent.userId)
+            resolve: (parent, args) =>  User.findById(parent.userId)
         }
     })
 });
@@ -130,37 +123,33 @@ const RootQuery = new GraphQLObjectType({
             args: {
                 id: {type: GraphQLID}
             },
-            // resolve(parent, args) {
-            //      // we resolve with data
-            //      // get and return data from a data source
-            //      return _.find(userData,{id: args.id})
-            // }
+            resolve: (parent, args) =>  User.findById(args.id)
         },
         users: {
             type: new GraphQLList(UserType),
-            //resolve: (parent,args) => userData
+            resolve: (parent,args) => User.find()
         },
         hobby: {
             type: HobbyType,
             args: {
                 id: {type: GraphQLID}
             },
-            //resolve: (parent, args) =>  getItemByID(hobbyData,args.id)
+            resolve: (parent, args) =>  Hobby.findById(args.id)
         },
         hobbies: {
             type: new GraphQLList(HobbyType),
-            //resolve: (parent,args) => hobbyData
+            resolve: (parent,args) => Hobby.find()
         },
         post: {
             type: PostType,
             args: {
                 id: {type: GraphQLID}
             }, 
-            //resolve(parent,args) { return getItemByID(postData,args.id)}
+            resolve(parent,args) { return Post.findById(args.id)}
         },
         posts: {
             type: new GraphQLList(PostType),
-            //resolve: (parent,args) => postData
+            resolve: (parent,args) => Post.find()
         }
     })
 });
