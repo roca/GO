@@ -1,5 +1,8 @@
 const graphql = require('graphql');
 var _ = require('lodash');
+const User = require('../models/user');
+const Post = require('../models/post');
+const Hobby = require('../models/hobby');
 
 var getItemByID = (objArray,id) => {
     return _.find(objArray,{id})
@@ -8,57 +11,58 @@ var getItemByID = (objArray,id) => {
 var getItemsByKey = (objArray,key) => {
     return _.filter(objArray,key)
 }
-var createNewUserItem = (objArray,args) => {
-    let user = {
+var createNewUserItem = (args) => {
+    let user = new User({
         name: args.name,
         age: args.age,
         profession: args.profession
-    }
-    objArray[objArray.length] = user
-    return user
+    });
+    user.save();
+    return user;
 }
-var createNewPostItem = (objArray,args) => {
-    let post = {
+
+var createNewPostItem = (args) => {
+    let post = new Post({
         comment: args.comment,
         userId: args.userId
-    }
-    objArray[objArray.length] = post
-    return post
+    });
+    post.save();
+    return post;
 }
-var createNewHobbyItem = (objArray,args) => {
-    let hobby = {
+var createNewHobbyItem = (args) => {
+    let hobby = new Hobby({
         title: args.title,
         description: args.description,
         userId: args.userId
-    }
-    objArray[objArray.length] = hobby
-    return hobby
+    });
+    hobby.save();
+    return hobby;
 }
 
 // dummy data
-var userData = [
-    {id: '1', name: 'Bond', age:36, profession: 'Programmer'},
-    {id: '13', name: 'Anna', age:26, profession: 'Baker'},
-    {id: '211', name: 'Bella', age:16, profession: 'Medical Doctor'},
-    {id: '19', name: 'Gina', age:26, profession: 'Painter'},
-    {id: '150', name: 'Georgina', age:36, profession: 'Teacher'}
-];
+// var userData = [
+//     {id: '1', name: 'Bond', age:36, profession: 'Programmer'},
+//     {id: '13', name: 'Anna', age:26, profession: 'Baker'},
+//     {id: '211', name: 'Bella', age:16, profession: 'Medical Doctor'},
+//     {id: '19', name: 'Gina', age:26, profession: 'Painter'},
+//     {id: '150', name: 'Georgina', age:36, profession: 'Teacher'}
+// ];
 
-var hobbyData = [
-   {id: '1', title: 'Programing', description: 'Using computer to make the world a better place', userId: '150'},
-   {id: '2', title: 'Rowing', description: 'Sweat and feel better before eating donuts', userId: '211'},
-   {id: '3', title: 'Swimming', description: 'Get in the water and learn to become the water', userId: '211'},
-   {id: '4', title: 'Fencing', description: 'A hobby for fancy people', userId: '13'},
-   {id: '5', title: 'Hiking', description: 'Wear hiking boot and explore the world', userId: '150'}
-]
+// var hobbyData = [
+//    {id: '1', title: 'Programing', description: 'Using computer to make the world a better place', userId: '150'},
+//    {id: '2', title: 'Rowing', description: 'Sweat and feel better before eating donuts', userId: '211'},
+//    {id: '3', title: 'Swimming', description: 'Get in the water and learn to become the water', userId: '211'},
+//    {id: '4', title: 'Fencing', description: 'A hobby for fancy people', userId: '13'},
+//    {id: '5', title: 'Hiking', description: 'Wear hiking boot and explore the world', userId: '150'}
+// ]
 
-var postData = [
-    {id: '1', comment: 'Building a Mind', userId: '1'},
-    {id: '2', comment: 'GraphQL is Amazing', userId: '1'},
-    {id: '3', comment: 'How to Change the World', userId: '19'},
-    {id: '4', comment: 'How to Change the World', userId: '211'},
-    {id: '5', comment: 'How to Change the World', userId: '1'}
-]
+// var postData = [
+//     {id: '1', comment: 'Building a Mind', userId: '1'},
+//     {id: '2', comment: 'GraphQL is Amazing', userId: '1'},
+//     {id: '3', comment: 'How to Change the World', userId: '19'},
+//     {id: '4', comment: 'How to Change the World', userId: '211'},
+//     {id: '5', comment: 'How to Change the World', userId: '1'}
+// ]
 
 const {
     GraphQLSchema,
@@ -80,11 +84,11 @@ const UserType = new GraphQLObjectType({
        profession: {type: GraphQLString},
        posts: {
            type: new GraphQLList(PostType),
-           resolve: (parent, args) =>  getItemsByKey(postData,{userId: parent.id})
+           //resolve: (parent, args) =>  getItemsByKey(postData,{userId: parent.id})
        },
        hobbies: {
            type: new GraphQLList(HobbyType),
-           resolve: (parent, args) =>  getItemsByKey(hobbyData,{userId: parent.id})
+           //resolve: (parent, args) =>  getItemsByKey(hobbyData,{userId: parent.id})
        }
    })
 });
@@ -98,7 +102,7 @@ const HobbyType = new GraphQLObjectType({
         description: {type: GraphQLString},
         user: {
             type: UserType,
-            resolve: (parent, args) =>  getItemByID(userData,parent.userId)
+            //resolve: (parent, args) =>  getItemByID(userData,parent.userId)
         }
     })
 });
@@ -111,7 +115,7 @@ const PostType = new GraphQLObjectType({
         comment: {type: GraphQLString},
         user: {
             type: UserType,
-            resolve: (parent, args) =>  getItemByID(userData,parent.userId)
+            //resolve: (parent, args) =>  getItemByID(userData,parent.userId)
         }
     })
 });
@@ -126,27 +130,38 @@ const RootQuery = new GraphQLObjectType({
             args: {
                 id: {type: GraphQLID}
             },
-            resolve(parent, args) {
-                 // we resolve with data
-                 // get and return data from a data source
-                 return _.find(userData,{id: args.id})
-            }
+            // resolve(parent, args) {
+            //      // we resolve with data
+            //      // get and return data from a data source
+            //      return _.find(userData,{id: args.id})
+            // }
+        },
+        users: {
+            type: new GraphQLList(UserType),
+            //resolve: (parent,args) => userData
         },
         hobby: {
             type: HobbyType,
             args: {
                 id: {type: GraphQLID}
             },
-            resolve: (parent, args) =>  getItemByID(hobbyData,args.id)
+            //resolve: (parent, args) =>  getItemByID(hobbyData,args.id)
+        },
+        hobbies: {
+            type: new GraphQLList(HobbyType),
+            //resolve: (parent,args) => hobbyData
         },
         post: {
             type: PostType,
             args: {
                 id: {type: GraphQLID}
             }, 
-            resolve(parent,args) { return getItemByID(postData,args.id)}
+            //resolve(parent,args) { return getItemByID(postData,args.id)}
+        },
+        posts: {
+            type: new GraphQLList(PostType),
+            //resolve: (parent,args) => postData
         }
-
     })
 });
 
@@ -154,34 +169,31 @@ const RootQuery = new GraphQLObjectType({
 const Mutation = new GraphQLObjectType({
     name: 'Mutation',
     fields: {
-        createUser: {
+        CreateUser: {
             type: UserType,
             args: {
-                // id: {type: GraphQLID},
                 name: {type: GraphQLString},
                 age: {type: GraphQLInt},
                 profession: {type: GraphQLString}
             },
-            resolve: (parent,args) => createNewUserItem(userData,args)
+            resolve: (parent,args) => createNewUserItem(args)
         },
-        createPosts: {
+        CreatePosts: {
             type: PostType,
             args: {
-                // id: {type: GraphQLID},
                 comment: {type: GraphQLString},
                 userId: {type: GraphQLID}
             },
-            resolve: (parent,args) => createNewPostItem(postData,args)
+            resolve: (parent,args) => createNewPostItem(args)
         },
-        createHobbies: {
+        CreateHobby: {
             type: HobbyType,
             args: {
-                // id: {type: GraphQLID},
                 title: {type: GraphQLString},
                 description: {type: GraphQLString},
                 userId: {type: GraphQLID}
             },
-            resolve: (parent,args) => createNewHobbyItem(hobbyData,args)
+            resolve: (parent,args) => createNewHobbyItem(args)
         }
     }
 });
