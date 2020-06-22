@@ -14,6 +14,21 @@ var createNewUserItem = (args) => {
     return user;
 }
 
+var updateUserItem = (args) => {
+    let updatedUser = User.findByIdAndUpdate(
+        args.id,
+        {
+            $set: {
+                name: args.name,
+                age: args.age,
+                profession: args.profession
+            }
+        },
+        {new: true} // send back the updated objectType
+    );
+    return updatedUser;
+}
+
 var createNewPostItem = (args) => {
     let post = new Post({
         comment: args.comment,
@@ -22,6 +37,20 @@ var createNewPostItem = (args) => {
     post.save();
     return post;
 }
+var updatePostItem = (args) => {
+    let updatedPost = Post.findByIdAndUpdate(
+        args.id,
+        {
+            $set: {
+                comment: args.comment,
+                userId: args.userId
+            }
+        },
+        {new: true} // send back the updated objectType
+    );
+    return updatedPost;
+}
+
 var createNewHobbyItem = (args) => {
     let hobby = new Hobby({
         title: args.title,
@@ -30,6 +59,20 @@ var createNewHobbyItem = (args) => {
     });
     hobby.save();
     return hobby;
+}
+var updateHobbyItem = (args) => {
+    let updatedHobby = Hobby.findByIdAndUpdate(
+        args.id,
+        {
+            $set: {
+                title: args.title,
+                description: args.description,
+                userId: args.userId
+            }
+        },
+        {new: true} // send back the updated objectType
+    );
+    return updatedHobby;
 }
 
 // dummy data
@@ -63,7 +106,8 @@ const {
     GraphQLID,
     GraphQLString,
     GraphQLInt,
-    GraphQLList
+    GraphQLList,
+    GraphQLNonNull
 } = graphql
 
 // Create types
@@ -123,11 +167,11 @@ const RootQuery = new GraphQLObjectType({
             args: {
                 id: {type: GraphQLID}
             },
-            resolve: (parent, args) =>  User.findById(args.id)
+            resolve: (parent, args) =>  User.findById({id:args.id})
         },
         users: {
             type: new GraphQLList(UserType),
-            resolve: (parent,args) => User.find()
+            resolve: (parent,args) => User.find({})
         },
         hobby: {
             type: HobbyType,
@@ -138,7 +182,7 @@ const RootQuery = new GraphQLObjectType({
         },
         hobbies: {
             type: new GraphQLList(HobbyType),
-            resolve: (parent,args) => Hobby.find()
+            resolve: (parent,args) => Hobby.find({})
         },
         post: {
             type: PostType,
@@ -149,7 +193,7 @@ const RootQuery = new GraphQLObjectType({
         },
         posts: {
             type: new GraphQLList(PostType),
-            resolve: (parent,args) => Post.find()
+            resolve: (parent,args) => Post.find({})
         }
     })
 });
@@ -161,28 +205,57 @@ const Mutation = new GraphQLObjectType({
         CreateUser: {
             type: UserType,
             args: {
-                name: {type: GraphQLString},
-                age: {type: GraphQLInt},
+                name: {type: new GraphQLNonNull(GraphQLString)},
+                age: {type: new GraphQLNonNull(GraphQLInt)},
                 profession: {type: GraphQLString}
             },
             resolve: (parent,args) => createNewUserItem(args)
         },
-        CreatePosts: {
+        UpdateUser: {
+            type: UserType,
+            args: {
+                id: {type: new GraphQLNonNull(GraphQLID)},
+                name: {type: new GraphQLNonNull(GraphQLString)},
+                age: {type: GraphQLInt},
+                profession: {type: GraphQLString}
+            },
+            resolve: (parent,args) => updateUserItem(args)
+        },
+        CreatePost: {
             type: PostType,
             args: {
-                comment: {type: GraphQLString},
-                userId: {type: GraphQLID}
+                comment: {type: new GraphQLNonNull(GraphQLString)},
+                userId: {type: new GraphQLNonNull(GraphQLID)}
             },
             resolve: (parent,args) => createNewPostItem(args)
+        },
+        UpdatePost: {
+            type: PostType,
+            args: {
+                id: {type: new GraphQLNonNull(GraphQLID)},
+                comment: {type: new GraphQLNonNull(GraphQLString)},
+                userId: {type: new GraphQLNonNull(GraphQLID)}
+            },
+            resolve: (parent,args) => updatePostItem(args)
         },
         CreateHobby: {
             type: HobbyType,
             args: {
-                title: {type: GraphQLString},
+                title: {type: new GraphQLNonNull(GraphQLString)},
                 description: {type: GraphQLString},
-                userId: {type: GraphQLID}
+                userId: {type: new GraphQLNonNull(GraphQLID)}
             },
             resolve: (parent,args) => createNewHobbyItem(args)
+        },
+        UpdateHobby: {
+            type: HobbyType,
+            args: {
+                id: {type: new GraphQLNonNull(GraphQLID)},
+                title: {type: new GraphQLNonNull(GraphQLString)},
+                description: {type: new GraphQLNonNull(GraphQLString)},
+                userId: {type: new GraphQLNonNull(GraphQLID)}
+            },
+            resolve: (parent,args) => updateHobbyItem(args)
         }
     }
 });
@@ -227,6 +300,56 @@ mutation m1{
     hobbies {
       title
     }
+  }
+}
+
+mutation m1 {
+  CreateUser(name: "Mabondu",age: 78, profession: "Father") {
+    id
+    name
+    age
+    profession
+  }
+}
+
+mutation m2 {
+  CreatePosts(comment: "This is cool",userId: "5eecd2c0fc41853930576ecb") {
+    comment
+    id
+  }
+}
+
+
+mutation m3 {
+  CreateHobby(title: "Cyclist", description: "Roadie", userId: "5eecd2c0fc41853930576ecb") {
+    id
+    title
+  }
+}
+
+query q1{
+  post(id: "5eecd413592edb39a8933396"){
+    id
+    comment
+  }
+}
+
+query q2 {
+  hobbies {
+    id
+    title
+    user{
+      name
+      hobbies{
+        title
+      }
+    }
+  }
+}
+
+query q3 {
+  hobby(id: "5eecd4c9592edb39a8933397") {
+    title
   }
 }
 */
