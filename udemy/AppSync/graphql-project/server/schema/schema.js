@@ -4,6 +4,14 @@ const User = require('../models/user');
 const Post = require('../models/post');
 const Hobby = require('../models/hobby');
 
+var RemoveItem = (mObj,args) => {
+    let item = mObj.findByIdAndRemove(args.id).exec();
+    if(!item){
+        throw new Error("Error deleting Item");
+    }
+    return item;
+}
+
 var createNewUserItem = (args) => {
     let user = new User({
         name: args.name,
@@ -221,6 +229,13 @@ const Mutation = new GraphQLObjectType({
             },
             resolve: (parent,args) => updateUserItem(args)
         },
+        RemoveUser: {
+            type: UserType,
+            args: {
+                id: {type: new GraphQLNonNull(GraphQLID)}
+            },
+            resolve: (parent,args) => RemoveItem(User,args)
+        },
         CreatePost: {
             type: PostType,
             args: {
@@ -237,6 +252,13 @@ const Mutation = new GraphQLObjectType({
                 userId: {type: new GraphQLNonNull(GraphQLID)}
             },
             resolve: (parent,args) => updatePostItem(args)
+        },
+        RemovePost: {
+            type: PostType,
+            args: {
+                id: {type: new GraphQLNonNull(GraphQLID)}
+            },
+            resolve: (parent,args) => RemoveItem(Post,args)
         },
         CreateHobby: {
             type: HobbyType,
@@ -256,6 +278,13 @@ const Mutation = new GraphQLObjectType({
                 userId: {type: new GraphQLNonNull(GraphQLID)}
             },
             resolve: (parent,args) => updateHobbyItem(args)
+        },
+        RemoveHobby: {
+            type: HobbyType,
+            args: {
+                id: {type: new GraphQLNonNull(GraphQLID)}
+            },
+            resolve: (parent,args) => RemoveItem(Hobby,args)
         }
     }
 });
