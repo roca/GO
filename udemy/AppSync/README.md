@@ -77,3 +77,5 @@ This section has moved here: https://facebook.github.io/create-react-app/docs/tr
 - url: https://mlab.com/
 - connect: "mongodb+srv://" + process.env.DB_USER + ":" + encodeURI(process.env.DB_PASS) + "@cluster0-xetiz.mongodb.net/gq-course?retryWrites=true&w=majority";
 
+## Prisma
+- url: https://www.prisma.io/blog/introducing-graphql-playground-f1e0a018f05d
