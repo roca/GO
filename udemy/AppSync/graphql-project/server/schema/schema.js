@@ -83,31 +83,6 @@ var updateHobbyItem = (args) => {
     return updatedHobby;
 }
 
-// dummy data
-// var userData = [
-//     {id: '1', name: 'Bond', age:36, profession: 'Programmer'},
-//     {id: '13', name: 'Anna', age:26, profession: 'Baker'},
-//     {id: '211', name: 'Bella', age:16, profession: 'Medical Doctor'},
-//     {id: '19', name: 'Gina', age:26, profession: 'Painter'},
-//     {id: '150', name: 'Georgina', age:36, profession: 'Teacher'}
-// ];
-
-// var hobbyData = [
-//    {id: '1', title: 'Programing', description: 'Using computer to make the world a better place', userId: '150'},
-//    {id: '2', title: 'Rowing', description: 'Sweat and feel better before eating donuts', userId: '211'},
-//    {id: '3', title: 'Swimming', description: 'Get in the water and learn to become the water', userId: '211'},
-//    {id: '4', title: 'Fencing', description: 'A hobby for fancy people', userId: '13'},
-//    {id: '5', title: 'Hiking', description: 'Wear hiking boot and explore the world', userId: '150'}
-// ]
-
-// var postData = [
-//     {id: '1', comment: 'Building a Mind', userId: '1'},
-//     {id: '2', comment: 'GraphQL is Amazing', userId: '1'},
-//     {id: '3', comment: 'How to Change the World', userId: '19'},
-//     {id: '4', comment: 'How to Change the World', userId: '211'},
-//     {id: '5', comment: 'How to Change the World', userId: '1'}
-// ]
-
 const {
     GraphQLSchema,
     GraphQLObjectType,
