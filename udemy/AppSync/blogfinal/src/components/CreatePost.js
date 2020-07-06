@@ -47,13 +47,13 @@ class CreatePost extends Component {
     render() {
         return (
             <form className="add-post"
-                onSubmit={this.handleAddPost} >
+                onSubmit={(event) => this.handleAddPost(event)} >
                 <input style={{ font: '19px'}}
                     type="text" placeholder="Title"
                     name="postTitle"
                     required
                     value={this.state.postTitle}
-                    onChange={this.handleChangePost}/>
+                    onChange={(event) => this.handleChangePost(event)}/>
                 <textarea
                     type="text" placeholder="New Blog Post"
                     name="postBody"
@@ -61,7 +61,7 @@ class CreatePost extends Component {
                     cols="40"
                     required
                     value={this.state.postBody}
-                    onChange={this.handleChangePost}/>
+                    onChange={(event) => this.handleChangePost(event)}/>
                 <input className="btn" style={{ fontSize: '19px'}}
                     type="submit"/>
             </form>

@@ -1,8 +1,8 @@
 import React , { Component } from 'react';
-import { Auth} from 'aws-amplify';
+import { API, graphqlOperation, Auth} from 'aws-amplify';
+import { updatePost } from '../graphql/mutations';
 
-// import { API, graphqlOperation, Auth} from 'aws-amplify';
-// import { updatePost } from '../graphql/mutations';
+
 class EditPost extends Component {
 
     state = {
@@ -11,7 +11,11 @@ class EditPost extends Component {
         postOwnerId: "",
         postOwnerUsername: "",
         postTitle: "",
-        postBody: ""
+        postBody: "",
+        postData: {
+            postTitle: this.props.postTitle,
+            postBody: this.props.postBody
+        }
     }
 
     handleModal = () => {
@@ -21,6 +25,28 @@ class EditPost extends Component {
 
     }
 
+    handleChangePostTitle = event => this.setState({
+       postData: {...this.state.postData, postTitle: event.target.value} 
+    })
+    handleChangePostBody = event => this.setState({
+       postData: {...this.state.postData, postBody: event.target.value} 
+    })
+
+    handleUpdatePost = async event => {
+        event.preventDefault();
+
+        const input = {
+            id: this.props.id,
+            postOwnerId: this.state.postOwnerId,
+            postOwnerUsername: this.state.postOwnerUsername,
+            postTitle: this.state.postData.postTitle,
+            postBody: this.state.postData.postBody
+        }
+
+        await API.graphql(graphqlOperation(updatePost, { input }));
+
+        this.setState({ show: !this.state.show });
+    }
 
 
     componentWillMount = async () => {
@@ -35,12 +61,28 @@ class EditPost extends Component {
 
 
      render() {
-        //const post = this.props.data
         return (
             <>
                 { this.state.show && (
                     <div className="modal">
                         <button className="close" onClick={this.handleModal}>X</button>
+
+                        <form className="add-post"
+                            onSubmit={(event) => this.handleUpdatePost(event)} >
+                            <input style={{ font: '19px'}}
+                                type="text" placeholder="Title"
+                                name="postTitle"
+                                value={this.state.postData.postTitle}
+                                onChange={(event) => this.handleChangePostTitle(event)}/>
+                            <input style={{ height: "150px", fontSize: "19px"}}
+                                type="text" placeholder="New Blog Post"
+                                name="postBody"
+                                value={this.state.postData.postBody}
+                                onChange={(event) => this.handleChangePostBody(event)}/>
+                            <input className="btn" style={{ fontSize: '19px'}}
+                                type="submit" value="update post"/>
+                        </form>
+
                     </div>
                 )
                 }

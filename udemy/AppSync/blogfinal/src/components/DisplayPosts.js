@@ -5,6 +5,8 @@ import DeletePost  from './DeletePost'
 import EditPost  from './EditPost'
 import { onCreatePost } from '../graphql/subscriptions';
 import { onDeletePost } from '../graphql/subscriptions';
+import { onUpdatePost } from '../graphql/subscriptions';
+import { updatePost } from '../graphql/mutations';
 
 class DisplayPosts extends Component {
 
@@ -33,11 +35,26 @@ class DisplayPosts extends Component {
                 this.setState({posts: updatedPosts});
             }
         })
+        this.updatePostListener = API.graphql(graphqlOperation(onUpdatePost)).subscribe({
+            next: postData => {
+                const updatedPost = postData.value.data.onUpdatePost;
+                const { posts } = this.state;
+                const index = posts.findIndex( post => post.id === updatedPost.id)
+                const updatedPosts = [
+                    ...posts.slice(0,index),
+                    updatedPost,
+                    ...posts.slice(index + 1)
+                ];
+
+                this.setState({posts: updatedPosts});
+            }
+        })
     }
 
     componentWillUnmount() {
         this.createPostListener.unsubscribe();
         this.deletePostListener.unsubscribe();
+        this.updatePostListener.unsubscribe();
     }
 
     getPosts = async () => {
@@ -64,7 +81,7 @@ class DisplayPosts extends Component {
                     <br/>
                     <span>
                         <DeletePost data={post}/>
-                        <EditPost data={post} />
+                        <EditPost {...post} />
                     </span>
                 </div>
             )
