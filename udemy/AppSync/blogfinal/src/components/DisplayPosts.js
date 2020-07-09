@@ -10,12 +10,15 @@ import { onUpdatePost } from '../graphql/subscriptions';
 import { onCreateComment } from '../graphql/subscriptions';
 import CommentPost from './CommentPost';
 import { FaThumbsUp } from 'react-icons/fa';
+import { createLike } from '../graphql/mutations';
 
 class DisplayPosts extends Component {
 
     state = {
         ownerId:"",
         ownerUsername:"",
+        errorMessage: "",
+        postLikedBy: [],
         isHovering: false,
         posts: []
     }
@@ -119,8 +122,30 @@ class DisplayPosts extends Component {
         return false
     }
 
+    handleLike = async postId => {
+        if (this.likedPost(postId)) {
+            return this.setState({errorMessage: "Can't like your own post"});
+        } else {
+            const input = {
+                numberLikes: 1,
+                likeOwnerId: this.state.ownerId,
+                likeOwnerUsername: this.state.ownerUsername,
+                likePostId: postId
+            }
+            try {
+                const result = await API.graphql(graphqlOperation(createLike,{ input }))
+                console.log("Liked: ", result.data);
+            } catch (error) {
+                console.error(error)
+            }
+        }
+    }
+
     render() {
         const { posts } = this.state;
+
+        const loggedInUser = this.state.ownerId;
+
         return posts.map((post) => {
             return (
                 <div className="posts" style={rowStyle} key={post.id}>
@@ -136,8 +161,17 @@ class DisplayPosts extends Component {
                     <p>{post.postBody}</p>
                     <br/>
                     <span>
-                        <DeletePost data={post}/>
-                        <EditPost {...post} />
+                        { post.postOwnerId === loggedInUser && <DeletePost data={post}/>}
+                        { post.postOwnerId === loggedInUser && <EditPost {...post} />}
+                        <span>
+                            <p className="alert"> 
+                                {post.postOwnerId === loggedInUser && this.state.errorMessage}
+                            </p>
+                            <p onClick={() => this.handleLike(post.id)}>
+                                <FaThumbsUp />
+                                {post.likes.items.length}
+                            </p>
+                        </span>
                     </span>
                     <span>
                         <CreateCommentPost postId={post.id}/>
@@ -147,7 +181,8 @@ class DisplayPosts extends Component {
                                 post.comments.items.map((comment,index) => <CommentPost key={index} commentData={comment}/>)
                             }
                     </span>
-            
+
+              
                 </div>
             )
         })
