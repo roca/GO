@@ -3,13 +3,14 @@ import { listPosts } from '../graphql/queries';
 import { API, graphqlOperation, Auth } from 'aws-amplify';
 import DeletePost  from './DeletePost'
 import EditPost  from './EditPost'
+import UsersWhoLikedPost from './UsersWhoLikedPost'
 import CreateCommentPost  from './CreateCommentPost'
 import { onCreatePost, onCreateLike } from '../graphql/subscriptions';
 import { onDeletePost } from '../graphql/subscriptions';
 import { onUpdatePost } from '../graphql/subscriptions';
 import { onCreateComment } from '../graphql/subscriptions';
 import CommentPost from './CommentPost';
-import { FaThumbsUp } from 'react-icons/fa';
+import { FaThumbsUp, FaSadTear } from 'react-icons/fa';
 import { createLike } from '../graphql/mutations';
 
 class DisplayPosts extends Component {
@@ -28,9 +29,10 @@ class DisplayPosts extends Component {
 
         await Auth.currentUserInfo()
             .then(user => {
+                //console.log(user);
                 this.setState({
                     ownerId: user.attributes.sub,
-                    ownerUsername: user.username
+                    ownerUsername: user.attributes.email
                 })
             })
 
@@ -133,8 +135,8 @@ class DisplayPosts extends Component {
                 likePostId: postId
             }
             try {
-                const result = await API.graphql(graphqlOperation(createLike,{ input }))
-                console.log("Liked: ", result.data);
+                const result = await API.graphql(graphqlOperation(createLike,{ input }));
+                //console.log("Liked: ", result.data);
             } catch (error) {
                 console.error(error)
             }
@@ -153,7 +155,7 @@ class DisplayPosts extends Component {
             }
             this.setState({postLikedBy: innerLikes})
         }
-        console.log("Post liked by: ", this.state.postLikedBy);
+        //console.log("Post liked by: ", this.state.postLikedBy);
     }
 
     handleMouseHoverLeave = async () => {
@@ -171,7 +173,7 @@ class DisplayPosts extends Component {
                 <div className="posts" style={rowStyle} key={post.id}>
                     <h1>{post.postTitle}</h1>
                     <span style={{fontStyle: "italic", color: "#0ca5e297"}}>
-                        {"Wrote by: "} {post.postOwnerUsername}
+                        {"Wrote by: "} <a href={"mailto:" + post.postOwnerUsername}>{post.postOwnerUsername}</a>
                         { " on "}
                         <time style={{fontStyle: "italic"}}>
                             {" "}
@@ -195,6 +197,14 @@ class DisplayPosts extends Component {
                                 <FaThumbsUp />
                                 {post.likes.items.length}
                             </p>
+                            {
+                                this.state.isHovering &&
+                                    <div className="user-liked">
+                                        {this.state.postLikedBy.length === 0 ? 
+                                            "Liked by no one" : "Liked by: "}
+                                        { this.state.postLikedBy.length === 0 ? <FaSadTear /> : <UsersWhoLikedPost data={this.state.postLikedBy} /> }
+                                    </div>
+                            }
                         </span>
                     </span>
                     <span>
@@ -205,8 +215,6 @@ class DisplayPosts extends Component {
                                 post.comments.items.map((comment,index) => <CommentPost key={index} commentData={comment}/>)
                             }
                     </span>
-
-              
                 </div>
             )
         })

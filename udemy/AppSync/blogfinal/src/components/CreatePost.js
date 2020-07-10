@@ -17,7 +17,7 @@ class CreatePost extends Component {
                 .then(user => {
                     this.setState({
                         postOwnerId: user.attributes.sub,
-                        postOwnerUsername: user.username
+                        postOwnerUsername: user.attributes.email
                     })
                     // console.log("Curr: User: ",user.username);
                     // console.log("Attr.Sub: User: ",user.attributes.sub);
@@ -38,6 +38,8 @@ class CreatePost extends Component {
             postBody: this.state.postBody,
             createdAt: new Date().toISOString()
         }
+
+        //console.log(input)
 
         await API.graphql(graphqlOperation(createPost, { input }));
 

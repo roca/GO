@@ -60,7 +60,7 @@ class EditPost extends Component {
             .then(user => {
                  this.setState({
                      postOwnerId: user.attributes.sub,
-                     postOwnerUsername: user.username 
+                     postOwnerUsername: user.attributes.email 
                  })
             })
          

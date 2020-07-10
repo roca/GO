@@ -30,7 +30,7 @@ class DisplayPosts extends Component {
                 this.setState(
                     {
                         ownerId: user.attributes.sub,
-                        ownerUsername: user.username,
+                        ownerUsername: user.attributes.email,
                     }
                 )
             })
@@ -151,7 +151,7 @@ class DisplayPosts extends Component {
            try {
               const result =  await API.graphql(graphqlOperation(createLike, { input }))
    
-               console.log("Liked: ", result.data);
+               //console.log("Liked: ", result.data);
                
            }catch (error) {
                 console.error(error)
@@ -178,7 +178,7 @@ class DisplayPosts extends Component {
 
          }
 
-          console.log("Post liked by: ", this.state.postLikedBy);
+          //console.log("Post liked by: ", this.state.postLikedBy);
           
 
      
@@ -187,10 +187,6 @@ class DisplayPosts extends Component {
     handleMouseHoverLeave = async () => {
             this.setState({isHovering: !this.state.isHovering})
             this.setState({postLikedBy: []})
-
-
-
-
     }
     
     render() {
