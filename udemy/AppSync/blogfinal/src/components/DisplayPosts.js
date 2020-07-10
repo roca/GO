@@ -141,6 +141,26 @@ class DisplayPosts extends Component {
         }
     }
 
+    handleMouseHover = async postId => {
+        this.setState({isHovering: !this.state.isHovering});
+
+        let innerLikes = this.state.postLikedBy;
+        for (let post of this.state.posts) {
+            if (post.id === postId) {
+                for ( let like of post.likes.items) {
+                    innerLikes.push(like.likeOwnerUsername)
+                }
+            }
+            this.setState({postLikedBy: innerLikes})
+        }
+        console.log("Post liked by: ", this.state.postLikedBy);
+    }
+
+    handleMouseHoverLeave = async () => {
+        this.setState({isHovering: !this.state.isHovering});
+        this.setState({postLikedBy: []}); 
+    }
+
     render() {
         const { posts } = this.state;
 
@@ -167,7 +187,11 @@ class DisplayPosts extends Component {
                             <p className="alert"> 
                                 {post.postOwnerId === loggedInUser && this.state.errorMessage}
                             </p>
-                            <p onClick={() => this.handleLike(post.id)}>
+                            <p  onMouseEnter={ () => this.handleMouseHover(post.id)}
+                                onMouseLeave={ () => this.handleMouseHoverLeave() }
+                                onClick={() => this.handleLike(post.id)}
+                                style={{color: (post.likes.items.length > 0) ? "blue":"gray"}}
+                                className="like-button">
                                 <FaThumbsUp />
                                 {post.likes.items.length}
                             </p>
