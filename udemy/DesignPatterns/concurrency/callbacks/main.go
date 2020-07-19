@@ -14,10 +14,12 @@ func toUpperSync(word string, f func(string)) {
 
 func main() {
 
-	wait.Add(1)
+	wait.Add(2)
 	toUpperSync("Hello Callbacks!", func(v string) {
-		fmt.Printf("Callbacks: %s\n", v)
-		wait.Done()
+		toUpperSync("Hello Callbacks!", func(v string) {
+			fmt.Printf("Callbacks: %s\n", v)
+			wait.Done()
+		})
 	})
 	println("Waiting async response...")
 	wait.Wait()
