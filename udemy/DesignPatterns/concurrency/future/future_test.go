@@ -14,7 +14,7 @@ func TestStringOrError_Execute(t *testing.T) {
 		wg.Add(1)
 
 		//Timeout
-		//go timeout(t, &wg)
+		go timeout(t, &wg)
 		future.Success(func(s string) {
 			t.Log(s)
 			wg.Done()
@@ -39,6 +39,23 @@ func TestStringOrError_Execute(t *testing.T) {
 		}).Execute(func() (string, error) {
 			return "", errors.New("Error ocurred")
 		})
+
+		wg.Wait()
+	})
+
+	t.Run("Closure Success result", func(t *testing.T) {
+		var wg sync.WaitGroup
+		wg.Add(1)
+
+		//Timeout
+		go timeout(t, &wg)
+		future.Success(func(s string) {
+			t.Log(s)
+			wg.Done()
+		}).Fail(func(e error) {
+			t.Fail()
+			wg.Done()
+		}).Execute(setContext("Hello"))
 
 		wg.Wait()
 	})
