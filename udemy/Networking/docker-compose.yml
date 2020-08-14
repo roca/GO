@@ -1,0 +1,19 @@
+version: "2"
+
+services:
+    sender:
+      container_name: sender
+      build:
+        context: .
+        dockerfile: ./Dockerfile
+      volumes:
+        - .:/app
+      working_dir: /app
+    receiver:
+      container_name: receiver
+      build:
+        context: .
+        dockerfile: ./Dockerfile
+      volumes:
+        - .:/app
+      working_dir: /app
