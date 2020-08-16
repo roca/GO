@@ -5,6 +5,7 @@ RUN apk upgrade
 RUN apk add bash
 RUN apk add git
 RUN apk add gcc
+RUN apk add curl
 
 WORKDIR /app
 
