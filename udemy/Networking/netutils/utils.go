@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"encoding/binary"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"net"
-	"errors"
 	"syscall"
 )
 
@@ -27,24 +27,22 @@ func main() {
 	}
 
 	fmt.Print("Enter protocol: ")
-	fmt.Scanf("%s\n",&protocol)
+	fmt.Scanf("%s\n", &protocol)
 
-	pp,_ := hex.DecodeString(protocol)
+	pp, _ := hex.DecodeString(protocol)
 
-
-	fd,err := CreateDataLinkSocket(iface)
+	fd, err := CreateDataLinkSocket(iface)
 	if err != nil {
 		panic(err)
 	}
 	defer syscall.Close(fd)
 
-	BindSocketToAddress( fd, binary.BigEndian.Uint16(pp) ,iface )
+	BindSocketToAddress(fd, binary.BigEndian.Uint16(pp), iface)
 
 	rb := make([]byte, 8192)
 
-
 	for {
-		n,_,err := syscall.Recvfrom(fd, rb, 0 )
+		n, _, err := syscall.Recvfrom(fd, rb, 0)
 
 		if err != nil {
 			panic(err)
@@ -53,17 +51,16 @@ func main() {
 		destmac := net.HardwareAddr(rb[:6])
 		srcmac := net.HardwareAddr(rb[6:12])
 
-		fmt.Println("Destination Mac => ",destmac.String(), "|| Source Mac => ",srcmac.String())
-		typ := binary.BigEndian.Uint16( rb[12:14] )
-		fmt.Printf("Type: %X\n",typ)
-		fmt.Println("Data: ", (rb[14:n]))
+		fmt.Println("Destination Mac => ", destmac.String(), "|| Source Mac => ", srcmac.String())
+		typ := binary.BigEndian.Uint16(rb[12:14])
+		fmt.Printf("Type: %X\n", typ)
+		fmt.Println("Data: ", string(rb[14:n]))
 		fmt.Println("==================================================================================")
 
 	}
 }
 
-
-func GetInterface( name string ) ( iface net.Interface, err error ) {
+func GetInterface(name string) (iface net.Interface, err error) {
 	interfaces, err := net.Interfaces()
 	if err == nil {
 		for _, i := range interfaces {
@@ -78,11 +75,11 @@ func GetInterface( name string ) ( iface net.Interface, err error ) {
 	return net.Interface{}, errors.New("No interface found")
 }
 
-func CreateDataLinkSocket(  iface net.Interface ) ( fd int,  err error ) {
-	fd, err = syscall.Socket(syscall.AF_PACKET, syscall.SOCK_RAW, 0 )
+func CreateDataLinkSocket(iface net.Interface) (fd int, err error) {
+	fd, err = syscall.Socket(syscall.AF_PACKET, syscall.SOCK_RAW, 0)
 
 	if err != nil {
-		return -1,err
+		return -1, err
 	}
 
 	if err = syscall.BindToDevice(fd, iface.Name); err != nil {
@@ -95,9 +92,9 @@ func CreateDataLinkSocket(  iface net.Interface ) ( fd int,  err error ) {
 /*
 Bind socket to send receive over interface and assign a specific protocol.
 */
-func BindSocketToAddress( fd int, protocol uint16, iface net.Interface  ) *syscall.SockaddrLinklayer {
+func BindSocketToAddress(fd int, protocol uint16, iface net.Interface) *syscall.SockaddrLinklayer {
 
-	pv := uint16(protocol >> 8) | uint16( protocol << 8 )
+	pv := uint16(protocol>>8) | uint16(protocol<<8)
 
 	ll := &syscall.SockaddrLinklayer{
 		Protocol: uint16(pv),
@@ -114,4 +111,3 @@ func BindSocketToAddress( fd int, protocol uint16, iface net.Interface  ) *sysca
 	return ll
 
 }
-

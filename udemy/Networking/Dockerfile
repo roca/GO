@@ -11,6 +11,8 @@ WORKDIR /app
 
 COPY . .
 
+EXPOSE 80
+
 CMD ["tail","-f","/dev/null"]
 
 
