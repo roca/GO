@@ -16,7 +16,7 @@ TimeoutStartSec=0
 Restart=always
 RestartSec=5s
 ExecStart=/usr/local/bin/k3s \
-	agent --server https://192.168.33.111:6443 --token K10fea8bd5f5667d8a31aaecd84f2872e1df96902d115871db849b04241bb247555::server:14686b4e35a4700691621702ef0d0f7f --with-node-id --write-kubeconfig-mode 644  \
+	agent --docker --no-flannel --node-name node01 --node-ip 192.168.33.112 --server https://192.168.33.111:6443 --token K10fea8bd5f5667d8a31aaecd84f2872e1df96902d115871db849b04241bb247555::server:14686b4e35a4700691621702ef0d0f7f --with-node-id --write-kubeconfig-mode 644  \
 
 
 [Install]

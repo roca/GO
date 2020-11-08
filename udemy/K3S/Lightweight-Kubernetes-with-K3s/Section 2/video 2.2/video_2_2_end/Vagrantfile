@@ -51,7 +51,7 @@ Vagrant.configure("2") do |config|
         curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION=v1.17.11+k3s1 sh -
         systemctl stop k3s
         cp /vagrant/master.service /etc/systemd/system/k3s.service 
-        sed -i -e "s#server#agent --server https://192.168.33.111:6443 --token $(cat /vagrant/node-token) --with-node-id --write-kubeconfig-mode 644 #g" /etc/systemd/system/k3s.service
+        sed -i -e "s#server#agent --docker --no-flannel --node-name node01 --node-ip 192.168.33.112 --server https://192.168.33.111:6443 --token $(cat /vagrant/node-token) --with-node-id --write-kubeconfig-mode 644 #g" /etc/systemd/system/k3s.service
         cp /etc/systemd/system/k3s.service /vagrant/agent.service
         systemctl daemon-reload
         systemctl start k3s

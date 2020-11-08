@@ -34,3 +34,14 @@ Raspberry Pi (optional)<br/>
 * [Kubernetes Cookbook - Second Edition](https://www.packtpub.com/virtualization-and-cloud/kubernetes-cookbook-second-edition)
 
 * [Kubernetes for Developers](https://www.packtpub.com/virtualization-and-cloud/kubernetes-developers)
+
+
+## Sum more notes:
+
+### First deployment: 
+
+    - kubectl create deployment myapp --image=nginxinc/nginx-unprivileged
+    - kubectl expose deployment/myapp --protocol=TCP --port 8080 --type NodePort --target-port=8080
+
+### Reference for k3d
+    - https://k3d.io/
