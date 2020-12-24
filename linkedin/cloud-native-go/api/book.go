@@ -2,8 +2,11 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
+	"path"
 )
 
 type Book struct {
@@ -36,8 +39,7 @@ func (b Book) ToJSON() []byte {
 // FromJSON to be used for un-marshalling of the Book type
 func FromJSON(data []byte) Book {
 	book := Book{}
-	err := json.Unmarshal(data, &book)
-	if err != nil {
+	if err := json.Unmarshal(data, &book); err != nil {
 		panic(err)
 	}
 	return book
@@ -50,10 +52,22 @@ func BooksHandleFunc(w http.ResponseWriter, r *http.Request) {
 	case http.MethodGet:
 		books := AllBooks()
 		writeJSON(w, books)
+	case http.MethodPost:
+		body, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			log.Println(err)
+		}
+		book := FromJSON(body)
+		isbn, created := CreateBook(book)
+		if created {
+			w.Header().Add("Location", "/api/books/"+isbn)
+			w.WriteHeader(http.StatusCreated)
+		} else {
+			w.WriteHeader(http.StatusConflict)
+		}
 	default:
 		w.WriteHeader(http.StatusBadRequest)
-		_, err := w.Write([]byte("Unsupported request method."))
-		if err != nil {
+		if _, err := w.Write([]byte("Unsupported request method.")); err != nil {
 			log.Println(err)
 		}
 	}
@@ -62,25 +76,90 @@ func BooksHandleFunc(w http.ResponseWriter, r *http.Request) {
 // BooksHandleFunc to be used as http.HandleFunc for Book API
 // '/api/books/<isbn>'
 func BookHandleFunc(w http.ResponseWriter, r *http.Request) {
-	bytes, err := json.Marshal(Books)
-	if err != nil {
-		panic(err)
+	isbn := path.Base(r.URL.Path)
+	//fmt.Println(isbn)
+	switch method := r.Method; method {
+	case http.MethodGet:
+		book, found := GetBook(isbn)
+		if found {
+			writeJSON(w, book)
+		} else {
+			w.WriteHeader(http.StatusNotFound)
+		}
+	case http.MethodPut:
+		body, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+		book := FromJSON(body)
+		exists := UpdateBook(isbn, book)
+		if exists {
+			w.WriteHeader(http.StatusOK)
+		} else {
+			w.WriteHeader(http.StatusNotFound)
+		}
+	case http.MethodDelete:
+		DeleteBook(isbn)
+		w.WriteHeader(http.StatusOK)
+	default:
+		w.WriteHeader(http.StatusBadRequest)
+		if _, err := w.Write([]byte("Unsupported request method.")); err != nil {
+			log.Println(err)
+		}
 	}
-
-	w.Header().Add("Content-Type", "application/json; charset-utf-8")
-	w.Write(bytes)
 }
 
 func AllBooks() []Book {
 	return Books
 }
 
-func writeJSON(w http.ResponseWriter, books []Book) {
-	bytes, err := json.Marshal(books)
+func CreateBook(book Book) (string, bool) {
+	if b, exists := books[book.ISBN]; exists {
+		return b.ISBN, false
+	}
+	Books = append(Books, book)
+	books[book.ISBN] = book
+	return book.ISBN, true
+}
+
+func GetBook(isbn string) (Book, bool) {
+	if b, exists := books[isbn]; exists {
+		//fmt.Println(b)
+		return b, true
+	}
+	return Book{}, false
+}
+
+func UpdateBook(isbn string, book Book) bool {
+	for i := 0; i < len(Books); i++ {
+		if _, exists := books[Books[i].ISBN]; exists && Books[i].ISBN == isbn {
+			Books[i].Title = book.Title
+			Books[i].Author = book.Author
+			Books[i].Description = book.Description
+			return true
+		}
+	}
+
+	return false
+}
+
+func DeleteBook(isbn string) {
+	for i := 0; i < len(Books); i++ {
+		if _, exists := books[isbn]; exists && Books[i].ISBN == isbn {
+			delete(books,isbn)
+			Books = append(Books[0:i], Books[i+1:]...)
+		}
+	}	
+}
+
+func writeJSON(w http.ResponseWriter, value interface{}) {
+	bytes, err := json.Marshal(value)
 	if err != nil {
 		panic(err)
 	}
 
 	w.Header().Add("Content-Type", "application/json; charset-utf-8")
-	w.Write(bytes)
+	if _, err := w.Write(bytes); err != nil {
+		log.Println(err)
+	}
 }
