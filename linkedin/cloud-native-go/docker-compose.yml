@@ -1,0 +1,12 @@
+version: '2'
+
+services:
+    api:
+        container_name: api
+        build:
+            context: .
+            dockerfile: Dockerfile
+        ports:
+            - "9090:9090"
+        working_dir: /linkedin/cloud-native-go/api
+        stdin_open: true
