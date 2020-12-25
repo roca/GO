@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -146,10 +145,10 @@ func UpdateBook(isbn string, book Book) bool {
 func DeleteBook(isbn string) {
 	for i := 0; i < len(Books); i++ {
 		if _, exists := books[isbn]; exists && Books[i].ISBN == isbn {
-			delete(books,isbn)
+			delete(books, isbn)
 			Books = append(Books[0:i], Books[i+1:]...)
 		}
-	}	
+	}
 }
 
 func writeJSON(w http.ResponseWriter, value interface{}) {
