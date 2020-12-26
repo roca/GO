@@ -1,12 +1,16 @@
 version: '2'
-
 services:
-    api:
+    microservice:
         container_name: api
-        build:
-            context: .
-            dockerfile: Dockerfile
+        image: rcampbell/cloud-native-go:1.0.2
+        environment:
+        - PORT=9090
         ports:
-            - "9090:9090"
-        working_dir: /linkedin/cloud-native-go/api
-        stdin_open: true
+        - "9090:9090"
+    nginx:
+        container_name: nginx
+        image: nginx:1.11.9
+        ports:
+        - "8080:80"
+        links:
+        - microservice
