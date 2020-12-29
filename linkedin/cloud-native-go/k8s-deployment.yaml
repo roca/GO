@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloud-native-go
+  namespace: cloud-native-go
+  labels:
+    app: cloud-native-go
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: cloud-native-go
+  template:
+    metadata:
+      labels:
+        app: cloud-native-go
+        tier: service
+    spec:
+      containers:
+        - name: cloud-native-go
+          image: rcampbell/cloud-native-go:1.0.2
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "125m"
+            limits:
+              memory: "128Mi"
+              cpu: "250m"
+          readinessProbe:
+              httpGet:
+                path: /
+                port: 9090
+              initialDelaySeconds: 5
+              timeoutSeconds: 5
+          livenessProbe:
+              httpGet:
+                path: /
+                port: 9090
+              initialDelaySeconds: 5
+              timeoutSeconds: 5
+          ports:
+          - containerPort: 9090
+          env:
+            - name: PORT
+              value: "9090"
