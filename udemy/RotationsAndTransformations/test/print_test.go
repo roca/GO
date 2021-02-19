@@ -24,3 +24,13 @@ func TestMatPrint(t *testing.T) {
 	assert.Equal(t, formatedString, fmt.Sprintf("%v\n", fa), "Matrix string output did not match")
 
 }
+
+func TestPlus(t *testing.T) {
+	v1 := &aml.Vector3{1.0,2.0,3.0}
+	v2 := &aml.Vector3{1.0,2.0,3.0}
+
+	v1.Plus(v2)
+	assert.Equal(t,v1.X, 2.0)
+	assert.Equal(t,v1.Y,4.0)
+	assert.Equal(t,v1.Z,6.0)
+}
