@@ -37,7 +37,6 @@ func New(values ...interface{}) (Vector, error) {
 	default:
 		return Vector{}, nil
 	}
-	return Vector{}, fmt.Errorf("Could not create Vector type")
 }
 
 func (u Vector) Cross(v Vector) Vector {
