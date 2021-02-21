@@ -57,3 +57,13 @@ func TestCase03(t *testing.T) {
 
 	assert.Equal(t, actual, expected, "Should initialize with three values")
 }
+
+// Case 03: Should initialize with slice of three values
+func TestCase04(t *testing.T) {
+	v, _ := vector.New([]float64{1.0, 2.0, 3.0})
+
+	expected := []float64{1.0, 2.0, 3.0}
+	actual := []float64{v.X, v.Y, v.Z}
+
+	assert.Equal(t, actual, expected, "Should initialize with slice of three values")
+}
