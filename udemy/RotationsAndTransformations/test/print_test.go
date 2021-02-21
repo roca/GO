@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"gonum.org/v1/gonum/mat"
 	"udemy.com/aml"
+	"udemy.com/aml/vector"
 )
 
 func TestMatPrint(t *testing.T) {
@@ -25,12 +26,34 @@ func TestMatPrint(t *testing.T) {
 
 }
 
-func TestPlus(t *testing.T) {
-	v1 := &aml.Vector3{1.0,2.0,3.0}
-	v2 := &aml.Vector3{1.0,2.0,3.0}
+// Vectot test
 
-	v1.Plus(v2)
-	assert.Equal(t,v1.X, 2.0)
-	assert.Equal(t,v1.Y,4.0)
-	assert.Equal(t,v1.Z,6.0)
+// Case 01: Default valuses for Vector should be 0.0
+func TestCase01(t *testing.T) {
+	v := vector.Vector{}
+
+	expected := []float64{0.0, 0.0, 0.0}
+	actual := []float64{v.X, v.Y, v.Z}
+
+	assert.Equal(t, actual, expected, "Default valuses for Vector should be 0.0 float64")
+}
+
+// Case 02: Should initialize with scalar value
+func TestCase02(t *testing.T) {
+	v, _ := vector.New(3.0)
+
+	expected := []float64{3.0, 3.0, 3.0}
+	actual := []float64{v.X, v.Y, v.Z}
+
+	assert.Equal(t, actual, expected, "Should initialize with scalar value")
+}
+
+// Case 03: Should initialize with three values
+func TestCase03(t *testing.T) {
+	v, _ := vector.New(1.0, 2.0, 3.0)
+
+	expected := []float64{1.0, 2.0, 3.0}
+	actual := []float64{v.X, v.Y, v.Z}
+
+	assert.Equal(t, actual, expected, "Should initialize with three values")
 }
