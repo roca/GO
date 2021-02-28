@@ -5,14 +5,15 @@ import (
 	"math"
 )
 
-type Point struct{ X, Y, Z int }
-type Vector struct{ X, Y, Z float64 }
+// type Point struct{ X, Y, Z int }
 
 // type Ray struct {
 // 	V Vector
 // 	P Point
 // 	T float64 // theta
 // }
+
+type Vector struct{ X, Y, Z float64 }
 
 func New(values ...interface{}) (Vector, error) {
 
@@ -39,44 +40,106 @@ func New(values ...interface{}) (Vector, error) {
 		return Vector{}, nil
 	}
 }
-
-func (v *Vector) Sop(operation string, value float64) {
-	switch o := operation; o {
-	case "+=":
+func NewX() Vector { return Vector{1.0, 0.0, 0.0} }
+func NewY() Vector { return Vector{0.0, 1.0, 0.0} }
+func NewZ() Vector { return Vector{0.0, 0.0, 1.0} }
+func (v *Vector) Negative() {
+	v.Sop("*=", -1.0)
+}
+func (v *Vector) Sop(operation string, value float64) (*Vector, error) {
+	switch o := operation; {
+	case o == "+=" || o == "+":
 		v.X += value
 		v.Y += value
 		v.Z += value
-	case "-=":
+		return v, nil
+	case o == "-=" || o == "-":
 		v.X -= value
 		v.Y -= value
 		v.Z -= value
-	case "*=":
+		return v, nil
+	case o == "*=" || o == "*":
 		v.X *= value
 		v.Y *= value
 		v.Z *= value
-	case "/=":
+		return v, nil
+	case o == "/=" || o == "/":
 		v.X /= value
 		v.Y /= value
 		v.Z /= value
+		return v, nil
+	default:
+		return &Vector{}, fmt.Errorf("Vector has no such operation '%s'", o)
 	}
 }
+func (v *Vector) Vop(operation string, u Vector) (*Vector, error) {
+	switch o := operation; {
+	case o == "+=" || o == "+":
+		v.X += u.X
+		v.Y += u.Y
+		v.Z += u.Z
+		return v, nil
+	case o == "-=" || o == "-":
+		v.X -= u.X
+		v.Y -= u.Y
+		v.Z -= u.Z
+		return v, nil
+	case o == "*=" || o == "*":
+		v.X *= u.X
+		v.Y *= u.Y
+		v.Z *= u.Z
+		return v, nil
+	case o == "/=" || o == "/":
+		v.X /= u.X
+		v.Y /= u.Y
+		v.Z /= u.Z
+		return v, nil
+	default:
+		return &Vector{}, fmt.Errorf("Vector has no such operation '%s'", o)
+	}
+}
+func (u Vector) Mag() float64 {
+	return math.Sqrt((u.X * u.X) + (u.Y * u.Y) + (u.Z * u.Z))
+}
+func (u Vector) Norm() float64 { return u.Mag() }
+func (v *Vector) Normalize() (*Vector, error) {
+	mag := v.Mag()
+	if mag == 0 {
+		return &Vector{}, fmt.Errorf("Can't normalize this vector the magnitdue was 0")
+	}
+	v.X /= mag
+	v.Y /= mag
+	v.Z /= mag
+	return v, nil
+}
+func Cross(l Vector, r Vector) *Vector {
+	x := (l.Y * r.Z) - (l.Z * r.Y)
+	y := (l.Z * r.X) - (l.X * r.Z)
+	z := (l.X * r.Y) - (l.Y * r.X)
+	return &Vector{x, y, z}
+}
+func Dot(u Vector, v Vector) float64 { return (u.X * v.X) + (u.Y * v.Y) + (u.Z * v.Z) }
+func Unit(u Vector) *Vector {
+	mag := u.Norm()
+	if mag > 0.0 {
+		v, _ := u.Sop("/=", mag)
+		return v
+	}
 
-func (u Vector) Cross(v Vector) Vector {
-	return Vector{u.Y*v.Z - u.Z*v.Y, u.X*v.Z - u.Z*v.X, u.X*v.Y - u.Y*v.X}
+	return &u
 }
 
 // Vector Operations
 
-func (u Vector) Mag() float64             { return math.Sqrt(u.X*u.X + u.Y*u.Y + u.Z*u.Z) }
-func (u Vector) Divide(v Vector) Vector   { return Vector{u.X / v.X, u.Y / v.Y, u.Z / v.Z} }
-func (u Vector) MultMag(n float64) Vector { return Vector{u.X * n, u.Y * n, u.Z * n} }
+// func (u Vector) Divide(v Vector) Vector   { return Vector{u.X / v.X, u.Y / v.Y, u.Z / v.Z} }
+// func (u Vector) MultMag(n float64) Vector { return Vector{u.X * n, u.Y * n, u.Z * n} }
 
-func (u Point) Add(v Vector) Vector {
-	return Vector{float64(u.X) + v.X, float64(u.Y) + v.Y, float64(u.Z) + v.Z}
-}
-func (u Point) Subtract(v Point) Vector {
-	return Vector{float64(u.X - v.X), float64(u.Y - v.Y), float64(u.Z - v.Z)}
-}
+// func (u Point) Add(v Vector) Vector {
+// 	return Vector{float64(u.X) + v.X, float64(u.Y) + v.Y, float64(u.Z) + v.Z}
+// }
+// func (u Point) Subtract(v Point) Vector {
+// 	return Vector{float64(u.X - v.X), float64(u.Y - v.Y), float64(u.Z - v.Z)}
+// }
 
 // func triangulate(input string) {
 // 	var r1, r2 Ray
