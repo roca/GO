@@ -48,7 +48,10 @@ func TestCase04(t *testing.T) {
 	assert.Equal(t, actual, expected, "Should initialize with slice of three values")
 }
 
-// Destructive scalar operations (Sop). nothing returned
+/*
+	Destructive scalar operations (Sop). nothing return
+	(v *Vector) Sop(operation string, value float64) (*Vector, error)
+*/
 func TestCase05(t *testing.T) {
 	s := 3.0
 
@@ -57,25 +60,56 @@ func TestCase05(t *testing.T) {
 	expected := []float64{v.X + s, v.Y + s, v.Z + s}
 	v.Sop("+=", s)
 	actual := []float64{v.X, v.Y, v.Z}
-	assert.Equal(t, actual, expected, "Vector should be altered with scalar added to eah axis")
+	assert.Equal(t, actual, expected, "Vector should be altered with scalar added to each axis")
+
+	// 	v + s
+	expected = []float64{v.X + s, v.Y + s, v.Z + s}
+	u, _ := v.Sop("+", s)
+	actual = []float64{u.X, u.Y, u.Z}
+	assert.Equal(t, actual, expected, "Vector should be altered with scalar added to each axis")
 
 	// 	v -= s
 	expected = []float64{v.X - s, v.Y - s, v.Z - s}
 	v.Sop("-=", s)
 	actual = []float64{v.X, v.Y, v.Z}
-	assert.Equal(t, actual, expected, "Vector should be altered with scalar subtracting to eah axis")
+	assert.Equal(t, actual, expected, "Vector should be altered with scalar subtracted from each axis")
+
+	// 	v - s
+	expected = []float64{v.X - s, v.Y - s, v.Z - s}
+	w, _ := v.Sop("-", s)
+	actual = []float64{w.X, w.Y, w.Z}
+	assert.Equal(t, actual, expected, "Vector should be altered with scalar subtracted from each axis")
 
 	// 	v *= s
 	expected = []float64{v.X * s, v.Y * s, v.Z * s}
 	v.Sop("*=", s)
 	actual = []float64{v.X, v.Y, v.Z}
-	assert.Equal(t, actual, expected, "Vector should be altered with scalar subtracting to eah axis")
+	assert.Equal(t, actual, expected, "Vector should be altered with scalar multiplied by each axis")
+
+	// 	v * s
+	expected = []float64{v.X * s, v.Y * s, v.Z * s}
+	x, _ := v.Sop("*", s)
+	actual = []float64{x.X, x.Y, x.Z}
+	assert.Equal(t, actual, expected, "Vector should be altered with scalar multiplied by each axis")
 
 	// 	v /= s
 	expected = []float64{v.X / s, v.Y / s, v.Z / s}
 	v.Sop("/=", s)
 	actual = []float64{v.X, v.Y, v.Z}
-	assert.Equal(t, actual, expected, "Vector should be altered with scalar subtracting to eah axis")
+	assert.Equal(t, actual, expected, "Vector should be altered with each axis divided by scalar")
+
+	// 	v / s
+	expected = []float64{v.X / s, v.Y / s, v.Z / s}
+	y, _ := v.Sop("/", s)
+	actual = []float64{y.X, y.Y, y.Z}
+	assert.Equal(t, actual, expected, "Vector should be altered with each axis divided by scalar")
+
+	// 	v ? s
+	expected = []float64{0.0, 0.0, 0.0}
+	z, e := v.Sop("?", s)
+	actual = []float64{z.X, z.Y, z.Z}
+	assert.Equal(t, actual, expected, "Vector should a nil object for its typ")
+	assert.NotNil(t, e, "This unknown operations should raise error")
 
 	// 	v.Mag()
 	expectedScalar := math.Sqrt(math.Pow(v.X, 2.0) + math.Pow(v.Y, 2.0) + math.Pow(v.Z, 2.0))
@@ -85,18 +119,21 @@ func TestCase05(t *testing.T) {
 	// 	v.Normalize()
 	mag := v.Mag()
 	expected = []float64{v.X / mag, v.Y / mag, v.Z / mag}
-	_ = v.Normalize()
+	v.Normalize()
 	actual = []float64{v.X, v.Y, v.Z}
-	assert.Equal(t, actual, expected, "Vector should be altered with scalar subtracting to eah axis")
+	assert.Equal(t, actual, expected, "Vector should be altered with scalar subtracting to each axis")
 
 	// 	v.Negative()
-	expected = []float64{v.X * -1.0,  v.Y * -1.0, v.Z  * -1.0}
+	expected = []float64{v.X * -1.0, v.Y * -1.0, v.Z * -1.0}
 	v.Negative()
 	actual = []float64{v.X, v.Y, v.Z}
 	assert.Equal(t, actual, expected, "Vector should be altered with each axis times by -1")
 }
 
-// Destructive vector operations (Vop). nothing returned
+/*
+ 	Destructive vector operations (Vop). nothing returned
+	(v *Vector) Vop(operation string, u Vector) (*Vector, error)
+*/
 func TestCase06(t *testing.T) {
 	v1, _ := vector.New(1.0, 2.0, 3.0)
 	v2, _ := vector.New(1.0, 2.0, 3.0)
@@ -107,9 +144,21 @@ func TestCase06(t *testing.T) {
 	actual := []float64{v1.X, v1.Y, v1.Z}
 	assert.Equal(t, actual, expected, "Vector should be altered with added vectors axis added to each axis")
 
+	//  v1 + v2
+	expected = []float64{v1.X + v2.X, v1.Y + v2.Y, v1.Z + v2.Z}
+	v1.Vop("+", v2)
+	actual = []float64{v1.X, v1.Y, v1.Z}
+	assert.Equal(t, actual, expected, "Vector should be altered with added vectors axis added to each axis")
+
 	//  v1 -= v2
 	expected = []float64{v1.X - v2.X, v1.Y - v2.Y, v1.Z - v2.Z}
 	v1.Vop("-=", v2)
+	actual = []float64{v1.X, v1.Y, v1.Z}
+	assert.Equal(t, actual, expected, "Vector should be altered with substracted vectors axis substracted from each axis")
+
+	//  v1 - v2
+	expected = []float64{v1.X - v2.X, v1.Y - v2.Y, v1.Z - v2.Z}
+	v1.Vop("-", v2)
 	actual = []float64{v1.X, v1.Y, v1.Z}
 	assert.Equal(t, actual, expected, "Vector should be altered with substracted vectors axis substracted from each axis")
 
@@ -119,11 +168,30 @@ func TestCase06(t *testing.T) {
 	actual = []float64{v1.X, v1.Y, v1.Z}
 	assert.Equal(t, actual, expected, "Vector should be altered with the second vectors axis multipled by each axis")
 
+	//  v1 * v2
+	expected = []float64{v1.X * v2.X, v1.Y * v2.Y, v1.Z * v2.Z}
+	v1.Vop("*", v2)
+	actual = []float64{v1.X, v1.Y, v1.Z}
+	assert.Equal(t, actual, expected, "Vector should be altered with the second vectors axis multipled by each axis")
+
 	//  v1 /= v2
 	expected = []float64{v1.X / v2.X, v1.Y / v2.Y, v1.Z / v2.Z}
 	v1.Vop("/=", v2)
 	actual = []float64{v1.X, v1.Y, v1.Z}
 	assert.Equal(t, actual, expected, "Vector should be altered with the second vectors axis divided by each axis")
+
+	//  v1 / v2
+	expected = []float64{v1.X / v2.X, v1.Y / v2.Y, v1.Z / v2.Z}
+	v1.Vop("/", v2)
+	actual = []float64{v1.X, v1.Y, v1.Z}
+	assert.Equal(t, actual, expected, "Vector should be altered with the second vectors axis divided by each axis")
+
+	// 	v ? s
+	expected = []float64{0.0, 0.0, 0.0}
+	z, e := v1.Vop("?", v2)
+	actual = []float64{z.X, z.Y, z.Z}
+	assert.Equal(t, actual, expected, "Vector should a nil object for its type")
+	assert.NotNil(t, e, "This unknown operations should raise error")
 }
 
 // Special Object creation
@@ -149,29 +217,30 @@ func TestCase07(t *testing.T) {
 }
 
 // Vector to Vector nondestructive operations which creates a new vector
-/*
-With another vector (VVop)
-	v1 + v2 = v3 (VpV)
-	v1 - v2 = v3 (VmV)
-	v1 * v2 = v3 (VtV)
-	v1 / v2 = v3 (VdV)
-With a scalar (VSop)
-    va + s = vb (VpS)
-    va - s = vb (VmS)
-    va * s = vb (VtS)
-    va / s = vb (VdS)
-With a scalar (SVop)
-	s + va = sb (SpV)
-	s - va = sb (SmV)
-	s * va = sb (StV)
-	s / va = sb (SdV)
-*/
+// Cross
+func TestCase08(t *testing.T) {
+	v1, _ := vector.New(2.0, -5.0, 4.0)
+	v2, _ := vector.New(6.0, 2.0, -8.0)
+	expected := []float64{32.0, 40.0, 34.0}
+	v := vector.Cross(v1, v2)
+	actual := []float64{v.X, v.Y, v.Z}
+	assert.Equal(t, actual, expected, "Cross(v1,v2) is inccorrect")
+}
 
-// Other Vector operations
-/*
-      norm(V) = s
-      unit(V) = v
-	  cross(v1,vb) = vc
-	  dot(va,vb) = s
+// Dot
+func TestCase09(t *testing.T) {
+	v1, _ := vector.New(2.0, -5.0, 4.0)
+	v2, _ := vector.New(6.0, 2.0, -8.0)
+	expected := -30.0
+	actual := vector.Dot(v1, v2)
+	assert.Equal(t, actual, expected, "Dot(v1,v2) is inccorrect")
+}
 
-*/
+// Unit
+func TestCase10(t *testing.T) {
+	v, _ := vector.New(2.0, -5.0, 4.0)
+	expected := []float64{v.X / v.Norm(), v.Y / v.Norm(), v.Z / v.Norm()}
+	u := vector.Unit(v)
+	actual := []float64{u.X, u.Y, u.Z}
+	assert.Equal(t, actual, expected, "Unit(v) is inccorrect")
+}
