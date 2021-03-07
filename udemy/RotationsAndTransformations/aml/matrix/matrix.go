@@ -99,11 +99,27 @@ func (m *Matrix) Data() []float64 {
 	}
 }
 
+//
+
 // Operator Assignments (Matrix)
+// +=, -=, *=, /=
 // Operator Assignments (Scalar)
+// +=, -=, *=, /=
 // Special Type creation
+func(m *Matrix) Identity() Matrix { return Matrix{}}
 
 // Matrix / Matrix Operations
+// +, -, *, /
 // Matrix / Vector Operations
+// M * V = V
 // Matrix / Scalar Operations
+// M * S, M + S, M - S , M / S
+// S * M, S + M, S - M , S / M
 // Matrix Operations
+
+
+func(m *Matrix) DiagV(n Matrix) (vector.Vector, error) { return vector.Vector{},nil}
+func(m *Matrix) DiagM(v vector.Vector) (Matrix, error) { return Matrix{},nil}
+func(m *Matrix) Transpose() Matrix { return Matrix{}}
+func(m *Matrix) Inverse() Matrix { return Matrix{}}
+func(m *Matrix) Determinant() float64 { return 0.0}
