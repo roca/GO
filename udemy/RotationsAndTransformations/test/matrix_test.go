@@ -8,7 +8,7 @@ import (
 )
 
 // Case 01: Default valuses for Matrixshould be 0.0
-func TestCase01(t *testing.T) {
+func TestConstructWithNoData(t *testing.T) {
 	m := matrix.Matrix{}
 
 	expected := []float64{
@@ -25,18 +25,35 @@ func TestCase01(t *testing.T) {
 	assert.Equal(t, actual, expected, "Default valuses for Vector should be 0.0 float64")
 }
 
-// func TestMatPrint(t *testing.T) {
-// 	v := make([]float64, 12)
-// 	for i := 0; i < 12; i++ {
-// 		v[i] = float64(i)
-// 	}
-// 	// Create a new matrix
-// 	A := mat.NewDense(3, 4, v)
-// 	println("A:")
-// 	formatedString := aml.MatPrint(A)
+func TestConstructWithSingelScalar(t *testing.T) {
+	s := 5.
+	m, _ := matrix.New(s)
 
-// 	fa := mat.Formatted(A, mat.Prefix(""), mat.Squeeze())
+	expected := []float64{
+		s, s, s,
+		s, s, s,
+		s, s, s,
+	}
+	actual := []float64{
+		m.M11, m.M12, m.M13,
+		m.M21, m.M22, m.M23,
+		m.M31, m.M32, m.M33,
+	}
+	assert.Equal(t, actual, expected, "Valuses for Matrix should be %f ", s)
+}
 
-// 	assert.Equal(t, formatedString, fmt.Sprintf("%v\n", fa), "Matrix string output did not match")
+func TestConstructWithNineScalars(t *testing.T) {
+	m, _ := matrix.New(1., 2., 3., 4., 5., 6., 7., 8., 9.)
 
-// }
+	expected := []float64{
+		1.0, 2.0, 3.0,
+		4.0, 5.0, 6.0,
+		7.0, 8.0, 9.0,
+	}
+	actual := []float64{
+		m.M11, m.M12, m.M13,
+		m.M21, m.M22, m.M23,
+		m.M31, m.M32, m.M33,
+	}
+	assert.Equal(t, actual, expected, "Valuses for Matrix for each element incorrectly assigned")
+}
