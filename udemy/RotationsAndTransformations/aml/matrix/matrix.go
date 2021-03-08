@@ -78,7 +78,7 @@ func New(values ...interface{}) (Matrix, error) {
 	case []vector.Vector:
 		a := values[0].([]vector.Vector)
 		switch l := len(a); l {
-		case 1:
+		case 3:
 			return Matrix{
 				a[0].X, a[0].Y, a[0].Z,
 				a[1].X, a[1].Y, a[1].Z,
