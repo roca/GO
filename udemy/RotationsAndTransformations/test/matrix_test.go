@@ -152,8 +152,24 @@ func TestDiagM(t *testing.T)       {}
 func TestDiagV(t *testing.T)       {}
 func TestTranspose(t *testing.T)   {}
 func TestDeterminant(t *testing.T) {}
-func TestInverse(t *testing.T)     {}
-func TestIdentity(t *testing.T)    {
+func TestInverse(t *testing.T) {
+	m, _ := matrix.New([][]float64{
+		{-2.0, -3.0, 2.0},
+		{1.0, -1.0, 1.0},
+		{6.0, -8.0, 7.0},
+	})
+	expected := [][]float64{
+		{-1. / 3., -5. / 3., 1. / 3.},
+		{1. / 3., 26. / 3., -4. / 3.},
+		{2. / 3., 34. / 3., -5. / 3.},
+	}
+	inverseM, _ := m.Inverse()
+	actual := inverseM.Data()
+
+	assert.Equal(t, actual, expected, "Inverse is incorrect")
+
+}
+func TestIdentity(t *testing.T) {
 
 	expected := [][]float64{
 		{1., 0., 0.},
