@@ -131,3 +131,26 @@ func TestConstructWithSliceOfVectors(t *testing.T) {
 	}
 	assert.Equal(t, actual, expected, "Valuses for Matrix for each element incorrectly assigned")
 }
+//Operations with a matrix
+func TestAdditionWithMatrix(t *testing.T){}
+func TestSubtractionWithMatrix(t *testing.T){}
+func TestMultiplicationWithMatrix(t *testing.T){}
+func TestDivisionWithMatrix(t *testing.T){}
+
+//Operations with a vector
+func TestMultiplicationWithVector(t *testing.T){}
+
+//Operations with a scalar
+func TestAdditionWithScalar(t *testing.T){}
+func TestSubtractionWithScalar(t *testing.T){}
+func TestMultiplicationWithScalar(t *testing.T){}
+func TestDivisionWithScalar(t *testing.T){}
+
+//Special operations
+func TestDiagM(t *testing.T){}
+func TestDiagV(t *testing.T){}
+func TestTranspose(t *testing.T){}
+func TestDeterminant(t *testing.T){}
+func TestInverse(t *testing.T){}
+func TestIdentity(t *testing.T){}
+func TestNegative(t *testing.T){}

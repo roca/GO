@@ -125,8 +125,8 @@ func TestCase05(t *testing.T) {
 
 	// 	v.Negative()
 	expected = []float64{v.X * -1.0, v.Y * -1.0, v.Z * -1.0}
-	v.Negative()
-	actual = []float64{v.X, v.Y, v.Z}
+	minusV, _ := v.Negative()
+	actual = []float64{minusV.X, minusV.Y, minusV.Z}
 	assert.Equal(t, actual, expected, "Vector should be altered with each axis times by -1")
 }
 

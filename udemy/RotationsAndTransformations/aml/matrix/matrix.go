@@ -2,6 +2,7 @@ package matrix
 
 import (
 	"fmt"
+	"math"
 
 	"udemy.com/aml/vector"
 )
@@ -94,7 +95,7 @@ func New(values ...interface{}) (Matrix, error) {
 
 // Special Type creation
 func Identity() Matrix {
-	m,_ := New([][]float64{
+	m, _ := New([][]float64{
 		{1., 0., 0.},
 		{0., 1., 0.},
 		{0., 0., 1.},
@@ -102,16 +103,15 @@ func Identity() Matrix {
 	return m
 }
 
-func (m *Matrix) Negate() (Matrix,error) {
+func (m *Matrix) Negate() (Matrix, error) {
+	u, _ := m.Copy()
+	u.Sop("*=", -1.0)
+	return u, nil
+}
+
+func (m *Matrix) Copy() (Matrix, error) {
 	dataM := m.Data()
-	for i, row := range dataM {
-			for j, _ := range row {
-				for k := 0; k < 3; k++ {
-					dataM[i][j] *= -1.0
-				}
-			}
-		}
-		u,_ := New(dataM)
+	u, _ := New(dataM)
 	return u, nil
 }
 
@@ -324,8 +324,6 @@ func (m *Matrix) Sop(operation string, value float64) (*Matrix, error) {
 	}
 }
 
-
-
 // Matrix / Vector Operations
 // M * V = V
 // Matrix / Scalar Operations
@@ -333,8 +331,55 @@ func (m *Matrix) Sop(operation string, value float64) (*Matrix, error) {
 // S * M, S + M, S - M , S / M
 // Matrix Operations
 
-func (m *Matrix) DiagV(n Matrix) (vector.Vector, error) { return vector.Vector{}, nil }
-func (m *Matrix) DiagM(v vector.Vector) (Matrix, error) { return Matrix{}, nil }
-func (m *Matrix) Transpose() (Matrix, error)            { return Matrix{}, nil }
-func (m *Matrix) Inverse() (Matrix, error)              { return Matrix{}, nil }
-func (m *Matrix) Determinant() (float64, error)         { return 0.0, nil }
+func Transpose(m Matrix) (Matrix, error) {
+	dataM := m.Data()
+	u, _ := m.Copy()
+	dataU := u.Data()
+	for i, row := range dataM {
+		for j, _ := range row {
+			for k := 0; k < 3; k++ {
+				dataU[i][j] = dataM[j][i]
+			}
+		}
+	}
+	u.change(dataU)
+	return u, nil
+}
+func Determinant(m Matrix) (float64, error) {
+	det1 := m.M11 * ((m.M22 * m.M33) - (m.M32 * m.M23))
+	det2 := m.M12 * ((m.M21 * m.M33) - (m.M23 * m.M31))
+	det3 := m.M13 * ((m.M21 * m.M32) - (m.M22 * m.M31))
+	det := det1 - det2 + det3
+	return det, nil
+}
+func DiagV(m Matrix) (vector.Vector, error) {
+	v, _ := vector.New([]float64{m.M11, m.M22, m.M33})
+	return v, nil
+}
+func DiagM(v vector.Vector) (Matrix, error) {
+	u := Matrix{}
+	u.M11 = v.X
+	u.M22 = v.Y
+	u.M33 = v.Z
+	return u, nil
+}
+func (m *Matrix) Inverse() (Matrix, error) {
+	det, _ := Determinant(*m)
+	dataM := m.Data()
+	if math.Abs(det) > 0.0 {
+		dataM[0][0] = (m.M22*m.M33 - m.M32*m.M23) / det
+		dataM[0][1] = (m.M13*m.M32 - m.M33*m.M12) / det
+		dataM[0][2] = (m.M12*m.M23 - m.M22*m.M13) / det
+
+		dataM[1][0] = (m.M23*m.M31 - m.M33*m.M21) / det
+		dataM[1][1] = (m.M11*m.M33 - m.M31*m.M13) / det
+		dataM[1][2] = (m.M13*m.M21 - m.M23*m.M11) / det
+
+		dataM[2][0] = (m.M21*m.M32 - m.M31*m.M22) / det
+		dataM[2][1] = (m.M12*m.M31 - m.M32*m.M11) / det
+		dataM[2][2] = (m.M11*m.M22 - m.M21*m.M12) / det
+
+	}
+	u, _ := New(dataM)
+	return u, nil
+}

@@ -39,9 +39,18 @@ func NewZ() Vector { return Vector{0.0, 0.0, 1.0} }
 func (v *Vector) Data() []float64 {
 	return []float64{v.X, v.Y, v.Z}
 }
-func (v *Vector) Negative() {
-	v.Sop("*=", -1.0)
+func (v *Vector) Negative() (Vector,error) {
+	u,_ := v.Copy()
+	u.Sop("*=", -1.0)
+    return u,nil
 }
+
+func (m *Vector) Copy() (Vector, error) {
+	dataV := m.Data()
+	u, _ := New(dataV)
+	return u, nil
+}
+
 func (v *Vector) Sop(operation string, value float64) (*Vector, error) {
 	switch o := operation; {
 	case o == "+=" || o == "+":
