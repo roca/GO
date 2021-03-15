@@ -235,7 +235,6 @@ func (m *Matrix) Mop(operation string, u Matrix) (*Matrix, error) {
 		m.M11 += u.M11
 		m.M12 += u.M12
 		m.M13 += u.M13
-		m.M21 += u.M21
 		m.M22 += u.M22
 		m.M23 += u.M23
 		m.M31 += u.M31
@@ -352,16 +351,32 @@ func Determinant(m Matrix) (float64, error) {
 	det := det1 - det2 + det3
 	return det, nil
 }
-func DiagV(m Matrix) (vector.Vector, error) {
-	v, _ := vector.New([]float64{m.M11, m.M22, m.M33})
-	return v, nil
+
+func Diag(v interface{}) (Matrix, error) {
+	switch v.(type) {
+	case vector.Vector:
+		u := v.(vector.Vector)
+		m := Matrix{}
+		m.M11 = u.X
+		m.M22 = u.Y
+		m.M33 = u.Z
+		return m, nil
+	case Matrix:
+		m := v.(Matrix)
+		u := Matrix{}
+		u.M11 = m.M11
+		u.M22 = m.M22
+		u.M33 = m.M33
+		return u, nil
+	default:
+		return Matrix{}, fmt.Errorf("Matrix has no such operation")
+
+	}
 }
-func DiagM(v vector.Vector) (Matrix, error) {
-	u := Matrix{}
-	u.M11 = v.X
-	u.M22 = v.Y
-	u.M33 = v.Z
-	return u, nil
+func DiagV(v interface{}) (vector.Vector, error) {
+	m, e := Diag(v)
+	u, _ := vector.New([]float64{m.M11, m.M22, m.M33})
+	return u, e
 }
 func (m *Matrix) Inverse() (Matrix, error) {
 	det, _ := Determinant(*m)

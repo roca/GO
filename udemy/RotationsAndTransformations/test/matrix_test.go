@@ -148,10 +148,54 @@ func TestMultiplicationWithScalar(t *testing.T) {}
 func TestDivisionWithScalar(t *testing.T)       {}
 
 //Special operations
-func TestDiagM(t *testing.T)       {}
-func TestDiagV(t *testing.T)       {}
-func TestTranspose(t *testing.T)   {}
-func TestDeterminant(t *testing.T) {}
+func TestDiagM(t *testing.T) {}
+func TestDiag(t *testing.T) {
+	// With a Vector
+	v, _ := vector.New([]float64{-2.0, -3.0, 2.0})
+	m, _ := matrix.Diag(v)
+	expected := [][]float64{
+		{-2., 0., 0.},
+		{0., -3., 0.},
+		{0., 0., 2.},
+	}
+	actual := m.Data()
+	assert.Equal(t, expected, actual, "Diagonal valuse should be the original vector")
+
+	u, _ := matrix.New([][]float64{
+		{-2.0, -3.0, 2.0},
+		{1.0, -1.0, 1.0},
+		{6.0, -8.0, 7.0},
+	})
+	v, _ = matrix.DiagV(u)
+	expected2 := []float64{-2., -1., 7.}
+	actual2 := []float64{v.X, v.Y, v.Z}
+	assert.Equal(t, expected2, actual2, "Diagonal valuse should be the original vector")
+}
+func TestTranspose(t *testing.T) {
+	m, _ := matrix.New([][]float64{
+		{-2.0, -3.0, 2.0},
+		{1.0, -1.0, 1.0},
+		{6.0, -8.0, 7.0},
+	})
+	u, _ := matrix.Transpose(m)
+	expected := [][]float64{
+		{-2.0, 1.0, 6.0},
+		{-3.0, -1.0, -8.0},
+		{2.0, 1.0, 7.0},
+	}
+	actual := u.Data()
+	assert.Equal(t, actual, expected, "Transpose of this matrix is incorrect")
+}
+func TestDeterminant(t *testing.T) {
+	m, _ := matrix.New([][]float64{
+		{-2.0, -3.0, 2.0},
+		{1.0, -1.0, 1.0},
+		{6.0, -8.0, 7.0},
+	})
+	expected := -3.0
+	actual, _ := matrix.Determinant(m)
+	assert.Equal(t, actual, expected, "Determinant should be %f", expected)
+}
 func TestInverse(t *testing.T) {
 	m, _ := matrix.New([][]float64{
 		{-2.0, -3.0, 2.0},
@@ -167,7 +211,6 @@ func TestInverse(t *testing.T) {
 	actual := inverseM.Data()
 
 	assert.Equal(t, actual, expected, "Inverse is incorrect")
-
 }
 func TestIdentity(t *testing.T) {
 
@@ -180,7 +223,6 @@ func TestIdentity(t *testing.T) {
 	actual := identityM.Data()
 
 	assert.Equal(t, actual, expected, "All valuse should along the diaganal should be equal to 1.0. All others 0.0")
-
 }
 func TestNegative(t *testing.T) {
 	m, _ := matrix.New([][]float64{

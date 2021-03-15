@@ -39,10 +39,10 @@ func NewZ() Vector { return Vector{0.0, 0.0, 1.0} }
 func (v *Vector) Data() []float64 {
 	return []float64{v.X, v.Y, v.Z}
 }
-func (v *Vector) Negative() (Vector,error) {
-	u,_ := v.Copy()
+func (v *Vector) Negative() (Vector, error) {
+	u, _ := v.Copy()
 	u.Sop("*=", -1.0)
-    return u,nil
+	return u, nil
 }
 
 func (m *Vector) Copy() (Vector, error) {
