@@ -255,21 +255,38 @@ func (m *Matrix) Mop(operation string, u Matrix) (*Matrix, error) {
 	case o == "*=" || o == "*":
 		dataM := m.Data()
 		dataU := u.Data()
-		for i, row := range dataM {
-			for j, _ := range row {
+		z := Matrix{}
+		data := z.Data()
+
+		for i := 0; i < 3; i++  {
+			for j := 0; j < 3; j++  {
 				for k := 0; k < 3; k++ {
-					dataM[i][j] = dataM[i][k] * dataU[k][i]
+					data[i][j] += dataM[i][k] * dataU[k][j]
 				}
 			}
 		}
-		m.change(dataM)
+		_ = m.change(data)
 		return m, nil
 	case o == "/=" || o == "/":
 		inverse, _ := u.Inverse()
-		m.Mop("/=", inverse)
+		_,_ = m.Mop("*=", inverse)
 		return m, nil
 	default:
 		return &Matrix{}, fmt.Errorf("Matrix has no such operation '%s'", o)
+	}
+}
+
+func (m *Matrix) Vop(operation string, v vector.Vector) (vector.Vector, error) {
+	switch o := operation; {
+	case o == "*":
+		u, _ := vector.New([]float64{
+			m.M11*v.X + m.M12*v.Y + m.M13*v.Z,
+			m.M21*v.X + m.M22*v.Y + m.M23*v.Z,
+			m.M31*v.X + m.M32*v.Y + m.M33*v.Z,
+		})
+		return u, nil
+	default:
+		return vector.Vector{}, fmt.Errorf("Matrix has no such operation '%s'", o)
 	}
 }
 
@@ -281,9 +298,7 @@ func (m *Matrix) Sop(operation string, value float64) (*Matrix, error) {
 	case o == "+=" || o == "+":
 		for i, row := range dataM {
 			for j, _ := range row {
-				for k := 0; k < 3; k++ {
-					dataM[i][j] += value
-				}
+				dataM[i][j] += value
 			}
 		}
 		m.change(dataM)
@@ -291,9 +306,7 @@ func (m *Matrix) Sop(operation string, value float64) (*Matrix, error) {
 	case o == "-=" || o == "-":
 		for i, row := range dataM {
 			for j, _ := range row {
-				for k := 0; k < 3; k++ {
-					dataM[i][j] -= value
-				}
+				dataM[i][j] -= value
 			}
 		}
 		m.change(dataM)
@@ -301,9 +314,7 @@ func (m *Matrix) Sop(operation string, value float64) (*Matrix, error) {
 	case o == "*=" || o == "*":
 		for i, row := range dataM {
 			for j, _ := range row {
-				for k := 0; k < 3; k++ {
-					dataM[i][j] *= value
-				}
+				dataM[i][j] *= value
 			}
 		}
 		m.change(dataM)
@@ -311,9 +322,7 @@ func (m *Matrix) Sop(operation string, value float64) (*Matrix, error) {
 	case o == "/=" || o == "/":
 		for i, row := range dataM {
 			for j, _ := range row {
-				for k := 0; k < 3; k++ {
-					dataM[i][j] /= value
-				}
+				dataM[i][j] /= value
 			}
 		}
 		m.change(dataM)

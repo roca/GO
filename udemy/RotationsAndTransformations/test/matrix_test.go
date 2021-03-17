@@ -133,9 +133,23 @@ func TestConstructWithSliceOfVectors(t *testing.T) {
 }
 
 //Operations with a matrix
-func TestAdditionWithMatrix(t *testing.T)       {}
-func TestSubtractionWithMatrix(t *testing.T)    {}
-func TestMultiplicationWithMatrix(t *testing.T) {}
+func TestAdditionWithMatrix(t *testing.T)    {}
+func TestSubtractionWithMatrix(t *testing.T) {}
+func TestMultiplicationWithMatrix(t *testing.T) {
+	m1, _ := matrix.New([][]float64{{1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}, {7.0, 8.0, 9.0}})
+	m2, _ := matrix.New([][]float64{{1.5, 2.5, 3.5}, {4.5, 5.5, 6.5}, {7.5, 8.5, 9.5}})
+	_, _ = m1.Mop("*=", m2)
+	expected := [][]float64{
+		{33.0, 39.0, 45.0},
+		{73.5, 88.5, 103.5},
+		{114.0, 138.0, 162.0},
+	}
+	actual := m1.Data()
+	for i := 0; i < 3; i++ {
+		b := assert.InDeltaSlice(t, expected[i], actual[i], .000000000000001)
+		assert.Equal(t, true, b, "Matrix division values incorrect")
+	}
+}
 func TestDivisionWithMatrix(t *testing.T) {
 	m1, _ := matrix.New([][]float64{{-2.0, -3.0, 2.0}, {1.0, 0.0, 1.0}, {6.0, -8.0, 7.0}})
 	m2, _ := matrix.New([][]float64{{-2.0, 2.0, 3.0}, {-1.0, 1.0, 3.0}, {2.0, 0.0, -1.0}})
