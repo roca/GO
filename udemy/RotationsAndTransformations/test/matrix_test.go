@@ -136,19 +136,102 @@ func TestConstructWithSliceOfVectors(t *testing.T) {
 func TestAdditionWithMatrix(t *testing.T)       {}
 func TestSubtractionWithMatrix(t *testing.T)    {}
 func TestMultiplicationWithMatrix(t *testing.T) {}
-func TestDivisionWithMatrix(t *testing.T)       {}
+func TestDivisionWithMatrix(t *testing.T) {
+	m1, _ := matrix.New([][]float64{{-2.0, -3.0, 2.0}, {1.0, 0.0, 1.0}, {6.0, -8.0, 7.0}})
+	m2, _ := matrix.New([][]float64{{-2.0, 2.0, 3.0}, {-1.0, 1.0, 3.0}, {2.0, 0.0, -1.0}})
+	_, _ = m1.Mop("/", m2)
+	expected := [][]float64{
+		{-17.0 / 6.0, 8. / 3., -5.0 / 2.0},
+		{-0.5, 1.0, 0.5},
+		{-10.0, 12.0, -1.0},
+	}
+	actual := m1.Data()
+	for i := 0; i < 3; i++ {
+		b := assert.InDeltaSlice(t, expected[i], actual[i], .000000000000001)
+		assert.Equal(t, true, b, "Matrix division values incorrect")
+	}
+}
 
 //Operations with a vector
-func TestMultiplicationWithVector(t *testing.T) {}
+func TestMultiplicationWithVector(t *testing.T) {
+	m, _ := matrix.New([][]float64{
+		{-2.0, -3.0, 2.0},
+		{1.0, 0.0, 1.0},
+		{6.0, -8.0, 7.0},
+	})
+	v, _ := vector.New([]float64{-2.0, 2.0, 3.0})
+	v2, _ := m.Vop("*", v)
+	expected := []float64{4.0, 1.0, -7.0}
+	actual := []float64{v2.X, v2.Y, v2.Z}
+	assert.Equal(t, expected, actual, "M * V operation is incorrect")
+}
 
-//Operations with a scalar
-func TestAdditionWithScalar(t *testing.T)       {}
-func TestSubtractionWithScalar(t *testing.T)    {}
-func TestMultiplicationWithScalar(t *testing.T) {}
-func TestDivisionWithScalar(t *testing.T)       {}
+/*
+	Destructive scalar operations (Sop). nothing return
+	(m *Matrix) Sop(operation string, value float64) (*Matrix, error)
+*/
+func TestAdditionWithScalar(t *testing.T) {
+	m, _ := matrix.New([][]float64{
+		{-2.0, -3.0, 2.0},
+		{1.0, -1.0, 1.0},
+		{6.0, -8.0, 7.0},
+	})
+	u, _ := m.Sop("+=", 0.5)
+	actual := u.Data()
+	expected := [][]float64{
+		{-2.0 + 0.5, -3.0 + 0.5, 2.0 + 0.5},
+		{1.0 + 0.5, -1.0 + 0.5, 1.0 + 0.5},
+		{6.0 + 0.5, -8.0 + 0.5, 7.0 + 0.5},
+	}
+	assert.Equal(t, expected, actual, "Matrix += S calculations is inncorrect")
+}
+func TestSubtractionWithScalar(t *testing.T) {
+	m, _ := matrix.New([][]float64{
+		{-2.0, -3.0, 2.0},
+		{1.0, -1.0, 1.0},
+		{6.0, -8.0, 7.0},
+	})
+	u, _ := m.Sop("-=", 0.5)
+	actual := u.Data()
+	expected := [][]float64{
+		{-2.0 - 0.5, -3.0 - 0.5, 2.0 - 0.5},
+		{1.0 - 0.5, -1.0 - 0.5, 1.0 - 0.5},
+		{6.0 - 0.5, -8.0 - 0.5, 7.0 - 0.5},
+	}
+	assert.Equal(t, expected, actual, "Matrix -= S calculations is inncorrect")
+}
+func TestMultiplicationWithScalar(t *testing.T) {
+	m, _ := matrix.New([][]float64{
+		{-2.0, -3.0, 2.0},
+		{1.0, -1.0, 1.0},
+		{6.0, -8.0, 7.0},
+	})
+	u, _ := m.Sop("*=", 0.5)
+	actual := u.Data()
+	expected := [][]float64{
+		{-2.0 * 0.5, -3.0 * 0.5, 2.0 * 0.5},
+		{1.0 * 0.5, -1.0 * 0.5, 1.0 * 0.5},
+		{6.0 * 0.5, -8.0 * 0.5, 7.0 * 0.5},
+	}
+	assert.Equal(t, expected, actual, "Matrix *= S calculations is inncorrect")
+}
+func TestDivisionWithScalar(t *testing.T) {
+	m, _ := matrix.New([][]float64{
+		{-2.0, -3.0, 2.0},
+		{1.0, -1.0, 1.0},
+		{6.0, -8.0, 7.0},
+	})
+	u, _ := m.Sop("/=", 0.5)
+	actual := u.Data()
+	expected := [][]float64{
+		{-2.0 / 0.5, -3.0 / 0.5, 2.0 / 0.5},
+		{1.0 / 0.5, -1.0 / 0.5, 1.0 / 0.5},
+		{6.0 / 0.5, -8.0 / 0.5, 7.0 / 0.5},
+	}
+	assert.Equal(t, expected, actual, "Matrix /= S calculations is inncorrect")
+}
 
 //Special operations
-func TestDiagM(t *testing.T) {}
 func TestDiag(t *testing.T) {
 	// With a Vector
 	v, _ := vector.New([]float64{-2.0, -3.0, 2.0})
