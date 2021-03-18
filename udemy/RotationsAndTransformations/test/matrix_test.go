@@ -133,8 +133,36 @@ func TestConstructWithSliceOfVectors(t *testing.T) {
 }
 
 //Operations with a matrix
-func TestAdditionWithMatrix(t *testing.T)    {}
-func TestSubtractionWithMatrix(t *testing.T) {}
+func TestAdditionWithMatrix(t *testing.T) {
+	m1, _ := matrix.New([][]float64{{1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}, {7.0, 8.0, 9.0}})
+	m2, _ := matrix.New([][]float64{{1.5, 2.5, 3.5}, {4.5, 5.5, 6.5}, {7.5, 8.5, 9.5}})
+	_, _ = m1.Mop("+=", m2)
+	expected := [][]float64{
+		{2.5, 4.5, 6.5},
+		{8.5, 10.5, 12.5},
+		{14.5, 16.5, 18.5},
+	}
+	actual := m1.Data()
+	for i := 0; i < 3; i++ {
+		b := assert.InDeltaSlice(t, expected[i], actual[i], .000000000000001)
+		assert.Equal(t, true, b, "Matrix addition values incorrect")
+	}
+}
+func TestSubtractionWithMatrix(t *testing.T) {
+	m1, _ := matrix.New([][]float64{{1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}, {7.0, 8.0, 9.0}})
+	m2, _ := matrix.New([][]float64{{1.5, 2.5, 3.5}, {4.5, 5.5, 6.5}, {7.5, 8.5, 9.5}})
+	_, _ = m1.Mop("-=", m2)
+	expected := [][]float64{
+		{-0.5, -0.5, -0.5},
+		{-0.5, -0.5, -0.5},
+		{-0.5, -0.5, -0.5},
+	}
+	actual := m1.Data()
+	for i := 0; i < 3; i++ {
+		b := assert.InDeltaSlice(t, expected[i], actual[i], .000000000000001)
+		assert.Equal(t, true, b, "Matrix subtraction values incorrect")
+	}
+}
 func TestMultiplicationWithMatrix(t *testing.T) {
 	m1, _ := matrix.New([][]float64{{1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}, {7.0, 8.0, 9.0}})
 	m2, _ := matrix.New([][]float64{{1.5, 2.5, 3.5}, {4.5, 5.5, 6.5}, {7.5, 8.5, 9.5}})
@@ -147,7 +175,7 @@ func TestMultiplicationWithMatrix(t *testing.T) {
 	actual := m1.Data()
 	for i := 0; i < 3; i++ {
 		b := assert.InDeltaSlice(t, expected[i], actual[i], .000000000000001)
-		assert.Equal(t, true, b, "Matrix division values incorrect")
+		assert.Equal(t, true, b, "Matrix multiplication values incorrect")
 	}
 }
 func TestDivisionWithMatrix(t *testing.T) {
@@ -291,7 +319,7 @@ func TestDeterminant(t *testing.T) {
 	})
 	expected := -3.0
 	actual, _ := matrix.Determinant(m)
-	assert.Equal(t, actual, expected, "Determinant should be %f", expected)
+	assert.Equal(t, expected, actual, "Determinant should be %f", expected)
 }
 func TestInverse(t *testing.T) {
 	m, _ := matrix.New([][]float64{
@@ -336,4 +364,14 @@ func TestNegative(t *testing.T) {
 	actual := negativeM.Data()
 
 	assert.Equal(t, actual, expected, "All valuse should be the negative of the original")
+}
+func TestEpsilon3(t *testing.T) {
+	assert.Equal(t, matrix.Epsilon3(1, 2, 3), 1.0, "e(1,1,1) should equal 1.0")
+	assert.Equal(t, matrix.Epsilon3(2, 3, 1), 1.0, "e(1,1,1) should equal 1.0")
+	assert.Equal(t, matrix.Epsilon3(3, 1, 2), 1.0, "e(1,1,1) should equal 1.0")
+
+	assert.Equal(t, matrix.Epsilon3(3, 2, 1), -1.0, "e(3,2,1) should equal -1.0")
+	assert.Equal(t, matrix.Epsilon3(1, 3, 2), -1.0, "e(1,3,2) should equal -1.0")
+	assert.Equal(t, matrix.Epsilon3(2, 1, 3), -1.0, "e(2,1,3) should equal -1.0")
+
 }

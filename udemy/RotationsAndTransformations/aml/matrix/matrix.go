@@ -235,6 +235,7 @@ func (m *Matrix) Mop(operation string, u Matrix) (*Matrix, error) {
 		m.M11 += u.M11
 		m.M12 += u.M12
 		m.M13 += u.M13
+		m.M21 += u.M21
 		m.M22 += u.M22
 		m.M23 += u.M23
 		m.M31 += u.M31
@@ -258,8 +259,8 @@ func (m *Matrix) Mop(operation string, u Matrix) (*Matrix, error) {
 		z := Matrix{}
 		data := z.Data()
 
-		for i := 0; i < 3; i++  {
-			for j := 0; j < 3; j++  {
+		for i := 0; i < 3; i++ {
+			for j := 0; j < 3; j++ {
 				for k := 0; k < 3; k++ {
 					data[i][j] += dataM[i][k] * dataU[k][j]
 				}
@@ -269,7 +270,7 @@ func (m *Matrix) Mop(operation string, u Matrix) (*Matrix, error) {
 		return m, nil
 	case o == "/=" || o == "/":
 		inverse, _ := u.Inverse()
-		_,_ = m.Mop("*=", inverse)
+		_, _ = m.Mop("*=", inverse)
 		return m, nil
 	default:
 		return &Matrix{}, fmt.Errorf("Matrix has no such operation '%s'", o)
@@ -354,10 +355,25 @@ func Transpose(m Matrix) (Matrix, error) {
 	return u, nil
 }
 func Determinant(m Matrix) (float64, error) {
-	det1 := m.M11 * ((m.M22 * m.M33) - (m.M32 * m.M23))
-	det2 := m.M12 * ((m.M21 * m.M33) - (m.M23 * m.M31))
-	det3 := m.M13 * ((m.M21 * m.M32) - (m.M22 * m.M31))
-	det := det1 - det2 + det3
+	// det1 := m.M11 * ((m.M22 * m.M33) - (m.M32 * m.M23))
+	// det2 := m.M12 * ((m.M21 * m.M33) - (m.M23 * m.M31))
+	// det3 := m.M13 * ((m.M21 * m.M32) - (m.M22 * m.M31))
+	// det := det1 - det2 + det3
+	det := 0.0
+	data := m.Data()
+	for i := 0; i < 3; i++ {
+		for j := 0; j < 3; j++ {
+			for k := 0; k < 3; k++ {
+				q := []int{i, j, k}
+				s := 1.0
+				for l := 0; l < 3; l++ {
+					s *= data[l][q[l]]
+				}
+				det += Epsilon3(i+1, j+1, k+1) * s
+			}
+		}
+	}
+
 	return det, nil
 }
 
@@ -406,4 +422,23 @@ func (m *Matrix) Inverse() (Matrix, error) {
 	}
 	u, _ := New(dataM)
 	return u, nil
+}
+
+func Epsilon3(i, j, k int) float64 {
+	if (i == j) || (j == k) || (k == i) {
+		return 0.0
+	}
+
+	p := fmt.Sprintf("%d%d%d", i, j, k)
+	e := make(map[string]int)
+	e["123"] = 1
+	e["231"] = 1
+	e["312"] = 1
+
+	e["321"] = -1
+	e["132"] = -1
+	e["213"] = -1
+
+	// fmt.Printf("%s %d\n", p, e[p])
+	return float64(e[p])
 }
