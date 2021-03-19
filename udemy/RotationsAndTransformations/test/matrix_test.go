@@ -365,13 +365,13 @@ func TestNegative(t *testing.T) {
 
 	assert.Equal(t, actual, expected, "All valuse should be the negative of the original")
 }
-func TestEpsilon3(t *testing.T) {
-	assert.Equal(t, matrix.Epsilon3(1, 2, 3), 1.0, "e(1,1,1) should equal 1.0")
-	assert.Equal(t, matrix.Epsilon3(2, 3, 1), 1.0, "e(1,1,1) should equal 1.0")
-	assert.Equal(t, matrix.Epsilon3(3, 1, 2), 1.0, "e(1,1,1) should equal 1.0")
+func TestEpsilon(t *testing.T) {
+	assert.Equal(t, matrix.Epsilon(1, 2, 3), 1, "e(1,1,1) should equal 1.0")
+	assert.Equal(t, matrix.Epsilon(2, 3, 1), 1, "e(1,1,1) should equal 1.0")
+	assert.Equal(t, matrix.Epsilon(3, 1, 2), 1, "e(1,1,1) should equal 1.0")
 
-	assert.Equal(t, matrix.Epsilon3(3, 2, 1), -1.0, "e(3,2,1) should equal -1.0")
-	assert.Equal(t, matrix.Epsilon3(1, 3, 2), -1.0, "e(1,3,2) should equal -1.0")
-	assert.Equal(t, matrix.Epsilon3(2, 1, 3), -1.0, "e(2,1,3) should equal -1.0")
+	assert.Equal(t, matrix.Epsilon(3, 2, 1), -1, "e(3,2,1) should equal -1.0")
+	assert.Equal(t, matrix.Epsilon(1, 3, 2), -1, "e(1,3,2) should equal -1.0")
+	assert.Equal(t, matrix.Epsilon(2, 1, 3), -1, "e(2,1,3) should equal -1.0")
 
 }
