@@ -375,3 +375,19 @@ func TestEpsilon(t *testing.T) {
 	assert.Equal(t, matrix.Epsilon(2, 1, 3), -1, "e(2,1,3) should equal -1.0")
 
 }
+func TestIsOrthogonal(t *testing.T) {
+	m, _ := matrix.New([][]float64{
+		{1.0 / 3.0, -2.0 / 3.0, 2.0 / 3.0},
+		{2.0 / 3.0, -1.0 / 3.0, -2.0 / 3.0},
+		{2.0 / 3.0, 2.0 / 3.0, 1.0 / 3.0},
+	})
+	assert.True(t, matrix.IsOrthogonal(m), "This Matrix should be orthogonal")
+}
+func TestIsNotOrthogonal(t *testing.T) {
+	m, _ := matrix.New([][]float64{
+		{1.0, 2.0, 2.0},
+		{2.0, 1.0, 2.0},
+		{2.0, 2.0, 1.0},
+	})
+	assert.False(t, matrix.IsOrthogonal(m), "This Matrix should not be orthogonal")
+}

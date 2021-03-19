@@ -377,7 +377,7 @@ func Determinant(m Matrix) (float64, error) {
 	return det, nil
 }
 
-	// fmt.Printf("%s %d\n", p, e[p])
+// fmt.Printf("%s %d\n", p, e[p])
 func Diag(v interface{}) (Matrix, error) {
 	switch v.(type) {
 	case vector.Vector:
@@ -425,9 +425,9 @@ func (m *Matrix) Inverse() (Matrix, error) {
 	return u, nil
 }
 
-func Epsilon(values ... int) int{
+func Epsilon(values ...int) int {
 	m := make(map[int]int)
-	for _,v := range values {
+	for _, v := range values {
 		m[v] = v
 	}
 	if len(m) < len(values) {
@@ -451,4 +451,24 @@ func sign(i int) int {
 		return -1
 	}
 	return 1
+}
+
+func IsOrthogonal(m Matrix) bool {
+	det, _ := Determinant(m)
+	if math.Abs(det) > 1.0000000001 {
+		return false
+	}
+	mInverse, _ := m.Inverse()
+	mTranspose, _ := Transpose(m)
+	dataI := mInverse.Data()
+	dataT := mTranspose.Data()
+
+	for i, row := range dataI {
+		for j, vI := range row {
+			if math.Abs(vI-dataT[i][j]) > .0000000001 {
+				return false
+			}
+		}
+	}
+	return true
 }
