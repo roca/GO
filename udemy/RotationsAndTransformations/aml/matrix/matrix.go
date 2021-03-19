@@ -369,7 +369,7 @@ func Determinant(m Matrix) (float64, error) {
 				for l := 0; l < 3; l++ {
 					s *= data[l][q[l]]
 				}
-				det += Epsilon3(i+1, j+1, k+1) * s
+				det += float64(Epsilon(i+1, j+1, k+1)) * s
 			}
 		}
 	}
@@ -377,6 +377,7 @@ func Determinant(m Matrix) (float64, error) {
 	return det, nil
 }
 
+	// fmt.Printf("%s %d\n", p, e[p])
 func Diag(v interface{}) (Matrix, error) {
 	switch v.(type) {
 	case vector.Vector:
@@ -424,21 +425,30 @@ func (m *Matrix) Inverse() (Matrix, error) {
 	return u, nil
 }
 
-func Epsilon3(i, j, k int) float64 {
-	if (i == j) || (j == k) || (k == i) {
+func Epsilon(values ... int) int{
+	m := make(map[int]int)
+	for _,v := range values {
+		m[v] = v
+	}
+	if len(m) < len(values) {
 		return 0.0
 	}
 
-	p := fmt.Sprintf("%d%d%d", i, j, k)
-	e := make(map[string]int)
-	e["123"] = 1
-	e["231"] = 1
-	e["312"] = 1
+	ep := 1
+	for l, v1 := range values {
+		for n, v2 := range values {
 
-	e["321"] = -1
-	e["132"] = -1
-	e["213"] = -1
+			if (v1 != v2) && (l > n) {
+				ep *= sign(v1 - v2)
+			}
+		}
+	}
 
-	// fmt.Printf("%s %d\n", p, e[p])
-	return float64(e[p])
+	return ep
+}
+func sign(i int) int {
+	if i < 0 {
+		return -1
+	}
+	return 1
 }
