@@ -1,6 +1,7 @@
 package test
 
 import (
+	"math"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -390,4 +391,28 @@ func TestIsNotOrthogonal(t *testing.T) {
 		{2.0, 2.0, 1.0},
 	})
 	assert.False(t, matrix.IsOrthogonal(m), "This Matrix should not be orthogonal")
+}
+func TestRotationX(t *testing.T) {
+	m, _ := matrix.RotationX(30. * math.Pi / 180.)
+	expected := [][]float64{
+		{1., 0., 0.},
+		{0., .8660254, .5},
+		{0., -.5, .8660254},
+	}
+	actual := m.Data()
+	for i := 0; i < 3; i++ {
+		b := assert.InDeltaSlice(t, expected[i], actual[i], .00000001)
+		assert.Equal(t, true, b, "RotationX Matrix values incorrect")
+	}
+	x_a, _ := vector.New(0.7, 1.2, -0.3)
+	x_b, _ := m.Vop("*", x_a)
+
+	expectedV := []float64{0.7, 0.88923048, -.85980762}
+	actualV := x_b.Data()
+	for i := 0; i < 3; i++ {
+		b := assert.InDelta(t, expectedV[i], actualV[i], .00000001)
+		assert.Equal(t, true, b, "RotationX * V values incorrect")
+	}
+
+
 }

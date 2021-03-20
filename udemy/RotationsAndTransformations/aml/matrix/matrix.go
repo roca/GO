@@ -472,3 +472,15 @@ func IsOrthogonal(m Matrix) bool {
 	}
 	return true
 }
+
+func RotationX(theta float64) (Matrix, error) {
+	m, e := New([][]float64{
+		{1., 0., 0.},
+		{0., math.Cos(theta), math.Sin(theta)},
+		{0., -1.0 * math.Sin(theta), math.Cos(theta)},
+	})
+	if e != nil {
+		return Matrix{}, e
+	}
+	return m, nil
+}
