@@ -7,6 +7,17 @@ import (
 	"udemy.com/aml/vector"
 )
 
+type IMatrix interface {
+	New(values ...interface{}) (Matrix, error)
+	Negate() (Matrix, error)
+	Copy() (Matrix, error)
+	change(values ...interface{}) error
+	Data() [][]float64
+	Mop(operation string, u Matrix) (*Matrix, error)
+	Sop(operation string, value float64) (*Matrix, error)
+	Inverse() (Matrix, error)
+}
+
 type Matrix struct {
 	M11, M12, M13 float64
 	M21, M22, M23 float64
@@ -451,36 +462,4 @@ func sign(i int) int {
 		return -1
 	}
 	return 1
-}
-
-func IsOrthogonal(m Matrix) bool {
-	det, _ := Determinant(m)
-	if math.Abs(det) > 1.0000000001 {
-		return false
-	}
-	mInverse, _ := m.Inverse()
-	mTranspose, _ := Transpose(m)
-	dataI := mInverse.Data()
-	dataT := mTranspose.Data()
-
-	for i, row := range dataI {
-		for j, vI := range row {
-			if math.Abs(vI-dataT[i][j]) > .0000000001 {
-				return false
-			}
-		}
-	}
-	return true
-}
-
-func RotationX(theta float64) (Matrix, error) {
-	m, e := New([][]float64{
-		{1., 0., 0.},
-		{0., math.Cos(theta), math.Sin(theta)},
-		{0., -1.0 * math.Sin(theta), math.Cos(theta)},
-	})
-	if e != nil {
-		return Matrix{}, e
-	}
-	return m, nil
 }
