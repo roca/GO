@@ -131,6 +131,19 @@ func TestConstructWithSliceOfVectors(t *testing.T) {
 	}
 	assert.Equal(t, actual, expected, "Valuses for Matrix for each element incorrectly assigned")
 }
+func TestCopy(t *testing.T) {
+	m, _ := matrix.New([][]float64{{1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}, {7.0, 8.0, 9.0}})
+	u := m
+	u.M11 = 0.0
+
+	if &u == &m {
+		t.Errorf("Addresses should not be equal %g %g", &u, &m)
+	}
+	if u.M11 == m.M11 {
+		t.Errorf("Values should not be equal %g %g", u.M11, m.M11)
+	}
+
+}
 
 //Operations with a matrix
 func TestAdditionWithMatrix(t *testing.T) {

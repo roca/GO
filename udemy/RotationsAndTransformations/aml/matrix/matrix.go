@@ -10,7 +10,6 @@ import (
 type IMatrix interface {
 	New(values ...interface{}) (Matrix, error)
 	Negate() (Matrix, error)
-	Copy() (Matrix, error)
 	change(values ...interface{}) error
 	Data() [][]float64
 	Mop(operation string, u Matrix) (*Matrix, error)
@@ -115,15 +114,14 @@ func Identity() Matrix {
 }
 
 func (m *Matrix) Negate() (Matrix, error) {
-	u, _ := m.Copy()
-	u.Sop("*=", -1.0)
-	return u, nil
+	u := m
+	_,_ = u.Sop("*=", -1.0)
+	return *u, nil
 }
 
 func (m *Matrix) Copy() (Matrix, error) {
-	dataM := m.Data()
-	u, _ := New(dataM)
-	return u, nil
+	u := m
+	return *u, nil
 }
 
 func (m *Matrix) change(values ...interface{}) error {
@@ -353,7 +351,7 @@ func (m *Matrix) Sop(operation string, value float64) (*Matrix, error) {
 
 func Transpose(m Matrix) (Matrix, error) {
 	dataM := m.Data()
-	u, _ := m.Copy()
+	u := m
 	dataU := u.Data()
 	for i, row := range dataM {
 		for j, _ := range row {
@@ -362,7 +360,7 @@ func Transpose(m Matrix) (Matrix, error) {
 			}
 		}
 	}
-	u.change(dataU)
+	_ = u.change(dataU)
 	return u, nil
 }
 func Determinant(m Matrix) (float64, error) {
