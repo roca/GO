@@ -117,11 +117,11 @@ func (v *Vector) Normalize() (*Vector, error) {
 	v.Z /= mag
 	return v, nil
 }
-func Cross(l Vector, r Vector) *Vector {
+func Cross(l Vector, r Vector) Vector {
 	x := (l.Y * r.Z) - (l.Z * r.Y)
 	y := (l.Z * r.X) - (l.X * r.Z)
 	z := (l.X * r.Y) - (l.Y * r.X)
-	return &Vector{x, y, z}
+	return Vector{x, y, z}
 }
 func Dot(u Vector, v Vector) float64 { return (u.X * v.X) + (u.Y * v.Y) + (u.Z * v.Z) }
 func Unit(u Vector) *Vector {

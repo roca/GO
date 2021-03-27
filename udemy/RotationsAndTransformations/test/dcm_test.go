@@ -123,3 +123,12 @@ func TestIsNotOrthogonal(t *testing.T) {
 	})
 	assert.False(t, dcm.IsOrthogonal(m), "This Matrix should not be orthogonal")
 }
+func TestNormaliz(t *testing.T) {
+	m, _ := matrix.New([][]float64{
+		{1.0 / 3.0, -2.0 / 3.0, 2.0 / 3.0},
+		{2.0 / 3.0, -1.0 / 3.0, -2.0 / 3.0},
+		{2.0 / 3.0, 2.0 / 3.0, 1.0 / 3.0},
+	})
+	_ = dcm.Normalize(&m)
+	assert.True(t, dcm.IsOrthogonal(m), "This Matrix should be orthogonal")
+}

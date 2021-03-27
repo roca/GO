@@ -73,6 +73,31 @@ func IsOrthogonal(m matrix.Matrix) bool {
 }
 
 func Normalize(m *matrix.Matrix) error {
+	X, _ := vector.New(m.M11, m.M12, m.M13)
+	Y, _ := vector.New(m.M21, m.M22, m.M23)
+	vError := vector.Dot(X, Y)
+
+	xTemp := X
+	yTemp := Y
+	_, _ = xTemp.Sop("*=", .5*vError)
+	_, _ = yTemp.Sop("*=", .5*vError)
+
+	xOrth := X
+	yOrth := Y
+
+	_, _ = xOrth.Vop("-=", yTemp)
+	_, _ = yOrth.Vop("-=", xTemp)
+	zOrth := vector.Cross(X, Y)
+
+	xNorm, _ := xOrth.Sop("*=", 0.5*(3.0-vector.Dot(xOrth, xOrth)))
+	yNorm, _ := yOrth.Sop("*=", 0.5*(3.0-vector.Dot(yOrth, yOrth)))
+	zNorm, _ := zOrth.Sop("*=", 0.5*(3.0-vector.Dot(zOrth, zOrth)))
+
+	dcmT, _ := matrix.New(*xNorm, *yNorm, *zNorm)
+	dcm, _ := matrix.Transpose(dcmT)
+
+	*m = dcm
+
 	return nil
 }
 
