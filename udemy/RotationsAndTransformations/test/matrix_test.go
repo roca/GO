@@ -133,15 +133,17 @@ func TestConstructWithSliceOfVectors(t *testing.T) {
 }
 func TestCopy(t *testing.T) {
 	m, _ := matrix.New([][]float64{{1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}, {7.0, 8.0, 9.0}})
-	u, _:= m.Copy()
+	u, _ := m.Copy()
 	u.M11 = 0.0
 
 	if &u == &m {
-		t.Errorf("Addresses should not be equal %g %g", &u, &m)
+		t.Errorf("Addresses should not be equal %g %g", u, &m)
 	}
 	if u.M11 == m.M11 {
 		t.Errorf("Values should not be equal %g %g", u.M11, m.M11)
 	}
+	assert.Equal(t, 1.0, m.M11, "Incorrect value")
+	assert.Equal(t, 0.0, u.M11, "Incorrect value")
 
 }
 
@@ -160,6 +162,31 @@ func TestAdditionWithMatrix(t *testing.T) {
 		b := assert.InDeltaSlice(t, expected[i], actual[i], .000000000000001)
 		assert.Equal(t, true, b, "Matrix addition values incorrect")
 	}
+}
+
+func TestAdditionWithMatrixNonDestructive(t *testing.T) {
+	m1, _ := matrix.New([][]float64{{1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}, {7.0, 8.0, 9.0}})
+	m2, _ := matrix.New([][]float64{{1.5, 2.5, 3.5}, {4.5, 5.5, 6.5}, {7.5, 8.5, 9.5}})
+	m3, _ := m1.Mop("+", m2)
+	expected := [][]float64{
+		{2.5, 4.5, 6.5},
+		{8.5, 10.5, 12.5},
+		{14.5, 16.5, 18.5},
+	}
+	actual := m3.Data()
+	for i := 0; i < 3; i++ {
+		b := assert.InDeltaSlice(t, expected[i], actual[i], .000000000000001)
+		assert.Equal(t, true, b, "Matrix addition values incorrect")
+	}
+	if m3 == &m1 {
+		t.Errorf("Addresses should not be equal %g %g", m3, &m1)
+	}
+	if m3.M11 == m1.M11 {
+		t.Errorf("Values should not be equal %g %g", m3.M11, m1.M11)
+	}
+	assert.Equal(t, 2.5, m3.M11, "Incorrect value")
+	assert.Equal(t, 1.0, m1.M11, "Incorrect value")
+
 }
 func TestSubtractionWithMatrix(t *testing.T) {
 	m1, _ := matrix.New([][]float64{{1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}, {7.0, 8.0, 9.0}})
@@ -194,7 +221,7 @@ func TestMultiplicationWithMatrix(t *testing.T) {
 func TestDivisionWithMatrix(t *testing.T) {
 	m1, _ := matrix.New([][]float64{{-2.0, -3.0, 2.0}, {1.0, 0.0, 1.0}, {6.0, -8.0, 7.0}})
 	m2, _ := matrix.New([][]float64{{-2.0, 2.0, 3.0}, {-1.0, 1.0, 3.0}, {2.0, 0.0, -1.0}})
-	_, _ = m1.Mop("/", m2)
+	_, _ = m1.Mop("/=", m2)
 	expected := [][]float64{
 		{-17.0 / 6.0, 8. / 3., -5.0 / 2.0},
 		{-0.5, 1.0, 0.5},
