@@ -133,7 +133,7 @@ func TestConstructWithSliceOfVectors(t *testing.T) {
 }
 func TestCopy(t *testing.T) {
 	m, _ := matrix.New([][]float64{{1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}, {7.0, 8.0, 9.0}})
-	u := m
+	u, _:= m.Copy()
 	u.M11 = 0.0
 
 	if &u == &m {
