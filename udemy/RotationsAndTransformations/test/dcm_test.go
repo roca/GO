@@ -1,6 +1,7 @@
 package test
 
 import (
+	"fmt"
 	"math"
 	"testing"
 
@@ -131,4 +132,16 @@ func TestNormaliz(t *testing.T) {
 	})
 	_ = dcm.Normalize(&m)
 	assert.True(t, dcm.IsOrthogonal(m), "This Matrix should be orthogonal")
+}
+
+func TestKinematicRatesFromBodyRates(t *testing.T) {
+	R := matrix.Identity()
+	for i := 0; i < 100; i++ {
+		v, _ := vector.New([]float64{1.,0.0,0.0})
+		RDot,_ := dcm.KinematicRatesFromBodyRates(&R, &v)
+		R,_ = dcm.Intergrate(&R, &RDot, .01)
+		fmt.Println(R)
+	}
+
+
 }

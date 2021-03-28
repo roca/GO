@@ -1,7 +1,6 @@
 package dcm
 
 import (
-	"errors"
 	"math"
 
 	"udemy.com/aml/matrix"
@@ -99,18 +98,45 @@ func Normalize(m *matrix.Matrix) error {
 
 func Intergrate(dcm, dcmRates *matrix.Matrix, dt float64) (matrix.Matrix, error) {
 	dcmDt, _ := dcmRates.Sop("*", dt)
-	dcmNew, _ := dcm.Mop("+", *dcmDt)
-	_ = Normalize(dcmNew)
-	if !IsOrthogonal(*dcmNew) {
-		return matrix.Matrix{}, errors.New("DCM is not Orthoganal")
-	}
+	_, _ = dcm.Mop("+=", *dcmDt)
+	//	_ = Normalize(dcm)
+	// if !IsOrthogonal(*dcm) {
+	// 	return matrix.Matrix{}, errors.New("DCM is not Orthoganal")
+	// }
 
-	return *dcmNew, nil
+	return *dcm, nil
 }
 
 func KinematicRatesFromBodyRates(dcm *matrix.Matrix, bodyRates *vector.Vector) (matrix.Matrix, error) {
-	return matrix.Matrix{}, nil
+	p := bodyRates.X
+	q := bodyRates.Y
+	r := bodyRates.Z
+	skeMatrix, _ := matrix.New([][]float64{
+		{0.0, -r, q},
+		{r, 0.0, -p},
+		{-q, p, 0.0},
+	})
+	_, _ = skeMatrix.Sop("*=", -1.0)
+	_, _ = skeMatrix.Mop("*=", *dcm)
+	// _ = Normalize(&skeMatrix)
+	// if !IsOrthogonal(skeMatrix) {
+	// 	return matrix.Matrix{}, errors.New("DCM is not Orthoganal")
+	// }
+	return skeMatrix, nil
 }
 func KinematicRatesFromWorldRates(dcm *matrix.Matrix, worldRates *vector.Vector) (matrix.Matrix, error) {
-	return matrix.Matrix{}, nil
+	p := worldRates.X
+	q := worldRates.Y
+	r := worldRates.Z
+	skeMatrix, _ := matrix.New([][]float64{
+		{0.0, -r, q},
+		{r, 0.0, -p},
+		{-q, p, 0.0},
+	})
+	finalSkeMatrix, _ := dcm.Mop("*", skeMatrix)
+	// _ = Normalize(&finalSkeMatrix)
+	// if !IsOrthogonal(finalSkeMatrix) {
+	// 	return matrix.Matrix{}, errors.New("DCM is not Orthoganal")
+	// }
+	return *finalSkeMatrix, nil
 }

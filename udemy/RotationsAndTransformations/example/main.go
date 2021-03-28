@@ -1,17 +1,20 @@
 package main
 
 import (
-	"gonum.org/v1/gonum/mat"
-	"udemy.com/aml"
+	"fmt"
+
+	"udemy.com/aml/dcm"
+	"udemy.com/aml/matrix"
+	"udemy.com/aml/vector"
 )
 
 func main() {
-	v := make([]float64, 12)
-	for i := 0; i < 12; i++ {
-		v[i] = float64(i)
+	R := matrix.Identity()
+	for i := 0; i < 100; i++ {
+		v, _ := vector.New([]float64{1., 0.0, 0.0})
+		RDot, _ := dcm.KinematicRatesFromBodyRates(&R, &v)
+		R, _ = dcm.Intergrate(&R, &RDot, .01)
+
+		fmt.Printf("%f\n", R.Data())
 	}
-	// Create a new matrix
-	A := mat.NewDense(3, 4, v)
-	println("A:")
-	aml.MatPrint(A)
 }
