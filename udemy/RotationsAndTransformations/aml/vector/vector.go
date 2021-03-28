@@ -3,6 +3,7 @@ package vector
 import (
 	"fmt"
 	"math"
+	"strings"
 )
 
 type Vector struct {
@@ -41,64 +42,83 @@ func (v *Vector) Data() []float64 {
 }
 func (v *Vector) Negative() (Vector, error) {
 	u, _ := v.Copy()
-	u.Sop("*=", -1.0)
+	_, _ = u.Sop("*=", -1.0)
 	return u, nil
 }
 
 func (m *Vector) Copy() (Vector, error) {
-	dataV := m.Data()
-	u, _ := New(dataV)
-	return u, nil
+	u := m
+	return *u, nil
+}
+func (m *Vector) CopyPointer() (*Vector, error) {
+	var new *Vector
+	x, _ := m.Copy()
+	new = &x
+	return new, nil
 }
 
 func (v *Vector) Sop(operation string, value float64) (*Vector, error) {
+	var new *Vector
+	if !strings.Contains(operation, "=") {
+		new, _ = v.CopyPointer()
+	} else {
+		new = v
+	}
+
 	switch o := operation; {
 	case o == "+=" || o == "+":
-		v.X += value
-		v.Y += value
-		v.Z += value
-		return v, nil
+		new.X += value
+		new.Y += value
+		new.Z += value
+		return new, nil
 	case o == "-=" || o == "-":
-		v.X -= value
-		v.Y -= value
-		v.Z -= value
-		return v, nil
+		new.X -= value
+		new.Y -= value
+		new.Z -= value
+		return new, nil
 	case o == "*=" || o == "*":
-		v.X *= value
-		v.Y *= value
-		v.Z *= value
-		return v, nil
+		new.X *= value
+		new.Y *= value
+		new.Z *= value
+		return new, nil
 	case o == "/=" || o == "/":
-		v.X /= value
-		v.Y /= value
-		v.Z /= value
-		return v, nil
+		new.X /= value
+		new.Y /= value
+		new.Z /= value
+		return new, nil
 	default:
 		return &Vector{}, fmt.Errorf("Vector has no such operation '%s'", o)
 	}
 }
 func (v *Vector) Vop(operation string, u Vector) (*Vector, error) {
+	var new *Vector
+	if !strings.Contains(operation, "=") {
+		new, _ = v.CopyPointer()
+	} else {
+		new = v
+	}
+	
 	switch o := operation; {
 	case o == "+=" || o == "+":
-		v.X += u.X
-		v.Y += u.Y
-		v.Z += u.Z
-		return v, nil
+		new.X += u.X
+		new.Y += u.Y
+		new.Z += u.Z
+		return new, nil
 	case o == "-=" || o == "-":
-		v.X -= u.X
-		v.Y -= u.Y
-		v.Z -= u.Z
-		return v, nil
+		new.X -= u.X
+		new.Y -= u.Y
+		new.Z -= u.Z
+		return new, nil
 	case o == "*=" || o == "*":
-		v.X *= u.X
-		v.Y *= u.Y
-		v.Z *= u.Z
-		return v, nil
+		new.X *= u.X
+		new.Y *= u.Y
+		new.Z *= u.Z
+		return new, nil
 	case o == "/=" || o == "/":
-		v.X /= u.X
-		v.Y /= u.Y
-		v.Z /= u.Z
-		return v, nil
+		new.X /= u.X
+		new.Y /= u.Y
+		new.Z /= u.Z
+		return new, nil
 	default:
 		return &Vector{}, fmt.Errorf("Vector has no such operation '%s'", o)
 	}

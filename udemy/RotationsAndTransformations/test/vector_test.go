@@ -146,7 +146,7 @@ func TestCase06(t *testing.T) {
 
 	//  v1 + v2
 	expected = []float64{v1.X + v2.X, v1.Y + v2.Y, v1.Z + v2.Z}
-	v1.Vop("+", v2)
+	v1.Vop("+=", v2)
 	actual = []float64{v1.X, v1.Y, v1.Z}
 	assert.Equal(t, actual, expected, "Vector should be altered with added vectors axis added to each axis")
 
@@ -158,7 +158,7 @@ func TestCase06(t *testing.T) {
 
 	//  v1 - v2
 	expected = []float64{v1.X - v2.X, v1.Y - v2.Y, v1.Z - v2.Z}
-	v1.Vop("-", v2)
+	v1.Vop("-=", v2)
 	actual = []float64{v1.X, v1.Y, v1.Z}
 	assert.Equal(t, actual, expected, "Vector should be altered with substracted vectors axis substracted from each axis")
 
@@ -170,7 +170,7 @@ func TestCase06(t *testing.T) {
 
 	//  v1 * v2
 	expected = []float64{v1.X * v2.X, v1.Y * v2.Y, v1.Z * v2.Z}
-	v1.Vop("*", v2)
+	v1.Vop("*=", v2)
 	actual = []float64{v1.X, v1.Y, v1.Z}
 	assert.Equal(t, actual, expected, "Vector should be altered with the second vectors axis multipled by each axis")
 
@@ -182,7 +182,7 @@ func TestCase06(t *testing.T) {
 
 	//  v1 / v2
 	expected = []float64{v1.X / v2.X, v1.Y / v2.Y, v1.Z / v2.Z}
-	v1.Vop("/", v2)
+	v1.Vop("/=", v2)
 	actual = []float64{v1.X, v1.Y, v1.Z}
 	assert.Equal(t, actual, expected, "Vector should be altered with the second vectors axis divided by each axis")
 

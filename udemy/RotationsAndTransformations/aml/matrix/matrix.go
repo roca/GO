@@ -3,6 +3,7 @@ package matrix
 import (
 	"fmt"
 	"math"
+	"strings"
 
 	"udemy.com/aml/vector"
 )
@@ -10,6 +11,8 @@ import (
 type IMatrix interface {
 	New(values ...interface{}) (Matrix, error)
 	Negate() (Matrix, error)
+	Copy() (Matrix, error)
+	CopyPointer() (*Matrix, error)
 	change(values ...interface{}) error
 	Data() [][]float64
 	Mop(operation string, u Matrix) (*Matrix, error)
@@ -115,13 +118,19 @@ func Identity() Matrix {
 
 func (m *Matrix) Negate() (Matrix, error) {
 	u := m
-	_,_ = u.Sop("*=", -1.0)
+	_, _ = u.Sop("*=", -1.0)
 	return *u, nil
 }
 
 func (m *Matrix) Copy() (Matrix, error) {
 	u := m
 	return *u, nil
+}
+func (m *Matrix) CopyPointer() (*Matrix, error) {
+	var new *Matrix
+	x, _ := m.Copy()
+	new = &x
+	return new, nil
 }
 
 func (m *Matrix) change(values ...interface{}) error {
@@ -239,31 +248,38 @@ func (m *Matrix) Data() [][]float64 {
 // Operator Assignments (Matrix)
 // +=, -=, *=, /=
 func (m *Matrix) Mop(operation string, u Matrix) (*Matrix, error) {
+	var new *Matrix
+	if !strings.Contains(operation, "=") {
+		new, _ = m.CopyPointer()
+	} else {
+		new = m
+	}
+
 	switch o := operation; {
 	case o == "+=" || o == "+":
-		m.M11 += u.M11
-		m.M12 += u.M12
-		m.M13 += u.M13
-		m.M21 += u.M21
-		m.M22 += u.M22
-		m.M23 += u.M23
-		m.M31 += u.M31
-		m.M32 += u.M32
-		m.M33 += u.M33
-		return m, nil
+		new.M11 += u.M11
+		new.M12 += u.M12
+		new.M13 += u.M13
+		new.M21 += u.M21
+		new.M22 += u.M22
+		new.M23 += u.M23
+		new.M31 += u.M31
+		new.M32 += u.M32
+		new.M33 += u.M33
+		return new, nil
 	case o == "-=" || o == "-":
-		m.M11 -= u.M11
-		m.M12 -= u.M12
-		m.M13 -= u.M13
-		m.M21 -= u.M21
-		m.M22 -= u.M22
-		m.M23 -= u.M23
-		m.M31 -= u.M31
-		m.M32 -= u.M32
-		m.M33 -= u.M33
-		return m, nil
+		new.M11 -= u.M11
+		new.M12 -= u.M12
+		new.M13 -= u.M13
+		new.M21 -= u.M21
+		new.M22 -= u.M22
+		new.M23 -= u.M23
+		new.M31 -= u.M31
+		new.M32 -= u.M32
+		new.M33 -= u.M33
+		return new, nil
 	case o == "*=" || o == "*":
-		dataM := m.Data()
+		dataM := new.Data()
 		dataU := u.Data()
 		z := Matrix{}
 		data := z.Data()
@@ -275,24 +291,31 @@ func (m *Matrix) Mop(operation string, u Matrix) (*Matrix, error) {
 				}
 			}
 		}
-		_ = m.change(data)
-		return m, nil
+		_ = new.change(data)
+		return new, nil
 	case o == "/=" || o == "/":
 		inverse, _ := u.Inverse()
-		_, _ = m.Mop("*=", inverse)
-		return m, nil
+		_, _ = new.Mop("*=", inverse)
+		return new, nil
 	default:
 		return &Matrix{}, fmt.Errorf("Matrix has no such operation '%s'", o)
 	}
 }
 
 func (m *Matrix) Vop(operation string, v vector.Vector) (vector.Vector, error) {
+	var new *Matrix
+	if !strings.Contains(operation, "=") {
+		new, _ = m.CopyPointer()
+	} else {
+		new = m
+	}
+
 	switch o := operation; {
 	case o == "*":
 		u, _ := vector.New([]float64{
-			m.M11*v.X + m.M12*v.Y + m.M13*v.Z,
-			m.M21*v.X + m.M22*v.Y + m.M23*v.Z,
-			m.M31*v.X + m.M32*v.Y + m.M33*v.Z,
+			new.M11*v.X + new.M12*v.Y + new.M13*v.Z,
+			new.M21*v.X + new.M22*v.Y + new.M23*v.Z,
+			new.M31*v.X + new.M32*v.Y + new.M33*v.Z,
 		})
 		return u, nil
 	default:
@@ -303,7 +326,14 @@ func (m *Matrix) Vop(operation string, v vector.Vector) (vector.Vector, error) {
 // Operator Assignments (Scalar)
 // +=, -=, *=, /=
 func (m *Matrix) Sop(operation string, value float64) (*Matrix, error) {
-	dataM := m.Data()
+	var new *Matrix
+	if !strings.Contains(operation, "=") {
+		new, _ = m.CopyPointer()
+	} else {
+		new = m
+	}
+
+	dataM := new.Data()
 	switch o := operation; {
 	case o == "+=" || o == "+":
 		for i, row := range dataM {
@@ -311,32 +341,32 @@ func (m *Matrix) Sop(operation string, value float64) (*Matrix, error) {
 				dataM[i][j] += value
 			}
 		}
-		m.change(dataM)
-		return m, nil
+		new.change(dataM)
+		return new, nil
 	case o == "-=" || o == "-":
 		for i, row := range dataM {
 			for j, _ := range row {
 				dataM[i][j] -= value
 			}
 		}
-		m.change(dataM)
-		return m, nil
+		new.change(dataM)
+		return new, nil
 	case o == "*=" || o == "*":
 		for i, row := range dataM {
 			for j, _ := range row {
 				dataM[i][j] *= value
 			}
 		}
-		m.change(dataM)
-		return m, nil
+		new.change(dataM)
+		return new, nil
 	case o == "/=" || o == "/":
 		for i, row := range dataM {
 			for j, _ := range row {
 				dataM[i][j] /= value
 			}
 		}
-		m.change(dataM)
-		return m, nil
+		new.change(dataM)
+		return new, nil
 	default:
 		return &Matrix{}, fmt.Errorf("Vector has no such operation '%s'", o)
 	}

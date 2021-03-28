@@ -77,21 +77,16 @@ func Normalize(m *matrix.Matrix) error {
 	Y, _ := vector.New(m.M21, m.M22, m.M23)
 	vError := vector.Dot(X, Y)
 
-	xTemp := X
-	yTemp := Y
-	_, _ = xTemp.Sop("*=", .5*vError)
-	_, _ = yTemp.Sop("*=", .5*vError)
+	xError,_ := X.Sop("*", .5*vError)
+	yError,_ := Y.Sop("*", .5*vError)
 
-	xOrth := X
-	yOrth := Y
-
-	_, _ = xOrth.Vop("-=", yTemp)
-	_, _ = yOrth.Vop("-=", xTemp)
+	xOrth, _ := X.Vop("-", *yError)
+	yOrth, _ := Y.Vop("-", *xError)
 	zOrth := vector.Cross(X, Y)
 
-	xNorm, _ := xOrth.Sop("*=", 0.5*(3.0-vector.Dot(xOrth, xOrth)))
-	yNorm, _ := yOrth.Sop("*=", 0.5*(3.0-vector.Dot(yOrth, yOrth)))
-	zNorm, _ := zOrth.Sop("*=", 0.5*(3.0-vector.Dot(zOrth, zOrth)))
+	xNorm, _ := xOrth.Sop("*", 0.5*(3.0-vector.Dot(*xOrth, *xOrth)))
+	yNorm, _ := yOrth.Sop("*", 0.5*(3.0-vector.Dot(*yOrth, *yOrth)))
+	zNorm, _ := zOrth.Sop("*", 0.5*(3.0-vector.Dot(zOrth, zOrth)))
 
 	dcmT, _ := matrix.New(*xNorm, *yNorm, *zNorm)
 	dcm, _ := matrix.Transpose(dcmT)
