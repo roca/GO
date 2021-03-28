@@ -1,6 +1,7 @@
 package dcm
 
 import (
+	"errors"
 	"math"
 
 	"udemy.com/aml/matrix"
@@ -77,8 +78,8 @@ func Normalize(m *matrix.Matrix) error {
 	Y, _ := vector.New(m.M21, m.M22, m.M23)
 	vError := vector.Dot(X, Y)
 
-	xError,_ := X.Sop("*", .5*vError)
-	yError,_ := Y.Sop("*", .5*vError)
+	xError, _ := X.Sop("*", .5*vError)
+	yError, _ := Y.Sop("*", .5*vError)
 
 	xOrth, _ := X.Vop("-", *yError)
 	yOrth, _ := Y.Vop("-", *xError)
@@ -97,7 +98,14 @@ func Normalize(m *matrix.Matrix) error {
 }
 
 func Intergrate(dcm, dcmRates *matrix.Matrix, dt float64) (matrix.Matrix, error) {
-	return matrix.Matrix{}, nil
+	dcmDt, _ := dcmRates.Sop("*", dt)
+	dcmNew, _ := dcm.Mop("+", *dcmDt)
+	_ = Normalize(dcmNew)
+	if !IsOrthogonal(*dcmNew) {
+		return matrix.Matrix{}, errors.New("DCM is not Orthoganal")
+	}
+
+	return *dcmNew, nil
 }
 
 func KinematicRatesFromBodyRates(dcm *matrix.Matrix, bodyRates *vector.Vector) (matrix.Matrix, error) {
