@@ -13,11 +13,12 @@ type IMatrix interface {
 	Negate() (Matrix, error)
 	Copy() (Matrix, error)
 	CopyPointer() (*Matrix, error)
-	change(values ...interface{}) error
 	Data() [][]float64
 	Mop(operation string, u Matrix) (*Matrix, error)
 	Sop(operation string, value float64) (*Matrix, error)
 	Inverse() (Matrix, error)
+	Mutate()
+	change(values ...interface{}) error
 }
 
 type Matrix struct {
@@ -131,6 +132,10 @@ func (m *Matrix) CopyPointer() (*Matrix, error) {
 	x, _ := m.Copy()
 	new = &x
 	return new, nil
+}
+
+func (m *Matrix) Mutate(values ...interface{}) {
+ _ = m.change(values)
 }
 
 func (m *Matrix) change(values ...interface{}) error {

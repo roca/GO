@@ -1,6 +1,7 @@
 package dcm
 
 import (
+	"fmt"
 	"math"
 
 	"udemy.com/aml/matrix"
@@ -15,7 +16,7 @@ func RotationX(theta float64) (matrix.Matrix, error) {
 	})
 	if e != nil {
 		return matrix.Matrix{}, e
-	}
+	} 
 	return m, nil
 }
 func RotationY(theta float64) (matrix.Matrix, error) {
@@ -71,6 +72,23 @@ func IsOrthogonal(m matrix.Matrix) bool {
 	}
 	return true
 }
+func Normalize2(m *matrix.Matrix) error {
+	V1, _ := vector.New(m.M11, m.M12, m.M13)
+	V2, _ := vector.New(m.M21, m.M22, m.M23)
+	V3, _ := vector.New(m.M31, m.M32, m.M33)
+
+	U1 := vector.Cross(V2, V3)
+	_, _ = U1.Sop("*=", vector.Dot(V1, V3))
+	U2 := vector.Cross(V3, V1)
+	_, _ = U2.Sop("*=", vector.Dot(V3, V1))
+	U3 := vector.Cross(U1, U2)
+
+	dcm, _ := matrix.New(U1, U2, U3)
+	fmt.Printf("%f\n-------------------\n", dcm.Data())
+	*m = dcm
+
+	return nil
+}
 
 func Normalize(m *matrix.Matrix) error {
 	X, _ := vector.New(m.M11, m.M12, m.M13)
@@ -84,27 +102,28 @@ func Normalize(m *matrix.Matrix) error {
 	yOrth, _ := Y.Vop("-", *xError)
 	zOrth := vector.Cross(X, Y)
 
-	xNorm, _ := xOrth.Sop("*", 0.5*(3.0-vector.Dot(*xOrth, *xOrth)))
-	yNorm, _ := yOrth.Sop("*", 0.5*(3.0-vector.Dot(*yOrth, *yOrth)))
-	zNorm, _ := zOrth.Sop("*", 0.5*(3.0-vector.Dot(zOrth, zOrth)))
+	dotX := 0.5 * (3.0 - vector.Dot(*xOrth, *xOrth))
+	dotY := 0.5 * (3.0 - vector.Dot(*yOrth, *yOrth))
+	dotZ := 0.5 * (3.0 - vector.Dot(zOrth, zOrth))
 
-	dcmT, _ := matrix.New(*xNorm, *yNorm, *zNorm)
-	dcm, _ := matrix.Transpose(dcmT)
+	xNorm, _ := xOrth.Sop("*", dotX)
+	yNorm, _ := yOrth.Sop("*", dotY)
+	zNorm, _ := zOrth.Sop("*", dotZ)
 
-	*m = dcm
+	dcm, _ := matrix.New(*xNorm, *yNorm, *zNorm)
+	dcmT, _ := matrix.Transpose(dcm)
+
+	m.Mutate(dcmT.Data())
 
 	return nil
 }
 
 func Intergrate(dcm, dcmRates *matrix.Matrix, dt float64) (matrix.Matrix, error) {
 	dcmDt, _ := dcmRates.Sop("*", dt)
-	_, _ = dcm.Mop("+=", *dcmDt)
-	//	_ = Normalize(dcm)
-	// if !IsOrthogonal(*dcm) {
-	// 	return matrix.Matrix{}, errors.New("DCM is not Orthoganal")
-	// }
+	dcmNew, _ := dcm.Mop("+", *dcmDt)
+	_ = Normalize(dcmNew)
 
-	return *dcm, nil
+	return *dcmNew, nil
 }
 
 func KinematicRatesFromBodyRates(dcm *matrix.Matrix, bodyRates *vector.Vector) (matrix.Matrix, error) {
