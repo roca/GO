@@ -16,7 +16,7 @@ func RotationX(theta float64) (matrix.Matrix, error) {
 	})
 	if e != nil {
 		return matrix.Matrix{}, e
-	} 
+	}
 	return m, nil
 }
 func RotationY(theta float64) (matrix.Matrix, error) {
@@ -158,4 +158,19 @@ func KinematicRatesFromWorldRates(dcm *matrix.Matrix, worldRates *vector.Vector)
 	// 	return matrix.Matrix{}, errors.New("DCM is not Orthoganal")
 	// }
 	return *finalSkeMatrix, nil
+}
+func RadiansToDegrees(radians float64) (degrees float64) {
+	degrees = radians * 180.0 / math.Pi
+	return
+}
+func DegreesToRadians(degrees float64) (radians float64) {
+	radians = degrees * math.Pi / 180.0
+	return
+}
+
+func EulerAnglesFromRotaionMatrix(m matrix.Matrix) (phi, theta, si float64) {
+	phi = math.Atan(m.M23 / m.M33)
+	theta = -1.0 * math.Asin(m.M13)
+	si = math.Atan(m.M12 / m.M11)
+	return
 }
