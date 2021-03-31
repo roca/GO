@@ -47,10 +47,10 @@ func Rotation(thetaX, thetaY, thetaZ float64) (matrix.Matrix, error) {
 	rY, _ := RotationY(thetaY)
 	rZ, _ := RotationZ(thetaZ)
 
-	r, _ := rX.Mop("*=", rY)
-	_, _ = r.Mop("*=", rZ)
+	rYZ, _ := rY.Mop("*", rZ)
+	rXYZ, _ := rX.Mop("*", *rYZ)
 
-	return *r, nil
+	return *rXYZ, nil
 }
 
 func IsOrthogonal(m matrix.Matrix) bool {

@@ -85,27 +85,39 @@ func TestRotationZ(t *testing.T) {
 
 }
 func TestRotation(t *testing.T) {
-	theta := 30. * math.Pi / 180.
-	m, _ := dcm.Rotation(0., 0., theta)
+	phi := -45. * math.Pi / 180.
+	theta := -75. * math.Pi / 180.
+	si := 78.0 * math.Pi / 180.
+	m, _ := dcm.Rotation(phi, theta, si)
+
+	fmt.Printf("%g", m.Data())
 	expected := [][]float64{
-		{math.Cos(theta), math.Sin(theta), 0.},
-		{-1.0 * math.Sin(theta), math.Cos(theta), 0.},
-		{0., 0., 1.},
+		{math.Cos(theta) * math.Cos(si), math.Cos(theta) * math.Sin(si), -1.0 * math.Sin(theta)},
+		{(math.Sin(phi) * math.Sin(theta) * math.Cos(si)) - (math.Cos(phi) * math.Sin(si)), (math.Sin(phi) * math.Sin(theta) * math.Sin(si)) + (math.Cos(phi) * math.Cos(si)), math.Cos(theta) * math.Sin(phi)},
+		{(math.Cos(phi) * math.Sin(theta) * math.Cos(si)) + (math.Sin(phi) * math.Sin(si)), (math.Cos(phi) * math.Sin(theta) * math.Sin(si)) - (math.Sin(phi) * math.Cos(si)), math.Cos(theta) * math.Cos(phi)},
 	}
+
 	actual := m.Data()
 	for i := 0; i < 3; i++ {
 		b := assert.InDeltaSlice(t, expected[i], actual[i], .00000001)
 		assert.Equal(t, true, b, "RotationZ Matrix values incorrect")
 	}
-	x_a, _ := vector.New(0.7, 1.2, -0.3)
-	x_b, _ := m.Vop("*", x_a)
+	phiActual := math.Atan(m.M23 / m.M33)
+	thetaActual := -1.0 * math.Asin(m.M13)
+	siActual := math.Atan(m.M12 / m.M11)
+	assert.InDeltaf(t, phi, phiActual, .0000000001, "phi Values %f != %f", phi, phiActual)
+	assert.InDeltaf(t, theta, thetaActual, .0000000001, "theta Values %f != %f", theta, thetaActual)
+	assert.InDeltaf(t, si, siActual, .0000000001, "si Values %f != %f", si, siActual)
 
-	expectedV := []float64{1.2062177826, 0.689230484541, -0.3}
-	actualV := x_b.Data()
-	for i := 0; i < 3; i++ {
-		b := assert.InDelta(t, expectedV[i], actualV[i], .00000001)
-		assert.Equal(t, true, b, "RotationX * V values incorrect")
-	}
+	// x_a, _ := vector.New(0.7, 1.2, -0.3)
+	// x_b, _ := m.Vop("*", x_a)
+
+	// expectedV := []float64{1.2062177826, 0.689230484541, -0.3}
+	// actualV := x_b.Data()
+	// for i := 0; i < 3; i++ {
+	// 	b := assert.InDelta(t, expectedV[i], actualV[i], .00000001)
+	// 	assert.Equal(t, true, b, "RotationX * V values incorrect")
+	// }
 
 }
 func TestIsOrthogonal(t *testing.T) {
@@ -137,11 +149,10 @@ func TestNormaliz(t *testing.T) {
 func TestKinematicRatesFromBodyRates(t *testing.T) {
 	R := matrix.Identity()
 	for i := 0; i < 100; i++ {
-		v, _ := vector.New([]float64{1.,0.0,0.0})
-		RDot,_ := dcm.KinematicRatesFromBodyRates(&R, &v)
-		R,_ = dcm.Intergrate(&R, &RDot, .01)
+		v, _ := vector.New([]float64{1., 0.0, 0.0})
+		RDot, _ := dcm.KinematicRatesFromBodyRates(&R, &v)
+		R, _ = dcm.Intergrate(&R, &RDot, .01)
 		fmt.Println(R)
 	}
-
 
 }
