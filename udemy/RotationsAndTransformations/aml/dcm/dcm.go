@@ -169,8 +169,8 @@ func DegreesToRadians(degrees float64) (radians float64) {
 }
 
 func EulerAnglesFromRotaionMatrix(m matrix.Matrix) (phi, theta, si float64) {
-	phi = math.Atan(m.M23 / m.M33)
+	phi = math.Atan2(m.M23, m.M33)
 	theta = -1.0 * math.Asin(m.M13)
-	si = math.Atan(m.M12 / m.M11)
+	si = math.Atan2(m.M12, m.M11)
 	return
 }

@@ -101,9 +101,9 @@ func TestRotation(t *testing.T) {
 		b := assert.InDeltaSlice(t, expected[i], actual[i], .00000001)
 		assert.Equal(t, true, b, "RotationZ Matrix values incorrect")
 	}
-	phiActual := math.Atan(R.M23 / R.M33)
+	phiActual := math.Atan2(R.M23, R.M33)
 	thetaActual := -1.0 * math.Asin(R.M13)
-	siActual := math.Atan(R.M12 / R.M11)
+	siActual := math.Atan2(R.M12, R.M11)
 	assert.InDeltaf(t, phi, phiActual, .0000000001, "phi Values %f != %f", phi, phiActual)
 	assert.InDeltaf(t, theta, thetaActual, .0000000001, "theta Values %f != %f", theta, thetaActual)
 	assert.InDeltaf(t, si, siActual, .0000000001, "si Values %f != %f", si, siActual)
