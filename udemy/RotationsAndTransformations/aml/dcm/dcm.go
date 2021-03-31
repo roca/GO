@@ -42,15 +42,26 @@ func RotationZ(theta float64) (matrix.Matrix, error) {
 	return m, nil
 }
 
-func Rotation(thetaX, thetaY, thetaZ float64) (matrix.Matrix, error) {
-	rX, _ := RotationX(thetaX)
-	rY, _ := RotationY(thetaY)
-	rZ, _ := RotationZ(thetaZ)
+func XYZRotation(phi, theta, si float64) (matrix.Matrix, error) {
+	Rx, _ := RotationX(phi)
+	Ry, _ := RotationY(theta)
+	Rz, _ := RotationZ(si)
 
-	rYZ, _ := rY.Mop("*", rZ)
-	rXYZ, _ := rX.Mop("*", *rYZ)
+	Ryz, _ := Ry.Mop("*", Rz)
+	Rxyz, _ := Rx.Mop("*", *Ryz)
 
-	return *rXYZ, nil
+	return *Rxyz, nil
+}
+
+func ZXZRotation(phi, theta, si float64) (matrix.Matrix, error) {
+	Rz, _ := RotationZ(phi)
+	Rx, _ := RotationX(theta)
+	Rz2, _ := RotationZ(si)
+
+	Rxz, _ := Rx.Mop("*", Rz2)
+	Rzxz, _ := Rz.Mop("*", *Rxz)
+
+	return *Rzxz, nil
 }
 
 func IsOrthogonal(m matrix.Matrix) bool {
@@ -168,9 +179,15 @@ func DegreesToRadians(degrees float64) (radians float64) {
 	return
 }
 
-func EulerAnglesFromRotaionMatrix(m matrix.Matrix) (phi, theta, si float64) {
-	phi = math.Atan2(m.M23, m.M33)
-	theta = -1.0 * math.Asin(m.M13)
-	si = math.Atan2(m.M12, m.M11)
+func EulerAnglesFromRxyx(Rxyz matrix.Matrix) (phi, theta, si float64) {
+	phi = math.Atan2(Rxyz.M23, Rxyz.M33)
+	theta = -1.0 * math.Asin(Rxyz.M13)
+	si = math.Atan2(Rxyz.M12, Rxyz.M11)
+	return
+}
+func EulerAnglesFromRzxz(Rzxz matrix.Matrix) (phi, theta, si float64) {
+	phi = math.Atan2(Rzxz.M13, Rzxz.M23)
+	theta = math.Acos(Rzxz.M33)
+	si = math.Atan2(Rzxz.M31, -1.0*Rzxz.M32)
 	return
 }

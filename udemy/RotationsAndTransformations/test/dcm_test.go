@@ -84,11 +84,11 @@ func TestRotationZ(t *testing.T) {
 	}
 
 }
-func TestRotation(t *testing.T) {
+func TestXYZRotation(t *testing.T) {
 	phi := dcm.DegreesToRadians(-45.0)
 	theta := dcm.DegreesToRadians(-75.0)
 	si := dcm.DegreesToRadians(78.0)
-	R, _ := dcm.Rotation(phi, theta, si)
+	R, _ := dcm.XYZRotation(phi, theta, si)
 
 	expected := [][]float64{
 		{math.Cos(theta) * math.Cos(si), math.Cos(theta) * math.Sin(si), -1.0 * math.Sin(theta)},
