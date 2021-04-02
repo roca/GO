@@ -31,4 +31,8 @@ func main() {
 	fmt.Printf("IsOrthogonal: %t\n", dcm.IsOrthogonal(Rzxz))
 	fmt.Printf("Euler Angles: [%f, %f, %f] degrees\n", dcm.RadiansToDegrees(phiActual), dcm.RadiansToDegrees(thetaActual), dcm.RadiansToDegrees(siActual))
 
+	phiActual, thetaActual, siActual = dcm.EulerAnglesFromRzxz(Rxyz)
+	fmt.Printf("Attitude for ZXZ: [%f, %f, %f] degrees\n", dcm.RadiansToDegrees(phiActual), dcm.RadiansToDegrees(thetaActual), dcm.RadiansToDegrees(siActual))
+
+
 }

@@ -191,3 +191,52 @@ func EulerAnglesFromRzxz(Rzxz matrix.Matrix) (phi, theta, si float64) {
 	si = math.Atan2(Rzxz.M31, -1.0*Rzxz.M32)
 	return
 }
+
+// Euler Angle Rates
+// Singularity: For theta = 0 degrees, Rates go to infinity
+
+func XYZEulerAngleRates(phi, theta, si float64, omega_body vector.Vector) (vector.Vector, error) {
+	Exyz, _ := matrix.New(0)
+
+	Exyz.M11 = 1.0
+	Exyz.M12 = math.Tan(theta) * math.Sin(phi)
+	Exyz.M13 = math.Tan(theta) * math.Cos(phi)
+
+	Exyz.M21 = 0.0
+	Exyz.M22 = math.Cos(phi)
+	Exyz.M23 = -1.0 * math.Sin(phi)
+
+	Exyz.M31 = 0.0
+	Exyz.M32 = math.Sin(phi) / math.Cos(theta)
+	Exyz.M33 = math.Cos(phi) / math.Cos(theta)
+
+	w, _ := Exyz.Vop("*", omega_body)
+
+	return w, nil
+}
+
+func ZXZEulerAngleRates(phi, theta, si float64, omega_body vector.Vector) (vector.Vector, error) {
+	Ezxz, _ := matrix.New(0)
+
+	Ezxz.M11 = -1.0 * math.Sin(phi) * math.Cos(theta) / math.Sin(theta)
+	Ezxz.M11 = -1.0 * math.Cos(phi) * math.Cos(theta) / math.Sin(theta)
+	Ezxz.M13 = 1.0
+
+	Ezxz.M21 = math.Cos(phi)
+	Ezxz.M22 = -1.0 * math.Sin(phi)
+	Ezxz.M23 = 0.0
+
+	Ezxz.M31 = math.Sin(phi) / math.Sin(theta)
+	Ezxz.M32 = math.Cos(phi) / math.Sin(theta)
+	Ezxz.M33 = 0.0
+
+	w, _ := Ezxz.Vop("*", omega_body)
+
+	return w, nil
+}
+
+func EulerIntergration(x, xDot vector.Vector, dt float64) (vector.Vector, error) {
+	v, _ := xDot.Sop("*", dt)
+	w, _ := x.Vop("+", *v)
+	return *w, nil
+}

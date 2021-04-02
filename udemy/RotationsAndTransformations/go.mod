@@ -5,6 +5,7 @@ go 1.14
 require (
 	github.com/ajstarks/svgo v0.0.0-20200725142600-7a3c8b57fecb // indirect
 	github.com/go-latex/latex v0.0.0-20210118124228-b3d85cf34e07 // indirect
+	github.com/jung-kurt/gofpdf v1.16.2 // indirect
 	github.com/kr/pty v1.1.8 // indirect
 	github.com/stretchr/testify v1.2.2
 	go.etcd.io/etcd v3.3.25+incompatible
@@ -14,5 +15,5 @@ require (
 	golang.org/x/tools v0.1.0 // indirect
 	gonum.org/v1/gonum v0.8.2
 	gonum.org/v1/netlib v0.0.0-20201012070519-2390d26c3658 // indirect
-	gonum.org/v1/plot v0.8.1 // indirect
+	gonum.org/v1/plot v0.9.0
 )
