@@ -11,14 +11,14 @@ import (
 
 func main() {
 	attitude, _ := vector.New(
-		dcm.DegreesToRadians(0.1), // phi
-		dcm.DegreesToRadians(0.0), // theta
-		dcm.DegreesToRadians(0.0), // si
+		dcm.DegreesToRadians(0.1), // phi(Role Rate)
+		dcm.DegreesToRadians(0.0), // theta(Pitch Rate)
+		dcm.DegreesToRadians(0.0), // si(Yaw Rate)
 	)
 	omegaBody, _ := vector.New( // Angular Rates
-		dcm.DegreesToRadians(0.0),  // phiDot(Role Rate)
-		dcm.DegreesToRadians(20.0), // thetaDot(Pitch Rate)
-		dcm.DegreesToRadians(0.0),  // siDot(Yaw Rate)
+		dcm.DegreesToRadians(0.0),  // phiDot
+		dcm.DegreesToRadians(20.0), // thetaDot
+		dcm.DegreesToRadians(0.0),  // siDot
 	)
 
 	dt := 0.01

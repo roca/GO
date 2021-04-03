@@ -179,7 +179,7 @@ func DegreesToRadians(degrees float64) (radians float64) {
 	return
 }
 
-func EulerAnglesFromRxyx(Rxyz matrix.Matrix) (phi, theta, si float64) {
+func EulerAnglesFromRxyz(Rxyz matrix.Matrix) (phi, theta, si float64) {
 	phi = math.Atan2(Rxyz.M23, Rxyz.M33)
 	theta = -1.0 * math.Asin(Rxyz.M13)
 	si = math.Atan2(Rxyz.M12, Rxyz.M11)
