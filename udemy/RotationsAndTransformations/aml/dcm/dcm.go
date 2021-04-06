@@ -42,28 +42,6 @@ func RotationZ(theta float64) (matrix.Matrix, error) {
 	return m, nil
 }
 
-func XYZRotation(phi, theta, si float64) (matrix.Matrix, error) {
-	Rx, _ := RotationX(phi)
-	Ry, _ := RotationY(theta)
-	Rz, _ := RotationZ(si)
-
-	Ryz, _ := Ry.Mop("*", Rz)
-	Rxyz, _ := Rx.Mop("*", *Ryz)
-
-	return *Rxyz, nil
-}
-
-func ZXZRotation(phi, theta, si float64) (matrix.Matrix, error) {
-	Rz, _ := RotationZ(phi)
-	Rx, _ := RotationX(theta)
-	Rz2, _ := RotationZ(si)
-
-	Rxz, _ := Rx.Mop("*", Rz2)
-	Rzxz, _ := Rz.Mop("*", *Rxz)
-
-	return *Rzxz, nil
-}
-
 func IsOrthogonal(m matrix.Matrix) bool {
 	det, _ := matrix.Determinant(m)
 	if math.Abs(det) > 1.0000000001 {

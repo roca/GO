@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"udemy.com/aml/dcm"
+	"udemy.com/aml/euler"
 )
 
 func main() {
@@ -18,13 +19,11 @@ func main() {
 		dcm.DegreesToRadians(0.0),
 	}
 
-	// aw, _ := euler.New(attitudeAW[0], attitudeAW[1], attitudeAW[2], "XYZ")
-	// ca, _ := euler.New(attitudeCA[0], attitudeCA[1], attitudeCA[2], "XYZ")
+	aw, _ := euler.New(attitudeAW[0], attitudeAW[1], attitudeAW[2], "XYZ")
+	ca, _ := euler.New(attitudeCA[0], attitudeCA[1], attitudeCA[2], "XYZ")
 
-	Raw, _ := dcm.XYZRotation(attitudeAW[0], attitudeAW[1], attitudeAW[2])
-	Rca, _ := dcm.XYZRotation(attitudeCA[0], attitudeCA[1], attitudeCA[2])
-	// Raw, _ := aw.ToDCM()
-	// Rca, _ := ca.ToDCM()
+	Raw, _ := aw.ToDCM()
+	Rca, _ := ca.ToDCM()
 
 	Rcw, _ := Rca.Mop("*", Raw)
 	phi, theta, si := dcm.EulerAnglesFromRxyz(*Rcw)

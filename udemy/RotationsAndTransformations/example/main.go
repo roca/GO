@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"udemy.com/aml/dcm"
+	"udemy.com/aml/euler"
 )
 
 func main() {
@@ -11,7 +12,9 @@ func main() {
 	theta := dcm.DegreesToRadians(-105.0)
 	si := dcm.DegreesToRadians(135.0)
 
-	Rxyz, _ := dcm.XYZRotation(phi, theta, si)
+	anglesXYZ, _ := euler.New(phi, theta, si, "XYZ")
+	Rxyz, _ := anglesXYZ.ToDCM()
+
 	phiActual, thetaActual, siActual := dcm.EulerAnglesFromRxyz(Rxyz)
 	d := Rxyz.Data()
 	fmt.Println("Rxyz:", Rxyz.Data())
@@ -21,7 +24,8 @@ func main() {
 	fmt.Printf("IsOrthogonal: %t\n", dcm.IsOrthogonal(Rxyz))
 	fmt.Printf("Euler Angles: [%f, %f, %f] degrees\n", dcm.RadiansToDegrees(phiActual), dcm.RadiansToDegrees(thetaActual), dcm.RadiansToDegrees(siActual))
 
-	Rzxz, _ := dcm.ZXZRotation(phi, theta, si)
+	anglesZXZ, _ := euler.New(phi, theta, si, "ZXZ")
+	Rzxz, _ := anglesZXZ.ToDCM()
 	phiActual, thetaActual, siActual = dcm.EulerAnglesFromRzxz(Rzxz)
 	d = Rzxz.Data()
 	fmt.Println("Rzxz:", Rzxz.Data())
@@ -34,7 +38,8 @@ func main() {
 	phiActual, thetaActual, siActual = dcm.EulerAnglesFromRzxz(Rxyz)
 	fmt.Printf("Attitude for ZXZ: [%f, %f, %f] degrees\n", dcm.RadiansToDegrees(phiActual), dcm.RadiansToDegrees(thetaActual), dcm.RadiansToDegrees(siActual))
 
-	Rzxz, _ = dcm.ZXZRotation(phiActual, thetaActual, siActual)
+	anglesZXZActual, _ := euler.New(phiActual, thetaActual, siActual, "ZXZ")
+	Rzxz, _ = anglesZXZActual.ToDCM()
 	phiActual, thetaActual, siActual = dcm.EulerAnglesFromRxyz(Rzxz)
 	fmt.Printf("Attitude for ZXZ: [%f, %f, %f] degrees\n", dcm.RadiansToDegrees(phiActual), dcm.RadiansToDegrees(thetaActual), dcm.RadiansToDegrees(siActual))
 
