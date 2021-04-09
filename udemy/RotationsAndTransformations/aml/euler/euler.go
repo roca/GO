@@ -1,6 +1,8 @@
 package euler
 
 import (
+	"fmt"
+	"math"
 	"strings"
 
 	"udemy.com/aml/dcm"
@@ -36,34 +38,30 @@ type Angles struct {
 	Si       float64
 }
 
-func New(phi, theta, si float64, sequence seq) (Angles, error) {
-	return Angles{Phi: phi, Theta: theta, Si: si, Sequence: sequence}, nil
+func DcmToAngles(m matrix.Matrix, sequence seq) (Angles, error) {
+	if !dcm.IsOrthogonal(m) {
+		return Angles{}, fmt.Errorf("This Matrix is not orthoganal %g", m)
+	}
+
+	anglesMap := map[seq]func(matrix.Matrix) (Angles, error){
+		XYZ: dcmToAnglesXYZ,
+		ZXZ: dcmToAnglesZXZ,
+		XYX: dcmToAnglesXYX,
+		YZY: dcmToAnglesYZY,
+		ZYZ: dcmToAnglesZYZ,
+		// XZX: dcmToAnglesXZX,
+		// YXY: dcmToAnglesYXY,
+		// YZX: dcmToAnglesYZX,
+		// ZXY: dcmToAnglesZXY,
+		// XZY: dcmToAnglesXZY,
+		// ZYX: dcmToAnglesZYX,
+		// YXZ: dcmToAnglesYXZ,
+	}
+
+	angles, e := anglesMap[sequence](m)
+
+	return angles, e
 }
-
-// func NewFromDcm(m matrix.Matrix, sequence seq) (Angles, error) {
-// 	if !dcm.IsOrthogonal(m) {
-// 		return Angles{}, fmt.Errorf("This Matrix is not orthoganal %g", m)
-// 	}
-
-// 	anglesMap := map[seq]func(matrix.Matrix) (Angles, error){
-// 		ZXZ: dcmToAnglesZXZ,
-// 		XYX: dcmToAnglesXYX,
-// 		YZY: dcmToAnglesYZY,
-// 		ZYZ: dcmToAnglesZYZ,
-// 		XZX: dcmToAnglesXZX,
-// 		YXY: dcmToAnglesYXY,
-// 		XYZ: dcmToAnglesXYZ,
-// 		YZX: dcmToAnglesYZX,
-// 		ZXY: dcmToAnglesZXY,
-// 		XZY: dcmToAnglesXZY,
-// 		ZYX: dcmToAnglesZYX,
-// 		YXZ: dcmToAnglesYXZ,
-// 	}
-
-// 	angles, e := anglesMap[sequence](m)
-
-// 	return angles, e
-// }
 
 func (a Angles) ToDCM() (matrix.Matrix, error) {
 	rotations := map[string]func(float64) (matrix.Matrix, error){
@@ -86,13 +84,45 @@ func (a *Angles) Convert(sequence seq) {
 	a.Sequence = sequence
 }
 
-// func dcmToAnglesZXZ(dcm matrix.Matrix) (Angles, error) { return Angles{}, nil }
-// func dcmToAnglesXYX(dcm matrix.Matrix) (Angles, error) { return Angles{}, nil }
-// func dcmToAnglesYZY(dcm matrix.Matrix) (Angles, error) { return Angles{}, nil }
-// func dcmToAnglesZYZ(dcm matrix.Matrix) (Angles, error) { return Angles{}, nil }
+func dcmToAnglesXYZ(dcm matrix.Matrix) (Angles, error) {
+	phi := math.Atan2(dcm.M23, dcm.M33)
+	theta := -math.Asin(dcm.M13)
+	psi := math.Atan2(dcm.M12, dcm.M11)
+
+	return Angles{Phi: phi, Theta: theta, Si: psi, Sequence: XYZ}, nil
+}
+
+func dcmToAnglesZXZ(dcm matrix.Matrix) (Angles, error) {
+	phi := math.Atan2(dcm.M13, dcm.M23)
+	theta := math.Acos(dcm.M33)
+	psi := math.Atan2(dcm.M31, -dcm.M32)
+
+	return Angles{Phi: phi, Theta: theta, Si: psi, Sequence: ZXZ}, nil
+}
+
+func dcmToAnglesXYX(dcm matrix.Matrix) (Angles, error) {
+	phi := math.Atan2(dcm.M21, dcm.M31)
+	theta := math.Acos(dcm.M11)
+	psi := math.Atan2(dcm.M12, -dcm.M13)
+
+	return Angles{Phi: phi, Theta: theta, Si: psi, Sequence: XYX}, nil
+}
+func dcmToAnglesYZY(dcm matrix.Matrix) (Angles, error) {
+	phi := math.Atan2(dcm.M32, dcm.M12)
+	theta := math.Acos(dcm.M22)
+	psi := math.Atan2(dcm.M23, -dcm.M21)
+	return Angles{Phi: phi, Theta: theta, Si: psi, Sequence: YZY}, nil
+}
+
+func dcmToAnglesZYZ(dcm matrix.Matrix) (Angles, error) {
+	phi := math.Atan2(dcm.M23, -dcm.M13)
+	theta := math.Acos(dcm.M33)
+	psi := math.Atan2(dcm.M32, dcm.M31)
+	return Angles{Phi: phi, Theta: theta, Si: psi, Sequence: ZYZ}, nil
+}
+
 // func dcmToAnglesXZX(dcm matrix.Matrix) (Angles, error) { return Angles{}, nil }
 // func dcmToAnglesYXY(dcm matrix.Matrix) (Angles, error) { return Angles{}, nil }
-// func dcmToAnglesXYZ(dcm matrix.Matrix) (Angles, error) { return Angles{}, nil }
 // func dcmToAnglesYZX(dcm matrix.Matrix) (Angles, error) { return Angles{}, nil }
 // func dcmToAnglesZXY(dcm matrix.Matrix) (Angles, error) { return Angles{}, nil }
 // func dcmToAnglesXZY(dcm matrix.Matrix) (Angles, error) { return Angles{}, nil }
