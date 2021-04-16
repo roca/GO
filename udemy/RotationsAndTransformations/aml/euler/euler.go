@@ -116,12 +116,48 @@ func Integrate(angles Angles, angleRates Angles, dt float64) (Angles, error) {
 
 	return Angles{Phi: phiNew, Theta: thetaNew, Si: siNew, Sequence: angles.Sequence}, nil
 }
-// func LinearInterpolate(startAngles, endAngles Angles, t float64) (Angles, error) {
-// 	return Angles{}, nil
-// }
-// func SmoothInterpolate(startAngles, endAngles Angles, t float64) (Angles, error) {
-// 	return Angles{}, nil
-// }
+func LinearInterpolate(startAngles, endAngles Angles, t float64) (Angles, error) {
+	if startAngles.Sequence != endAngles.Sequence {
+		return Angles{}, fmt.Errorf("Sequence %s != %s", startAngles.Sequence, endAngles.Sequence)
+	}
+	if t < 0.0 {
+		return startAngles, nil
+	}
+	if t > 1.0 {
+		return endAngles, nil
+	}
+	phiNew := (1-t)*startAngles.Phi + t*endAngles.Phi
+	thetaNew := (1-t)*startAngles.Theta + t*endAngles.Theta
+	siNew := (1-t)*startAngles.Si + t*endAngles.Si
+
+	return Angles{Phi: phiNew, Theta: thetaNew, Si: siNew, Sequence: startAngles.Sequence}, nil
+}
+
+func SmoothInterpolate(startAngles, endAngles Angles, t float64) (Angles, error) {
+	if startAngles.Sequence != endAngles.Sequence {
+		return Angles{}, fmt.Errorf("Sequence %s != %s", startAngles.Sequence, endAngles.Sequence)
+	}
+	if t < 0.0 {
+		return startAngles, nil
+	}
+	if t > 1.0 {
+		return endAngles, nil
+	}
+	t2 := t*t;
+	t3 := t2*t;
+	t4 := t3*t;
+	t5 := t4*t;
+
+	deltaPhi   := endAngles.Phi - startAngles.Phi;
+	deltaTheta := endAngles.Theta - startAngles.Theta;
+	deltaSi   := endAngles.Si - startAngles.Si;
+
+	phiNew   := 6*deltaPhi*t5 + -15*deltaPhi*t4 + 10*deltaPhi*t3 + startAngles.Phi;
+	thetaNew := 6*deltaTheta*t5 + -15*deltaTheta*t4 + 10*deltaTheta*t3 + startAngles.Theta;
+	siNew    := 6*deltaSi*t5 + -15*deltaSi*t4 + 10*deltaSi*t3 + startAngles.Si;
+
+	return Angles{Phi: phiNew, Theta: thetaNew, Si: siNew, Sequence: startAngles.Sequence}, nil
+}
 
 func dcmToAnglesXYZ(dcm matrix.Matrix) (Angles, error) {
 	phi := math.Atan2(dcm.M23, dcm.M33)
