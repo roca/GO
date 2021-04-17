@@ -39,6 +39,12 @@ type Angles struct {
 	Si       float64
 }
 
+func New(phi, theta, si float64, sequence ...seq) Angles {
+	if len(sequence) != 0 {
+		return Angles{Phi: phi, Theta: theta, Si: si, Sequence: sequence[0]}
+	}
+	return Angles{Phi: phi, Theta: theta, Si: si, Sequence: XYZ}
+}
 func (a Angles) ToDCM() (matrix.Matrix, error) {
 	rotations := map[string]func(float64) (matrix.Matrix, error){
 		"X": dcm.RotationX,
@@ -143,18 +149,18 @@ func SmoothInterpolate(startAngles, endAngles Angles, t float64) (Angles, error)
 	if t > 1.0 {
 		return endAngles, nil
 	}
-	t2 := t*t;
-	t3 := t2*t;
-	t4 := t3*t;
-	t5 := t4*t;
+	t2 := t * t
+	t3 := t2 * t
+	t4 := t3 * t
+	t5 := t4 * t
 
-	deltaPhi   := endAngles.Phi - startAngles.Phi;
-	deltaTheta := endAngles.Theta - startAngles.Theta;
-	deltaSi   := endAngles.Si - startAngles.Si;
+	deltaPhi := endAngles.Phi - startAngles.Phi
+	deltaTheta := endAngles.Theta - startAngles.Theta
+	deltaSi := endAngles.Si - startAngles.Si
 
-	phiNew   := 6*deltaPhi*t5 + -15*deltaPhi*t4 + 10*deltaPhi*t3 + startAngles.Phi;
-	thetaNew := 6*deltaTheta*t5 + -15*deltaTheta*t4 + 10*deltaTheta*t3 + startAngles.Theta;
-	siNew    := 6*deltaSi*t5 + -15*deltaSi*t4 + 10*deltaSi*t3 + startAngles.Si;
+	phiNew := 6*deltaPhi*t5 + -15*deltaPhi*t4 + 10*deltaPhi*t3 + startAngles.Phi
+	thetaNew := 6*deltaTheta*t5 + -15*deltaTheta*t4 + 10*deltaTheta*t3 + startAngles.Theta
+	siNew := 6*deltaSi*t5 + -15*deltaSi*t4 + 10*deltaSi*t3 + startAngles.Si
 
 	return Angles{Phi: phiNew, Theta: thetaNew, Si: siNew, Sequence: startAngles.Sequence}, nil
 }

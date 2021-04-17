@@ -15,7 +15,7 @@ func TestToXYZDCM(t *testing.T) {
 	theta := dcm.DegreesToRadians(-75.0)
 	si := dcm.DegreesToRadians(78.0)
 
-	angles, _ := euler.New(phi, theta, si, "XYZ")
+	angles := euler.Angles{Phi: phi, Theta: theta, Si: si, Sequence: "XYZ"}
 	R, _ := angles.ToDCM()
 
 	expected := [][]float64{
