@@ -10,10 +10,10 @@ import (
 	"udemy.com/aml/vector"
 )
 
-type seq string
+type Seq string
 
 const (
-	ZXZ seq = "ZXZ"
+	ZXZ Seq = "ZXZ"
 	XYX     = "XYX"
 	YZY     = "YZY"
 	ZYZ     = "ZYZ"
@@ -29,17 +29,17 @@ const (
 
 type IAngles interface {
 	ToDCM() (matrix.Matrix, error)
-	Convert(Angles, seq) (Angles, error)
+	Convert(Angles, Seq) (Angles, error)
 	KinematicRates(vector.Vector) (Angles, error)
 }
 type Angles struct {
-	Sequence seq `default:"XYZ"`
+	Sequence Seq `default:"XYZ"`
 	Phi      float64
 	Theta    float64
 	Si       float64
 }
 
-func New(phi, theta, si float64, sequence ...seq) Angles {
+func New(phi, theta, si float64, sequence ...Seq) Angles {
 	if len(sequence) != 0 {
 		return Angles{Phi: phi, Theta: theta, Si: si, Sequence: sequence[0]}
 	}
@@ -62,7 +62,7 @@ func (a Angles) ToDCM() (matrix.Matrix, error) {
 
 	return *R123, nil
 }
-func (a *Angles) Convert(angles Angles, sequence seq) (Angles, error) {
+func (a *Angles) Convert(angles Angles, sequence Seq) (Angles, error) {
 	dcm, _ := angles.ToDCM()
 
 	newAngles, _ := DcmToAngles(dcm, sequence)
@@ -70,7 +70,7 @@ func (a *Angles) Convert(angles Angles, sequence seq) (Angles, error) {
 	return newAngles, nil
 }
 func (angles Angles) KinematicRates(bodyRates vector.Vector) (Angles, error) {
-	ratesMap := map[seq]func(vector.Vector) (Angles, error){
+	ratesMap := map[Seq]func(vector.Vector) (Angles, error){
 		XYZ: angles.ratesMatrixXYZ,
 		ZXZ: angles.ratesMatrixZXZ,
 		XYX: angles.ratesMatrixXYX,
@@ -88,12 +88,12 @@ func (angles Angles) KinematicRates(bodyRates vector.Vector) (Angles, error) {
 
 	return rates, nil
 }
-func DcmToAngles(m matrix.Matrix, sequence seq) (Angles, error) {
+func DcmToAngles(m matrix.Matrix, sequence Seq) (Angles, error) {
 	if !dcm.IsOrthogonal(m) {
 		return Angles{}, fmt.Errorf("This Matrix is not orthoganal %g", m)
 	}
 
-	anglesMap := map[seq]func(matrix.Matrix) (Angles, error){
+	anglesMap := map[Seq]func(matrix.Matrix) (Angles, error){
 		XYZ: dcmToAnglesXYZ,
 		ZXZ: dcmToAnglesZXZ,
 		XYX: dcmToAnglesXYX,

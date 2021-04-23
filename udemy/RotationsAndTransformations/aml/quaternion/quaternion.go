@@ -1,0 +1,132 @@
+package quaternion
+
+import (
+	"fmt"
+	"math"
+
+	"udemy.com/aml/dcm"
+	"udemy.com/aml/euler"
+	"udemy.com/aml/matrix"
+)
+
+type IQuaternion interface {
+	Norm() float64
+}
+
+type Quaternion struct {
+	S, X, Y, Z float64
+}
+
+func New(s, x, y, z float64) (Quaternion, error) {
+	return Quaternion{S: s, X: x, Y: y}, nil
+}
+
+// Quaternion Operations
+func (q Quaternion) Norm() float64 {
+	return math.Sqrt(q.S*q.S + q.X*q.X + q.Y*q.Y + q.Z*q.Z)
+}
+func IsUnitQuat(q Quaternion, tol ...float64) bool {
+	tolerance := .0000000001
+	if len(tol) != 0 {
+		tolerance = tol[0]
+	}
+	return (q.Norm() - 1.0) < (2.0 * tolerance)
+}
+func Angles2Quat(angle euler.Angles) (Quaternion, error)                  {}
+func (q Quaternion) Quat2Angles(sequence euler.Seq) (euler.Angles, error) {}
+
+// DCM Conversion Functions
+func Dcm2Quat(r matrix.Matrix) (Quaternion, error) {
+	if !dcm.IsOrthogonal(r) {
+		return Quaternion{}, nil
+	}
+
+	q0_den := (1.0 + r.M11 + r.M22 + r.M33)
+	s0 := math.Sqrt(q0_den)
+
+	q1_den := (1.0 + r.M11 - r.M22 - r.M33)
+	s1 := math.Sqrt(q1_den)
+
+	q2_den := (1.0 - r.M11 + r.M22 - r.M33)
+	s2 := math.Sqrt(q2_den)
+
+	q3_den := (1.0 - r.M11 - r.M22 + r.M33)
+	s3 := math.Sqrt(q3_den)
+
+	q2q3 := r.M23 + r.M32
+	q1q3 := r.M31 + r.M13
+	q1q2 := r.M12 + r.M21
+	q0q1 := r.M23 - r.M32
+	q0q2 := r.M31 - r.M13
+	q0q3 := r.M12 - r.M21
+
+	qs := make(map[float64]Quaternion)
+	qs[q0_den] = Quaternion{
+		S: 0.5 * s0,
+		X: 0.5 * q0q1 / s0,
+		Y: 0.5 * q0q2 / s0,
+		Z: 0.5 * q0q3 / s0,
+	}
+	qs[q1_den] = Quaternion{
+		S: 0.5 * q0q1 / s1,
+		X: 0.5 * s1,
+		Y: 0.5 * q1q2 / s1,
+		Z: 0.5 * q1q3 / s1,
+	}
+	qs[q2_den] = Quaternion{
+		S: 0.5 * q0q2 / s2,
+		X: 0.5 * q1q2 / s2,
+		Y: 0.5 * s2,
+		Z: 0.5 * q2q3 / s2,
+	}
+	qs[q3_den] = Quaternion{
+		S: 0.5 * q0q3 / s3,
+		X: 0.5 * q1q3 / s3,
+		Y: 0.5 * q2q3 / s3,
+		Z: 0.5 * s3,
+	}
+
+	q_dens := []float64{q0_den, q1_den, q2_den, q3_den}
+	max_q_den := q_dens[0]
+	for _, q_den := range q_dens {
+		max_q_den = math.Max(max_q_den, q_den)
+	}
+	return qs[max_q_den], nil
+}
+func Quat2DCM(rhs Quaternion) (matrix.Matrix, error) {
+	TOL := 0.0001
+
+	// Check if valid rotation quaternion
+	if IsUnitQuat(rhs, TOL) {
+		q0 := rhs.S
+		q1 := rhs.X
+		q2 := rhs.Y
+		q3 := rhs.Z
+		q0_2 := q0 * q0
+		q1_2 := q1 * q1
+		q2_2 := q2 * q2
+		q3_2 := q3 * q3
+		q1q2 := q1 * q2
+		q0q3 := q0 * q3
+		q1q3 := q1 * q3
+		q0q2 := q0 * q2
+		q2q3 := q2 * q3
+		q0q1 := q0 * q1
+		data := [][]float64{
+			{
+				q0_2 + q1_2 - q2_2 - q3_2,
+				2.0 * (q1q2 + q0q3),
+				2.0 * (q1q3 - q0q2),
+			},
+			{
+				2.0 * (q1q2 - q0q3),
+				q0_2 - q1_2 + q2_2 - q3_2,
+				2.0 * (q2q3 + q0q1),
+			},
+			{2.0 * (q1q3 + q0q2), 2.0 * (q2q3 - q0q1), q0_2 - q1_2 - q2_2 + q3_2},
+		}
+		dcm, _ := matrix.New(data)
+		return dcm, nil
+	}
+	return matrix.Matrix{}, fmt.Errorf("Quaternion Norm %f != 1.0", rhs.Norm())
+}

@@ -42,9 +42,13 @@ func RotationZ(theta float64) (matrix.Matrix, error) {
 	return m, nil
 }
 
-func IsOrthogonal(m matrix.Matrix) bool {
+func IsOrthogonal(m matrix.Matrix, tol ...float64) bool {
+	tolerance := .0000000001
+	if len(tol) != 0 {
+		tolerance = tol[0]
+	}
 	det, _ := matrix.Determinant(m)
-	if math.Abs(det) > 1.0000000001 {
+	if math.Abs(det) > (1 + tolerance) {
 		return false
 	}
 	mInverse, _ := m.Inverse()
@@ -54,7 +58,7 @@ func IsOrthogonal(m matrix.Matrix) bool {
 
 	for i, row := range dataI {
 		for j, vI := range row {
-			if math.Abs(vI-dataT[i][j]) > .0000000001 {
+			if math.Abs(vI-dataT[i][j]) > tolerance {
 				return false
 			}
 		}
