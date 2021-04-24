@@ -22,8 +22,35 @@ func New(s, x, y, z float64) (Quaternion, error) {
 }
 
 // Quaternion Operations
+func (q Quaternion) Conjugate() (Quaternion, error) {
+	return Quaternion{S: q.S, X: -q.X, Y: -q.Y, Z: -q.Z}, nil
+}
 func (q Quaternion) Norm() float64 {
 	return math.Sqrt(q.S*q.S + q.X*q.X + q.Y*q.Y + q.Z*q.Z)
+}
+func (q Quaternion) Inverse() (Quaternion, error) {
+	qI, _ := q.Conjugate()
+	mag := q.Norm()
+	return Quaternion{S: qI.S / mag, X: qI.X / mag, Y: qI.Y / mag, Z: qI.Z / mag}, nil
+}
+func (q Quaternion) Unit() (Quaternion, error) {
+	mag := q.Norm()
+	if mag > 0.0 {
+		return Quaternion{S: q.S / mag, X: q.X / mag, Y: q.Y / mag, Z: q.Z / mag}, nil
+	}
+	return Quaternion{S: q.S, X: q.X, Y: q.Y, Z: q.Z}, nil
+}
+func (q *Quaternion) Normalise() {
+	mag := q.Norm()
+	if mag > 0.0 {
+		q.S /= mag
+		q.X /= mag
+		q.Y /= mag
+		q.Z /= mag
+	}
+}
+func (q Quaternion) Dot(q2 Quaternion) float64 {
+	return (q.S*q2.S + q.X*q2.X + q.Y*q2.Y + q.Z*q2.Z)
 }
 func IsUnitQuat(q Quaternion, tol ...float64) bool {
 	tolerance := .0000000001
