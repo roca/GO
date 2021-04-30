@@ -29,7 +29,7 @@ func TestAngles2Quat(t *testing.T) {
 	assert.InDeltaf(t, expected.Y, quat.Y, tolerance, "quat.S %f != %f", expected.Y, quat.Y)
 	assert.InDeltaf(t, expected.Z, quat.Z, tolerance, "quat.S %f != %f", expected.Z, quat.Z)
 
-	angles, _ := quat.Quat2Angles("XYZ")
+	angles, _ := quat.ToAngles("XYZ")
 	assert.InDeltaf(t, angles_xyz.Phi, angles.Phi, tolerance, "Phi %f != %f", angles_xyz.Phi, angles.Phi)
 	assert.InDeltaf(t, angles_xyz.Theta, angles.Theta, tolerance, "Theta %f != %f", angles_xyz.Theta, angles.Theta)
 	assert.InDeltaf(t, angles_xyz.Si, angles.Si, tolerance, "Si %f != %f", angles_xyz.Si, angles.Si)

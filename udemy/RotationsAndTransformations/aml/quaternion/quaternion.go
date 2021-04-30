@@ -78,7 +78,7 @@ func Angles2Quat(angle euler.Angles) (Quaternion, error) {
 	return Dcm2Quat(dcm)
 }
 
-func (q Quaternion) Quat2Angles(sequence euler.Seq) (euler.Angles, error) {
+func (q Quaternion) ToAngles(sequence euler.Seq) (euler.Angles, error) {
 	dcm, _ := Quat2DCM(q)
 	return euler.DcmToAngles(dcm, sequence)
 }
