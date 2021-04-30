@@ -4,9 +4,12 @@ import (
 	"fmt"
 	"math"
 
+	"strings"
+
 	"udemy.com/aml/dcm"
 	"udemy.com/aml/euler"
 	"udemy.com/aml/matrix"
+	"udemy.com/aml/vector"
 )
 
 type IQuaternion interface {
@@ -19,6 +22,17 @@ type Quaternion struct {
 
 func New(s, x, y, z float64) (Quaternion, error) {
 	return Quaternion{S: s, X: x, Y: y}, nil
+}
+
+func (m *Quaternion) Copy() (Quaternion, error) {
+	u := m
+	return *u, nil
+}
+func (m *Quaternion) CopyPointer() (*Quaternion, error) {
+	var new *Quaternion
+	x, _ := m.Copy()
+	new = &x
+	return new, nil
 }
 
 // Quaternion Operations
@@ -59,8 +73,15 @@ func IsUnitQuat(q Quaternion, tol ...float64) bool {
 	}
 	return (q.Norm() - 1.0) < (2.0 * tolerance)
 }
-func Angles2Quat(angle euler.Angles) (Quaternion, error)                  {}
-func (q Quaternion) Quat2Angles(sequence euler.Seq) (euler.Angles, error) {}
+func Angles2Quat(angle euler.Angles) (Quaternion, error) {
+	dcm, _ := angle.ToDCM()
+	return Dcm2Quat(dcm)
+}
+
+func (q Quaternion) Quat2Angles(sequence euler.Seq) (euler.Angles, error) {
+	dcm, _ := Quat2DCM(q)
+	return euler.DcmToAngles(dcm, sequence)
+}
 
 // DCM Conversion Functions
 func Dcm2Quat(r matrix.Matrix) (Quaternion, error) {
@@ -156,4 +177,92 @@ func Quat2DCM(rhs Quaternion) (matrix.Matrix, error) {
 		return dcm, nil
 	}
 	return matrix.Matrix{}, fmt.Errorf("Quaternion Norm %f != 1.0", rhs.Norm())
+}
+
+// Quaternion / Quaternion Operations
+func (q *Quaternion) Qop(operation string, u Quaternion) (*Quaternion, error) {
+	var new *Quaternion
+	if !strings.Contains(operation, "=") {
+		new, _ = q.CopyPointer()
+	} else {
+		new = q
+	}
+
+	switch o := operation; {
+	case o == "+=" || o == "+":
+		new.S += u.S
+		new.X += u.X
+		new.Y += u.Y
+		new.Z += u.Z
+		return new, nil
+	case o == "-=" || o == "-":
+		new.S -= u.S
+		new.X -= u.X
+		new.Y -= u.Y
+		new.Z -= u.Z
+	case o == "*=" || o == "*":
+		s_new := (u.S * q.S) - (u.X * q.X) - (u.Y * q.Y) - (u.Z * q.Z)
+		x_new := (u.S * q.X) + (u.X * q.S) - (u.Y * q.Z) + (u.Z * q.Y)
+		y_new := (u.S * q.Y) + (u.X * q.Z) + (u.Y * q.S) - (u.Z * q.X)
+		z_new := (u.S * q.Z) - (u.X * q.Y) + (u.Y * q.X) + (u.Z * q.S)
+		new.S = s_new
+		new.Y = x_new
+		new.X = y_new
+		new.Z = z_new
+		return new, nil
+	default:
+		return &Quaternion{}, fmt.Errorf("Matrix has no such operation '%s'", o)
+	}
+	return new, nil
+}
+
+// Quaternion / Scalar Operations
+func (q *Quaternion) Sop(operation string, s float64) (*Quaternion, error) {
+	var new *Quaternion
+	if !strings.Contains(operation, "=") {
+		new, _ = q.CopyPointer()
+	} else {
+		new = q
+	}
+
+	switch o := operation; {
+	case o == "+=" || o == "+":
+		new.S += s
+		new.X += s
+		new.Y += s
+		new.Z += s
+		return new, nil
+	case o == "-=" || o == "-":
+		new.S -= s
+		new.X -= s
+		new.Y -= s
+		new.Z -= s
+	case o == "*=" || o == "*":
+		new.S *= s
+		new.X *= s
+		new.Y *= s
+		new.Z *= s
+	case o == "/=" || o == "/":
+		new.S /= s
+		new.X /= s
+		new.Y /= s
+		new.Z /= s
+		return new, nil
+	default:
+		return &Quaternion{}, fmt.Errorf("Matrix has no such operation '%s'", o)
+	}
+	return new, nil
+}
+
+// Quaternion / Vector Operations
+func (q Quaternion) Vop(operation string, v vector.Vector) (vector.Vector, error) {
+
+	switch o := operation; {
+	case o == "*":
+		dcm, _ := Quat2DCM(q)
+		u, _ := dcm.Vop("*", v)
+		return u, nil
+	default:
+		return vector.Vector{}, fmt.Errorf("Matrix has no such operation '%s'", o)
+	}
 }
