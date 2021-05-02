@@ -34,3 +34,20 @@ func TestAngles2Quat(t *testing.T) {
 	assert.InDeltaf(t, angles_xyz.Theta, angles.Theta, tolerance, "Theta %f != %f", angles_xyz.Theta, angles.Theta)
 	assert.InDeltaf(t, angles_xyz.Si, angles.Si, tolerance, "Si %f != %f", angles_xyz.Si, angles.Si)
 }
+
+// func SlerpInterpolate(y *testing.T) {
+// 	start_xyz := euler.New(
+// 		dcm.DegreesToRadians(0.),
+// 		dcm.DegreesToRadians(0.),
+// 		dcm.DegreesToRadians(0.),
+// 	)
+// 	end_xyz := euler.New(
+// 		dcm.DegreesToRadians(48.),
+// 		dcm.DegreesToRadians(-85.),
+// 		dcm.DegreesToRadians(-135.),
+// 	)
+
+// 	startQuat, _ := quaternion.Angles2Quat(start_xyz)
+// 	endQuat, _ := quaternion.Angles2Quat(end_xyz)
+
+// }

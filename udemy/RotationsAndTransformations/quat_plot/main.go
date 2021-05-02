@@ -6,19 +6,21 @@ import (
 	"gonum.org/v1/plot/plotutil"
 	"gonum.org/v1/plot/vg"
 	"udemy.com/aml/dcm"
+	"udemy.com/aml/euler"
+	"udemy.com/aml/quaternion"
 	"udemy.com/aml/vector"
 )
 
 func main() {
-	attitude, _ := vector.New(
-		dcm.DegreesToRadians(0.1), // phi(Role Rate)
-		dcm.DegreesToRadians(0.0), // theta(Pitch Rate)
-		dcm.DegreesToRadians(0.0), // si(Yaw Rate)
+	attitude_xyz := euler.New(
+		dcm.DegreesToRadians(0.0),
+		dcm.DegreesToRadians(0.0),
+		dcm.DegreesToRadians(0.0),
 	)
-	omegaBody, _ := vector.New( // Angular Rates
-		dcm.DegreesToRadians(0.0),  // phiDot
-		dcm.DegreesToRadians(20.0), // thetaDot
-		dcm.DegreesToRadians(0.0),  // siDot
+	omega_body, _ := vector.New(
+		dcm.DegreesToRadians(-1.),
+		dcm.DegreesToRadians(15.),
+		dcm.DegreesToRadians(-2.),
 	)
 
 	dt := 0.01
@@ -26,14 +28,18 @@ func main() {
 	phiValues := []float64{}
 	thetaValues := []float64{}
 	siValues := []float64{}
-	for t := 0.; t <= 25.0; t += dt {
-		attitudeDot, _ := dcm.XYZEulerAngleRates(attitude.X, attitude.Y, attitude.Z, omegaBody)
-		attitude, _ = dcm.EulerIntergration(attitude, attitudeDot, dt)
 
+	q, _ := quaternion.Angles2Quat(attitude_xyz)
+
+	for t := 0.; t < 20.+dt; t += dt {
+		q_dot, _ := quaternion.KinematicRates_BodyRates(q, omega_body)
+		q, _ = quaternion.Integrate(q, q_dot, dt)
+		q.Normalize()
+		attitude_new, _ := q.ToAngles("XYZ")
 		timeValues = append(timeValues, t)
-		phiValues = append(phiValues, dcm.RadiansToDegrees(attitude.X))
-		thetaValues = append(thetaValues, dcm.RadiansToDegrees(attitude.Y))
-		siValues = append(siValues, dcm.RadiansToDegrees(attitude.Z))
+		phiValues = append(phiValues, dcm.RadiansToDegrees(attitude_new.Phi))
+		thetaValues = append(thetaValues, dcm.RadiansToDegrees(attitude_new.Theta))
+		siValues = append(siValues, dcm.RadiansToDegrees(attitude_new.Si))
 	}
 
 	p := plot.New()

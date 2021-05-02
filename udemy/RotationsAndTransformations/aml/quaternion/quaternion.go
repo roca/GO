@@ -49,18 +49,18 @@ func (q Quaternion) Inverse() (Quaternion, error) {
 }
 func (q Quaternion) Unit() (Quaternion, error) {
 	mag := q.Norm()
+	q_new := q
 	if mag > 0.0 {
-		return Quaternion{S: q.S / mag, X: q.X / mag, Y: q.Y / mag, Z: q.Z / mag}, nil
+		_, _ = q_new.Sop("/=", mag)
+		return q_new, nil
 	}
-	return Quaternion{S: q.S, X: q.X, Y: q.Y, Z: q.Z}, nil
+
+	return q_new, nil
 }
-func (q *Quaternion) Normalise() {
+func (q *Quaternion) Normalize() {
 	mag := q.Norm()
 	if mag > 0.0 {
-		q.S /= mag
-		q.X /= mag
-		q.Y /= mag
-		q.Z /= mag
+		_, _ = q.Sop("/=", mag)
 	}
 }
 func (q Quaternion) Dot(q2 Quaternion) float64 {
@@ -76,13 +76,45 @@ func IsUnitQuat(q Quaternion, tol ...float64) bool {
 func Angles2Quat(angle euler.Angles) (Quaternion, error) {
 	dcm, _ := angle.ToDCM()
 	return Dcm2Quat(dcm)
-}
 
+	// XYZ case:
+	// c1 := math.Cos(0.5 * angle.Phi)
+	// s1 := math.Sin(0.5 * angle.Phi)
+	// c2 := math.Cos(0.5 * angle.Theta)
+	// s2 := math.Sin(0.5 * angle.Theta)
+	// c3 := math.Cos(0.5 * angle.Si)
+	// s3 := math.Sin(0.5 * angle.Si)
+	// q0 := c1*c2*c3 - s1*c2*s3
+	// q1 := c1*c2*s3 + s1*c2*c3
+	// q2 := c1*s2*c3 + s1*s2*s3
+	// q3 := c1*s2*s3 - s1*s2*c3
+	// return Quaternion{S: q0, X: q1, Y: q2, Z: q3}, nil
+}
 func (q Quaternion) ToAngles(sequence euler.Seq) (euler.Angles, error) {
 	dcm, _ := Quat2DCM(q)
 	return euler.DcmToAngles(dcm, sequence)
-}
 
+	// XYZ case:
+	// q0_2 := q.S * q.S
+	// q1_2 := q.X * q.X
+	// q2_2 := q.Y * q.Y
+	// q3_2 := q.Z * q.Z
+	// x2q1q2 := 2.0 * q.X * q.Y
+	// x2q0q3 := 2.0 * q.S * q.Z
+	// x2q1q3 := 2.0 * q.X * q.Z
+	// x2q0q2 := 2.0 * q.S * q.Y
+	// x2q2q3 := 2.0 * q.Y * q.Z
+	// x2q0q1 := 2.0 * q.S * q.X
+	// m11 := q0_2 + q1_2 - q2_2 - q3_2
+	// m12 := x2q1q2 + x2q0q3
+	// m13 := x2q1q3 - x2q0q2
+	// m23 := x2q2q3 + x2q0q1
+	// m33 := q0_2 - q1_2 - q2_2 + q3_2
+	// phi := math.Atan2(m23, m33)
+	// theta := -math.Asin(m13)
+	// si := math.Atan2(m12, m11)
+	// return euler.New(phi, theta, si, "XYZ"), nil
+}
 // DCM Conversion Functions
 func Dcm2Quat(r matrix.Matrix) (Quaternion, error) {
 	if !dcm.IsOrthogonal(r) {
@@ -178,7 +210,6 @@ func Quat2DCM(rhs Quaternion) (matrix.Matrix, error) {
 	}
 	return matrix.Matrix{}, fmt.Errorf("Quaternion Norm %f != 1.0", rhs.Norm())
 }
-
 // Quaternion / Quaternion Operations
 func (q *Quaternion) Qop(operation string, u Quaternion) (*Quaternion, error) {
 	var new *Quaternion
@@ -215,7 +246,6 @@ func (q *Quaternion) Qop(operation string, u Quaternion) (*Quaternion, error) {
 	}
 	return new, nil
 }
-
 // Quaternion / Scalar Operations
 func (q *Quaternion) Sop(operation string, s float64) (*Quaternion, error) {
 	var new *Quaternion
@@ -265,4 +295,92 @@ func (q Quaternion) Vop(operation string, v vector.Vector) (vector.Vector, error
 	default:
 		return vector.Vector{}, fmt.Errorf("Matrix has no such operation '%s'", o)
 	}
+}
+
+func KinematicRates_BodyRates(quat Quaternion, bodyRates vector.Vector) (Quaternion, error) {
+	p := bodyRates.X
+	q := bodyRates.Y
+	r := bodyRates.Z
+
+	s := 0.5 * (-quat.X*p - quat.Y*q - quat.Z*r)
+	x := 0.5 * (quat.S*p + quat.Z*q - quat.Y*r)
+	y := 0.5 * (-quat.Z*p + quat.S*q + quat.X*r)
+	z := 0.5 * (quat.Y*p - quat.X*q + quat.S*r)
+
+	return Quaternion{S: s, X: x, Y: y, Z: z}, nil
+}
+func KinematicRates_WorldRates(quat Quaternion, worldRates vector.Vector) (Quaternion, error) {
+	p := worldRates.X
+	q := worldRates.Y
+	r := worldRates.Z
+
+	s := 0.5 * (-quat.X*p - quat.Y*q - quat.Z*r)
+	x := 0.5 * (quat.S*p - quat.Z*q + quat.Y*r)
+	y := 0.5 * (quat.Z*p + quat.S*q - quat.X*r)
+	z := 0.5 * (-quat.Y*p + quat.X*q + quat.S*r)
+
+	return Quaternion{S: s, X: x, Y: y, Z: z}, nil
+}
+
+func Integrate(quat, quatRates Quaternion, dt float64) (Quaternion, error) {
+	qt, _ := quatRates.Sop("*", dt)
+	quatNew, _ := quat.Qop("+", *qt)
+	quatNew.Normalize()
+	return *quatNew, nil
+}
+
+func linearInterpolate(startQuat, endQuat Quaternion, t float64) (Quaternion, error) {
+	q0, _ := startQuat.Unit()
+	q1, _ := endQuat.Unit()
+
+	if t < 0.0 {
+		return q0, nil
+	}
+	if t > 1.0 {
+		return q1, nil
+	}
+
+	a := 1.0 - t
+	b := t
+	_, _ = q0.Sop("*=", a)
+	_, _ = q1.Sop("*=", b)
+	q, _ := q0.Qop("+", q1)
+	qt, _ := q.Unit()
+	return qt, nil
+}
+
+func SlerpInterpolate(startQuat, endQuat Quaternion, t float64) (Quaternion, error) {
+	q0, _ := startQuat.Unit()
+	q1, _ := endQuat.Unit()
+
+	if t < 0.0 {
+		return q0, nil
+	}
+	if t > 1.0 {
+		return q1, nil
+	}
+
+	quatDot := q0.Dot(q1)
+
+	// Check for Negative Dot Product
+	if quatDot < 0 {
+		_, _ = q1.Sop("*=", -1.0)
+		quatDot = -quatDot
+	}
+
+	theta := math.Acos(quatDot)
+
+	// Check for Small Angles
+	if theta < 0.0001 {
+		return linearInterpolate(startQuat, endQuat, t)
+	}
+
+	// SLERP
+	a := math.Sin((1.0-t)*theta) / math.Sin(theta)
+	b := math.Sin(t*theta) / math.Sin(theta)
+	_, _ = q0.Sop("*=", a)
+	_, _ = q1.Sop("*=", b)
+	q, _ := q0.Qop("+", q1)
+	qt, _ := q.Unit()
+	return qt, nil
 }
