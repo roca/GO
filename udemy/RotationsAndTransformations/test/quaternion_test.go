@@ -1,12 +1,14 @@
 package test
 
 import (
+	"math"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"udemy.com/aml/dcm"
 	"udemy.com/aml/euler"
 	"udemy.com/aml/quaternion"
+	"udemy.com/aml/vector"
 )
 
 func TestAngles2Quat(t *testing.T) {
@@ -35,19 +37,33 @@ func TestAngles2Quat(t *testing.T) {
 	assert.InDeltaf(t, angles_xyz.Si, angles.Si, tolerance, "Si %f != %f", angles_xyz.Si, angles.Si)
 }
 
-// func SlerpInterpolate(y *testing.T) {
-// 	start_xyz := euler.New(
-// 		dcm.DegreesToRadians(0.),
-// 		dcm.DegreesToRadians(0.),
-// 		dcm.DegreesToRadians(0.),
-// 	)
-// 	end_xyz := euler.New(
-// 		dcm.DegreesToRadians(48.),
-// 		dcm.DegreesToRadians(-85.),
-// 		dcm.DegreesToRadians(-135.),
-// 	)
+func TestExercise1(t *testing.T) {
+	v, _ := vector.New(6., 12., -4.)
 
-// 	startQuat, _ := quaternion.Angles2Quat(start_xyz)
-// 	endQuat, _ := quaternion.Angles2Quat(end_xyz)
+	phi := math.Acos(v.X / v.Mag())
+	theta := math.Acos(v.Y / v.Mag())
+	si := math.Acos(v.Z / v.Mag())
 
-// }
+	r := dcm.DegreesToRadians(30)
+	quat := quaternion.Quaternion{
+		S: math.Cos(r / 2),
+		X: math.Cos(phi) * math.Sin(r/2),
+		Y: math.Cos(theta) * math.Sin(r/2),
+		Z: math.Cos(si) * math.Sin(r/2),
+	}
+
+	tolerance := .001
+	expected := quaternion.Quaternion{
+		S: 0.9659,
+		X: 0.1102,
+		Y: 0.2218,
+		Z: -0.0740,
+	}
+
+	assert.InDeltaf(t, expected.S, quat.S, tolerance, "quat.S %f != %f", expected.S, quat.S)
+	assert.InDeltaf(t, expected.X, quat.X, tolerance, "quat.S %f != %f", expected.X, quat.X)
+	assert.InDeltaf(t, expected.Y, quat.Y, tolerance, "quat.S %f != %f", expected.Y, quat.Y)
+	assert.InDeltaf(t, expected.Z, quat.Z, tolerance, "quat.S %f != %f", expected.Z, quat.Z)
+
+}
+
