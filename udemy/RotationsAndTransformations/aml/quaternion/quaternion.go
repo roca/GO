@@ -321,14 +321,12 @@ func KinematicRates_WorldRates(quat Quaternion, worldRates vector.Vector) (Quate
 
 	return Quaternion{S: s, X: x, Y: y, Z: z}, nil
 }
-
 func Integrate(quat, quatRates Quaternion, dt float64) (Quaternion, error) {
 	qt, _ := quatRates.Sop("*", dt)
 	quatNew, _ := quat.Qop("+", *qt)
 	quatNew.Normalize()
 	return *quatNew, nil
 }
-
 func linearInterpolate(startQuat, endQuat Quaternion, t float64) (Quaternion, error) {
 	q0, _ := startQuat.Unit()
 	q1, _ := endQuat.Unit()
@@ -348,7 +346,6 @@ func linearInterpolate(startQuat, endQuat Quaternion, t float64) (Quaternion, er
 	qt, _ := q.Unit()
 	return qt, nil
 }
-
 func SlerpInterpolate(startQuat, endQuat Quaternion, t float64) (Quaternion, error) {
 	q0, _ := startQuat.Unit()
 	q1, _ := endQuat.Unit()

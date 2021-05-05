@@ -24,9 +24,9 @@ func main() {
 	)
 
 	omega_body, _ := vector.New(
+		dcm.DegreesToRadians(0.01),
 		dcm.DegreesToRadians(10.),
-		dcm.DegreesToRadians(5.),
-		dcm.DegreesToRadians(-15.),
+		dcm.DegreesToRadians(0.),
 	)
 
 	dt := 0.01
