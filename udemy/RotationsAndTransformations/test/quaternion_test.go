@@ -64,6 +64,31 @@ func TestExercise1(t *testing.T) {
 	assert.InDeltaf(t, expected.X, quat.X, tolerance, "quat.S %f != %f", expected.X, quat.X)
 	assert.InDeltaf(t, expected.Y, quat.Y, tolerance, "quat.S %f != %f", expected.Y, quat.Y)
 	assert.InDeltaf(t, expected.Z, quat.Z, tolerance, "quat.S %f != %f", expected.Z, quat.Z)
+}
+func TestSlerpInterpolate(t *testing.T) {
+	angles1 := euler.New(
+		dcm.DegreesToRadians(10.),
+		dcm.DegreesToRadians(-20.0),
+		dcm.DegreesToRadians(15.0),
+	)
+	angles2 := euler.New(
+		dcm.DegreesToRadians(40.),
+		dcm.DegreesToRadians(-60.0),
+		dcm.DegreesToRadians(135.0),
+	)
+
+	quat1, _ := quaternion.Angles2Quat(angles1)
+	quat2, _ := quaternion.Angles2Quat(angles2)
+	quat_slerp, _ := quaternion.SlerpInterpolate(quat1, quat2, 0.5)
+
+	tolerance := .0000000001
+
+	angles_interp, _ := quat_slerp.ToAngles("XYZ")
+
+	expected :=  euler.New(0.6547065473112085, -0.5673275993649903, 1.2166389498633288)
+
+	assert.InDeltaf(t, expected.Phi, angles_interp.Phi, tolerance, "quat.S %f != %f", expected.Phi, angles_interp.Phi)
+	assert.InDeltaf(t, expected.Theta, angles_interp.Theta, tolerance, "quat.S %f != %f", expected.Theta, angles_interp.Theta)
+	assert.InDeltaf(t, expected.Si, angles_interp.Si, tolerance, "quat.S %f != %f", expected.Si, angles_interp.Si)
 
 }
-
