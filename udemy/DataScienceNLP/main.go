@@ -3,6 +3,5 @@ package main
 import "udemy.com/DataScienceNLP/files"
 
 func main() {
-files.OpenTextFile() 
-
+	files.OpenCSVFile("iris.csv")
 }
