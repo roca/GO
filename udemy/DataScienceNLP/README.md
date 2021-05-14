@@ -1,5 +1,5 @@
 # Course Link
-- https://www.udemy.com/course/go-for-data-science-and-natural-language-processing-golang
+- https://www.github.com/roca/GO/udemy/Dcourse/go-for-data-science-and-natural-language-processing-golang
 
 # Company site
 - http://jcharistech.com/
