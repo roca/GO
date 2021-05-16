@@ -12,10 +12,10 @@ import (
 	"github.com/rsc/pdf"
 )
 
-var (
-	//go:embed iris.csv
-	irisCsv string
-)
+// var (
+// 	//go:embed iris.csv
+// 	irisCsv string
+// )
 
 func OpenTextFile(filePath string) {
 	// Method: 1

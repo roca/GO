@@ -3,36 +3,51 @@ package main
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/roca/GO/udemy/DataScienceNLP/files"
 )
 
 func main() {
-	stringExamples()
+	stringExamples02()
+}
+func stringExamples02() {
+	var mystr string = "hello Go"
+	fmt.Printf("Value: '%s'\n", mystr)
+	fmt.Printf("Type: %T\n", mystr)
+	fmt.Printf("Length: %d\n", len(mystr))
+	fmt.Printf("Uppercase: %s\n", strings.ToUpper(mystr))
+	fmt.Printf("Lowercase: %s\n", strings.ToLower(mystr))
+	fmt.Printf("Titlecase: %s\n", strings.Title(mystr))
+	fmt.Printf("Count 'l' occurrences: %d\n", strings.Count(mystr,"l"))
+	fmt.Printf("Contains 'Go': %t\n", strings.Contains(mystr,"Go"))
+	fmt.Printf("Split on ' ': %q\n", strings.Split(mystr," "))
+	fmt.Printf("Split after 'hel': %q\n", strings.SplitAfter(mystr,"hel"))
+
 }
 
-func stringExamples() {
+func stringExamples01() {
 	fmt.Println("Method1: Create Characters with type ")
 	var char byte = 'A'
 	var char2 rune = 'A'
 	fmt.Printf("Char as Byte %d %T\n", char, char)
-	fmt.Printf("Char as Rune %d %T\n", char2,char2)
+	fmt.Printf("Char as Rune %d %T\n", char2, char2)
 
 	fmt.Println("Method2: Create Characters with Method")
 	charA := byte('A')
 	charB := rune('A')
 	fmt.Printf("Char as Byte:Fxn %d %T\n", charA, charA)
-	fmt.Printf("Char as Rune:Fxn %d %T\n", charB,charB)
+	fmt.Printf("Char as Rune:Fxn %d %T\n", charB, charB)
 
 	fmt.Println("Actual Representation")
 	str1 := string(char)
 	str2 := string(char2)
 	fmt.Printf("Char as String %s %T\n", str1, str1)
-	fmt.Printf("Char as String %s %T\n", str2,str2)
+	fmt.Printf("Char as String %s %T\n", str2, str2)
 
 	fmt.Println("Representation method 2 using Printf")
 	fmt.Printf("Char as Byte %c %T\n", char, char)
-	fmt.Printf("Char as Rune %c %T\n", char2,char2)
+	fmt.Printf("Char as Rune %c %T\n", char2, char2)
 }
 func filesExmaples() {
 	args := os.Args[1:]
