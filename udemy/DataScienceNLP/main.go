@@ -9,7 +9,32 @@ import (
 )
 
 func main() {
-	stringExamples02()
+	textCleaningExamples01()
+}
+
+func textCleaningExamples01() { // Using github.com/mingrammer/commonregex
+	// Textcleaning using Regex & more
+	var mystr string = "Hello GoDev my email is jharis@gmail.com"
+	// Multi line large text string literal ``
+	var docx string = `
+	Golang was designed at Google by Robert Griesemer, Rob Pike,
+ and Ken Thompson. Ken called Rob on 519-555-7765 which was redirected to +44 22 777 555.
+Jesse sent an email to jc.@gmail.com which he found on the website http://jcharistech.com.
+Golang was publicly announced in November 2009 and version 1.0 was released in March 2012.
+Go is widely used in production at Google USA and in many other organizations and open-source projects.
+In November 2016, the Go and Go Mono fonts were released by type designers Charles Bigelow and Kris Holmes specifically for use by the Go project. Go is a humanist sans-serif which resembles Lucida Grande and Go Mono is monospaced. Each of the fonts adhere to the WGL4 character set and were designed to be legible with a large x-height and distinct letterforms. Both Go and Go Mono adhere to the DIN 1450 standard by having a slashed zero, lowercase l with a tail, and an uppercase I with serifs.
+I have been coding since 4:00 AM this morning.Accra is big but not bigger as London.
+john.smith@yahoo.com
+	`
+
+	// Text Preprocessing
+	// Normalizing: uniform case, removing unicode chars
+	fmt.Println(strings.ToLower(mystr))
+	fmt.Println(docx)
+	// Remove noise [ special chars, eamils, phone #s]
+	// Lemma/Stemming
+	// Tokenization
+
 }
 func stringExamples02() {
 	var mystr string = "hello Go"
@@ -19,10 +44,15 @@ func stringExamples02() {
 	fmt.Printf("Uppercase: %s\n", strings.ToUpper(mystr))
 	fmt.Printf("Lowercase: %s\n", strings.ToLower(mystr))
 	fmt.Printf("Titlecase: %s\n", strings.Title(mystr))
-	fmt.Printf("Count 'l' occurrences: %d\n", strings.Count(mystr,"l"))
-	fmt.Printf("Contains 'Go': %t\n", strings.Contains(mystr,"Go"))
-	fmt.Printf("Split on ' ': %q\n", strings.Split(mystr," "))
-	fmt.Printf("Split after 'hel': %q\n", strings.SplitAfter(mystr,"hel"))
+	fmt.Printf("Count 'l' occurrences: %d\n", strings.Count(mystr, "l"))
+	fmt.Printf("Contains 'Go': %t\n", strings.Contains(mystr, "Go"))
+	fmt.Printf("Split on ' ': %q\n", strings.Split(mystr, " "))
+	fmt.Printf("Split after 'hel': %q\n", strings.SplitAfter(mystr, "hel"))
+	fmt.Printf("Replace 'hello': %s\n", strings.ReplaceAll(mystr, "hello", "I love"))
+
+	s := strings.Split(strings.ReplaceAll(mystr, "hello", "N.L.P programing"), " ")
+	ss := strings.Join(s, " using ")
+	fmt.Printf("Split and Join : %s\n", ss)
 
 }
 
