@@ -2,10 +2,15 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
+	"log"
 	"os"
+	"regexp"
 	"strings"
 
 	"github.com/roca/GO/udemy/DataScienceNLP/files"
+
+	cregex "github.com/mingrammer/commonregex"
 )
 
 func main() {
@@ -27,6 +32,17 @@ I have been coding since 4:00 AM this morning.Accra is big but not bigger as Lon
 john.smith@yahoo.com
 	`
 
+	/*
+		Reading text from a file
+		os, ioutil, bufio
+	*/
+	content, err := ioutil.ReadFile("example.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	docx2 := string(content)
+	fmt.Println("Sample:::", docx2)
+
 	// Text Preprocessing
 	// Normalizing: uniform case, removing unicode chars
 	fmt.Println(strings.ToLower(mystr))
@@ -34,6 +50,25 @@ john.smith@yahoo.com
 	// Remove noise [ special chars, eamils, phone #s]
 	// Lemma/Stemming
 	// Tokenization
+
+	/*
+	  Extra Emails
+	  Method 1: Standard Library Regexp
+	*/
+	// Pattern
+	p := regexp.MustCompile(`GoDev`)
+	// Find/Replace
+	fmt.Println(p.FindAllString(mystr, 1))
+	fmt.Println(p.ReplaceAllString(mystr, "REPLACED"))
+
+	/*
+	  Extra Emails
+	  Method 2: External Library commonregex similar
+	  to python library neatregex
+	*/
+cregex.Date(text string)	
+	
+
 
 }
 func stringExamples02() {
