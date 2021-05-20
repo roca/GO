@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"regexp"
 	"strings"
 
 	"github.com/roca/GO/udemy/DataScienceNLP/files"
@@ -19,18 +18,18 @@ func main() {
 
 func textCleaningExamples01() { // Using github.com/mingrammer/commonregex
 	// Textcleaning using Regex & more
-	var mystr string = "Hello GoDev my email is jharis@gmail.com"
+	// var mystr string = "Hello GoDev my email is jharis@gmail.com"
 	// Multi line large text string literal ``
-	var docx string = `
-	Golang was designed at Google by Robert Griesemer, Rob Pike,
- and Ken Thompson. Ken called Rob on 519-555-7765 which was redirected to +44 22 777 555.
-Jesse sent an email to jc.@gmail.com which he found on the website http://jcharistech.com.
-Golang was publicly announced in November 2009 and version 1.0 was released in March 2012.
-Go is widely used in production at Google USA and in many other organizations and open-source projects.
-In November 2016, the Go and Go Mono fonts were released by type designers Charles Bigelow and Kris Holmes specifically for use by the Go project. Go is a humanist sans-serif which resembles Lucida Grande and Go Mono is monospaced. Each of the fonts adhere to the WGL4 character set and were designed to be legible with a large x-height and distinct letterforms. Both Go and Go Mono adhere to the DIN 1450 standard by having a slashed zero, lowercase l with a tail, and an uppercase I with serifs.
-I have been coding since 4:00 AM this morning.Accra is big but not bigger as London.
-john.smith@yahoo.com
-	`
+	// 	var docx string = `
+	// 	Golang was designed at Google by Robert Griesemer, Rob Pike,
+	//  and Ken Thompson. Ken called Rob on 519-555-7765 which was redirected to +44 22 777 555.
+	// Jesse sent an email to jc.@gmail.com which he found on the website http://jcharistech.com.
+	// Golang was publicly announced in November 2009 and version 1.0 was released in March 2012.
+	// Go is widely used in production at Google USA and in many other organizations and open-source projects.
+	// In November 2016, the Go and Go Mono fonts were released by type designers Charles Bigelow and Kris Holmes specifically for use by the Go project. Go is a humanist sans-serif which resembles Lucida Grande and Go Mono is monospaced. Each of the fonts adhere to the WGL4 character set and were designed to be legible with a large x-height and distinct letterforms. Both Go and Go Mono adhere to the DIN 1450 standard by having a slashed zero, lowercase l with a tail, and an uppercase I with serifs.
+	// I have been coding since 4:00 AM this morning.Accra is big but not bigger as London.
+	// john.smith@yahoo.com
+	// 	`
 
 	/*
 		Reading text from a file
@@ -45,8 +44,8 @@ john.smith@yahoo.com
 
 	// Text Preprocessing
 	// Normalizing: uniform case, removing unicode chars
-	fmt.Println(strings.ToLower(mystr))
-	fmt.Println(docx)
+	// fmt.Println(strings.ToLower(mystr))
+	// fmt.Println(docx)
 	// Remove noise [ special chars, eamils, phone #s]
 	// Lemma/Stemming
 	// Tokenization
@@ -56,19 +55,24 @@ john.smith@yahoo.com
 	  Method 1: Standard Library Regexp
 	*/
 	// Pattern
-	p := regexp.MustCompile(`GoDev`)
+	// p := regexp.MustCompile(`GoDev`)
 	// Find/Replace
-	fmt.Println(p.FindAllString(mystr, 1))
-	fmt.Println(p.ReplaceAllString(mystr, "REPLACED"))
+	// fmt.Println(p.FindAllString(mystr, 1))
+	// fmt.Println(p.ReplaceAllString(mystr, "REPLACED"))
 
 	/*
 	  Extra Emails
 	  Method 2: External Library commonregex similar
 	  to python library neatregex
 	*/
-cregex.Date(text string)	
-	
+	// fmt.Println(cregex.Emails(mystr))
 
+	// Exercise 1.
+	fmt.Println("Emails: ", cregex.Emails(docx2))
+
+	// Remove/Replace : Document Redaction/Text Cleaning
+	p := cregex.EmailRegex
+	fmt.Println("ALTERED::: ",p.ReplaceAllString(docx2, "REPLACED"))
 
 }
 func stringExamples02() {
