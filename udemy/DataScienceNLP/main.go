@@ -7,13 +7,40 @@ import (
 	"os"
 	"strings"
 
+	"github.com/abadojack/whatlanggo"
 	"github.com/roca/GO/udemy/DataScienceNLP/files"
+	"github.com/rylans/getlang"
 
 	cregex "github.com/mingrammer/commonregex"
 )
 
 func main() {
-	textCleaningExamples01()
+	languageDetectionExample01()
+	languageDetectionExample02()
+}
+
+func languageDetectionExample02() { // Using github.com/abadojack/whatlanggo
+	var mydocx string = "Hello world of Go"
+	lang := whatlanggo.Detect(mydocx)
+	fmt.Println("Text:", mydocx)
+	fmt.Println("whatlango: ",lang.Lang.String())   // Language name
+	fmt.Println("whatlango: ",lang.Confidence)   // Confidence/Accuracy of prediction
+}
+
+func languageDetectionExample01() { // Using github.com/rylans/getlang
+	var mystr string = "Hello world of Go"
+	// var mystrfr string = "Bonjour a tous"
+
+	lang := getlang.FromString(mystr)
+	// lang2 := getlang.FromString(mystrfr)
+
+	fmt.Println("Text:", mystr)
+	fmt.Println("getlang: ",lang.LanguageCode()) // Language code
+	fmt.Println("getlang: ",lang.Confidence())   // Confidence/Accuracy of prediction
+
+	// fmt.Println("Text:", mystrfr)
+	// fmt.Println("getlang: ",lang2.LanguageCode()) // Language code
+	// fmt.Println("getlang: ",lang2.Confidence())   // Confidence/Accuracy of prediction
 }
 
 func textCleaningExamples01() { // Using github.com/mingrammer/commonregex
@@ -72,7 +99,7 @@ func textCleaningExamples01() { // Using github.com/mingrammer/commonregex
 
 	// Remove/Replace : Document Redaction/Text Cleaning
 	p := cregex.EmailRegex
-	fmt.Println("ALTERED::: ",p.ReplaceAllString(docx2, "REPLACED"))
+	fmt.Println("ALTERED::: ", p.ReplaceAllString(docx2, "REPLACED"))
 
 }
 func stringExamples02() {
