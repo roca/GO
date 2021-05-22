@@ -5,9 +5,11 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"regexp"
 	"strings"
 
 	"github.com/abadojack/whatlanggo"
+	"github.com/jdkato/prose/tokenize"
 	"github.com/roca/GO/udemy/DataScienceNLP/files"
 	"github.com/rylans/getlang"
 
@@ -15,16 +17,46 @@ import (
 )
 
 func main() {
-	languageDetectionExample01()
-	languageDetectionExample02()
+	// languageDetectionExample01()
+	//languageDetectionExample02()
+	//filesExmaples()
+	tokenizationExample01()
+}
+
+func tokenizationExample01() { // From Scratch
+
+	// Method 1: strings.Split
+	var myText string = "Paul wasn't coding at all"
+	tokens := strings.Split(myText, " ")
+	fmt.Println(tokens)
+
+	// Method 2: Rule Based (Regex)
+	r := regexp.MustCompile(`\w+`)
+	tokens2 := r.FindAllString(myText, -1)
+	fmt.Println(tokens2)
+
+	// Method 3: Regex + Split
+	r2 := regexp.MustCompile(`\s+`)
+	tokens3 := r2.Split(myText, -1)
+	fmt.Println(tokens3)
+}
+
+func tokenizationExample02() { // Using github.com/jdkato/prose
+
+	// Method 1: Using pros
+	var myText string = "Paul wasn't coding at all"
+	tokenizer := tokenize.NewTreebankWordTokenizer()
+	for _, tok := range tokenizer(myText) {
+	}
+
 }
 
 func languageDetectionExample02() { // Using github.com/abadojack/whatlanggo
 	var mydocx string = "Hello world of Go"
 	lang := whatlanggo.Detect(mydocx)
 	fmt.Println("Text:", mydocx)
-	fmt.Println("whatlango: ",lang.Lang.String())   // Language name
-	fmt.Println("whatlango: ",lang.Confidence)   // Confidence/Accuracy of prediction
+	fmt.Println("whatlango: ", lang.Lang.String()) // Language name
+	fmt.Println("whatlango: ", lang.Confidence)    // Confidence/Accuracy of prediction
 }
 
 func languageDetectionExample01() { // Using github.com/rylans/getlang
@@ -35,8 +67,8 @@ func languageDetectionExample01() { // Using github.com/rylans/getlang
 	// lang2 := getlang.FromString(mystrfr)
 
 	fmt.Println("Text:", mystr)
-	fmt.Println("getlang: ",lang.LanguageCode()) // Language code
-	fmt.Println("getlang: ",lang.Confidence())   // Confidence/Accuracy of prediction
+	fmt.Println("getlang: ", lang.LanguageCode()) // Language code
+	fmt.Println("getlang: ", lang.Confidence())   // Confidence/Accuracy of prediction
 
 	// fmt.Println("Text:", mystrfr)
 	// fmt.Println("getlang: ",lang2.LanguageCode()) // Language code

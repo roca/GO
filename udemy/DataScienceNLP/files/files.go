@@ -9,6 +9,7 @@ import (
 	"os"
 
 	"github.com/kniren/gota/dataframe"
+	"github.com/roca/GO/udemy/DataScienceNLP/must"
 	"github.com/rsc/pdf"
 )
 
@@ -45,10 +46,11 @@ func OpenTextFile(filePath string) {
 }
 func OpenCSVFile(filePath string) {
 	// Open the File
-	csvfile, err := os.Open(filePath)
-	if err != nil {
-		log.Fatal(err)
-	}
+	// csvfile, err := os.Open(filePath)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	csvfile := must.ReturnElseLogFatal(os.Open,filePath).(*os.File)
 	defer csvfile.Close()
 
 	// // Method: 1
@@ -78,18 +80,11 @@ func OpenCSVFile(filePath string) {
 }
 
 func OpenPDFFile(filePath string) {
-	// Open the File
-	pdfFile, err := pdf.Open(filePath)
-	if err != nil {
-		log.Fatal(err)
-	}
-	//pdfFile1, err := must(pdf.Open,filePath)
+	//Open the File
+	// pdfFile, err := pdf.Open(filePath)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	pdfFile := must.ReturnElseLogFatal(pdf.Open, filePath).(*pdf.Reader)
 	fmt.Println(pdfFile.Page(1).Content())
-}
-func must(f func(inputs ...interface{}) (interface{}, error), inputs ...interface{}) (interface{}, error) {
-	result, err := f(inputs)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return result, err
 }
