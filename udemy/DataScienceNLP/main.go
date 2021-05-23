@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/abadojack/whatlanggo"
+	"github.com/jdkato/prose/tag"
 	"github.com/jdkato/prose/tokenize"
 	"github.com/roca/GO/udemy/DataScienceNLP/files"
 	"github.com/rylans/getlang"
@@ -20,7 +21,7 @@ func main() {
 	// languageDetectionExample01()
 	//languageDetectionExample02()
 	//filesExmaples()
-	tokenizationExample01()
+	tokenizationExample02()
 }
 
 func tokenizationExample01() { // From Scratch
@@ -39,15 +40,31 @@ func tokenizationExample01() { // From Scratch
 	r2 := regexp.MustCompile(`\s+`)
 	tokens3 := r2.Split(myText, -1)
 	fmt.Println(tokens3)
+
+	// Method 4: Using pros
+	tokenizer := tokenize.NewTreebankWordTokenizer()
+	tokens4 := tokenizer.Tokenize(myText)
+	for _, tok := range tokens4 {
+		fmt.Println(tok)
+	}
+	fmt.Println(tokens4)
 }
 
-func tokenizationExample02() { // Using github.com/jdkato/prose
+func tokenizationExample02() { // Using prose
+	myText := "I am going to fish a fish at the bank"
 
-	// Method 1: Using pros
-	var myText string = "Paul wasn't coding at all"
+	// Tokens
 	tokenizer := tokenize.NewTreebankWordTokenizer()
-	for _, tok := range tokenizer(myText) {
-	}
+	tokens := tokenizer.Tokenize(myText)
+	fmt.Println(tokens)
+
+	// // Tags
+	// var model *tag.AveragedPerceptron
+	// postagger := tag.NewTrainedPerceptronTagger(model)
+	// tags := postagger.Tag(tokens)
+	// for _, token := range tags {
+	// 	fmt.Println(token.Text, token.Tag)
+	// }
 
 }
 
