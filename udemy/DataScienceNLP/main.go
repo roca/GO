@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/abadojack/whatlanggo"
+	"github.com/jdkato/prose/chunk"
 	"github.com/jdkato/prose/tag"
 	"github.com/jdkato/prose/tokenize"
 	"github.com/roca/GO/udemy/DataScienceNLP/files"
@@ -51,21 +52,47 @@ func tokenizationExample01() { // From Scratch
 }
 
 func tokenizationExample02() { // Using prose
-	myText := "I am going to fish a fish at the bank"
+	myText := "Jesse was going to fish a fish at the bank in London"
 
 	// Tokens
 	tokenizer := tokenize.NewTreebankWordTokenizer()
 	tokens := tokenizer.Tokenize(myText)
 	fmt.Println(tokens)
 
-	// // Tags
-	// var model *tag.AveragedPerceptron
-	// postagger := tag.NewTrainedPerceptronTagger(model)
-	// tags := postagger.Tag(tokens)
-	// for _, token := range tags {
-	// 	fmt.Println(token.Text, token.Tag)
-	// }
+	// Tags
+	postagger := tag.NewPerceptronTagger()
+	tags := postagger.Tag(tokens)
+	for _, token := range tags {
+		fmt.Println(token.Text, token.Tag)
+	}
 
+	fmt.Println("Noun Chunks::", getChunks(myText, "NN"))
+	fmt.Println("Verb Chunks::", getChunks(myText, "V"))
+
+	
+	regex := chunk.TreebankNamedEntities
+	// Loop: tag + reg == Named Entity Chunks
+	for _, entity := range chunk.Chunk(postagger.Tag(tokens), regex) {
+		fmt.Println(entity)
+	}
+
+}
+
+func getChunks(text string, tagName string) []string {
+	// Tokenize
+	tokens := tokenize.NewTreebankWordTokenizer().Tokenize(text)
+
+	// Tags
+	tags := tag.NewPerceptronTagger().Tag(tokens)
+
+	// if tag ==  requested tagName
+	chunks := []string{}
+	for _, token := range tags {
+		if strings.HasPrefix(token.Tag, tagName) {
+			chunks = append(chunks, token.Text)
+		}
+	}
+	return chunks
 }
 
 func languageDetectionExample02() { // Using github.com/abadojack/whatlanggo
