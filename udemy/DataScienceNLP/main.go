@@ -12,7 +12,9 @@ import (
 	"github.com/jdkato/prose/chunk"
 	"github.com/jdkato/prose/tag"
 	"github.com/jdkato/prose/tokenize"
+	"github.com/jdkato/prose/v2"
 	"github.com/roca/GO/udemy/DataScienceNLP/files"
+	"github.com/roca/GO/udemy/DataScienceNLP/must"
 	"github.com/rylans/getlang"
 
 	cregex "github.com/mingrammer/commonregex"
@@ -22,7 +24,27 @@ func main() {
 	// languageDetectionExample01()
 	//languageDetectionExample02()
 	//filesExmaples()
-	tokenizationExample02()
+	// tokenizationExample02()
+	nerExample01()
+}
+
+func nerExample01() {
+	// NER
+	// Entity: Person/People/Org/Location/etc
+
+	var myText string = "John Mark works in London as a Go developer"
+
+	// NLP Document Struct
+	doc := must.ReturnElseLogFatal(prose.NewDocument, myText).(*prose.Document)
+
+	for index, entity := range doc.Entities() {
+		fmt.Println(index, entity.Text, entity.Label)
+	}
+
+	for index, token := range doc.Tokens() {
+		fmt.Println(index, token.Text, token.Label)
+	}
+
 }
 
 func tokenizationExample01() { // From Scratch
@@ -69,7 +91,6 @@ func tokenizationExample02() { // Using prose
 	fmt.Println("Noun Chunks::", getChunks(myText, "NN"))
 	fmt.Println("Verb Chunks::", getChunks(myText, "V"))
 
-	
 	regex := chunk.TreebankNamedEntities
 	// Loop: tag + reg == Named Entity Chunks
 	for _, entity := range chunk.Chunk(postagger.Tag(tokens), regex) {
