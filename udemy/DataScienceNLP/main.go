@@ -25,7 +25,30 @@ func main() {
 	//languageDetectionExample02()
 	//filesExmaples()
 	// tokenizationExample02()
-	nerExample01()
+	//nerExample01()
+	nlpExample01()
+}
+
+func nlpExample01() {
+	var myText string = "Hello world this is Golang"
+
+	// NLP Document Struct
+	doc := must.ReturnElseLogFatal(prose.NewDocument, myText).(*prose.Document)
+	fmt.Printf("%T \n", doc)
+
+	for i, tok := range doc.Tokens() {
+		fmt.Println("Index:", i, "Tokens:", tok.Text, "Tag:", tok.Tag, "Label:", tok.Label)
+	}
+
+	// Reading from a TextFile
+	content := must.ReturnElseLogFatal(ioutil.ReadFile, "example.txt").([]byte)
+	//content, _ := ioutil.ReadFile("example.txt")
+	fmt.Println(string(content))
+	doc2 := must.ReturnElseLogFatal(prose.NewDocument, string(content)).(*prose.Document)
+	for i, tok := range doc2.Tokens() {
+		fmt.Println("Index:", i, "Tokens:", tok.Text, "Tag:", tok.Tag, "Label:", tok.Label)
+	}
+
 }
 
 func nerExample01() {
