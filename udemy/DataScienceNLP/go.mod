@@ -3,6 +3,7 @@ module github.com/roca/GO/udemy/DataScienceNLP
 go 1.16
 
 require (
+	github.com/Obaied/RAKE.Go v0.0.0-20191109090147-068a9e43b194 // indirect
 	github.com/abadojack/whatlanggo v1.0.1 // indirect
 	github.com/go-gota/gota v0.10.1 // indirect
 	github.com/jdkato/prose v1.2.1 // indirect

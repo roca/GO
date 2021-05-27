@@ -45,9 +45,16 @@ func nlpExample01() {
 	//content, _ := ioutil.ReadFile("example.txt")
 	fmt.Println(string(content))
 	doc2 := must.ReturnElseLogFatal(prose.NewDocument, string(content)).(*prose.Document)
+
+	// Word Tokens
 	for i, tok := range doc2.Tokens() {
 		fmt.Println("Index:", i, "Tokens:", tok.Text, "Tag:", tok.Tag, "Label:", tok.Label)
 	}
+
+	// Sentence Tokens
+	// for i, sentence := range doc2.Sentences(){
+	// 	fmt.Println("Index:", i, "Sentence:", sentence.Text)
+	// }
 
 }
 
