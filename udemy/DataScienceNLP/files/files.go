@@ -9,7 +9,7 @@ import (
 	"os"
 
 	"github.com/kniren/gota/dataframe"
-	"github.com/roca/GO/udemy/DataScienceNLP/must"
+	"github.com/roca/must"
 	"github.com/rsc/pdf"
 )
 
