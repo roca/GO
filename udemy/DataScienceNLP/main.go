@@ -11,6 +11,8 @@ import (
 	"github.com/JesusIslam/tldr"
 	rake "github.com/Obaied/RAKE.Go"
 	"github.com/abadojack/whatlanggo"
+	"github.com/grassmudhorses/vader-go/lexicon"
+	"github.com/grassmudhorses/vader-go/sentitext"
 	"github.com/jdkato/prose/chunk"
 	"github.com/jdkato/prose/tag"
 	"github.com/jdkato/prose/tokenize"
@@ -33,10 +35,17 @@ func main() {
 	//summaryExample()
 	sentimentExample()
 
-
 }
 func sentimentExample() {
-	content := must.ReturnElseLogFatal(ioutil.ReadFile, "AiHistory.txt").([]byte)
+	//content := must.ReturnElseLogFatal(ioutil.ReadFile, "AiHistory.txt").([]byte)
+	content := "I love eating apples and coding"
+	parseText := sentitext.Parse(string(content), lexicon.DefaultLexicon)
+	results := sentitext.PolarityScore(parseText)
+	fmt.Println("SENTIMENT POLARITY SCORE:",results)
+	fmt.Println("Positive:",results.Positive)
+	fmt.Println("Negative:",results.Negative)
+	fmt.Println("Neutral:",results.Neutral)
+	fmt.Println("Sentiment/Compound:",results.Compound)
 
 }
 func summaryExample() {
