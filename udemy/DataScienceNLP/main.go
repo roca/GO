@@ -11,6 +11,7 @@ import (
 	"github.com/JesusIslam/tldr"
 	rake "github.com/Obaied/RAKE.Go"
 	"github.com/abadojack/whatlanggo"
+	"github.com/cdipaolo/sentiment"
 	"github.com/grassmudhorses/vader-go/lexicon"
 	"github.com/grassmudhorses/vader-go/sentitext"
 	"github.com/jdkato/prose/chunk"
@@ -33,19 +34,33 @@ func main() {
 	//nlpExample01()
 	//rakeExample01()
 	//summaryExample()
-	sentimentExample()
+	// sentimentExample01()
+	sentimentExample02()
 
 }
-func sentimentExample() {
+
+func sentimentExample01() {
 	//content := must.ReturnElseLogFatal(ioutil.ReadFile, "AiHistory.txt").([]byte)
-	content := "I love eating apples and coding"
+	content := "I hate apples and coding"
 	parseText := sentitext.Parse(string(content), lexicon.DefaultLexicon)
 	results := sentitext.PolarityScore(parseText)
-	fmt.Println("SENTIMENT POLARITY SCORE:",results)
-	fmt.Println("Positive:",results.Positive)
-	fmt.Println("Negative:",results.Negative)
-	fmt.Println("Neutral:",results.Neutral)
-	fmt.Println("Sentiment/Compound:",results.Compound)
+	fmt.Println("SENTIMENT POLARITY SCORE:", results)
+	fmt.Println("Positive:", results.Positive)
+	fmt.Println("Negative:", results.Negative)
+	fmt.Println("Neutral:", results.Neutral)
+	fmt.Println("Sentiment/Compound:", results.Compound)
+
+}
+func sentimentExample02() {
+	content := "I hate apples and coding"
+	sentimentModel, err := sentiment.Restore()
+	if err != nil {
+		log.Fatal(err)
+	}
+	results := sentimentModel.SentimentAnalysis(content, sentiment.English)
+	fmt.Println(results)
+	//Sentiment for the whole sentence
+	fmt.Println("Sentiment Score:",results.Score)
 
 }
 func summaryExample() {
