@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/csv"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -35,8 +36,39 @@ func main() {
 	//rakeExample01()
 	//summaryExample()
 	// sentimentExample01()
-	sentimentExample02()
+	//sentimentExample02()
+	sentimentExample03()
 
+}
+
+func sentimentExample03() {
+
+	// Open File
+	csvfile := must.ReturnElseLogFatal(os.Open, "data/amazondataset.csv").(*os.File)
+	defer csvfile.Close()
+
+	// Method 1: Read our CSV File with 'Gota' dataframe
+	// df := dataframe.ReadCSV(csvfile)
+	// fmt.Println(df.Names())
+	// fmt.Println(df.Select("sentences").String()[0])
+
+	// Method 2: Read our CSV File with 'csv'
+	csvLines,_ := csv.NewReader(csvfile).ReadAll()
+	for _, line := range csvLines{
+		sentence := line[0]
+		label := line[1]
+		fmt.Println(sentence,"[Sentiment: {Orig:",label,",NewLabel",analyze(sentence),"}]")
+	}
+
+	// Apply our Fxn
+
+	// Results as A DataFrame
+}
+
+func analyze(text string) float64 {
+	parseText := sentitext.Parse(string(text), lexicon.DefaultLexicon)
+	results := sentitext.PolarityScore(parseText)
+	return results.Compound
 }
 
 func sentimentExample01() {
@@ -60,7 +92,7 @@ func sentimentExample02() {
 	results := sentimentModel.SentimentAnalysis(content, sentiment.English)
 	fmt.Println(results)
 	//Sentiment for the whole sentence
-	fmt.Println("Sentiment Score:",results.Score)
+	fmt.Println("Sentiment Score:", results.Score)
 
 }
 func summaryExample() {
