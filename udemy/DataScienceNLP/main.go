@@ -19,6 +19,7 @@ import (
 	"github.com/jdkato/prose/tag"
 	"github.com/jdkato/prose/tokenize"
 	"github.com/jdkato/prose/v2"
+	"github.com/kniren/gota/dataframe"
 	"github.com/roca/GO/udemy/DataScienceNLP/files"
 	"github.com/roca/must"
 	"github.com/rylans/getlang"
@@ -41,6 +42,12 @@ func main() {
 
 }
 
+type savedDetails struct {
+	Sentence   string
+	Label      string
+	Vaderlabel float64
+}
+
 func sentimentExample03() {
 
 	// Open File
@@ -53,16 +60,31 @@ func sentimentExample03() {
 	// fmt.Println(df.Select("sentences").String()[0])
 
 	// Method 2: Read our CSV File with 'csv'
-	csvLines,_ := csv.NewReader(csvfile).ReadAll()
-	for _, line := range csvLines{
+	detailsList := []savedDetails{}
+
+	csvr := csv.NewReader(csvfile)
+	csvLines := must.ReturnElseLogFatal(csvr.ReadAll).([][]string)
+	for _, line := range csvLines {
 		sentence := line[0]
 		label := line[1]
-		fmt.Println(sentence,"[Sentiment: {Orig:",label,",NewLabel",analyze(sentence),"}]")
+		// fmt.Println(sentence, "[Sentiment: {Orig:", label, ",NewLabel", analyze(sentence), "}]")
+		detailsList = append(detailsList, savedDetails{
+			Sentence:   sentence,
+			Label:      label,
+			Vaderlabel: analyze(sentence),
+		})
 	}
 
 	// Apply our Fxn
 
 	// Results as A DataFrame
+	//  Create Slice/Struct to store values
+	//  Struct to Dataframe
+	df := dataframe.LoadStructs(detailsList)
+	fmt.Println(df)
+	//  Save using Gota
+	f :=  must.ReturnElseLogFatal(os.Create,"data/newdata.csv").(*os.File)
+	df.WriteCSV(f)
 }
 
 func analyze(text string) float64 {
