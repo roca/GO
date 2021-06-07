@@ -20,6 +20,7 @@ import (
 	"github.com/jdkato/prose/tokenize"
 	"github.com/jdkato/prose/v2"
 	"github.com/kniren/gota/dataframe"
+	"github.com/montanaflynn/stats"
 	"github.com/roca/GO/udemy/DataScienceNLP/files"
 	"github.com/roca/must"
 	"github.com/rylans/getlang"
@@ -38,7 +39,26 @@ func main() {
 	//summaryExample()
 	// sentimentExample01()
 	//sentimentExample02()
-	sentimentExample03()
+	//sentimentExample03()
+	StatsExample01()
+}
+
+func StatsExample01() {
+	fmt.Println("Statistics in Go")
+	even := []float64{2, 4, 6, 8, 10, 8, 8}
+	var odd = []float64{1, 3, 5, 7, 9, 7, 7}
+
+	// Basic Math
+	// Mean
+
+	evenmean := must.ReturnElseLogFatal(stats.Mean, even).(float64)
+	oddmean := must.ReturnElseLogFatal(stats.Mean, odd).(float64)
+	evenmax := must.ReturnElseLogFatal(stats.Max, even).(float64)
+	oddmax := must.ReturnElseLogFatal(stats.Max, odd).(float64)
+	evenmode := must.ReturnElseLogFatal(stats.Mode, even).([]float64)
+	oddmode := must.ReturnElseLogFatal(stats.Mode, odd).([]float64)
+	fmt.Println("Even:", even, "Mean:", evenmean, "Max:", evenmax, "Mode:", evenmode)
+	fmt.Println("Odd:", odd, "Mean:", oddmean, "Max:", oddmax, "Mode:", oddmode)
 
 }
 
@@ -83,7 +103,7 @@ func sentimentExample03() {
 	df := dataframe.LoadStructs(detailsList)
 	fmt.Println(df)
 	//  Save using Gota
-	f :=  must.ReturnElseLogFatal(os.Create,"data/newdata.csv").(*os.File)
+	f := must.ReturnElseLogFatal(os.Create, "data/newdata.csv").(*os.File)
 	df.WriteCSV(f)
 }
 
