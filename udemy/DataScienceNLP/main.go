@@ -40,7 +40,15 @@ func main() {
 	// sentimentExample01()
 	//sentimentExample02()
 	//sentimentExample03()
-	StatsExample01()
+	//StatsExample01()
+	dataAnalysisExample01(
+}
+
+func dataAnalysisExample01() {
+	// Data Analysis in Go
+	// Open CSV
+	// Read CSV
+	// EDA
 }
 
 func StatsExample01() {
@@ -59,6 +67,10 @@ func StatsExample01() {
 	oddmode := must.ReturnElseLogFatal(stats.Mode, odd).([]float64)
 	fmt.Println("Even:", even, "Mean:", evenmean, "Max:", evenmax, "Mode:", evenmode)
 	fmt.Println("Odd:", odd, "Mean:", oddmean, "Max:", oddmax, "Mode:", oddmode)
+
+
+	// Stats package also has Arithmetic, Harm and Geo mean
+	// std, variance 
 
 }
 
