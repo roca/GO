@@ -41,14 +41,24 @@ func main() {
 	//sentimentExample02()
 	//sentimentExample03()
 	//StatsExample01()
-	dataAnalysisExample01(
+	dataAnalysisExample01()
 }
 
 func dataAnalysisExample01() {
 	// Data Analysis in Go
 	// Open CSV
+	csvfile := must.ReturnElseLogFatal(os.Open, "data/diamonds.csv").(*os.File)
+	defer csvfile.Close()
 	// Read CSV
+	df := dataframe.ReadCSV(csvfile)
+	fmt.Println(df)
 	// EDA
+
+	// Shape of Data
+	row,col := df.Dims()
+	fmt.Println("rows:",row,",columns:",col)
+
+
 }
 
 func StatsExample01() {
@@ -68,9 +78,8 @@ func StatsExample01() {
 	fmt.Println("Even:", even, "Mean:", evenmean, "Max:", evenmax, "Mode:", evenmode)
 	fmt.Println("Odd:", odd, "Mean:", oddmean, "Max:", oddmax, "Mode:", oddmode)
 
-
 	// Stats package also has Arithmetic, Harm and Geo mean
-	// std, variance 
+	// std, variance
 
 }
 
