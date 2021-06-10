@@ -55,10 +55,30 @@ func dataAnalysisExample01() {
 	// EDA
 
 	// Shape of Data
-	row,col := df.Dims()
-	fmt.Println("rows:",row,",columns:",col)
+	row, col := df.Dims()
+	fmt.Println("rows:", row, ",columns:", col)
 
+	// Get only row size
+	fmt.Println("row size:", df.Nrow())
 
+	// Get only col size
+	fmt.Println("col size:", df.Ncol())
+
+	// Get column names
+	fmt.Println("col names:", df.Names())
+
+	// // Get DataTypes
+	// fmt.Println("DataTypes:", df.Types())
+
+	// // Describe/Summary
+	// fmt.Println("Describe/Summary:", df.Describe())
+
+	// Selection of Columns & Rows
+	// Select columns by Column name
+	fmt.Println("Carats", df.Select("carat"))
+
+	// Select column nby index
+	fmt.Println("Carats index 0", df.Select(0))
 }
 
 func StatsExample01() {
