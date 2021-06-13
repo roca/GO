@@ -13,6 +13,8 @@ import (
 	rake "github.com/Obaied/RAKE.Go"
 	"github.com/abadojack/whatlanggo"
 	"github.com/cdipaolo/sentiment"
+	"github.com/go-gota/gota/series"
+	"github.com/gonum/stat"
 	"github.com/grassmudhorses/vader-go/lexicon"
 	"github.com/grassmudhorses/vader-go/sentitext"
 	"github.com/jdkato/prose/chunk"
@@ -51,7 +53,7 @@ func dataAnalysisExample01() {
 	defer csvfile.Close()
 	// Read CSV
 	df := dataframe.ReadCSV(csvfile)
-	fmt.Println(df)
+	// fmt.Println(df)
 	// EDA
 
 	// Shape of Data
@@ -75,10 +77,42 @@ func dataAnalysisExample01() {
 
 	// Selection of Columns & Rows
 	// Select columns by Column name
-	fmt.Println("Carats", df.Select("carat"))
+	//fmt.Println("Carats", df.Select("carat"))
 
-	// Select column nby index
-	fmt.Println("Carats index 0", df.Select(0))
+	// Select column by index
+	// fmt.Println("Carats index 0", df.Select(0))
+
+	// Multiple column selection with slice of strings
+	// fmt.Print(df.Select([]string{"carat","cut"}))
+
+	// Selection of single row
+	// fmt.Println(df.Subset(0))
+
+	// Selection of multiple rows
+	// fmt.Println(df.Subset([]int{0,2,4}))
+
+	// Series and apply functions
+	ds := df.Col("carat")
+	fmt.Printf("%T \n", ds)
+	// fmt.Println(ds)
+
+	// Apply function 'Mean'  to the series
+	dsmean := ds.Mean()
+	fmt.Println("Mean of carat series:", dsmean)
+
+	// Check for missing values
+	fmt.Printf("There are %d missing values in this series\n", len(ds.IsNaN()))
+
+	gmean := stat.Mean(ds.Float(),nil)
+	fmt.Println("Go 'num' package Mean series",gmean)
+
+	//  Apply Conditions/Filter
+	// type F struct {
+	// 	Colname string
+	// 	Comparator series.Comparator
+	// 	Comparando interface{}
+	// }
+
 }
 
 func StatsExample01() {
