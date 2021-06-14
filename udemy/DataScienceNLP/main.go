@@ -14,7 +14,6 @@ import (
 	"github.com/abadojack/whatlanggo"
 	"github.com/cdipaolo/sentiment"
 	"github.com/go-gota/gota/series"
-	"github.com/gonum/stat"
 	"github.com/grassmudhorses/vader-go/lexicon"
 	"github.com/grassmudhorses/vader-go/sentitext"
 	"github.com/jdkato/prose/chunk"
@@ -92,19 +91,19 @@ func dataAnalysisExample01() {
 	// fmt.Println(df.Subset([]int{0,2,4}))
 
 	// Series and apply functions
-	ds := df.Col("carat")
-	fmt.Printf("%T \n", ds)
+	// ds := df.Col("carat")
+	// fmt.Printf("%T \n", ds)
 	// fmt.Println(ds)
 
 	// Apply function 'Mean'  to the series
-	dsmean := ds.Mean()
-	fmt.Println("Mean of carat series:", dsmean)
+	// dsmean := ds.Mean()
+	// fmt.Println("Mean of carat series:", dsmean)
 
 	// Check for missing values
-	fmt.Printf("There are %d missing values in this series\n", len(ds.IsNaN()))
+	// fmt.Printf("There are %d missing values in this series\n", len(ds.IsNaN()))
 
-	gmean := stat.Mean(ds.Float(),nil)
-	fmt.Println("Go 'num' package Mean series",gmean)
+	// gmean := stat.Mean(ds.Float(),nil)
+	// fmt.Println("Go 'num' package Mean series",gmean)
 
 	//  Apply Conditions/Filter
 	// type F struct {
@@ -112,6 +111,13 @@ func dataAnalysisExample01() {
 	// 	Comparator series.Comparator
 	// 	Comparando interface{}
 	// }
+	fmt.Println(df.Select("cut"))
+	isPremium := df.Filter(dataframe.F{
+		Colname:    "cut",
+		Comparator: series.Eq,
+		Comparando: "Premium",
+	})
+	fmt.Println(isPremium.Dims())
 
 }
 
