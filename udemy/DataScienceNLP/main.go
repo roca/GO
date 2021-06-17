@@ -25,6 +25,7 @@ import (
 	"github.com/roca/GO/udemy/DataScienceNLP/files"
 	"github.com/roca/must"
 	"github.com/rylans/getlang"
+	"gonum.org/v1/gonum/mat"
 
 	cregex "github.com/mingrammer/commonregex"
 )
@@ -42,7 +43,28 @@ func main() {
 	//sentimentExample02()
 	//sentimentExample03()
 	//StatsExample01()
-	dataAnalysisExample01()
+	//dataAnalysisExample01()
+	gonumExample01()
+}
+
+func gonumExample01() {
+	// Scalar: A number
+	var a int = 44
+	fmt.Println("Scalar:", a)
+	// Vectors
+	// 1 Dim
+	// Row Vector/Column Vector[list of same datatype]
+	// Method 1
+	myvector := []float64{1.2, 3.4, 4.5, 3.5, 4.4}
+	fmt.Println("Vector:", myvector)
+	fmt.Printf("%T \n", myvector)
+
+	// Method 2: Using Gonum
+	myvectorA := mat.NewVecDense(2, []float64{1.2, 3.4})
+	myvectorB := mat.NewVecDense(2, []float64{3.2, 4.4})
+	fmt.Printf("%T \n", myvectorA)
+
+	// Matrix
 }
 
 func dataAnalysisExample01() {
