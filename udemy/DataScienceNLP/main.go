@@ -62,9 +62,29 @@ func gonumExample01() {
 	// Method 2: Using Gonum
 	myvectorA := mat.NewVecDense(2, []float64{1.2, 3.4})
 	myvectorB := mat.NewVecDense(2, []float64{3.2, 4.4})
-	fmt.Printf("%T \n", myvectorA)
+	fmt.Println("Vector A", myvectorA)
+	fmt.Println("Vector B", myvectorA)
+
+	// Dot Product
+	dp := mat.Dot(myvectorA, myvectorB)
+	fmt.Println("Dot product of A and B:", dp)
 
 	// Matrix
+	// Creating a Matrix
+	// Linear wrapped
+	data := []float64{
+		1.1, 1.2, 1.3,
+		2.1, 2.2, 2.3,
+	}
+	mymatrix := mat.NewDense(2, 3, data)
+	//fmt.Println(mymatrix)
+	// Formatted
+	fmt.Println("Matrices:\n", mat.Formatted(mymatrix))
+	fmt.Println("Row 0",mat.Row(nil, 0, mymatrix))
+	fmt.Println("Col 0",mat.Col(nil, 0, mymatrix))
+
+	// Matrix of Zeros
+	fmt.Println(mat.Formatted(mat.NewDense(3, 3, nil)))
 }
 
 func dataAnalysisExample01() {
