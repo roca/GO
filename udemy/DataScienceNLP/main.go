@@ -44,7 +44,13 @@ func main() {
 	//sentimentExample03()
 	//StatsExample01()
 	//dataAnalysisExample01()
-	gonumExample01()
+	//onumExample01()
+	gomlExample01()
+
+}
+
+func gomlExample01() {
+
 }
 
 func gonumExample01() {
