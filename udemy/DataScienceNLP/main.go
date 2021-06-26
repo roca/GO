@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/kniren/gota/dataframe"
+	"github.com/go-gota/gota/dataframe"
+	"github.com/go-gota/gota/series"
 	"github.com/roca/must"
 )
 
@@ -41,6 +42,24 @@ func gomlExample01() {
 	defer csvfile.Close()
 	// Read CSV
 	df := dataframe.ReadCSV(csvfile)
+	//fmt.Println(df)
+	fmt.Println(df.Names())
+	fmt.Println(df.Types())
+
+	sexMap := map[string]int{"f": 0, "m": 1}
+	options := map[string]interface{}{"colMap": sexMap}
+	df = MutateColInt("Sex", &df, options)
+
+	donarMap := map[string]int{
+		"0=Blood Donor":          0,
+		"0s=suspect Blood Donor": 1,
+		"1=Hepatitis":            1,
+		"2=Fibrosis":             1,
+		"3=Cirrhosis":            1,
+	}
+	options["colMap"] = donarMap
+	df = NewColInt("Category", "Target", &df, options)
+
 	fmt.Println(df)
 
 	// Initialize Model
@@ -52,6 +71,76 @@ func gomlExample01() {
 	// Save Model
 
 	// Evaluate
+}
+func ReplaceColValues(colname string,oldValue, newValue float64, df *dataframe.DataFrame) dataframe.DataFrame {
+	return *df
+}
+func MutateColInt(name string, df *dataframe.DataFrame, options ...map[string]interface{}) dataframe.DataFrame {
+	//fmt.Println(df.Col(name))
+	colMap := make(map[string]int)
+
+	if len(options) > 0 {
+		if v, found := options[0]["colMap"]; found {
+			colMap = v.(map[string]int)
+		}
+	} else {
+		for _, v := range df.Col(name).Records() {
+			colMap[v] = 0
+		}
+		i := 0
+		for k := range colMap {
+			i++
+			colMap[k] = i
+		}
+	}
+
+	//fmt.Println(colMap)
+	var newColValues = []int{}
+	for _, v := range df.Col(name).Records() {
+		newColValues = append(newColValues, colMap[v])
+	}
+	//fmt.Println(newColValues)
+
+	s := series.New(newColValues, series.Int, name)
+
+	mut := df.Mutate(s)
+
+	return mut
+
+}
+
+func NewColInt(name string, newname string, df *dataframe.DataFrame, options ...map[string]interface{}) dataframe.DataFrame {
+	//fmt.Println(df.Col(name))
+	colMap := make(map[string]int)
+
+	if len(options) > 0 {
+		if v, found := options[0]["colMap"]; found {
+			colMap = v.(map[string]int)
+		}
+	} else {
+		for _, v := range df.Col(name).Records() {
+			colMap[v] = 0
+		}
+		i := 0
+		for k := range colMap {
+			i++
+			colMap[k] = i
+		}
+	}
+
+	//fmt.Println(colMap)
+	var newColValues = []int{}
+	for _, v := range df.Col(name).Records() {
+		newColValues = append(newColValues, colMap[v])
+	}
+	//fmt.Println(newColValues)
+
+	s := series.New(newColValues, series.Int, newname)
+
+	mut := df.Mutate(s)
+
+	return mut
+
 }
 
 // func gonumExample01() {
