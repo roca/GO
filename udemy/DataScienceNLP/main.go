@@ -60,7 +60,12 @@ func gomlExample01() {
 	options["colMap"] = donarMap
 	df = NewColInt("Category", "Target", &df, options)
 
-	fmt.Println(df)
+	for _, name := range df.Names() {
+		if df.Col(name).HasNaN() {
+	                df = df.Mutate(ReplacMissingValuesFloat(df.Col(name)))
+		}
+	}
+
 
 	// Initialize Model
 
@@ -72,8 +77,23 @@ func gomlExample01() {
 
 	// Evaluate
 }
-func ReplaceColValues(colname string,oldValue, newValue float64, df *dataframe.DataFrame) dataframe.DataFrame {
-	return *df
+func ReplacMissingValuesFloat(s series.Series) series.Series {
+	if !s.HasNaN() {
+		return s
+	}
+
+	newValues := []float64{}
+
+	for i, isNaN := range s.IsNaN() {
+		newValues = append(newValues, s.Elem(i).Float())
+		if isNaN {
+			newValues[i] = 0.
+		}
+
+	}
+	newSeries := series.New(newValues, series.Float, s.Name)
+
+	return newSeries
 }
 func MutateColInt(name string, df *dataframe.DataFrame, options ...map[string]interface{}) dataframe.DataFrame {
 	//fmt.Println(df.Col(name))
