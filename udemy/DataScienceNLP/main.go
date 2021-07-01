@@ -73,9 +73,13 @@ func gomlExample01() {
 	df = df.Drop([]int{0, 1})
 	fmt.Println(df.Subset([]int{0, 1}))
 
-        // Get random sample of train and test data
+	// Get random sample of train and test data
 	train, test := Sample(df, .7, time.Now().UTC().UnixNano())
+	fmt.Print("Total: ")
+	fmt.Println(df.Dims())
+	fmt.Print("Train: ")
 	fmt.Println(train.Dims())
+	fmt.Print("Test: ")
 	fmt.Println(test.Dims())
 
 	// Initialize Model
@@ -96,35 +100,30 @@ func Sample(df dataframe.DataFrame, percentage float64, seed int64) (dataframe.D
 	sampleIndices := []int{}
 	rand.Seed(seed)
 
-	fmt.Println("Sample Size:", sampleSize, "out of a total of",r)
 	for len(sampleIndicesMap) < sampleSize {
 		i := rand.Intn(r)
 		sampleIndicesMap[i] = i
-		//fmt.Println(i,len(sampleIndicesMap))
 	}
 	for _, v := range sampleIndicesMap {
 		sampleIndices = append(sampleIndices, v)
 	}
 	sort.Ints(sampleIndices)
 
-	testMap := []map[string]interface{}{}
-
-	for i, v := range df.Maps() {
+	testIndices := []int{}
+	for i, _ := range df.Maps() {
 		found := false
 		for _, j := range sampleIndices {
-			//fmt.Println(i, j, v)
-			 if i == j {
-			 	found = true
-				 break
+			if i == j {
+				found = true
+				break
 			}
 		}
 		if !found {
-			testMap = append(testMap, v)
+			testIndices = append(testIndices, i)
 		}
 	}
-	test := dataframe.LoadMaps(testMap)
 
-	return df.Subset(sampleIndices), test
+	return df.Subset(sampleIndices), df.Subset(testIndices)
 }
 func ReplacMissingValuesFloat(s series.Series) series.Series {
 	if !s.HasNaN() {
