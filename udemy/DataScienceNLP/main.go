@@ -2,7 +2,10 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"os"
+	"sort"
+	"time"
 
 	"github.com/go-gota/gota/dataframe"
 	"github.com/go-gota/gota/series"
@@ -34,7 +37,7 @@ func gomlExample01() {
 	   1) Numerical
 	   2) No missing value & Header
 	   3) Train/Test CSV
-	   4) [xfeatures]<target>
+	   4) [features]<target>
 	*/
 	// Load our dataset
 	// 	// Open CSV
@@ -62,10 +65,18 @@ func gomlExample01() {
 
 	for _, name := range df.Names() {
 		if df.Col(name).HasNaN() {
-	                df = df.Mutate(ReplacMissingValuesFloat(df.Col(name)))
+			df = df.Mutate(ReplacMissingValuesFloat(df.Col(name)))
 		}
 	}
 
+	// Drop first two Columns
+	df = df.Drop([]int{0, 1})
+	fmt.Println(df.Subset([]int{0, 1}))
+
+        // Get random sample of train and test data
+	train, test := Sample(df, .7, time.Now().UTC().UnixNano())
+	fmt.Println(train.Dims())
+	fmt.Println(test.Dims())
 
 	// Initialize Model
 
@@ -76,6 +87,44 @@ func gomlExample01() {
 	// Save Model
 
 	// Evaluate
+}
+func Sample(df dataframe.DataFrame, percentage float64, seed int64) (dataframe.DataFrame, dataframe.DataFrame) {
+	r, _ := df.Dims()
+
+	sampleSize := int(float64(r) * percentage)
+	sampleIndicesMap := map[int]int{}
+	sampleIndices := []int{}
+	rand.Seed(seed)
+
+	fmt.Println("Sample Size:", sampleSize, "out of a total of",r)
+	for len(sampleIndicesMap) < sampleSize {
+		i := rand.Intn(r)
+		sampleIndicesMap[i] = i
+		//fmt.Println(i,len(sampleIndicesMap))
+	}
+	for _, v := range sampleIndicesMap {
+		sampleIndices = append(sampleIndices, v)
+	}
+	sort.Ints(sampleIndices)
+
+	testMap := []map[string]interface{}{}
+
+	for i, v := range df.Maps() {
+		found := false
+		for _, j := range sampleIndices {
+			//fmt.Println(i, j, v)
+			 if i == j {
+			 	found = true
+				 break
+			}
+		}
+		if !found {
+			testMap = append(testMap, v)
+		}
+	}
+	test := dataframe.LoadMaps(testMap)
+
+	return df.Subset(sampleIndices), test
 }
 func ReplacMissingValuesFloat(s series.Series) series.Series {
 	if !s.HasNaN() {
