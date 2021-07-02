@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io/fs"
 	"math/rand"
 	"os"
 	"sort"
@@ -41,8 +42,15 @@ func gomlExample01() {
 	*/
 	// Load our dataset
 	// 	// Open CSV
+	mode := int(0644)
+	m := fs.FileMode(mode)
 	csvfile := must.ReturnElseLogFatal(os.Open, "data/hcvdat0.csv").(*os.File)
+	trainFile := must.ReturnElseLogFatal(os.OpenFile, "data/train.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, m).(*os.File)
+	testFile := must.ReturnElseLogFatal(os.OpenFile, "data/test.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, m).(*os.File)
 	defer csvfile.Close()
+	defer trainFile.Close()
+	defer testFile.Close()
+
 	// Read CSV
 	df := dataframe.ReadCSV(csvfile)
 	//fmt.Println(df)
@@ -77,10 +85,15 @@ func gomlExample01() {
 	train, test := Sample(df, .7, time.Now().UTC().UnixNano())
 	fmt.Print("Total: ")
 	fmt.Println(df.Dims())
+
 	fmt.Print("Train: ")
 	fmt.Println(train.Dims())
+	noHeaderOption := dataframe.WriteHeader(false)
+	train.WriteCSV(trainFile,noHeaderOption)
+
 	fmt.Print("Test: ")
 	fmt.Println(test.Dims())
+	test.WriteCSV(testFile,noHeaderOption)
 
 	// Initialize Model
 
