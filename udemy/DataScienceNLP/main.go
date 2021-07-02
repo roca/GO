@@ -89,11 +89,11 @@ func gomlExample01() {
 	fmt.Print("Train: ")
 	fmt.Println(train.Dims())
 	noHeaderOption := dataframe.WriteHeader(false)
-	train.WriteCSV(trainFile,noHeaderOption)
+	_ = train.WriteCSV(trainFile, noHeaderOption)
 
 	fmt.Print("Test: ")
 	fmt.Println(test.Dims())
-	test.WriteCSV(testFile,noHeaderOption)
+	_ = test.WriteCSV(testFile, noHeaderOption)
 
 	// Initialize Model
 
