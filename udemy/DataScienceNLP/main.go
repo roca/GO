@@ -3,11 +3,13 @@ package main
 import (
 	"fmt"
 	"io/fs"
+	"log"
 	"math/rand"
 	"os"
 	"sort"
 	"time"
 
+	"github.com/cdipaolo/goml/base"
 	"github.com/go-gota/gota/dataframe"
 	"github.com/go-gota/gota/series"
 	"github.com/roca/must"
@@ -28,11 +30,38 @@ func main() {
 	//StatsExample01()
 	//dataAnalysisExample01()
 	//onumExample01()
+	// CleanDataExample01() // First step
 	gomlExample01()
 
 }
 
 func gomlExample01() {
+	// Load out train/test datasets
+	xtrain, ytrain, err := base.LoadDataFromCSV("data/train.csv")
+	if err != nil {
+		log.Fatal(err)
+	}
+	xtest, ytest, err := base.LoadDataFromCSV("data/test.csv")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("X Train %T \n", xtrain)
+	fmt.Printf("Y Train %T \n", ytrain)
+	fmt.Printf("X Test %T  \n", xtest)
+	fmt.Printf("Y Test %T  \n", ytest)
+
+	// Initialize Model
+
+	// Train
+
+	// Prediction
+
+	// Save Model
+
+	// Evaluate
+}
+
+func CleanDataExample01() {
 
 	/* Requirement For Dataset:
 	   1) Numerical
@@ -95,15 +124,6 @@ func gomlExample01() {
 	fmt.Println(test.Dims())
 	must.ReturnElseLogFatal(test.WriteCSV, testFile, noHeaderOption)
 
-	// Initialize Model
-
-	// Train
-
-	// Prediction
-
-	// Save Model
-
-	// Evaluate
 }
 func Sample(df dataframe.DataFrame, percentage float64, seed int64) (dataframe.DataFrame, dataframe.DataFrame) {
 	r, _ := df.Dims()
