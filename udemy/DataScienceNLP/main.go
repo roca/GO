@@ -1,10 +1,10 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/fs"
 	"log"
-	"math"
 	"math/rand"
 	"os"
 	"sort"
@@ -39,20 +39,20 @@ func main() {
 
 func gomlExample01() {
 	// Load out train/test datasets
-	xtrain, ytrain, err := base.LoadDataFromCSV("data/train.csv")
+	xTrain, yTrain, err := base.LoadDataFromCSV("data/train.csv")
 	if err != nil {
 		log.Fatal(err)
 	}
-	xtest, ytest, err := base.LoadDataFromCSV("data/test.csv")
+	xTest, yTest, err := base.LoadDataFromCSV("data/test.csv")
 	if err != nil {
 		log.Fatal(err)
 	}
 	fmt.Println("Training Dataset")
-	fmt.Printf("X Train %T \n", xtrain)
-	fmt.Printf("Y Train %T \n", ytrain)
+	fmt.Printf("X Train %T \n", xTrain)
+	fmt.Printf("Y Train %T \n", yTrain)
 	fmt.Println("Testing Dataset")
-	fmt.Printf("X Test %T  \n", xtest)
-	fmt.Printf("Y Test %T  \n", ytest)
+	fmt.Printf("X Test %T  \n", xTest)
+	fmt.Printf("Y Test %T  \n", yTest)
 
 	// Initialize Model
 	//  Optimization Method ()
@@ -60,25 +60,93 @@ func gomlExample01() {
 	//  Regularization : for overfitting
 	//  Dataset (Xfeatures) [][]float64
 	//  Class(binar 0 and 1)
-	model := linear.NewLogistic(base.BatchGA, 0.00001, 0, 1000, xtrain, ytrain)
+	// model := linear.NewLogistic(base.BatchGA, 0.00001, 0, 1000, xTrain, yTrain)
 
 	// Train
-	must.ReturnElseLogFatal(model.Learn)
+	// must.ReturnElseLogFatal(model.Learn)
 
 	// Prediction
-	s1 := xtest[0]   //Should be Negative result of 0
-	s2 := xtest[169] // Should be Positive result of 1
+	// s1 := xTest[0]   //Should be Negative result of 0
+	// s2 := xTest[169] // Should be Positive result of 1
 
-	mypred1 := must.ReturnElseLogFatal(model.Predict, s1).([]float64)
-	fmt.Println("Prediction 1 expected 0 to equal", math.Round(mypred1[0]))
-	mypred2 := must.ReturnElseLogFatal(model.Predict, s2).([]float64)
-	fmt.Println("Prediction 2 expected 1 to equal", math.Round(mypred2[0]))
+	// mypred1 := must.ReturnElseLogFatal(model.Predict, s1).([]float64)
+	// fmt.Println("Prediction 1 expected 0 to equal", math.Round(mypred1[0]))
+	// mypred2 := must.ReturnElseLogFatal(model.Predict, s2).([]float64)
+	// fmt.Println("Prediction 2 expected 1 to equal", math.Round(mypred2[0]))
 
+	// Save Model
+	// fmt.Println("Saved model to file logisticHCVmodel.json")
+	// model.PersistToFile("data/logisticHCVmodel.json")
+
+	// Evaluate
+	cm := evaluateModel(xTrain, yTrain, xTest, yTest)
+	fmt.Println("ConfusionMatrix")
+	fmt.Println(cm)
+	json, _ := json.MarshalIndent(cm, " ", " ")
+	fmt.Println(string(json))
+}
+
+type ConfusionMatrix struct {
+	Total         int     `json:"Total"`
+	TotalTrain    int     `json:"TotalTrain"`
+	TotalTest     int     `json:"TotalTest"`
+	Positive      int     `json:"Positive"`
+	Negative      int     `json:"Negative"`
+	TruePositive  int     `json:"TruePositive"`
+	TrueNegative  int     `json:"TrueNegative"`
+	FalsePositive int     `json:"FalsePositive"`
+	FalseNegative int     `json:"FalseNegative"`
+	Accuracy      float64 `json:"accuracy"`
+	Precision     float64 `json:"precision"`
+	Recall        float64 `json:"recall"`
+}
+
+func evaluateModel(xTrain [][]float64, yTrain []float64, xTest [][]float64, yTest []float64) ConfusionMatrix {
+	model := linear.NewLogistic(base.BatchGA, 0.00001, 0, 1000, xTrain, yTrain)
+	must.ReturnElseLogFatal(model.Learn)
+	fmt.Println("Finishing Training")
 	// Save Model
 	fmt.Println("Saved model to file logisticHCVmodel.json")
 	model.PersistToFile("data/logisticHCVmodel.json")
 
-	// Evaluate
+	cm := ConfusionMatrix{}
+	for _, y := range yTest {
+		if y == 1.0 {
+			cm.Positive++
+		}
+		if y == 1 {
+			cm.Negative++
+		}
+	}
+
+	decisionBoundary := 0.5
+	for i, v := range xTest {
+		prediction := must.ReturnElseLogFatal(model.Predict, v).([]float64)
+		y := int(yTest[i])
+		Positive := prediction[0] >= decisionBoundary
+
+		if y == 1 && Positive {
+			cm.TruePositive++
+		}
+		if y == 1 && !Positive {
+			cm.FalseNegative++
+		}
+		if y == 0 && Positive {
+			cm.FalsePositive++
+		}
+		if y == 0 && !Positive {
+			cm.TrueNegative++
+		}
+	}
+	cm.Accuracy = (float64(cm.TruePositive) + float64(cm.TrueNegative)) / (float64(cm.TruePositive) + float64(cm.TrueNegative) + float64(cm.FalsePositive) + float64(cm.FalseNegative))
+
+	cm.Precision = float64(cm.TruePositive) / (float64(cm.TruePositive) + float64(cm.FalsePositive))
+	cm.Recall = float64(cm.TruePositive) / (float64(cm.TruePositive) + float64(cm.FalseNegative))
+	cm.TotalTest = len(yTest)
+	cm.TotalTrain = len(yTrain)
+	cm.Total = len(yTest) + len(yTrain)
+
+	return cm
 }
 
 func CleanDataExample01() {
