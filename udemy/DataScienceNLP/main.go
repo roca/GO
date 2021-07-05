@@ -4,12 +4,14 @@ import (
 	"fmt"
 	"io/fs"
 	"log"
+	"math"
 	"math/rand"
 	"os"
 	"sort"
 	"time"
 
 	"github.com/cdipaolo/goml/base"
+	"github.com/cdipaolo/goml/linear"
 	"github.com/go-gota/gota/dataframe"
 	"github.com/go-gota/gota/series"
 	"github.com/roca/must"
@@ -45,18 +47,36 @@ func gomlExample01() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	fmt.Println("Training Dataset")
 	fmt.Printf("X Train %T \n", xtrain)
 	fmt.Printf("Y Train %T \n", ytrain)
+	fmt.Println("Testing Dataset")
 	fmt.Printf("X Test %T  \n", xtest)
 	fmt.Printf("Y Test %T  \n", ytest)
 
 	// Initialize Model
+	//  Optimization Method ()
+	//  Learning Rate
+	//  Regularization : for overfitting
+	//  Dataset (Xfeatures) [][]float64
+	//  Class(binar 0 and 1)
+	model := linear.NewLogistic(base.BatchGA, 0.00001, 0, 1000, xtrain, ytrain)
 
 	// Train
+	must.ReturnElseLogFatal(model.Learn)
 
 	// Prediction
+	s1 := xtest[0]   //Should be Negative result of 0
+	s2 := xtest[169] // Should be Positive result of 1
+
+	mypred1 := must.ReturnElseLogFatal(model.Predict, s1).([]float64)
+	fmt.Println("Prediction 1 expected 0 to equal", math.Round(mypred1[0]))
+	mypred2 := must.ReturnElseLogFatal(model.Predict, s2).([]float64)
+	fmt.Println("Prediction 2 expected 1 to equal", math.Round(mypred2[0]))
 
 	// Save Model
+	fmt.Println("Saved model to file logisticHCVmodel.json")
+	model.PersistToFile("data/logisticHCVmodel.json")
 
 	// Evaluate
 }
