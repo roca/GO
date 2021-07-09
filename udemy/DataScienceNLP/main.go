@@ -12,6 +12,7 @@ import (
 
 	"github.com/cdipaolo/goml/base"
 	"github.com/cdipaolo/goml/linear"
+	"github.com/cdipaolo/goml/text"
 	"github.com/go-gota/gota/dataframe"
 	"github.com/go-gota/gota/series"
 	"github.com/roca/must"
@@ -33,8 +34,65 @@ func main() {
 	//dataAnalysisExample01()
 	//onumExample01()
 	// CleanDataExample01() // First step
-	gomlExample01()
+	//gomlExample01()
+	textClassifierExample01()
 
+}
+
+func textClassifierExample01() {
+	// Use CSV
+
+	// Normal
+	// Stream
+	// Chan: channel to communicate between go routines
+	stream := make(chan base.TextDatapoint)
+	// Error
+	errors := make(chan error)
+
+	// Init Model
+	model := text.NewNaiveBayes(stream, 2, base.OnlyWordsAndNumbers)
+
+	// Training
+	go model.OnlineLearn(errors)
+	// Classify a text as either hardware or software
+	// Parse our stream of data
+	// {X: Features , Y: Label}
+	stream <- base.TextDatapoint{X: "He bought a computer with some memory", Y: 1}
+	stream <- base.TextDatapoint{X: "It needs more memory", Y: 1}
+	stream <- base.TextDatapoint{X: "computer", Y: 1}
+	stream <- base.TextDatapoint{X: "code", Y: 0}
+	stream <- base.TextDatapoint{X: "memory", Y: 1}
+	stream <- base.TextDatapoint{X: "bugs", Y: 0}
+	stream <- base.TextDatapoint{X: "I found some bugs in the code", Y: 0}
+	stream <- base.TextDatapoint{X: "I swapped the memory", Y: 1}
+	stream <- base.TextDatapoint{X: "I tested the code", Y: 0}
+
+	// Close
+	close(stream)
+
+	for {
+		err, more := <-errors
+		if err != nil {
+			log.Fatal(err)
+		} else {
+			fmt.Println("Errors:", more)
+			break
+		}
+	}
+
+	// Labels: Hardware 1, software 0
+	ex1 := "John bought a new computer" // Hardware 1
+	ex2 := "He fixed the bugs in the code" // Software 0
+
+
+	pred1 := model.Predict(ex1)
+	pred2 := model.Predict(ex2)
+
+	fmt.Println("'John bought a new computer'",pred1,"Prediction should be Hardware 1")
+	fmt.Println("'He fixed the bugs in the code'",pred2,"Prediction should be Software 0")
+
+	// Save model
+	_ = model.PersistToFile("data/hardwareSoftwareClassifier") // Default json
 }
 
 func gomlExample01() {
