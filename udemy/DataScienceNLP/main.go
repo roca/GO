@@ -15,6 +15,7 @@ import (
 	"github.com/cdipaolo/goml/text"
 	"github.com/go-gota/gota/dataframe"
 	"github.com/go-gota/gota/series"
+	"github.com/gofiber/fiber/v2"
 	"github.com/roca/must"
 )
 
@@ -35,7 +36,27 @@ func main() {
 	//onumExample01()
 	// CleanDataExample01() // First step
 	//gomlExample01()
-	textClassifierExample01()
+	//textClassifierExample01()
+	fiberExample01()
+
+}
+
+func fiberExample01() {
+	// Init App
+	app := fiber.New()
+
+	// Route
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.SendString("Hello Go4DataScientists")
+	})
+
+	app.Get("/api/:name", func(c *fiber.Ctx) error {
+		fname := c.Params("name")
+		return c.SendString(fname)
+	})
+
+	// Listen
+	app.Listen(":3000")
 
 }
 
@@ -81,15 +102,14 @@ func textClassifierExample01() {
 	}
 
 	// Labels: Hardware 1, software 0
-	ex1 := "John bought a new computer" // Hardware 1
+	ex1 := "John bought a new computer"    // Hardware 1
 	ex2 := "He fixed the bugs in the code" // Software 0
-
 
 	pred1 := model.Predict(ex1)
 	pred2 := model.Predict(ex2)
 
-	fmt.Println("'John bought a new computer'",pred1,"Prediction should be Hardware 1")
-	fmt.Println("'He fixed the bugs in the code'",pred2,"Prediction should be Software 0")
+	fmt.Println("'John bought a new computer'", pred1, "Prediction should be Hardware 1")
+	fmt.Println("'He fixed the bugs in the code'", pred2, "Prediction should be Software 0")
 
 	// Save model
 	_ = model.PersistToFile("data/hardwareSoftwareClassifier") // Default json
