@@ -8,6 +8,7 @@ import (
 	"math/rand"
 	"os"
 	"sort"
+	"strings"
 	"time"
 
 	"github.com/cdipaolo/goml/base"
@@ -37,10 +38,40 @@ func main() {
 	// CleanDataExample01() // First step
 	//gomlExample01()
 	//textClassifierExample01()
-	fiberExample01()
+	//fiberExample01()
+	fiberExample02()
 
 }
 
+func fiberExample02() {
+	// Init App
+	app := fiber.New()
+
+	// Route for path params
+	// localhost:3000/api/someParam
+	app.Get("/api/:name", func(c *fiber.Ctx) error {
+		fname := c.Params("name")
+		return c.SendString(fname)
+	})
+
+	// Route for Query param
+	// localhost:3000/api/?text="some query string"
+	app.Get("/api/:text?", func(c *fiber.Ctx) error {
+		text := c.Query("text")
+		//return c.SendString(text)
+
+		// Return JSON
+		newText := strings.ToUpper(text)
+
+		return c.JSON(fiber.Map{
+			"original": text ,
+			"modified": newText,
+		})
+	})
+
+	// Listen
+	app.Listen(":3000")
+}
 func fiberExample01() {
 	// Init App
 	app := fiber.New()
@@ -57,7 +88,6 @@ func fiberExample01() {
 
 	// Listen
 	app.Listen(":3000")
-
 }
 
 func textClassifierExample01() {
