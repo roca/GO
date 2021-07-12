@@ -17,6 +17,7 @@ import (
 	"github.com/go-gota/gota/dataframe"
 	"github.com/go-gota/gota/series"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/template/html"
 	"github.com/roca/must"
 )
 
@@ -39,8 +40,34 @@ func main() {
 	//gomlExample01()
 	//textClassifierExample01()
 	//fiberExample01()
-	fiberExample02()
+	//fiberExample02()
+	fiberExample03() // Html templating
 
+}
+
+func fiberExample03() {
+	// Render HTML
+	// Templating Engine
+	engine := html.New("./views", ".html")
+
+	// Reload Foe Changes :For Dev
+	engine.Reload(true)
+
+	// Init App
+	app := fiber.New(fiber.Config{
+		Views: engine,
+	})
+
+	app.Get("/", func(c *fiber.Ctx) error {
+		message := "Hello Data Scientist & Developers"
+		return c.Render("index", fiber.Map{
+			"coolMessage": message,
+		})
+
+	})
+
+	//Listen
+	_ = app.Listen(":3000")
 }
 
 func fiberExample02() {
@@ -64,7 +91,7 @@ func fiberExample02() {
 		newText := strings.ToUpper(text)
 
 		return c.JSON(fiber.Map{
-			"original": text ,
+			"original": text,
 			"modified": newText,
 		})
 	})
