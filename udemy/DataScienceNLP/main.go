@@ -59,9 +59,14 @@ func fiberExample03() {
 	})
 
 	app.Get("/", func(c *fiber.Ctx) error {
-		message := "Hello Data Scientist & Developers"
+		initMessage := "Hello Data Scientist & Developers"
+		fname := c.FormValue("firstname")
+		message := c.FormValue("message")
+
 		return c.Render("index", fiber.Map{
-			"coolMessage": message,
+			"coolMessage": initMessage,
+			"firstName": fname,
+			"newMessage": message,
 		})
 
 	})
