@@ -1,10 +1,15 @@
-<H1>Go4DataSceince Web App with Fiber</H1>
+
+<div>
+	<h2>Go4DataSceince Web App with Fiber</h2>
+	<a href="/" type="button">Refresh</a>
+</div>
 <div>
 	<p>{{ .coolMessage }}</p>
 </div>
-<form method="GET" action="/">
+<form method="POST" action="/" enctype="multipart/form-data">
 	<div>
 		<input type="text" name="firstname">
+		<input type="file" name="filename" accept=".jpg,.jpeg,.png">
 	</div>
 	<div>
 		<textarea type="text" name="message" cols="10" rows="10"></textarea>
@@ -17,4 +22,10 @@
 <div>
 	<p>Original Message: {{ .newMessage }}</p>
 	<p>Welcome {{ .firstName }} to Go 4 Data Science and GoFiber</p>
+</div>
+<hr/>
+<div>
+	<h4>Details</h4>
+	<p>Uploaded File {{ .SavedFileName }}</p>
+	<p>Uploaded File Size {{ .SavedFileSize }}</p>
 </div>

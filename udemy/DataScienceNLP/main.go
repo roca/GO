@@ -60,13 +60,41 @@ func fiberExample03() {
 
 	app.Get("/", func(c *fiber.Ctx) error {
 		initMessage := "Hello Data Scientist & Developers"
-		fname := c.FormValue("firstname")
-		message := c.FormValue("message")
+		// fname := c.FormValue("firstname")
+		// message := c.FormValue("message")
 
 		return c.Render("index", fiber.Map{
 			"coolMessage": initMessage,
-			"firstName": fname,
-			"newMessage": message,
+			// "firstName":   fname,
+			// "newMessage":  message,
+		})
+
+	})
+
+	app.Post("/", func(c *fiber.Ctx) error {
+		initMessage := "Hello Data Scientist & Developers"
+		fname := c.FormValue("firstname")
+		message := c.FormValue("message")
+
+		// File Uploads
+		file, err := c.FormFile("filename")
+		if err != nil {
+			log.Println(err)
+			return err
+		}
+		fmt.Println(file.Filename, "Size:", file.Size)
+		// Saving file
+		err = c.SaveFile(file, fmt.Sprintf("./data/images/%s", file.Filename))
+		if err != nil {
+			return err
+		}
+
+		return c.Render("index", fiber.Map{
+			"coolMessage": initMessage,
+			"firstName":   fname,
+			"newMessage":  message,
+			"SavedFileName": file.Filename,
+			"SavedFileSize": file.Size,
 		})
 
 	})
