@@ -41,8 +41,79 @@ func main() {
 	//textClassifierExample01()
 	//fiberExample01()
 	//fiberExample02()
-	fiberExample03() // Html templating
+	//fiberExample03() // Html templating
+	//fiberExample04() // Server static files
+	fiberExample05() // Server static files from form input
 
+}
+
+func fiberExample05() {
+	// Render HTML
+	// Templating Engine
+	engine := html.New("./views", ".html")
+
+	// Reload Foe Changes :For Dev
+	engine.Reload(true)
+
+	// Init App
+	app := fiber.New(fiber.Config{
+		Views: engine,
+	})
+
+	app.Static("/", "./data/images")
+
+
+	app.Get("/", func(c *fiber.Ctx) error {
+		initMessage := "Hello Data Scientist & Developers"
+		// fname := c.FormValue("firstname")
+		// message := c.FormValue("message")
+
+		return c.Render("index", fiber.Map{
+			"coolMessage": initMessage,
+			// "firstName":   fname,
+			// "newMessage":  message,
+		})
+
+	})
+
+	app.Post("/", func(c *fiber.Ctx) error {
+		initMessage := "Hello Data Scientist & Developers"
+		fname := c.FormValue("firstname")
+		message := c.FormValue("message")
+
+		// File Uploads
+		file, err := c.FormFile("filename")
+		if err != nil {
+			log.Println(err)
+			return err
+		}
+		fmt.Println(file.Filename, "Size:", file.Size)
+		// Saving file
+		err = c.SaveFile(file, fmt.Sprintf("./data/images/%s", file.Filename))
+		if err != nil {
+			return err
+		}
+
+		return c.Render("index", fiber.Map{
+			"coolMessage": initMessage,
+			"firstName":   fname,
+			"newMessage":  message,
+			"SavedFileName": file.Filename,
+			"SavedFileSize": file.Size,
+		})
+
+	})
+
+	//Listen
+	_ = app.Listen(":3000")
+}
+
+func fiberExample04() {
+	app := fiber.New()
+
+	app.Static("/", "./data/staticFiles")
+
+	app.Listen(":3000")
 }
 
 func fiberExample03() {
