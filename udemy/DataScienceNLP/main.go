@@ -43,9 +43,38 @@ func main() {
 	//fiberExample02()
 	//fiberExample03() // Html templating
 	//fiberExample04() // Server static files
-	fiberExample05() // Server static files from form input
+	//fiberExample05() // Server static files from form input
+	fiberExample06() // Using bootstrap
 
 }
+func fiberExample06() {
+	// Render HTML
+	// Templating Engine
+	engine := html.New("./views", ".html")
+
+	// Reload Foe Changes :For Dev
+	engine.Reload(true)
+
+	// Init App
+	app := fiber.New(fiber.Config{
+		Views: engine,
+	})
+	
+	// Static
+	app.Static("/", "./public")
+
+
+	app.Get("/", func(c *fiber.Ctx) error {
+		initMessage := "Hello Data Scientist & Developers"
+		return c.Render("index", fiber.Map{
+			"coolMessage": initMessage,
+		})
+
+	})
+
+
+}
+
 
 func fiberExample05() {
 	// Render HTML

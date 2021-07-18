@@ -1,33 +1,20 @@
-
-<div>
-	<h2>Go4DataSceince Web App with Fiber</h2>
-	<a href="/" type="button">Refresh</a>
-</div>
-<div>
-	<p>{{ .coolMessage }}</p>
-</div>
-<form method="POST" action="/" enctype="multipart/form-data">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Adding Bootstrap to Gofiber App</title>
+	<link rel="stylesheet" href="/dist/css/bootstrap.min.css">
+	<scrip src="/dist/js/bootstrap.min.js" />
+</head>
+<body>
 	<div>
-		<input type="text" name="firstname">
-		<input type="file" name="filename" accept=".jpg,.jpeg,.png">
+		<h3>Adding Bootstrap</h3>
 	</div>
-	<div>
-		<textarea type="text" name="message" cols="10" rows="10"></textarea>
-	</div>
-	<button type="reset">Reset</button>
-	<button type="submit">Submit</button>
-</form>
-<br/>
-<hr/>
-<div>
-	<p>Original Message: {{ .newMessage }}</p>
-	<p>Welcome {{ .firstName }} to Go 4 Data Science and GoFiber</p>
-</div>
-<hr/>
-<div>
-	<h4>Details</h4>
-	<p>Uploaded File {{ .SavedFileName }}</p>
-	<p>Uploaded File Size {{ .SavedFileSize }}</p>
-</div>
 
-	<img src="/{{ .SavedFileName }}" />
+	<div>
+		<p>{{ .message }}</p>
+	</div>
+</body>
+</html>
