@@ -59,7 +59,7 @@ func fiberExample06() {
 	app := fiber.New(fiber.Config{
 		Views: engine,
 	})
-	
+
 	// Static
 	app.Static("/", "./public")
 
@@ -67,12 +67,13 @@ func fiberExample06() {
 	app.Get("/", func(c *fiber.Ctx) error {
 		initMessage := "Hello Data Scientist & Developers"
 		return c.Render("index", fiber.Map{
-			"coolMessage": initMessage,
+			"message": initMessage,
 		})
 
 	})
 
-
+	//Listen
+	_ = app.Listen(":3000")
 }
 
 
