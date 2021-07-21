@@ -52,7 +52,7 @@ func fiberExample06() {
 	// Templating Engine
 	engine := html.New("./views", ".html")
 
-	// Reload Foe Changes :For Dev
+	// Reload For Changes :For Dev
 	engine.Reload(true)
 
 	// Init App
@@ -63,7 +63,6 @@ func fiberExample06() {
 	// Static
 	app.Static("/", "./public")
 
-
 	app.Get("/", func(c *fiber.Ctx) error {
 		initMessage := "Hello Data Scientist & Developers"
 		return c.Render("index", fiber.Map{
@@ -71,11 +70,17 @@ func fiberExample06() {
 		})
 
 	})
+	app.Post("/", func(c *fiber.Ctx) error {
+		message := c.FormValue("message")
+
+		return c.Render("index", fiber.Map{
+			"message":    message,
+		})
+	})
 
 	//Listen
 	_ = app.Listen(":3000")
 }
-
 
 func fiberExample05() {
 	// Render HTML
@@ -91,7 +96,6 @@ func fiberExample05() {
 	})
 
 	app.Static("/", "./data/images")
-
 
 	app.Get("/", func(c *fiber.Ctx) error {
 		initMessage := "Hello Data Scientist & Developers"
@@ -125,9 +129,9 @@ func fiberExample05() {
 		}
 
 		return c.Render("index", fiber.Map{
-			"coolMessage": initMessage,
-			"firstName":   fname,
-			"newMessage":  message,
+			"coolMessage":   initMessage,
+			"firstName":     fname,
+			"newMessage":    message,
 			"SavedFileName": file.Filename,
 			"SavedFileSize": file.Size,
 		})
@@ -191,9 +195,9 @@ func fiberExample03() {
 		}
 
 		return c.Render("index", fiber.Map{
-			"coolMessage": initMessage,
-			"firstName":   fname,
-			"newMessage":  message,
+			"coolMessage":   initMessage,
+			"firstName":     fname,
+			"newMessage":    message,
 			"SavedFileName": file.Filename,
 			"SavedFileSize": file.Size,
 		})
