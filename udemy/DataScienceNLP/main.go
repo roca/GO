@@ -63,10 +63,10 @@ func fiberExample06() {
 	// Static
 	app.Static("/", "./public")
 
+	initMessage := "Sentiment Analysis Web App with Go"
 	app.Get("/", func(c *fiber.Ctx) error {
-		initMessage := "Hello Data Scientist & Developers"
 		return c.Render("index", fiber.Map{
-			"message": initMessage,
+			"initMessage": initMessage,
 		})
 
 	})
@@ -74,7 +74,8 @@ func fiberExample06() {
 		message := c.FormValue("message")
 
 		return c.Render("index", fiber.Map{
-			"message":    message,
+			"initMessage": initMessage,
+			"message":     message,
 		})
 	})
 
