@@ -9,6 +9,7 @@
 <body>
 	<div>
 		<h3>{{ .initMessage }}</h3>
+		<a href="/">Refresh</a>
 	</div>
 
 		<div>
@@ -30,6 +31,14 @@
 		<div>
 			<h4>Original Message</h4>
 			<p>{{ .message }}</p>
+		</div>
+		<hr/>
+		<div>
+			<h4>Sentiment Score</h4>
+			<p>Positive: {{ .sentimentDetails.Positive }} </p>
+			<p>Negative: {{ .sentimentDetails.Negative }} </p>
+			<p>Neutral: {{ .sentimentDetails.Neutral }} </p>
+			<p>Compound: {{ .sentimentDetails.Compound }} </p>
 		</div>
 	
 </body>

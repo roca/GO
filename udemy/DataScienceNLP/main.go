@@ -18,6 +18,8 @@ import (
 	"github.com/go-gota/gota/series"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/template/html"
+	"github.com/grassmudhorses/vader-go/lexicon"
+	"github.com/grassmudhorses/vader-go/sentitext"
 	"github.com/roca/must"
 )
 
@@ -64,6 +66,7 @@ func fiberExample06() {
 	app.Static("/", "./public")
 
 	initMessage := "Sentiment Analysis Web App with Go"
+
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.Render("index", fiber.Map{
 			"initMessage": initMessage,
@@ -72,15 +75,36 @@ func fiberExample06() {
 	})
 	app.Post("/", func(c *fiber.Ctx) error {
 		message := c.FormValue("message")
-
+		sentimentDetails := sentimentize(message)
 		return c.Render("index", fiber.Map{
-			"initMessage": initMessage,
-			"message":     message,
+			"initMessage":      initMessage,
+			"message":          message,
+			"sentimentDetails": sentimentDetails,
 		})
 	})
 
 	//Listen
 	_ = app.Listen(":3000")
+}
+
+type SentimentDetails struct {
+	Positive float64 `json:"positive"`
+	Negative  float64 `json:"negative"`
+	Neutral   float64 `json:"neutral"`
+	Compound  float64 `json:"compound"`
+}
+
+func sentimentize(docx string) SentimentDetails {
+	// Parse
+	parsedText := sentitext.Parse(docx, lexicon.DefaultLexicon)
+	// Process
+	results := sentitext.PolarityScore(parsedText)
+	return SentimentDetails{
+		Positive: results.Positive,
+		Negative:  results.Negative,
+		Neutral:   results.Neutral,
+		Compound:  results.Compound,
+	}
 }
 
 func fiberExample05() {
