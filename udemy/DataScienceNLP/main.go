@@ -83,15 +83,29 @@ func fiberExample06() {
 		})
 	})
 
+	//  API Route
+	// localhost:3000/api/?text="this is your sentiment"
+
+	app.Get("/api/:text?", func(c *fiber.Ctx) error {
+		message := c.Query("text")
+		sentimentResults := analyzeSentiment(message)
+
+		return c.JSON(fiber.Map{
+			"message":   message,
+			"sentiment": sentimentResults,
+		})
+
+	})
+
 	//Listen
 	_ = app.Listen(":3000")
 }
 
 type SentimentDetails struct {
 	Positive float64 `json:"positive"`
-	Negative  float64 `json:"negative"`
-	Neutral   float64 `json:"neutral"`
-	Compound  float64 `json:"compound"`
+	Negative float64 `json:"negative"`
+	Neutral  float64 `json:"neutral"`
+	Compound float64 `json:"compound"`
 }
 
 func sentimentize(docx string) SentimentDetails {
@@ -101,10 +115,19 @@ func sentimentize(docx string) SentimentDetails {
 	results := sentitext.PolarityScore(parsedText)
 	return SentimentDetails{
 		Positive: results.Positive,
-		Negative:  results.Negative,
-		Neutral:   results.Neutral,
-		Compound:  results.Compound,
+		Negative: results.Negative,
+		Neutral:  results.Neutral,
+		Compound: results.Compound,
 	}
+}
+
+func analyzeSentiment(text string) float64 {
+	// Parse
+	parsedText := sentitext.Parse(text, lexicon.DefaultLexicon)
+	// Process
+	results := sentitext.PolarityScore(parsedText)
+
+	return results.Compound
 }
 
 func fiberExample05() {
