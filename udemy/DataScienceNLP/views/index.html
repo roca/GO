@@ -57,10 +57,18 @@
 		<hr/>
 		<div>
 			<h4>Sentiment Score</h4>
-			<p>Positive: {{ .sentimentDetails.Positive }} </p>
-			<p>Negative: {{ .sentimentDetails.Negative }} </p>
-			<p>Neutral: {{ .sentimentDetails.Neutral }} </p>
-			<p>Compound: {{ .sentimentDetails.Compound }} </p>
+			<div class="alert alert-primary" role="alert">
+				<p>Positive: {{ .sentimentDetails.Positive }} </p>
+			</div>
+			<div class="alert alert-primary" role="alert">
+				<p>Negative: {{ .sentimentDetails.Negative }} </p>
+			</div>
+			<div class="alert alert-primary" role="alert">
+				<p>Neutral: {{ .sentimentDetails.Neutral }} </p>
+			</div>
+			<div class="alert alert-primary" role="alert">
+				<p>Compound: {{ .sentimentDetails.Compound }} </p>
+			</div>
 		</div>
 
 		<hr/>
