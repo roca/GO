@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"go-concurrency-exercises/01-exercise/01-goroutines/04-add/counting"
+	"github.com/roca/GO/udemy/ConcurrencyInGo/go-concurrency-exercises/01-exercise/01-goroutines/04-add/counting"
 )
 
 func main() {
