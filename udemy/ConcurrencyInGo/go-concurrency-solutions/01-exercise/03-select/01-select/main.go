@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"time"
 )
 
@@ -18,6 +19,15 @@ func main() {
 		ch2 <- "two"
 	}()
 
-	// TODO: multiplex recv on channel - ch1, ch2
+	// multiplex recv on channel - ch1, ch2
+
+	for i := 0; i < 2; i++ {
+		select {
+		case v := <-ch1:
+			fmt.Println(v)
+		case v := <-ch2:
+			fmt.Println(v)
+		}
+	}
 
 }

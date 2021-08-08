@@ -14,7 +14,18 @@ func main() {
 		}
 		fmt.Println("Done receiving!")
 	}
+	owner := func() <-chan int {
+		ch := make(chan int)
+		go func() {
+			defer close(ch)
+			for i:=0; i<5;i++ {
+				ch <- i
+			}
+		}()
+		return ch
+	}
 
 	ch := owner()
 	consumer(ch)
+	
 }

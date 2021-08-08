@@ -12,12 +12,17 @@ func main() {
 
 	var balance int
 	var wg sync.WaitGroup
+	var mu sync.Mutex
 
 	deposit := func(amount int) {
+		mu.Lock()
+		defer mu.Unlock()
 		balance += amount
 	}
 
 	withdrawal := func(amount int) {
+		mu.Lock()
+		defer mu.Unlock()
 		balance -= amount
 	}
 
@@ -25,7 +30,7 @@ func main() {
 	// and 100 withdrawal of $1 concurrently.
 	// run the program and check result.
 
-	// TODO: fix the issue for consistent output.
+	// fix the issue for consistent output.
 
 	wg.Add(100)
 	for i := 0; i < 100; i++ {

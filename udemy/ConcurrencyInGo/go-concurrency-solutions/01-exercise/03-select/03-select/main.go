@@ -11,16 +11,20 @@ func main() {
 	go func() {
 		for i := 0; i < 3; i++ {
 			time.Sleep(1 * time.Second)
-			ch <- "message"
+			ch <- fmt.Sprintf("message %d", i)
 		}
 
 	}()
 
-	// TODO: if there is no value on channel, do not block.
+	// if there is no value on channel, do not block.
 	for i := 0; i < 2; i++ {
-		m := <-ch
-		fmt.Println(m)
-
+		select {
+		case m := <-ch:
+			fmt.Println(m)
+		default:
+			// Do some processing..
+			fmt.Println("no message received")
+		}
 		// Do some processing..
 		fmt.Println("processing..")
 		time.Sleep(1500 * time.Millisecond)
