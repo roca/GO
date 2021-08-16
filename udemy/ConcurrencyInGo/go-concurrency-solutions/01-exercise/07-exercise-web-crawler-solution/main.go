@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"runtime"
 	"time"
 
 	"golang.org/x/net/html"
@@ -20,24 +21,26 @@ type result struct {
 // Crawl uses findLinks to recursively crawl
 // pages starting with url, to a maximum of depth.
 func Crawl(url string, depth int) {
-	results := make(chan *result)
+	// Fetch URLs in parallel.
+	ch := make(chan *result)
 
 	fetch := func(url string, depth int) {
 		urls, err := findLinks(url)
-		results <- &result{url, urls, err, depth}
+		ch <- &result{url, urls, err, depth}
 	}
 
 	go fetch(url, depth)
 	fetched[url] = true
 
 	for fetching := 1; fetching > 0; fetching-- {
-		res := <-results
+		res := <-ch
+
 		if res.err != nil {
-			// fmt.Println(res.err)
 			continue
 		}
 
 		fmt.Printf("found: %s\n", res.url)
+		
 		if res.depth > 0 {
 			for _, u := range res.urls {
 				if !fetched[u] {
@@ -48,14 +51,15 @@ func Crawl(url string, depth int) {
 			}
 		}
 	}
-	close(results)
+	close(ch)
 }
 
 func main() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
 	fetched = make(map[string]bool)
 	now := time.Now()
 	Crawl("http://andcloud.io", 2)
-	fmt.Println("time taken:", time.Since(now))
+	fmt.Println("time taken:", time.Since(now), ", CPUs  used:", runtime.NumCPU())
 }
 
 func findLinks(url string) ([]string, error) {
