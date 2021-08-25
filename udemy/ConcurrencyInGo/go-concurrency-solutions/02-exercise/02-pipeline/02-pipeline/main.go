@@ -58,11 +58,11 @@ func merge(cs ...<-chan int) <-chan int {
 func main() {
 	in := generator(2, 3)
 
-	// TODO: fan out square stage to run two instances.
+	// fan out square stage to run two instances.
 	ch1 := square(in)
 	ch2 := square(in)
 
-	// TODO: fan in the results of square stages.
+	// fan in the results of square stages.
 
 	out := merge(ch1, ch2)
 	for i := range out {
