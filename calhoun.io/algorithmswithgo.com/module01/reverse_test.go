@@ -11,8 +11,9 @@ func TestReverse(t *testing.T) {
 		want string
 	}{
 		{"cat", "tac"},
+		{"ca t", "t ac"},
 		{"alphabet", "tebahpla"},
-		// {"日本語", "語本日"},
+		{"日本語", "語本日"},
 	}
 	for _, tc := range tests {
 		t.Run(fmt.Sprintf("%v", tc.word), func(t *testing.T) {

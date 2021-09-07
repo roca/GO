@@ -14,9 +14,10 @@ package module01
 // 	return result
 // }
 func Reverse(word string) string {
-	l := len(word)
+	r := []rune(word)
+	l := len(r)
 	if l == 0 {
 		return ""
 	}
-	return string(word[l-1]) + Reverse(string(word[:l-1]))
+	return string(r[l-1]) + Reverse(string(r[:l-1]))
 }

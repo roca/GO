@@ -1,3 +1,3 @@
 ### Laset Place in course
 
-- https://courses.calhoun.io/lessons/les_algo_m01_07
+- https://courses.calhoun.io/lessons/les_algo_m01_08
