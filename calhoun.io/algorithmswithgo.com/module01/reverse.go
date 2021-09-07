@@ -6,6 +6,17 @@ package module01
 //   Reverse("cat") => "tac"
 //   Reverse("alphabet") => "tebahpla"
 //
+// func Reverse(word string) string {
+// 	var result string
+// 	for _, v := range word {
+// 		result = string(v) + result
+// 	}
+// 	return result
+// }
 func Reverse(word string) string {
-	return ""
+	l := len(word)
+	if l == 0 {
+		return ""
+	}
+	return string(word[l-1]) + Reverse(string(word[:l-1]))
 }
