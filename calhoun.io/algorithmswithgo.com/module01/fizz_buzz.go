@@ -17,16 +17,21 @@ import (
 // it here to make life easier for beginners.
 func FizzBuzz(n int) {
 	s := []string{}
-	for i := 1; 1 <= n; i++ {
-		if i%3 == 0 && i%5 == 0 {
-			s = append(s, "Fizz Buzz")
-		} else if i%3 == 0 {
-			s = append(s, "Fizz")
-		} else if i%5 == 0 {
-			s = append(s, "Buzz")
-		} else {
-			s = append(s, fmt.Sprintf("%d", i))
-		}
+	for i := 1; i <= n; i++ {
+		s = append(s, FizzBuzzValue(i))
 	}
 	fmt.Println(strings.Join(s, ", "))
+}
+
+func FizzBuzzValue(i int) string {
+	switch {
+	case i%3 == 0 && i%5 == 0:
+		return "Fizz Buzz"
+	case i%3 == 0:
+		return "Fizz"
+	case i%5 == 0:
+		return "Buzz"
+	default:
+		return fmt.Sprintf("%d", i)
+	}
 }
