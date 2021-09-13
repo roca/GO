@@ -12,15 +12,15 @@ import "strings"
 //
 func BaseToDec(value string, base int) int {
 	var d int
-	r := []rune(strings.ToUpper(value))
-	for i := len(r); i > 0; i-- {
-		n := int(r[i-1])
+	r := []rune(Reverse(strings.ToUpper(value)))
+	for i, v := range r {
+		n := int(v)
 		if n >= 65 && n <= 90 {
 			n -= 55
 		} else if n >= 48 && n <= 57 {
 			n -= 48
 		}
-		d += n * pow(base, (len(r)-i))
+		d += n * pow(base, i)
 	}
 	return int(d)
 }
