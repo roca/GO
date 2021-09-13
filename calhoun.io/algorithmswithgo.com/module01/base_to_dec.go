@@ -1,5 +1,7 @@
 package module01
 
+import "strings"
+
 // BaseToDec takes in a number and the base it is currently
 // in and returns the decimal equivalent as an integer.
 //
@@ -10,7 +12,7 @@ package module01
 //
 func BaseToDec(value string, base int) int {
 	var d int
-	r := []rune(value)
+	r := []rune(strings.ToUpper(value))
 	for i := len(r); i > 0; i-- {
 		n := int(r[i-1])
 		if n >= 65 && n <= 90 {
