@@ -1,6 +1,8 @@
 package module01
 
-import "fmt"
+import (
+	"strings"
+)
 
 // DecToBase will return a string representing
 // the provided decimal number in the provided base.
@@ -12,14 +14,14 @@ import "fmt"
 //   DecToBase(14, 2) => "1110"
 //
 func DecToBase(dec, base int) string {
-	s := ""
+	var sb strings.Builder
 	for i := dec; i > 0; i /= base {
 		m := i % base
-		if m < 10 {
-			s = fmt.Sprintf("%d", m) + s
+		if m >= 0 && m < 10 {
+			sb.WriteRune(rune(m + 48))
 		} else {
-			s = fmt.Sprintf("%c", rune(m+55)) + s
+			sb.WriteRune(rune(m + 55))
 		}
 	}
-	return s
+	return Reverse(sb.String())
 }
