@@ -5,7 +5,6 @@ package module01
 // A Fibonacci number N is defined as:
 //
 //   Fibonacci(N) = Fibonacci(N-1) + Fibonacci(N-2)
-//
 // Where the following base cases are used:
 //
 //   Fibonacci(0) => 0
@@ -25,5 +24,20 @@ package module01
 //   Fibonacci(14) => 377
 //
 func Fibonacci(n int) int {
-	return 0
+	return fibT(n, 0, 1)
+	//return fibR(n)
+}
+
+func fibT(n, first, second int) int {
+	if n == 0 {
+		return first
+	}
+	return fibT(n-1, second, first+second)
+}
+
+func fibR(n int) int {
+	if n < 2 {
+		return n
+	}
+	return Fibonacci(n-1) + Fibonacci(n-2)
 }
