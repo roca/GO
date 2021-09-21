@@ -101,3 +101,24 @@ func Shuffle(cards []Card) []Card {
 	}
 	return ret
 }
+
+func Jokers(n int) func([]Card) []Card {
+	return func(cards []Card) []Card {
+		for i := 0; i < n; i++ {
+			cards = append(cards, Card{Suit: Joker, Rank: Rank(i)})
+		}
+		return cards
+	}
+}
+
+func Filter(f func(card Card) bool) func([]Card) []Card {
+	return func(cards []Card) []Card {
+		var ret []Card
+		for _, card := range cards {
+			if !f(card) {
+				ret = append(ret, card)
+			}
+		}
+		return ret
+	}
+}
