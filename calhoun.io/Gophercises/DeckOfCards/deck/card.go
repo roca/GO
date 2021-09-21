@@ -11,7 +11,7 @@ const (
 	Diamond
 	Club
 	Heart
-	Joker // this a sepcial case
+	Joker // this a special case
 )
 
 var suits = [...]Suit{Spade, Diamond, Club, Heart}
@@ -49,7 +49,6 @@ func (c Card) String() string {
 	if c.Suit == Joker {
 		return c.Suit.String()
 	}
-
 	return fmt.Sprintf("%s of %ss", c.Rank, c.Suit)
 }
 
