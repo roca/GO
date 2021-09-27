@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math/rand"
 	"sort"
+	"strings"
 	"time"
 )
 
@@ -132,4 +133,48 @@ func Deck(n int) func([]Card) []Card {
 		}
 		return ret
 	}
+}
+
+type Hand []Card
+
+func (h Hand) String() string {
+	strs := make([]string, len(h))
+	for i := range h {
+		strs[i] = h[i].String()
+	}
+	return strings.Join(strs, ", ")
+}
+
+func (h Hand) DealerString() string {
+	return h[0].String() + ", **HIDDEN**"
+}
+
+func (h Hand) Score() int {
+	minScore := h.MinScore()
+	if minScore > 11 {
+		return minScore
+	}
+	for _, card := range h {
+		// Ace is currently worth 1, and we are changing it to be worth 11
+		// 11 - 1 = 10
+		if card.Rank == Ace {
+			return minScore + 10
+		}
+	}
+	return minScore
+}
+
+func (h Hand) MinScore() int {
+	var score int
+	for _, card := range h {
+		score += min(int(card.Rank), 10)
+	}
+	return score
+}
+
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
 }
