@@ -178,3 +178,7 @@ func min(a, b int) int {
 	}
 	return b
 }
+
+func Draw(cards []Card) (Card, []Card) {
+	return cards[0], cards[1:]
+}
