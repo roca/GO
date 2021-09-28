@@ -16,7 +16,7 @@ type HumanAI struct {
 	GameState game.GameState
 }
 
-func New(gs game.GameState) HumanAI {
+func NewPlayer(gs game.GameState) HumanAI {
 	return HumanAI{
 		GameState: gs,
 	}
@@ -26,10 +26,10 @@ func (ai *HumanAI) Bet() int {
 	return 1
 }
 
-func (ai *HumanAI) Play(hand []deck.Card, dealer deck.Card) Move {
+func (ai *HumanAI) Play() Move {
 	for {
-		fmt.Println("Player:", hand, ",Score:", deck.Hand(hand).Score())
-		fmt.Println("Dealer:", dealer)
+		fmt.Println("Player:", ai.GameState.Player, ",Score:", ai.GameState.Player.Score())
+		fmt.Println("Dealer:", ai.GameState.Dealer[0])
 		fmt.Println("What will you do? (h)it or (s)tand")
 		var input string
 		fmt.Scanf("%s\n", &input)
@@ -46,12 +46,8 @@ func (ai *HumanAI) Play(hand []deck.Card, dealer deck.Card) Move {
 
 type Move func(game.GameState) game.GameState
 
-func (ai *HumanAI) Results(hands [][]deck.Card, dealer []deck.Card) {
-	for _, hand := range hands {
-		gs := game.GameState{
-			Player: hand,
-			Dealer: dealer,
-		}
+func Results(games []game.GameState) {
+	for _, gs := range games {
 		gs = game.EndHand(gs)
 	}
 }
