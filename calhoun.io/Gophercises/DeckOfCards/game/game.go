@@ -88,7 +88,6 @@ func EndHand(gs GameState) GameState {
 	case dScore == pScore:
 		fmt.Println("Draw")
 	}
-	fmt.Printf("\n %d cards left in deck \n\n", len(ret.Deck))
 
 	ret.Player = nil
 	ret.Dealer = nil
