@@ -2,39 +2,27 @@ package blackjack
 
 import (
 	"deck_of_cards/deck"
-	"deck_of_cards/game"
 )
 
-type DealerAI struct {
-	GameState game.GameState
+func DealerAI() AI {
+	return dealerAI{}
 }
 
-func NewDealer(gs game.GameState) DealerAI {
-	return DealerAI{
-		GameState: gs,
-	}
-}
+type dealerAI struct{}
 
-func (ai *DealerAI) Bet() int {
+func (ai dealerAI) Bet() int {
+	// noop
 	return 1
 }
 
-func (ai *DealerAI) Play() Move {
-	// If dealer score <= 16, we hit
-	// If dealer has a soft 17, then we hit.
-	if ai.GameState.Dealer.Score() <= 16 || (ai.GameState.Dealer.Score() == 17 && ai.GameState.Dealer.MinScore() != 17) {
-		return Hit
-	} else {
-		return Stand
+func (ai dealerAI) Play(hand []deck.Card, dealer deck.Card) Move {
+	dScore := Score(hand...)
+	if dScore <= 16 || (dScore == 17 && Soft(hand...)) {
+		return MoveHit
 	}
+	return MoveStand
 }
 
-func (ai *DealerAI) Results(hands [][]deck.Card, dealer []deck.Card) {
-	for _, hand := range hands {
-		gs := game.GameState{
-			Player: hand,
-			Dealer: dealer,
-		}
-		gs = game.EndHand(gs)
-	}
+func (ai dealerAI) Results(hand [][]deck.Card, dealer []deck.Card) {
+	// noop
 }
