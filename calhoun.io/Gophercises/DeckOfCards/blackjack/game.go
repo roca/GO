@@ -44,25 +44,25 @@ type StartOption struct {
 }
 
 func (o StartOption) String() string {
-	return fmt.Sprintf("{Decks: %d, Hands: %d, BlackjackPayouts: %g}",o.Decks,o.Hands,o.BlackjackPayouts)
+	return fmt.Sprintf("{Decks: %d, Hands: %d, BlackjackPayouts: %g}", o.Decks, o.Hands, o.BlackjackPayouts)
 }
 
 func New(opts ...interface{}) Game {
-	startOption := StartOption{3, 100, 1.5}
+	startDefaults := StartOption{3, 100, 1.5}
 	for _, opt := range opts {
 		switch o := opt.(type) {
 		case StartOption:
-			startOption = o
+			startDefaults = o
 		}
 	}
-	fmt.Println("New Game started with default options", startOption)
+	fmt.Println("New Game started with default options", startDefaults)
 	return Game{
-		nDecks:           startOption.Decks,
-		nHands:           startOption.Hands,
+		nDecks:           startDefaults.Decks,
+		nHands:           startDefaults.Hands,
 		state:            statePlayerTurn,
 		dealerAI:         dealerAI{},
 		balance:          0,
-		blackjackPayouts: startOption.BlackjackPayouts,
+		blackjackPayouts: startDefaults.BlackjackPayouts,
 	}
 }
 
@@ -91,9 +91,14 @@ func deal(g *Game) {
 }
 
 func (g *Game) Play(ai AI) int {
-	g.deck = deck.New(deck.Deck(3), deck.Shuffle)
+	g.deck = nil
 
-	for i := 0; i < 2; i++ {
+	minCards := 52 * g.nDecks / 3
+
+	for i := 0; i < g.nHands; i++ {
+		if len(g.deck) < minCards {
+			g.deck = deck.New(deck.Deck(g.nDecks), deck.Shuffle)
+		}
 		deal(g)
 		for g.state == statePlayerTurn {
 			hand := make([]deck.Card, len(g.player))
