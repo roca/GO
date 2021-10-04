@@ -37,22 +37,26 @@ type AI interface {
 	Results(hands [][]deck.Card, dealer []deck.Card)
 }
 
-type Options struct {
+type StartOption struct {
 	Decks            int
 	Hands            int
 	BlackjackPayouts float64
 }
 
+func (o StartOption) String() string {
+	return fmt.Sprintf("{Decks: %d, Hands: %d, BlackjackPayouts: %g}",o.Decks,o.Hands,o.BlackjackPayouts)
+}
+
 func New(opts ...interface{}) Game {
-	defaults := Options{3, 100, 1.5}
+	defaults := StartOption{3, 100, 1.5}
 
 	for _, opt := range opts {
 		switch o := opt.(type) {
-		case Options:
+		case StartOption:
 			defaults = o
 		}
 	}
-	fmt.Println("New Game with default options", defaults)
+	fmt.Println("New Game started with default options", defaults)
 	return Game{
 		nDecks:           defaults.Decks,
 		nHands:           defaults.Hands,
