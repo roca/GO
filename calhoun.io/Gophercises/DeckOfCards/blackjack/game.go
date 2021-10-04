@@ -48,22 +48,21 @@ func (o StartOption) String() string {
 }
 
 func New(opts ...interface{}) Game {
-	defaults := StartOption{3, 100, 1.5}
-
+	startOption := StartOption{3, 100, 1.5}
 	for _, opt := range opts {
 		switch o := opt.(type) {
 		case StartOption:
-			defaults = o
+			startOption = o
 		}
 	}
-	fmt.Println("New Game started with default options", defaults)
+	fmt.Println("New Game started with default options", startOption)
 	return Game{
-		nDecks:           defaults.Decks,
-		nHands:           defaults.Hands,
+		nDecks:           startOption.Decks,
+		nHands:           startOption.Hands,
 		state:            statePlayerTurn,
 		dealerAI:         dealerAI{},
 		balance:          0,
-		blackjackPayouts: defaults.BlackjackPayouts,
+		blackjackPayouts: startOption.BlackjackPayouts,
 	}
 }
 
