@@ -6,7 +6,8 @@ import (
 )
 
 const (
-	statePlayerTurn state = iota
+	stateBet state = iota
+	statePlayerTurn
 	stateDealerTurn
 	stateHandOver
 )
@@ -19,12 +20,15 @@ type state int8
 
 type Game struct {
 	// unexported fields
-	deck     []deck.Card
-	state    state
-	player   []deck.Card
-	dealer   []deck.Card
-	dealerAI AI
-	balance  int
+	deck             []deck.Card
+	nDecks           int
+	nHands           int
+	state            state
+	player           []deck.Card
+	dealer           []deck.Card
+	dealerAI         AI
+	balance          int
+	blackjackPayouts float64
 }
 
 type AI interface {
@@ -33,11 +37,29 @@ type AI interface {
 	Results(hands [][]deck.Card, dealer []deck.Card)
 }
 
-func New() Game {
+type Options struct {
+	Decks            int
+	Hands            int
+	BlackjackPayouts float64
+}
+
+func New(opts ...interface{}) Game {
+	defaults := Options{3, 100, 1.5}
+
+	for _, opt := range opts {
+		switch o := opt.(type) {
+		case Options:
+			defaults = o
+		}
+	}
+	fmt.Println("New Game with default options", defaults)
 	return Game{
-		state:    statePlayerTurn,
-		dealerAI: dealerAI{},
-		balance:  0,
+		nDecks:           defaults.Decks,
+		nHands:           defaults.Hands,
+		state:            statePlayerTurn,
+		dealerAI:         dealerAI{},
+		balance:          0,
+		blackjackPayouts: defaults.BlackjackPayouts,
 	}
 }
 
