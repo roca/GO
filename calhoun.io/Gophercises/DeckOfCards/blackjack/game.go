@@ -6,8 +6,7 @@ import (
 )
 
 const (
-	stateBet state = iota
-	statePlayerTurn
+	statePlayerTurn state = iota
 	stateDealerTurn
 	stateHandOver
 )
@@ -20,19 +19,23 @@ type state int8
 
 type Game struct {
 	// unexported fields
-	deck             []deck.Card
 	nDecks           int
 	nHands           int
-	state            state
-	player           []deck.Card
-	dealer           []deck.Card
-	dealerAI         AI
-	balance          int
 	blackjackPayouts float64
+
+	state state
+	deck  []deck.Card
+
+	player    []deck.Card
+	playerBet int
+	balance   int
+
+	dealer   []deck.Card
+	dealerAI AI
 }
 
 type AI interface {
-	Bet() int
+	Bet(shuffled bool) int
 	Play(hand []deck.Card, dealer deck.Card) Move
 	Results(hands [][]deck.Card, dealer []deck.Card)
 }
@@ -77,6 +80,10 @@ func (g *Game) currentHand() *[]deck.Card {
 	}
 }
 
+func bet(g *Game, ai AI, shuffled bool) {
+	g.playerBet = ai.Bet(shuffled)
+}
+
 func deal(g *Game) {
 	g.player = make([]deck.Card, 0, 5)
 	g.dealer = make([]deck.Card, 0, 5)
@@ -96,9 +103,12 @@ func (g *Game) Play(ai AI) int {
 	minCards := 52 * g.nDecks / 3
 
 	for i := 0; i < g.nHands; i++ {
+		shuffled := false
 		if len(g.deck) < minCards {
 			g.deck = deck.New(deck.Deck(g.nDecks), deck.Shuffle)
+			shuffled = true
 		}
+		bet(g, ai, shuffled)
 		deal(g)
 		for g.state == statePlayerTurn {
 			hand := make([]deck.Card, len(g.player))
@@ -136,26 +146,27 @@ func MoveStand(g *Game) {
 func endHand(g *Game, ai AI) {
 	pScore, dScore := Score(g.player...), Score(g.dealer...)
 	// TODO(roca): Figure out winnings and add/subtract them
+	winnings := g.playerBet
 	switch {
 	case pScore > 21:
 		fmt.Println("You busted")
-		g.balance--
+		winnings = -winnings
 	case dScore > 21:
 		fmt.Println("Dealer busted")
-		g.balance++
 	case pScore > dScore:
 		fmt.Println("You win!")
-		g.balance++
 	case dScore > pScore:
 		fmt.Println("You loose")
-		g.balance--
+		winnings = -winnings
 	case dScore == pScore:
 		fmt.Println("Draw")
+		winnings = 0
 	}
+	g.balance += winnings
 
-	fmt.Printf("Balance: %d\n", g.balance)
 
 	ai.Results([][]deck.Card{g.player}, g.dealer)
+	fmt.Printf("Balance: %d\n", g.balance)
 	g.player = nil
 	g.dealer = nil
 }
