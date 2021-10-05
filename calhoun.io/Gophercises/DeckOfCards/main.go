@@ -16,7 +16,7 @@ func main() {
 	startDefaults := blackjack.StartOption{
 		Decks:            3,
 		Hands:            2,
-		BlackjackPayouts: 1.5,
+		BlackjackPayout: 1.5,
 	}
 	game := blackjack.New(startDefaults)
 	_ = game.Play(blackjack.HumanAI())

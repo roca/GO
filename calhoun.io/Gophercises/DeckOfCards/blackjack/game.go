@@ -19,9 +19,9 @@ type state int8
 
 type Game struct {
 	// unexported fields
-	nDecks           int
-	nHands           int
-	blackjackPayouts float64
+	nDecks          int
+	nHands          int
+	blackjackPayout float64
 
 	state state
 	deck  []deck.Card
@@ -41,13 +41,13 @@ type AI interface {
 }
 
 type StartOption struct {
-	Decks            int
-	Hands            int
-	BlackjackPayouts float64
+	Decks           int
+	Hands           int
+	BlackjackPayout float64
 }
 
 func (o StartOption) String() string {
-	return fmt.Sprintf("{Decks: %d, Hands: %d, BlackjackPayouts: %g}", o.Decks, o.Hands, o.BlackjackPayouts)
+	return fmt.Sprintf("{Decks: %d, Hands: %d, BlackjackPayout: %g}", o.Decks, o.Hands, o.BlackjackPayout)
 }
 
 func New(opts ...interface{}) Game {
@@ -60,12 +60,12 @@ func New(opts ...interface{}) Game {
 	}
 	fmt.Println("New Game started with default options", startDefaults)
 	return Game{
-		nDecks:           startDefaults.Decks,
-		nHands:           startDefaults.Hands,
-		state:            statePlayerTurn,
-		dealerAI:         dealerAI{},
-		balance:          0,
-		blackjackPayouts: startDefaults.BlackjackPayouts,
+		nDecks:          startDefaults.Decks,
+		nHands:          startDefaults.Hands,
+		state:           statePlayerTurn,
+		dealerAI:        dealerAI{},
+		balance:         0,
+		blackjackPayout: startDefaults.BlackjackPayout,
 	}
 }
 
@@ -99,9 +99,7 @@ func deal(g *Game) {
 
 func (g *Game) Play(ai AI) int {
 	g.deck = nil
-
 	minCards := 52 * g.nDecks / 3
-
 	for i := 0; i < g.nHands; i++ {
 		shuffled := false
 		if len(g.deck) < minCards {
@@ -110,6 +108,10 @@ func (g *Game) Play(ai AI) int {
 		}
 		bet(g, ai, shuffled)
 		deal(g)
+		if Blackjack(g.dealer...) {
+			endHand(g, ai)
+			continue
+		}
 		for g.state == statePlayerTurn {
 			hand := make([]deck.Card, len(g.player))
 			copy(hand, g.player)
@@ -146,25 +148,27 @@ func MoveStand(g *Game) {
 func endHand(g *Game, ai AI) {
 	pScore, dScore := Score(g.player...), Score(g.dealer...)
 	// TODO(roca): Figure out winnings and add/subtract them
+	pBlackjack, dBlackjack := Blackjack(g.player...), Blackjack(g.dealer...)
 	winnings := g.playerBet
 	switch {
+	case pBlackjack && dBlackjack:
+		winnings = 0
+	case dBlackjack:
+		winnings = -winnings
+	case pBlackjack:
+		winnings = int(float64(winnings) * g.blackjackPayout)
 	case pScore > 21:
-		fmt.Println("You busted")
 		winnings = -winnings
 	case dScore > 21:
-		fmt.Println("Dealer busted")
+		// win
 	case pScore > dScore:
-		fmt.Println("You win!")
+		// win
 	case dScore > pScore:
-		fmt.Println("You loose")
 		winnings = -winnings
 	case dScore == pScore:
-		fmt.Println("Draw")
 		winnings = 0
 	}
 	g.balance += winnings
-
-
 	ai.Results([][]deck.Card{g.player}, g.dealer)
 	fmt.Printf("Balance: %d\n", g.balance)
 	g.player = nil
@@ -194,6 +198,11 @@ func Soft(hand ...deck.Card) bool {
 	minScore := minScore(hand...)
 	score := Score(hand...)
 	return minScore != score
+}
+
+// Blackjack returns true if a hand is a blackjack
+func Blackjack(hand ...deck.Card) bool {
+	return len(hand) == 2 && Score(hand...) == 21
 }
 
 func minScore(hand ...deck.Card) int {
