@@ -5,7 +5,7 @@ package main
 2. add betting
 3. blackjack payouts (1.5x)
 4. doubling down
-5. splitting 7,7
+5. TODO: splitting 7,7
 */
 
 import (
