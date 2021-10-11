@@ -164,6 +164,20 @@ func MoveHit(g *Game) error {
 	return nil
 }
 
+func MoveSplit(g *Game) error {
+	hand := g.currentHand()
+	if len(*hand) != 2 {
+		return errors.New("you can only split with two cards in your hand")
+	}
+	if (*hand)[0].Rank != (*hand)[1].Rank {
+		return errors.New("both cards must have the same rank to split")
+	}
+	g.player = append(g.player, hand{
+		cards: []deck.Card{*hand[1]},
+		bet:   g.player[g.handIdx].bet,
+	})
+}
+
 func MoveDouble(g *Game) error {
 	if len(g.player) != 2 {
 		return errors.New("can only double on a hand with 2 cards")
