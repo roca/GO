@@ -101,6 +101,10 @@ func deal(g *Game) {
 		card, g.deck = draw(g.deck)
 		g.dealer = append(g.dealer, card)
 	}
+	playerHand = []deck.Card{
+		{Rank: deck.Seven},
+		{Rank: deck.Seven},
+	}
 	g.player = []hand{
 		{cards: playerHand, bet: g.playerBet},
 	}
@@ -165,17 +169,19 @@ func MoveHit(g *Game) error {
 }
 
 func MoveSplit(g *Game) error {
-	hand := g.currentHand()
-	if len(*hand) != 2 {
+	cards := g.currentHand()
+	if len(*cards) != 2 {
 		return errors.New("you can only split with two cards in your hand")
 	}
-	if (*hand)[0].Rank != (*hand)[1].Rank {
+	if (*cards)[0].Rank != (*cards)[1].Rank {
 		return errors.New("both cards must have the same rank to split")
 	}
 	g.player = append(g.player, hand{
-		cards: []deck.Card{*hand[1]},
+		cards: []deck.Card{(*cards)[1]},
 		bet:   g.player[g.handIdx].bet,
 	})
+	g.player[g.handIdx].cards = (*cards)[:1]
+	return nil
 }
 
 func MoveDouble(g *Game) error {

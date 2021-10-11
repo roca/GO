@@ -24,7 +24,7 @@ func (ai humanAI) Bet(shuffled bool) int {
 func (ai humanAI) Play(hand []deck.Card, dealer deck.Card) Move {
 	for {
 		fmt.Println("Player:", hand, Score(hand...))
-		fmt.Println("What will you do? (h)it, (s)and, (d)ouble")
+		fmt.Println("What will you do? (h)it, (s)and, (d)ouble, s(p)lit")
 		var input string
 		fmt.Scanf("%s\n", &input)
 		switch input {
@@ -34,6 +34,8 @@ func (ai humanAI) Play(hand []deck.Card, dealer deck.Card) Move {
 			return MoveStand
 		case "d":
 			return MoveDouble
+		case "p":
+			return MoveSplit
 		default:
 			fmt.Println("Invalid option:", input)
 		}
