@@ -65,7 +65,7 @@ func New(opts ...interface{}) Game {
 			startDefaults = o
 		}
 	}
-	fmt.Println("New Game started with default options", startDefaults)
+	// fmt.Println("New Game started with default options", startDefaults)
 	return Game{
 		nDecks:          startDefaults.Decks,
 		nHands:          startDefaults.Hands,
@@ -253,7 +253,7 @@ func endRound(g *Game, ai AI) {
 		g.balance += winnings
 	}
 	ai.Results(allHands, g.dealer)
-	fmt.Printf("Balance: %d\n", g.balance)
+        // fmt.Printf("Balance: %d\n", g.balance)
 	g.player = nil
 	g.dealer = nil
 

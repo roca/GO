@@ -10,15 +10,17 @@ package main
 
 import (
 	"deck_of_cards/blackjack"
+	"fmt"
 )
-
 
 func main() {
 	startDefaults := blackjack.StartOption{
-		Decks:            3,
-		Hands:            2,
+		Decks:           4,
+		Hands:           50000,
 		BlackjackPayout: 1.5,
 	}
 	game := blackjack.New(startDefaults)
-	_ = game.Play(blackjack.HumanAI())
+	winnings := game.Play(blackjack.BasicAI())
+
+	fmt.Println(winnings)
 }
