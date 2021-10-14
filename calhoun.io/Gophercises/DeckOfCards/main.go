@@ -20,7 +20,7 @@ func main() {
 		BlackjackPayout: 1.5,
 	}
 	game := blackjack.New(startDefaults)
-	winnings := game.Play(blackjack.BasicAI())
+	winnings := game.Play(blackjack.BasicAI(blackjack.BasicAIOption{Decks: startDefaults.Decks}))
 
 	fmt.Println(winnings)
 }

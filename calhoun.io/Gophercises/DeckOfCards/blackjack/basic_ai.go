@@ -1,15 +1,52 @@
 package blackjack
 
-import "deck_of_cards/deck"
+import (
+	"deck_of_cards/deck"
+)
 
-type basicAI struct{}
+type basicAI struct {
+	score int
+	seen  int
+	decks int
+}
 
-func BasicAI() AI {
-	return basicAI{}
+type BasicAIOption struct {
+	Score int
+	Seen  int
+	Decks int
+}
+
+func BasicAI(opts ...interface{}) AI {
+	aiDefaults := BasicAIOption{}
+	for _, opt := range opts {
+		switch o := opt.(type) {
+		case BasicAIOption:
+			aiDefaults = o
+		}
+	}
+
+	return basicAI{
+		score: aiDefaults.Score,
+		seen:  aiDefaults.Seen,
+		decks: aiDefaults.Decks,
+	}
 }
 
 func (ai basicAI) Bet(shuffled bool) int {
-	return 100
+	refAI := &ai
+	if shuffled {
+		refAI.score = 0
+		refAI.seen = 0
+	}
+	trueScore := ai.score / ((ai.decks*52 - ai.seen) / 52)
+	switch {
+	case trueScore >= 14:
+		return 100000
+	case trueScore >= 8:
+		return 5000
+	default:
+		return 100
+	}
 }
 
 func (ai basicAI) Play(hand []deck.Card, dealer deck.Card) Move {
@@ -37,5 +74,23 @@ func (ai basicAI) Play(hand []deck.Card, dealer deck.Card) Move {
 }
 
 func (ai basicAI) Results(hands [][]deck.Card, dealer []deck.Card) {
-	// noop
+	for _, card := range dealer {
+		ai.count(card)
+	}
+	for _, hand := range hands {
+		for _, card := range hand {
+			ai.count(card)
+		}
+	}
+}
+func (ai basicAI) count(card deck.Card) {
+	refAI := &ai
+	score := Score(card)
+	switch {
+	case score >= 10:
+		refAI.score--
+	case score <= 6:
+		refAI.score++
+	}
+	refAI.seen++
 }
