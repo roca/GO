@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
-	"udemy.com/Frameworks/Gin-Web/books"
+	"udemy.com/books"
 )
 
 func main() {
