@@ -7,6 +7,7 @@ require (
 	github.com/99designs/gqlgen v0.11.3 // indirect
 	github.com/JesusIslam/tldr v0.6.0 // indirect
 	github.com/Obaied/RAKE.Go v0.0.0-20191109090147-068a9e43b194 // indirect
+	github.com/Shopify/sarama v1.19.0
 	github.com/abadojack/whatlanggo v1.0.1 // indirect
 	github.com/afex/hystrix-go v0.0.0-20180502004556-fa1af6a1f4f5
 	github.com/arsmn/fiber-swagger/v2 v2.6.0 // indirect
@@ -30,7 +31,9 @@ require (
 	github.com/gofiber/fiber/v2 v2.9.0 // indirect
 	github.com/gofiber/template v1.6.9 // indirect
 	github.com/gogo/protobuf v1.3.1 // indirect
+	github.com/golang/protobuf v1.3.3
 	github.com/grassmudhorses/vader-go v0.0.0-20191126145716-003d5aacdb71 // indirect
+	github.com/hashicorp/consul/api v1.1.0
 	github.com/jboursiquot/shoutouts v0.0.0-20190724224516-20f77e089950 // indirect
 	github.com/jdkato/prose v1.2.1 // indirect
 	github.com/jdkato/prose/v2 v2.0.0 // indirect
@@ -46,6 +49,7 @@ require (
 	github.com/pressly/chi v4.1.2+incompatible // indirect
 	github.com/rylans/getlang v0.0.0-20201227074721-9e7f44ff8aa0 // indirect
 	github.com/sirupsen/logrus v1.6.0 // indirect
+	github.com/streadway/amqp v1.0.0
 	github.com/swaggo/swag v1.7.0 // indirect
 	github.com/unrolled/secure v1.0.8 // indirect
 	golang.org/x/net v0.0.0-20210316092652-d523dce5a7f4
