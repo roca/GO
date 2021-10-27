@@ -13,7 +13,7 @@ services:
     networks:
       - sky-net
   gin-web-01:
-    image: gin-web:1.0.1
+    image: rcampbell/gin-web:1.0.1
     environment: 
       - PORT=8080
     ports: 
@@ -21,7 +21,7 @@ services:
     networks:
       - sky-net
   gin-web-02:
-    image: gin-web:1.0.1
+    image: rcampbell/gin-web:1.0.1
     environment: 
       - PORT=9090
     ports: 
