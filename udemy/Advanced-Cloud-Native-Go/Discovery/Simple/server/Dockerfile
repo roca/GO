@@ -1,10 +1,11 @@
-FROM golang:1.8.1-alpine
+FROM golang:alpine3.14
 
 RUN apk update && apk upgrade && apk add --no-cache bash git
 
 RUN go get github.com/hashicorp/consul/api
 
-ENV SOURCES /go/src/github.com/PacktPublishing/Advanced-Cloud-Native-Go/Discovery/Simple/
+ENV SOURCES /app/Simple/
+RUN mkdir -p ${SOURCES}
 COPY . ${SOURCES}
 
 RUN cd ${SOURCES}server/ && CGO_ENABLED=0 go build
