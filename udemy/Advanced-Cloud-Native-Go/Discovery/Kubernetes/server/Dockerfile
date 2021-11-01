@@ -1,9 +1,10 @@
-FROM golang:1.8.1-alpine
+FROM golang:alpine3.14
 
-ENV SOURCES /go/src/github.com/PacktPublishing/Advanced-Cloud-Native-Go/Discovery/Kubernetes/
+ENV SOURCES /app/K8s/
+RUN mkdir -p ${SOURCES}
 COPY . ${SOURCES}
 
-RUN cd ${SOURCES}server/ && CGO_ENABLED=0 go build
+RUN cd ${SOURCES}server/ && CGO_ENABLED=0 go build -o server
 
 WORKDIR ${SOURCES}server/
 CMD ${SOURCES}server/server

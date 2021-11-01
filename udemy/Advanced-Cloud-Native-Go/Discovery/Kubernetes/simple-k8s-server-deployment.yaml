@@ -1,9 +1,14 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: simple-k8s-server
+  labels:
+    io.kompose.service: simple-k8s-server
 spec:
   replicas: 2
+  selector:
+    matchLabels:
+      io.kompose.service: simple-k8s-server
   template:
     metadata:
       labels:
@@ -11,12 +16,20 @@ spec:
     spec:
       containers:
       - name: simple-k8s-server
-        image: "simple-k8s-server:1.0.1"
+        image: "rcampbell/simple-k8s-server:1.0.1"
         ports:
         - containerPort: 9090
         env:
         - name: PORT
           value: "9090"
+
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "125m"
+          limits:
+            memory: "128Mi"
+            cpu: "250m"
 
         readinessProbe:
           httpGet:
