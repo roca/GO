@@ -38,7 +38,8 @@ func hello(t time.Time, client *http.Client) {
 
 	// print response
 	body, _ := ioutil.ReadAll(response.Body)
-	fmt.Printf("%s. Time is %v\n", body, t)
+	os.Stdout.WriteString(fmt.Sprintf("%s. Time is %v\n", body, t))
+	// fmt.Printf("%s. Time is %v\n", body, t)
 }
 
 func callHelloEvery(d time.Duration, client *http.Client) {

@@ -17,6 +17,7 @@ spec:
       containers:
       - name: simple-k8s-server
         image: "rcampbell/simple-k8s-server:1.0.1"
+        imagePullPolicy: Always
         ports:
         - containerPort: 9090
         env:
