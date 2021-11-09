@@ -1,10 +1,10 @@
-FROM golang:1.15
+FROM golang:1.17
 
 # RUN apk update && apk upgrade && apk add --no-cache bash git
 
-# RUN go get -u github.com/micro/micro && \
-#     go get github.com/micro/protobuf/proto && \
-#     go get -u github.com/micro/protobuf/protoc-gen-go
+RUN go install github.com/micro/micro@latest && \
+    go install github.com/micro/protobuf/proto@latest && \
+    go install github.com/micro/protobuf/protoc-gen-go@latest
 
 ENV SOURCES /app/Go-Micro/
 RUN mkdir -p ${SOURCES}

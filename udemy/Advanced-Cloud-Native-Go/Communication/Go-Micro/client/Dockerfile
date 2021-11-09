@@ -2,20 +2,29 @@ FROM golang:1.15
 
 # RUN apk update && apk upgrade && apk add --no-cache bash git
 
-# RUN go get -u github.com/micro/micro && \
-#     go get github.com/micro/protobuf/proto && \
-#     go get -u github.com/micro/protobuf/protoc-gen-go && \
-#     go get github.com/micro/go-plugins/wrapper/breaker/hystrix && \
-#     go get github.com/afex/hystrix-go/hystrix
+# RUN go clean -modcache
+
+
+# RUN go mod tidy
 
 ENV SOURCES /app/Go-Micro/
 RUN mkdir -p ${SOURCES}
 COPY . ${SOURCES}
 
-RUN cd ${SOURCES}client/ && CGO_ENABLED=0 go build
+WORKDIR ${SOURCES}
+
+RUN go mod init udemy.com
+
+RUN go install github.com/micro/micro@latest && \
+    go install github.com/golang/protobuf/proto@latest && \
+    go install github.com/golang/protobuf/protoc-gen-go@latest && \
+    go install github.com/micro/go-plugins/wrapper/breaker/hystrix@latest && \
+    go install github.com/afex/hystrix-go/hystrix@latest
+
+
+RUN CGO_ENABLED=0  go build -o client/client client/main.go
 
 ENV CONSUL_HTTP_ADDR localhost:8500
 
-WORKDIR ${SOURCES}client/
 # CMD ["tail", "-f", "/dev/null"]
-CMD ${SOURCES}client/client
+CMD client/client
