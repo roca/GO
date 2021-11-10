@@ -6,31 +6,31 @@ import (
 	"net/http"
 	"time"
 
+	proto "udemy.com/proto"
 	hystrix "github.com/afex/hystrix-go/hystrix"
 	micro "github.com/micro/go-micro"
 	breaker "github.com/micro/go-plugins/wrapper/breaker/hystrix"
 	"golang.org/x/net/context"
-	greater "udemy.com/greater"
 )
 
 // The Greeter API.
 type Greeter struct{}
 
 // Hello is a Greeter API method.
-func (g *Greeter) Hello(ctx context.Context, req *greater.HelloRequest, rsp *greater.HelloResponse) error {
+func (g *Greeter) Hello(ctx context.Context, req *proto.HelloRequest, rsp *proto.HelloResponse) error {
 	rsp.Greeting = "Hello " + req.Name
 	return nil
 }
 
-func callEvery(d time.Duration, greeter greater.GreeterClient, f func(time.Time, greater.GreeterClient)) {
+func callEvery(d time.Duration, greeter proto.GreeterClient, f func(time.Time, proto.GreeterClient)) {
 	for x := range time.Tick(d) {
 		f(x, greeter)
 	}
 }
 
-func hello(t time.Time, greeter greater.GreeterClient) {
+func hello(t time.Time, greeter proto.GreeterClient) {
 	// Call the greeter
-	rsp, err := greeter.Hello(context.TODO(), &greater.HelloRequest{Name: "Leander, calling at " + t.String()})
+	rsp, err := greeter.Hello(context.TODO(), &proto.HelloRequest{Name: "Leander, calling at " + t.String()})
 	if err != nil {
 		if err.Error() == "hystrix: timeout" {
 			fmt.Printf("%s. Insert fallback logic here.\n", err.Error())
@@ -73,6 +73,6 @@ func main() {
 	go http.ListenAndServe(net.JoinHostPort("", "8081"), hystrixStreamHandler)
 
 	// Create new greeter client and call hello
-	greeter := greater.NewGreeterClient("greeter", service.Client())
+	greeter := proto.NewGreeterClient("greeter", service.Client())
 	callEvery(3*time.Second, greeter, hello)
 }

@@ -15,25 +15,23 @@ services:
       context: .
       dockerfile: server/Dockerfile
     image: go-micro-server:1.0.1
-    working_dir: /app/Go-Micro
-    # volumes:
-    #   - .:/app/Go-Micro
     environment: 
     - CONSUL_HTTP_ADDR=consul:8500
     depends_on:
       - consul
     networks:
       - sky-net
-    command:  tail -f /dev/null
+    # volumes:
+    #   - .:/Go-Micro
+    working_dir: /Go-Micro
+    command: >
+      /bin/bash -c "cd server && CGO_ENABLED=0 go build -o server main.go && tail -f /dev/null"
 
   go-micro-client:
     build:
       context: .
       dockerfile: client/Dockerfile
     image: go-micro-client:1.0.1     
-    working_dir: /app/Go-Micro
-    # volumes:
-    #   - .:/app/Go-Micro
     environment: 
     - CONSUL_HTTP_ADDR=consul:8500 
     depends_on:
@@ -41,7 +39,11 @@ services:
       - go-micro-server
     networks:
       - sky-net
-    command:  tail -f /dev/null
+    # volumes:
+    #   - .:/Go-Micro
+    working_dir: /Go-Micro
+    command: >
+      /bin/bash -c "cd client && CGO_ENABLED=0 go build -o client main.go && tail -f /dev/null"
 
   hystrix-dashboard:
     image: mlabouardy/hystrix-dashboard:latest

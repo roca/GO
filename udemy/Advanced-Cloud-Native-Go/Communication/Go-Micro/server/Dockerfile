@@ -1,19 +1,23 @@
-FROM golang:1.17
+FROM golang:1.16.2
 
-# RUN apk update && apk upgrade && apk add --no-cache bash git
-
-RUN go install github.com/micro/micro@latest && \
-    go install github.com/micro/protobuf/proto@latest && \
-    go install github.com/micro/protobuf/protoc-gen-go@latest
-
-ENV SOURCES /app/Go-Micro/
+ENV SOURCES /Go-Micro/
 RUN mkdir -p ${SOURCES}
 COPY . ${SOURCES}
+WORKDIR ${SOURCES}
 
-RUN cd ${SOURCES}server/ && CGO_ENABLED=0 go build
+RUN go mod init udemy.com
+
+RUN go get github.com/golang/protobuf/proto
+RUN go get github.com/micro/go-micro
+RUN go get github.com/micro/go-micro/client
+RUN go get github.com/micro/go-micro/server
+RUN go get golang.org/x/net/context
+RUN go get github.com/afex/hystrix-go/hystrix
+
+RUN go mod download golang.org/x/sys
+RUN go mod download golang.org/x/text
 
 ENV CONSUL_HTTP_ADDR localhost:8500
+RUN cd ${SOURCES}server && CGO_ENABLED=0 go build -o server main.go
 
-WORKDIR ${SOURCES}server/
-# CMD ["tail", "-f", "/dev/null"]
-CMD ${SOURCES}server/server
+CMD server/server

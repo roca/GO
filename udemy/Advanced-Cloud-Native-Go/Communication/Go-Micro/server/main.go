@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	greater "udemy.com/greater"
+	proto "udemy.com/proto"
 	micro "github.com/micro/go-micro"
 	"golang.org/x/net/context"
 )
@@ -15,7 +15,7 @@ type Greeter struct{}
 var counter int
 
 // Hello is a Greeter API method.
-func (g *Greeter) Hello(ctx context.Context, req *greater.HelloRequest, rsp *greater.HelloResponse) error {
+func (g *Greeter) Hello(ctx context.Context, req *proto.HelloRequest, rsp *proto.HelloResponse) error {
 	counter++
 	if counter > 7 && counter < 15 {
 		time.Sleep(1000 * time.Millisecond)
@@ -44,7 +44,7 @@ func main() {
 	service.Init()
 
 	// Register handler
-	greater.RegisterGreeterHandler(service.Server(), new(Greeter))
+	proto.RegisterGreeterHandler(service.Server(), new(Greeter))
 
 	// Run the server
 	if err := service.Run(); err != nil {
