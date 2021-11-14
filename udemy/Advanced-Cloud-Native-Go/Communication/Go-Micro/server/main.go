@@ -5,7 +5,7 @@ import (
 	"time"
 
 	proto "udemy.com/proto"
-	micro "github.com/micro/go-micro"
+	micro "github.com/micro/micro/v3/service"
 	"golang.org/x/net/context"
 )
 
@@ -30,7 +30,7 @@ func (g *Greeter) Hello(ctx context.Context, req *proto.HelloRequest, rsp *proto
 
 func main() {
 	// Create a new service. Optionally include some options here.
-	service := micro.NewService(
+	service := micro.New(
 		micro.Name("greeter"),
 		micro.Version("1.0.1"),
 		micro.Metadata(map[string]string{

@@ -21,11 +21,13 @@ services:
       - consul
     networks:
       - sky-net
+    ports:
+      - "8080:8080"
     # volumes:
     #   - .:/Go-Micro
     working_dir: /Go-Micro
     command: >
-      /bin/bash -c "cd server && CGO_ENABLED=0 go build -o server main.go && tail -f /dev/null"
+      /bin/bash -c "tail -f /dev/null"
 
   go-micro-client:
     build:
@@ -39,18 +41,20 @@ services:
       - go-micro-server
     networks:
       - sky-net
+    ports:
+      - "8081:8081"
     # volumes:
     #   - .:/Go-Micro
     working_dir: /Go-Micro
     command: >
-      /bin/bash -c "cd client && CGO_ENABLED=0 go build -o client main.go && tail -f /dev/null"
+      /bin/bash -c "tail -f /dev/null"
 
-  hystrix-dashboard:
-    image: mlabouardy/hystrix-dashboard:latest
-    ports:
-      - "9002:9002"
-    networks:
-      - sky-net
+  # hystrix-dashboard:
+  #   image: mlabouardy/hystrix-dashboard:latest
+  #   ports:
+  #     - "9002:9002"
+  #   networks:
+  #     - sky-net
 
 networks:
   sky-net:

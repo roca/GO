@@ -2,15 +2,11 @@ package main
 
 import (
 	"fmt"
-	"net"
-	"net/http"
 	"time"
 
-	proto "udemy.com/proto"
-	hystrix "github.com/afex/hystrix-go/hystrix"
-	micro "github.com/micro/go-micro"
-	breaker "github.com/micro/go-plugins/wrapper/breaker/hystrix"
+	micro "github.com/micro/micro/v3/service"
 	"golang.org/x/net/context"
+	proto "udemy.com/proto"
 )
 
 // The Greeter API.
@@ -22,13 +18,13 @@ func (g *Greeter) Hello(ctx context.Context, req *proto.HelloRequest, rsp *proto
 	return nil
 }
 
-func callEvery(d time.Duration, greeter proto.GreeterClient, f func(time.Time, proto.GreeterClient)) {
+func callEvery(d time.Duration, greeter proto.GreeterService, f func(time.Time, proto.GreeterService)) {
 	for x := range time.Tick(d) {
 		f(x, greeter)
 	}
 }
 
-func hello(t time.Time, greeter proto.GreeterClient) {
+func hello(t time.Time, greeter proto.GreeterService) {
 	// Call the greeter
 	rsp, err := greeter.Hello(context.TODO(), &proto.HelloRequest{Name: "Leander, calling at " + t.String()})
 	if err != nil {
@@ -46,7 +42,7 @@ func hello(t time.Time, greeter proto.GreeterClient) {
 
 func main() {
 	// Create a new service. Optionally include some options here.
-	service := micro.NewService(
+	service := micro.New(
 		micro.Name("greeter"),
 		micro.Version("latest"),
 		micro.Metadata(map[string]string{
@@ -56,23 +52,9 @@ func main() {
 
 	// Init will parse the command line flags. Any flags set will
 	// override the above settings.
-	// specify a Hystrix breaker client wrapper here
-	service.Init(
-		micro.WrapClient(breaker.NewClientWrapper()),
-	)
-
-	// override some default values for the Hystrix breaker
-	hystrix.DefaultVolumeThreshold = 3
-	hystrix.DefaultErrorPercentThreshold = 75
-	hystrix.DefaultTimeout = 500
-	hystrix.DefaultSleepWindow = 3500
-
-	// export Hystrix stream
-	hystrixStreamHandler := hystrix.NewStreamHandler()
-	hystrixStreamHandler.Start()
-	go http.ListenAndServe(net.JoinHostPort("", "8081"), hystrixStreamHandler)
+	service.Init()
 
 	// Create new greeter client and call hello
-	greeter := proto.NewGreeterClient("greeter", service.Client())
+	greeter := proto.NewGreeterService("greeter", service.Client())
 	callEvery(3*time.Second, greeter, hello)
 }
