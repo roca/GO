@@ -1,0 +1,16 @@
+version: '2'
+
+services:
+  go-micro:
+    container_name: go-micro
+    image: micro/micro:v2.9.3
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/Go-Micro
+    ports:
+      - "8081:8081"
+    working_dir: /Go-Micro
+    command: >
+      /bin/bash -c "tail -f /dev/null"
