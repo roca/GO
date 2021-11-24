@@ -1,5 +1,7 @@
 package main
 
+// SRP: Single Responsibility Principle
+
 import (
 	"fmt"
 	"io/ioutil"
