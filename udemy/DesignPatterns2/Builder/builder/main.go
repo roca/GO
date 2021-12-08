@@ -20,7 +20,7 @@ func (e *HtmlElement) String() string {
 
 func (e *HtmlElement) string(indent int) string {
 	sb := strings.Builder{}
-	i := strings.Repeat(" ", indent * indent)
+	i := strings.Repeat(" ", indentSize*indent)
 	sb.WriteString(fmt.Sprintf("%s<%s>\n", i, e.name))
 	if len(e.text) > 0 {
 		sb.WriteString(strings.Repeat(" ", (indent+1)*indentSize))
@@ -33,16 +33,32 @@ func (e *HtmlElement) string(indent int) string {
 	sb.WriteString(fmt.Sprintf("%s</%s>\n", i, e.name))
 	return sb.String()
 }
+
 type HtmlBuilder struct {
 	rootName string
-	root *HtmlElement
+	root     *HtmlElement
 }
 
 func NewHtmlBuilder(rootName string) *HtmlBuilder {
 	return &HtmlBuilder{
-		rootName: rootName, 
-		root: &HtmlElement{name: rootName},
+		rootName: rootName,
+		root:     &HtmlElement{name: rootName},
 	}
+}
+
+func (b *HtmlBuilder) String() string {
+	return b.root.String()
+}
+
+func (b *HtmlBuilder) AddChild(childName, childText string) {
+	e := &HtmlElement{name: childName, text: childText}
+	b.root.elements = append(b.root.elements, e)
+}
+
+func (b *HtmlBuilder) AddChildFluent(childName, childText string) *HtmlBuilder {
+	e := &HtmlElement{name: childName, text: childText}
+	b.root.elements = append(b.root.elements, e)
+	return b
 }
 
 func main() {
@@ -65,4 +81,10 @@ func main() {
 	}
 	sb.WriteString("</ul>")
 	fmt.Println(sb.String())
+
+	b := NewHtmlBuilder("ul").
+		AddChildFluent("li", "hello").
+		AddChildFluent("li", "world")
+
+	fmt.Println(b.String())
 }
