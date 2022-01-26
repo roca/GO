@@ -1,6 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"bytes"
+	"encoding/gob"
+	"fmt"
+)
 
 type Address struct {
 	StreetAddress, City, Country string
@@ -20,25 +24,48 @@ type Person struct {
 	Friends []string
 }
 
-func (p *Person) DeepCopy() *Person{
-	q := p
+func (p *Person) DeepCopy() *Person {
+	q := *p
 	q.Address = p.Address.DeepCopy()
 	copy(q.Friends, p.Friends)
-	return q
+	return &q
+}
+
+func (p *Person) DeepCopy2() *Person { //This version will uses serialization method
+	b := bytes.Buffer{}
+	e := gob.NewEncoder(&b)
+	_ = e.Encode(p)
+
+	//fmt.Println(string(b.Bytes()))
+
+	d := gob.NewDecoder(&b)
+	result := Person{}
+	_ = d.Decode(&result)
+
+	return &result
+
 }
 
 func main() {
-	john := Person{"John", &Address{"123 London Road", "London", "UK"}}
+	john := Person{"John", &Address{"123 London Road", "London", "UK"}, []string{"Alice", "Bob", "Charlie"}}
 
+	// Example 1: There is a problem here
 	// jane := john // copy by value
+	// jane.Name = "Jane" // Ok, not changing john's Name
 	// jane.Address.StreetAddress = "321 Baker Street"
 
-	//n deep copying
+	// Example 2: This is better
+	// jane := john // copy by reference
+	// jane.Name = "Jane" // Ok, not changing john's Name
+	// jane.Address = &Address{"321 Baker Street", "London", "UK"} // Ok, changing jane's Address`s StreetAddress`
 
-	jane := john // copy by reference
-	jane.Name = "Jane" // Ok, not changing john's Name
+	// Example 3: This is even better!
+	jane := *john.DeepCopy2()
+	jane.Name = "Jane"                                          // Ok, not changing john's Name
 	jane.Address = &Address{"321 Baker Street", "London", "UK"} // Ok, changing jane's Address`s StreetAddress`
+	jane.Friends = append(jane.Friends, "Jack")
 
-	fmt.Println(john,john.Address)
-	fmt.Println(jane,jane.Address)
+	fmt.Printf("%p %v\n", &john, john)
+	fmt.Printf("%p %v\n", &jane, jane)
+
 }
