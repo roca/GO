@@ -7,15 +7,15 @@ import (
 var (
 	money = 100
 	wg    sync.WaitGroup
-	lock  = sync.Mutex{}
+	//lock  = sync.Mutex{}
 )
 
 func stingy() {
 	defer wg.Done()
 	for i := 1; i <= 1000; i++ {
-		lock.Lock()
+		//lock.Lock()
 		money += 10
-		lock.Unlock()
+		//lock.Unlock()
 
 	}
 	println("Stingy Done")
@@ -24,9 +24,9 @@ func stingy() {
 func spendy() {
 	defer wg.Done()
 	for i := 1; i <= 1000; i++ {
-		lock.Lock()
+		//lock.Lock()
 		money -= 10
-		lock.Unlock()
+		//lock.Unlock()
 
 	}
 	println("Spendy Done")
@@ -34,13 +34,12 @@ func spendy() {
 
 func main() {
 
-	for i := 1; i <= 4; i++ {
-		wg.Add(1)
+	for i := 1; i <= 400; i++ {
+		wg.Add(2)
 		go stingy()
-		wg.Add(1)
 		go spendy()
+		wg.Wait()
+		print(money, "\n")
 	}
 
-	wg.Wait()
-	print(money, "\n")
 }
