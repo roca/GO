@@ -1,37 +1,46 @@
 package main
 
 import (
-	"time"
+	"sync"
 )
 
 var (
 	money = 100
-	//lock  = sync.Mutex{}
+	wg    sync.WaitGroup
+	lock  = sync.Mutex{}
 )
 
 func stingy() {
+	defer wg.Done()
 	for i := 1; i <= 1000; i++ {
-		//lock.Lock()
+		lock.Lock()
 		money += 10
-		//lock.Unlock()
-		time.Sleep(1 * time.Millisecond)
+		lock.Unlock()
+
 	}
 	println("Stingy Done")
 }
 
 func spendy() {
+	defer wg.Done()
 	for i := 1; i <= 1000; i++ {
-		//lock.Lock()
+		lock.Lock()
 		money -= 10
-		//lock.Unlock()
-		time.Sleep(1 * time.Millisecond)
+		lock.Unlock()
+
 	}
 	println("Spendy Done")
 }
 
 func main() {
-	go stingy()
-	go spendy()
-	time.Sleep(3000 * time.Millisecond)
+
+	for i := 1; i <= 4; i++ {
+		wg.Add(1)
+		go stingy()
+		wg.Add(1)
+		go spendy()
+	}
+
+	wg.Wait()
 	print(money, "\n")
 }
