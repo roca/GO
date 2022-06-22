@@ -21,33 +21,42 @@ func (b *Boid) start() {
 
 func (b *Boid) calcAcceleration() Vector2D {
 	upper, lower := b.position.AddV(viewRadius), b.position.AddV(-viewRadius)
-	avgVelocity := Vector2D{x: 0, y: 0}
+	avgPosition, avgVelocity := Vector2D{x: 0, y: 0}, Vector2D{x: 0, y: 0}
 	count := 0.0
 
+	lock.Lock()
 	for i := math.Max(lower.x, 0); i < math.Min(upper.x, screenWidth); i++ {
 		for j := math.Max(lower.y, 0); j < math.Min(upper.y, screenHeight); j++ {
 			if otherBoidId := boidMap[int(i)][int(j)]; otherBoidId != -1 && otherBoidId != b.id {
 				if dist := boids[otherBoidId].position.Distance(b.position); dist < viewRadius {
 					count++
 					avgVelocity = avgVelocity.Add(boids[otherBoidId].velocity)
+					avgPosition = avgPosition.Add(boids[otherBoidId].position)
 				}
 			}
 		}
 	}
+	lock.Unlock()
 
 	accel := Vector2D{x: 0, y: 0}
 	if count > 0 {
-		avgVelocity = avgVelocity.DivisionV(count)
-		accel = avgVelocity.Subtract(b.velocity).MultiplyV(adjRate)
+		avgPosition, avgVelocity = avgPosition.DivisionV(count), avgVelocity.DivisionV(count)
+
+		accelAlignment := avgVelocity.Subtract(b.velocity).MultiplyV(adjRate)
+		accelCohesion := avgPosition.Subtract(b.position).MultiplyV(adjRate)
+
+		accel = accel.Add(accelAlignment).Add(accelCohesion)
 	}
 
 	return accel
 }
 
 func (b *Boid) moveOne() {
-
+	acceleration := b.calcAcceleration()
+	
+	lock.Lock()
 	// This will sync the velocity of the boid with the other boids in its viewRadius
-	b.velocity = b.velocity.Add(b.calcAcceleration()).limit(-1, 1)
+	b.velocity = b.velocity.Add(acceleration).limit(-1, 1)
 
 	boidMap[int(b.position.x)][int(b.position.y)] = -1
 	b.position = b.position.Add(b.velocity)
@@ -59,7 +68,7 @@ func (b *Boid) moveOne() {
 	if next.y >= screenHeight || next.y < 0 {
 		b.velocity = Vector2D{x: b.velocity.x, y: -b.velocity.y}
 	}
-
+	lock.Unlock()
 }
 
 func createBoid(bid int) {
