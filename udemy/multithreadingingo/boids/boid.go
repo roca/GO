@@ -46,7 +46,7 @@ func (b *Boid) calcAcceleration() Vector2D {
 
 func (b *Boid) moveOne() {
 
-	// This will sync the velocity of the boid with the boids in its viewRadius
+	// This will sync the velocity of the boid with the other boids in its viewRadius
 	b.velocity = b.velocity.Add(b.calcAcceleration()).limit(-1, 1)
 
 	boidMap[int(b.position.x)][int(b.position.y)] = -1
