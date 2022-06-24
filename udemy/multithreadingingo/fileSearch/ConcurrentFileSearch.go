@@ -5,27 +5,36 @@ import (
 	"io/ioutil"
 	"path/filepath"
 	"strings"
+	"sync"
 )
 
 var (
-	matches []string
+	matches   []string
+	waitgroup = sync.WaitGroup{}
+	lock      = sync.Mutex{}
 )
 
 func fileSearch(root string, filename string) {
-	fmt.Println("Searching in", root)
+	defer waitgroup.Done()
+	//fmt.Println("Searching in", root)
 	files, _ := ioutil.ReadDir(root)
 	for _, file := range files {
 		if strings.Contains(file.Name(), filename) {
+			lock.Lock()
 			matches = append(matches, filepath.Join(root, file.Name()))
+			lock.Unlock()
 		}
 		if file.IsDir() {
-			fileSearch(filepath.Join(root, file.Name()), filename)
+			waitgroup.Add(1)
+			go fileSearch(filepath.Join(root, file.Name()), filename)
 		}
 	}
 }
 
 func main() {
-	fileSearch("/Users/romelcampbell/GOCODE/udemy", "README.md")
+	waitgroup.Add(1)
+	go fileSearch("/Users/romelcampbell/GOCODE/udemy", "README.md")
+	waitgroup.Wait()
 	for _, file := range matches {
 		fmt.Println("Matched", file)
 	}
