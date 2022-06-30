@@ -21,9 +21,9 @@ var (
 )
 
 func generateRandomMatrix(matrix *[matrixSize][matrixSize]int) {
+	rand.Seed(time.Now().UTC().UnixNano())
 	for row := 0; row < matrixSize; row++ {
 		for col := 0; col < matrixSize; col++ {
-			//rand.Seed(time.Now().UTC().UnixNano())
 			matrix[row][col] = rand.Intn(10) - 5
 		}
 	}
@@ -43,12 +43,13 @@ func workOutRow(row int) {
 }
 
 func main() {
+	//runtime.GOMAXPROCS(runtime.NumCPU())
 
 	fmt.Println("Working...")
 	waitGroup.Add(matrixSize)
 	for row := 0; row < matrixSize; row++ {
 		go workOutRow(row)
-	} // All this goroutines are waiting for the signal from the cond variable.
+	} // All these goroutines are waiting for the signal from the cond variable.
 
 	start := time.Now()
 	for i := 0; i < 100; i++ {
