@@ -14,7 +14,7 @@ func MoveTrain(train *Train, distance int, crossings []*Crossing) {
 				crossing.Intersections.Mutex.Lock()
 				crossing.Intersections.LockedBy = train.Id
 			}
-			back := train.Front + train.TrainLength
+			back := train.Front - train.TrainLength
 			if back == crossing.Position {
 				crossing.Intersections.LockedBy = -1
 				crossing.Intersections.Mutex.Unlock()
