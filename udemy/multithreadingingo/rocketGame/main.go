@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "image/png"
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -29,12 +30,12 @@ type player struct {
 
 // Run this code once at startup
 func init() {
-	background, _, err = ebitenutil.NewImageFromFile("assets/space.png")
+	background, _, err = ebitenutil.NewImageFromFile("./assets/space.png")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	spaceShip, _, err = ebitenutil.NewImageFromFile("assets/rocket.png")
+	spaceShip, _, err = ebitenutil.NewImageFromFile("./assets/rocket.png")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -80,7 +81,7 @@ func (g *Game) Layout(_, _ int) (w, h int) {
 }
 
 func main() {
-	ebiten.SetWindowSize(screenWidth, screenHeight)
+	ebiten.SetWindowSize(screenWidth*2, screenHeight*2)
 	ebiten.SetWindowTitle("Rocket in space")
 	if err := ebiten.RunGame(&Game{}); err != nil {
 		log.Fatal(err)
