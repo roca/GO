@@ -8,7 +8,8 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 
 	. "github.com/roca/GO/tree/staging/udemy/multithreadingingo/deadlocks_train/common"
-	. "github.com/roca/GO/tree/staging/udemy/multithreadingingo/deadlocks_train/deadlock"
+	//. "github.com/roca/GO/tree/staging/udemy/multithreadingingo/deadlocks_train/deadlock"
+	. "github.com/roca/GO/tree/staging/udemy/multithreadingingo/deadlocks_train/heirarchy"
 )
 
 var (
