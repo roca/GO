@@ -53,5 +53,5 @@ func main() {
 	}
 	elapsed := time.Since(start)
 	fmt.Println("Done")
-	fmt.Println("Processing took %s\n", elapsed)
+	fmt.Printf("Processing took %s\n", elapsed)
 }
