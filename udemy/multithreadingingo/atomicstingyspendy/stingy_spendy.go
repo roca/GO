@@ -1,37 +1,45 @@
 package main
 
 import (
+	"sync"
 	"sync/atomic"
-	"time"
 )
 
 var (
 	money int32 = 100
+	wg    sync.WaitGroup
 )
 
 func stingy() {
 	for i := 1; i <= 1000; i++ {
 		atomic.AddInt32(&money, 10)
-		time.Sleep(1 * time.Millisecond)
+		//money += 10
 
 	}
-	println("Stingy Done")
+	//println("Stingy Done")
+	wg.Done()
 }
 
 func spendy() {
 	for i := 1; i <= 1000; i++ {
 		atomic.AddInt32(&money, -10)
-		time.Sleep(1 * time.Millisecond)
+		//money -= 10
 
 	}
-	println("Spendy Done")
+	//println("Spendy Done")
+	wg.Done()
 }
 
 func main() {
 
-	go stingy()
-	go spendy()
-	time.Sleep(3000 * time.Millisecond)
-	print(money, "\n")
+	for i := 0; i < 10000; i++ {
+		wg.Add(2)
+		go stingy()
+		go spendy()
+		wg.Wait()
+		if money != 100 {
+			print("\n", i, ": ", money, "\n")
+		}
+	}
 
 }
