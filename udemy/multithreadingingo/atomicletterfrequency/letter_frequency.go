@@ -13,6 +13,7 @@ import (
 const allLetters = "abcdefghijklmnopqrstuvwxyz"
 
 //var lock = sync.Mutex{}
+//var lock = NewSpinLock()
 
 func countLetters(url string, frequency *[26]int32, wg *sync.WaitGroup) {
 	resp, _ := http.Get(url)
