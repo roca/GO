@@ -25,6 +25,7 @@ func countLetters(url string, frequency *[26]int32, wg *sync.WaitGroup) {
 			index := strings.Index(allLetters, c)
 			if index >= 0 {
 				atomic.AddInt32(&frequency[index], 1)
+				//frequency[index]++
 			}
 			//lock.Unlock()
 		}
