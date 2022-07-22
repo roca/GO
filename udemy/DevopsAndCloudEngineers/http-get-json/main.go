@@ -73,7 +73,12 @@ func main() {
 		if err := json.Unmarshal(body, &occurrence); err != nil {
 			log.Fatal(err)
 		}
-		fmt.Printf("JSON Parsed\nPage: %s\nWords: %v\n", page.Name, occurrence.Words)
+		if val,ok := occurrence.Words["word5"]; ok {
+			fmt.Printf("Found word1: %d\n", val)
+		}
+		for word, occurrence := range occurrence.Words {
+			fmt.Printf("%s: %d\n", word, occurrence)
+		}
 	default:
 		fmt.Println("Page not found")
 	}
