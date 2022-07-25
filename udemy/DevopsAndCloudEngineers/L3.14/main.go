@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -41,14 +42,25 @@ func (o Occurrence) GetResponse() string {
 }
 
 func main() {
-	args := os.Args
+	var (
+		requestURL string
+		password   string
+		parsedURL  *url.URL
+		err        error
+	)
 
-	if len(args) < 2 {
-		fmt.Println("Usage: ./http-get <url>")
+	flag.StringVar(&requestURL, "url", "", "URL to request")
+	flag.StringVar(&password, "password", "", "use a password to access our api")
+
+	flag.Parse()
+
+	if parsedURL, err = url.ParseRequestURI(requestURL); err != nil {
+		fmt.Printf("URL Validation error: %s\n", err)
+		flag.Usage()
 		os.Exit(1)
 	}
 
-	res, err := doRequest(args[1])
+	res, err := doRequest(parsedURL.String())
 	if err != nil {
 		if requestErr, ok := err.(RequestError); ok {
 			fmt.Printf("Error: %s (HTTP Code: %d, Body:%s)\n", requestErr.Err, requestErr.HTTPCode, requestErr.Body)
@@ -67,10 +79,6 @@ func main() {
 }
 
 func doRequest(requestURL string) (IResponse, error) {
-
-	if _, err := url.ParseRequestURI(requestURL); err != nil {
-		return nil, fmt.Errorf("URL Validation error: %s\n", err)
-	}
 
 	response, err := http.Get(requestURL)
 	if err != nil {
