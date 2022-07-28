@@ -72,7 +72,10 @@ func main() {
 			fmt.Printf("Error: %s\n", err)
 			os.Exit(1)
 		}
-		client.Transport = &MyJWTTransport{token: token}
+		client.Transport = &MyJWTTransport{
+			transport: http.DefaultTransport,
+			token:     token,
+		}
 	}
 
 	res, err := doRequest(client, parsedURL.String())

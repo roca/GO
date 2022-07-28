@@ -11,7 +11,7 @@
 			"mode": "auto",
 			"program": "${workspaceRoot}/L3.16",
 			"args": [
-				"-url", 	"http://localhost:8080/words",
+				"-url", 	"http://localhost:8080/words?input=word1",
 				"-password",	"xyz"
 			]
 
