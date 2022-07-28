@@ -15,7 +15,7 @@ type LoginResponse struct {
 	Token string `json:"token"`
 }
 
-func doLoginRequest(requestURL, password string) (string, error) {
+func doLoginRequest(client http.Client, requestURL, password string) (string, error) {
 	loginRequest := LoginRequest{
 		Password: password,
 	}
@@ -25,7 +25,7 @@ func doLoginRequest(requestURL, password string) (string, error) {
 		return "", fmt.Errorf("Marshal error %s", err)
 	}
 
-	resp, err := http.Post(requestURL, "application/json", bytes.NewBuffer(body))
+	resp, err := client.Post(requestURL, "application/json", bytes.NewBuffer(body))
 	if err != nil {
 		return "", fmt.Errorf("http Post error: %s\n", err)
 	}

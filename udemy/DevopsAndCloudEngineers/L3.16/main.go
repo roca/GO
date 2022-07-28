@@ -60,8 +60,10 @@ func main() {
 		os.Exit(1)
 	}
 
+	client := http.Client{}
+
 	if password != "" {
-		token, err := doLoginRequest(parsedURL.Scheme+"://"+parsedURL.Host+"/login", password)
+		token, err := doLoginRequest(client, parsedURL.Scheme+"://"+parsedURL.Host+"/login", password)
 		if err != nil {
 			if requestErr, ok := err.(RequestError); ok {
 				fmt.Printf("Error: %s (HTTP Code: %d, Body:%s)\n", requestErr.Err, requestErr.HTTPCode, requestErr.Body)
@@ -70,11 +72,10 @@ func main() {
 			fmt.Printf("Error: %s\n", err)
 			os.Exit(1)
 		}
-		fmt.Printf("token: %s\n",token)
-		os.Exit(0)
+		client.Transport = &MyJWTTransport{token: token}
 	}
 
-	res, err := doRequest(parsedURL.String())
+	res, err := doRequest(client, parsedURL.String())
 	if err != nil {
 		if requestErr, ok := err.(RequestError); ok {
 			fmt.Printf("Error: %s (HTTP Code: %d, Body:%s)\n", requestErr.Err, requestErr.HTTPCode, requestErr.Body)
@@ -92,9 +93,9 @@ func main() {
 	fmt.Printf("Response: %s\n", res.GetResponse())
 }
 
-func doRequest(requestURL string) (IResponse, error) {
+func doRequest(client http.Client, requestURL string) (IResponse, error) {
 
-	response, err := http.Get(requestURL)
+	response, err := client.Get(requestURL)
 	if err != nil {
 		return nil, fmt.Errorf("http Get error: %s\n", err)
 	}
