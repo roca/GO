@@ -8,15 +8,16 @@ type Options struct {
 }
 
 type APIIface interface {
+	DoGetRequest(requestURL string) (IResponse, error)
 }
 
-type API struct {
+type api struct {
 	Optiomns Options
 	Client   http.Client
 }
 
 func New(options Options) APIIface {
-	return API{
+	return api{
 		Optiomns: options,
 		Client: http.Client{
 			Transport: &MyJWTTransport{

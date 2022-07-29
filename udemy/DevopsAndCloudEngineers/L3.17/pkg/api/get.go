@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"net/http"
 	"strings"
 )
 
@@ -38,9 +37,9 @@ func (o Occurrence) GetResponse() string {
 	return fmt.Sprintf("%s", strings.Join(out, ", "))
 }
 
-func doRequest(client http.Client, requestURL string) (IResponse, error) {
+func (a api) DoGetRequest(requestURL string) (IResponse, error) {
 
-	response, err := client.Get(requestURL)
+	response, err := a.Client.Get(requestURL)
 	if err != nil {
 		return nil, fmt.Errorf("http Get error: %s\n", err)
 	}

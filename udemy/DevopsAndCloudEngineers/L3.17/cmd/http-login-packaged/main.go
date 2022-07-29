@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"net/http"
 	"net/url"
 	"os"
 
@@ -34,11 +33,9 @@ func main() {
 		LoginURL: parsedURL.Scheme + "://" + parsedURL.Host + "/login",
 	})
 
-	client := http.Client{}
-
-	res, err := doRequest(client, parsedURL.String())
+	res, err := apiInstance.DoGetRequest(parsedURL.String())
 	if err != nil {
-		if requestErr, ok := err.(RequestError); ok {
+		if requestErr, ok := err.(api.RequestError); ok {
 			fmt.Printf("Error: %s (HTTP Code: %d, Body:%s)\n", requestErr.Err, requestErr.HTTPCode, requestErr.Body)
 			os.Exit(1)
 		}
