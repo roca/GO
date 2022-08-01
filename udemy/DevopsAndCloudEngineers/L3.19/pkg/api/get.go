@@ -21,6 +21,11 @@ type Words struct {
 	Words []string `json:"words"`
 }
 
+type WordPage struct {
+	Page
+	Words
+}
+
 func (w Words) GetResponse() string {
 	return fmt.Sprintf("%s", strings.Join(w.Words, ", "))
 }
