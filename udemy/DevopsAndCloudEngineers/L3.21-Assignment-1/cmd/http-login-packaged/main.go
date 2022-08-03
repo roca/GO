@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"os"
 
-	"github.com/roca/GO/tree/staging/udemy/DevopsAndCloudEngineers/L3.17/pkg/api"
+	"github.com/roca/GO/tree/staging/udemy/DevopsAndCloudEngineers/L3.21-Assignment-1/pkg/api"
 )
 
 func main() {
