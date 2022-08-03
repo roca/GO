@@ -98,7 +98,7 @@ func (a api) DoGetRequest(requestURL string) (IResponse, error) {
 			}
 		}
 		return occurrence, nil
-	case "assignment":
+	case "assignment1":
 		var assignment Assignment
 		if err := json.Unmarshal(body, &assignment); err != nil {
 			return nil, RequestError{
