@@ -98,6 +98,16 @@ func (a api) DoGetRequest(requestURL string) (IResponse, error) {
 			}
 		}
 		return occurrence, nil
+	case "assignment":
+		var assignment Assignment
+		if err := json.Unmarshal(body, &assignment); err != nil {
+			return nil, RequestError{
+				HTTPCode: response.StatusCode,
+				Body:     string(body),
+				Err:      fmt.Sprintf("Assignment unmarshal error: %s\n", err),
+			}
+		}
+		return assignment, nil
 	}
 
 	return nil, fmt.Errorf("No responses for this url: %s", requestURL)
