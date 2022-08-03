@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"strings"
 )
 
@@ -42,23 +41,6 @@ func (o Occurrence) GetResponse() string {
 	}
 	return fmt.Sprintf("%s", strings.Join(out, ", "))
 }
-
-type Assignment struct {
-	Page         string             `json:"page"`
-	Words        []string           `json:"words"`
-	Percentages  map[string]float64 `json:"percentages"`
-	Special      []interface{}      `json:"special"`
-	ExtraSpecial []interface{}      `json:"extra_special"`
-}
-
-func (a Assignment) GetResponse() string {
-	asBytes, err := json.MarshalIndent(a, "", " ")
-	if err != nil {
-		log.Fatal(err)
-	}
-	return string(asBytes)
-}
-
 
 func (a api) DoGetRequest(requestURL string) (IResponse, error) {
 
@@ -116,16 +98,6 @@ func (a api) DoGetRequest(requestURL string) (IResponse, error) {
 			}
 		}
 		return occurrence, nil
-	case "assignment":
-		var assignment Assignment
-		if err := json.Unmarshal(body, &assignment); err != nil {
-			return nil, RequestError{
-				HTTPCode: response.StatusCode,
-				Body:     string(body),
-				Err:      fmt.Sprintf("Assignment unmarshal error: %s\n", err),
-			}
-		}
-		return assignment, nil
 	}
 
 	return nil, fmt.Errorf("No responses for this url: %s", requestURL)
