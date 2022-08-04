@@ -14,7 +14,7 @@ type Assignment struct {
 }
 
 func (a Assignment) GetResponse() string {
-	asBytes, err := json.MarshalIndent(a, "", " ")
+	asBytes, err := json.Marshal(a)
 	if err != nil {
 		log.Fatal(err)
 	}

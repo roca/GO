@@ -21,7 +21,7 @@ func (m *MockClient) Post(url string, contenType string, body io.Reader) (resp *
 	return m.PostResponseOutput, nil
 }
 
-func TestDoGetRequest(t *testing.T) {
+func TestDoWordsGetRequest(t *testing.T) {
 	wordPage := WordPage{
 		Page: Page{"words"},
 		Words: Words{
@@ -52,6 +52,43 @@ func TestDoGetRequest(t *testing.T) {
 		t.Fatalf("Response is empty")
 	}
 	if response.GetResponse() != "a, b" {
+		t.Errorf("Invalid response: %s", response.GetResponse())
+	}
+}
+
+func TestDoAssignmentGetRequest(t *testing.T) {
+	assignment := Assignment{
+		Page: "assignment1",
+		Words: []string{ "eigth", "two", "two", "two", "five"},
+		Special: []interface{}{ "one", "two", nil},
+		ExtraSpecial: []interface{}{ 1, 2, "3"},
+		Percentages: map[string]float64{"eigth": 0.5, "five": 1, "two": 0.66},
+	}
+	assignmentPageBytes, err := json.Marshal(assignment)
+	if err != nil {
+		t.Errorf("Error marshalling wordPage: %s", err)
+	}
+
+	apiInstance := api{
+		Options: Options{},
+		Client: &MockClient{
+			GetResponseOutput: &http.Response{
+				StatusCode: 200,
+				Body:       io.NopCloser(bytes.NewBuffer(assignmentPageBytes)),
+			},
+		},
+	}
+
+	response, err := apiInstance.DoGetRequest("http://localhost:8080/assignment1")
+	if err != nil {
+		t.Errorf("Error DoingGetRequest: %s", err)
+	}
+	if response == nil {
+		t.Fatalf("Response is empty")
+	}
+	expected := string(assignmentPageBytes)
+	actual := response.GetResponse()
+	if actual != expected {
 		t.Errorf("Invalid response: %s", response.GetResponse())
 	}
 }
