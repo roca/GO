@@ -9,11 +9,8 @@
 			"type": "go",
 			"request": "launch",
 			"mode": "auto",
-			"program": "${workspaceRoot}/L3.21-Assignment-1/cmd/http-login-packaged",
-			"args": [
-				"-url", 	"http://localhost:8080/assignment1",
-				"-password",	"xyz"
-			]
+			"program": "${workspaceRoot}/L4.25/main.go",
+			"args": []
 
 		}
 	]
