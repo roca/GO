@@ -18,7 +18,7 @@ func GetRateLimit() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return string(body), nil
+	return fmt.Sprintf("%d: %s",response.StatusCode,string(body)), nil
 }
 
 func main() {
@@ -29,9 +29,9 @@ func main() {
 		}
 		fmt.Printf("%d: %s\n", i, body)
 	}
-	now := time.Now()
-	fiveSeconds := time.Second * 5
-	for i := 0; i < 10 && time.Since(now) < fiveSeconds; i++ {
+	for i := 0; i < 1000; i++ {
 		f(i)
+		time.Sleep(200 * time.Millisecond)
 	}
+
 }
