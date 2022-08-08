@@ -11,8 +11,10 @@ func index(w http.ResponseWriter, req *http.Request) {
 }
 
 func main() {
+	port := "8080"
 	http.HandleFunc("/", index)
-	err := http.ListenAndServe(":8080", nil)
+	fmt.Printf("Starting server on port %v...\n", port)
+	err := http.ListenAndServe(":"+port, nil)
 	if err != nil {
 		log.Fatal("ListenAndServe error: ", err)
 	}
