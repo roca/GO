@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
@@ -28,12 +29,12 @@ func main() {
 		fmt.Printf("createS3Bucket error: %s", err)
 		os.Exit(1)
 	}
-	if err = upLoadToS3Bucket(ctx, s3Client); err != nil {
+	if err = upLoadToS3Bucket(ctx, manager.NewUploader(s3Client), "test.txt"); err != nil {
 		fmt.Printf("upLoadToS3Bucket error: %s", err)
 		os.Exit(1)
 	}
 	fmt.Println("Upload complete.")
-	if out, err = downLoadFromS3Bucket(ctx, s3Client); err != nil {
+	if out, err = downLoadFromS3Bucket(ctx, manager.NewDownloader(s3Client)); err != nil {
 		fmt.Printf("downLoadFromS3Bucket error: %s", err)
 		os.Exit(1)
 	}

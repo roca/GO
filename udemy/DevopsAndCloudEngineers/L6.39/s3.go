@@ -4,14 +4,28 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"io/ioutil"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/aws/aws-sdk-go-v2/service/s3/types"
-	"github.com/aws/aws-sdk-go/aws"
 )
+
+type IS3Client interface {
+	ListBuckets(ctx context.Context, params *s3.ListBucketsInput, optFns ...func(*s3.Options)) (*s3.ListBucketsOutput, error)
+	CreateBucket(ctx context.Context, params *s3.CreateBucketInput, optFns ...func(*s3.Options)) (*s3.CreateBucketOutput, error)
+}
+
+type IS3Uploader interface {
+	Upload(ctx context.Context, input *s3.PutObjectInput, opts ...func(*manager.Uploader)) (*manager.UploadOutput, error)
+}
+
+type IS3Downloader interface {
+	Download(ctx context.Context, w io.WriterAt, input *s3.GetObjectInput, options ...func(*manager.Downloader)) (n int64, err error)
+}
 
 func initS3Client(ctx context.Context) (*s3.Client, error) {
 	cfg, err := config.LoadDefaultConfig(ctx, config.WithRegion(regionName), config.WithSharedConfigProfile("go-aws-sdk"))
@@ -21,7 +35,7 @@ func initS3Client(ctx context.Context) (*s3.Client, error) {
 	return s3.NewFromConfig(cfg), nil
 }
 
-func createS3Bucket(ctx context.Context, s3Client *s3.Client) error {
+func createS3Bucket(ctx context.Context, s3Client IS3Client) error {
 	allBuckets, err := s3Client.ListBuckets(ctx, &s3.ListBucketsInput{})
 	if err != nil {
 		return fmt.Errorf("ListBuckets error: %s", err)
@@ -48,15 +62,14 @@ func createS3Bucket(ctx context.Context, s3Client *s3.Client) error {
 	return nil
 }
 
-func upLoadToS3Bucket(ctx context.Context, s3Client *s3.Client) error {
-	testFile, err := ioutil.ReadFile("test.txt")
+func upLoadToS3Bucket(ctx context.Context, upLoader IS3Uploader, filename string) error {
+	testFile, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return fmt.Errorf("ReadFile error: %s", err)
 	}
-	upLoader := manager.NewUploader(s3Client)
 	_, err = upLoader.Upload(ctx, &s3.PutObjectInput{
 		Bucket: aws.String(bucketName),
-		Key:    aws.String("test.txt"),
+		Key:    aws.String(filename),
 		Body:   bytes.NewReader(testFile),
 	})
 	if err != nil {
@@ -64,8 +77,7 @@ func upLoadToS3Bucket(ctx context.Context, s3Client *s3.Client) error {
 	}
 	return nil
 }
-func downLoadFromS3Bucket(ctx context.Context, s3Client *s3.Client) ([]byte, error) {
-	downLoader := manager.NewDownloader(s3Client)
+func downLoadFromS3Bucket(ctx context.Context, downLoader IS3Downloader) ([]byte, error) {
 	buffer := manager.NewWriteAtBuffer([]byte{})
 
 	numBytes, err := downLoader.Download(ctx, buffer, &s3.GetObjectInput{
