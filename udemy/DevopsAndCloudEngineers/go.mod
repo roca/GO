@@ -3,6 +3,7 @@ module github.com/roca/GO/tree/staging/udemy/DevopsAndCloudEngineers
 go 1.18
 
 require (
+	github.com/aws/aws-sdk-go v1.44.76 // indirect
 	github.com/aws/aws-sdk-go-v2 v1.16.11 // indirect
 	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.4.4 // indirect
 	github.com/aws/aws-sdk-go-v2/config v1.16.1 // indirect
