@@ -24,10 +24,12 @@ func (m *MockS3Client) CreateBucket(ctx context.Context, params *s3.CreateBucket
 	return m.CreateBucketOutput, nil
 }
 
-type MockS3Uploader struct{}
+type MockS3Uploader struct {
+	UploadOutput *manager.UploadOutput
+}
 
 func (m *MockS3Uploader) Upload(ctx context.Context, input *s3.PutObjectInput, opts ...func(*manager.Uploader)) (*manager.UploadOutput, error) {
-	return nil, nil
+	return m.UploadOutput, nil
 }
 
 type MockS3Downloader struct{}
@@ -49,5 +51,23 @@ func TestCreateS3Bucket(t *testing.T) {
 	})
 	if err != nil {
 		t.Fatalf("createS3Bucket error: %s", err)
+	}
+}
+
+func TestUploadToS3Bucket(t *testing.T) {
+	mockUploader := &MockS3Uploader{
+		UploadOutput: &manager.UploadOutput{},
+	}
+	err := upLoadToS3Bucket(context.Background(), mockUploader, "testdata/test.txt")
+	if err != nil {
+		t.Fatalf("upLoadToS3Bucket error: %s", err)
+	}
+}
+
+func TestDownLoadFromS3Bucket(t *testing.T) {
+	mockDownloader := &MockS3Downloader{}
+	_, err := downLoadFromS3Bucket(context.Background(), mockDownloader)
+	if err != nil {
+		t.Fatalf("downLoadFromS3Bucket error: %s", err)
 	}
 }
