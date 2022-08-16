@@ -1,19 +1,31 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
 
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore/arm"
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
+	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/resources/armresources"
 	"github.com/wardviaene/golang-for-devops-course/ssh-demo"
 )
 
 func main() {
 	var (
-		token  string
-		pubKey string
-		err    error
+		token          azcore.TokenCredential
+		pubKey         string
+		err            error
+		subscriptionID string
 	)
+
+	ctx := context.Background()
+	subscriptionID = os.Getenv("SUBSCRIPTION_ID")
+	if len(subscriptionID) == 0 {
+		fmt.Println("SUBSCRIPTION_ID not set")
+		os.Exit(1)
+	}
 
 	if pubKey, err = generateKey(); err != nil {
 		fmt.Printf("generateKey() error: %s\n", err)
@@ -23,7 +35,7 @@ func main() {
 		fmt.Printf("getToken() error: %s\n", err)
 		os.Exit(1)
 	}
-	if err = launchInstance(token, pubKey); err != nil {
+	if err = launchInstance(ctx, token, subscriptionID, pubKey); err != nil {
 		fmt.Printf("launchInstance() error: %s\n", err)
 		os.Exit(1)
 	}
@@ -51,14 +63,22 @@ func generateKey() (string, error) {
 	return string(publicKey), nil
 }
 
-func getToken() (string, error) {
-	_, err := azidentity.NewAzureCLICredential(nil)
+func getToken() (azcore.TokenCredential, error) {
+	token, err := azidentity.NewAzureCLICredential(nil)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	return "", nil
+	return token, nil
 }
 
-func launchInstance(token, pubKey string) error {
+func launchInstance(ctx context.Context, cred azcore.TokenCredential, subscriptionID, pubKey string) error {
+	options := &arm.ClientOptions{}
+
+	armresourcesClient, err := armresources.NewClient(subscriptionID, cred, options)
+	if err != nil {
+		return err
+	}
+	
+
 	return nil
 }
