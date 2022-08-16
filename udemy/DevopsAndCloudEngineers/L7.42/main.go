@@ -78,6 +78,14 @@ func getToken() (azcore.TokenCredential, error) {
 }
 
 func launchInstance(ctx context.Context, cred azcore.TokenCredential, subscriptionID, pubKey string) error {
+	
+	if err := createResourceClient(ctx, cred, subscriptionID, pubKey); err != nil {
+		return err
+	}
+	return nil
+}
+
+func createResourceClient(ctx context.Context, cred azcore.TokenCredential, subscriptionID, pubKey string) error {
 	options := &arm.ClientOptions{}
 
 	resourcesGroupClient, err := armresources.NewResourceGroupsClient(subscriptionID, cred, options)
