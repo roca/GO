@@ -7,9 +7,15 @@ import (
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/arm"
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore/to"
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/resources/armresources"
 	"github.com/wardviaene/golang-for-devops-course/ssh-demo"
+)
+
+const (
+	location          = "eastus"
+	resourceGroupName = "go-demo"
 )
 
 func main() {
@@ -21,9 +27,9 @@ func main() {
 	)
 
 	ctx := context.Background()
-	subscriptionID = os.Getenv("SUBSCRIPTION_ID")
+	subscriptionID = os.Getenv("AZURE_SUBSCRIPTION_ID")
 	if len(subscriptionID) == 0 {
-		fmt.Println("SUBSCRIPTION_ID not set")
+		fmt.Println("AZURE SUBSCRIPTION ID not set")
 		os.Exit(1)
 	}
 
@@ -74,11 +80,21 @@ func getToken() (azcore.TokenCredential, error) {
 func launchInstance(ctx context.Context, cred azcore.TokenCredential, subscriptionID, pubKey string) error {
 	options := &arm.ClientOptions{}
 
-	armresourcesClient, err := armresources.NewClient(subscriptionID, cred, options)
+	resourcesGroupClient, err := armresources.NewResourceGroupsClient(subscriptionID, cred, options)
 	if err != nil {
 		return err
 	}
-	
+
+	resourceGroupParams := armresources.ResourceGroup{
+		Location: to.Ptr(location),
+	}
+
+	resourceGroupResp, err := resourcesGroupClient.CreateOrUpdate(ctx, resourceGroupName, resourceGroupParams, nil)
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("Resource group created: %s\n", *resourceGroupResp.ID)
 
 	return nil
 }
