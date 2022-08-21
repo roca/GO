@@ -7,7 +7,6 @@ import (
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/arm"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/runtime"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/to"
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/network/armnetwork"
@@ -23,6 +22,7 @@ const (
 	publicIPAdressesName     = "go-demo-pip"
 	networkSecurityGroupName = "go-demo-nsg"
 	networkInterfaceFaceName = "go-demo-nic"
+	iPConfigurationName      = "go-demo-ipconfig"
 )
 
 func main() {
@@ -97,22 +97,25 @@ func launchInstance(ctx context.Context, cred azcore.TokenCredential, subscripti
 	}
 
 	// Create subnet
-	if _, err := createSubnet(ctx, cred, subscriptionID); err != nil {
+	subnet, err := createSubnet(ctx, cred, subscriptionID)
+	if err != nil {
 		return err
 	}
 
 	// Create public IP address
-	if _, err := createPublicIpClient(ctx, cred, subscriptionID); err != nil {
+	publicIPAddress, err := createPublicIpClient(ctx, cred, subscriptionID)
+	if err != nil {
 		return err
 	}
 
 	// Create network security group
-	if _, err := createNetworkSecurityGroup(ctx, cred, subscriptionID); err != nil {
+	networkSecurityGroup, err := createNetworkSecurityGroup(ctx, cred, subscriptionID)
+	if err != nil {
 		return err
 	}
 
 	// Create network interface client
-	if _, err := createNetworkInterFaceClient(ctx, cred, subscriptionID); err != nil {
+	if _, err := createNetworkInterFaceClient(ctx, cred, subscriptionID, networkSecurityGroup, subnet, publicIPAddress); err != nil {
 		return err
 	}
 
@@ -279,7 +282,14 @@ func createNetworkSecurityGroup(ctx context.Context, cred azcore.TokenCredential
 	return &resp.SecurityGroup, nil
 }
 
-func createNetworkInterFaceClient(ctx context.Context, cred azcore.TokenCredential, subscriptionID string) (*armnetwork.Interface, error) {
+func createNetworkInterFaceClient(
+	ctx context.Context, 
+	cred azcore.TokenCredential, 
+	subscriptionID string, 
+	networkSecurityGroup *armnetwork.SecurityGroup, 
+	subnet *armnetwork.Subnet,
+	publicIPAdress *armnetwork.PublicIPAddress,
+	) (*armnetwork.Interface, error) {
 	interfacesClient, err := armnetwork.NewInterfacesClient(subscriptionID, cred, nil)
 	if err != nil {
 		return nil, err
@@ -290,8 +300,26 @@ func createNetworkInterFaceClient(ctx context.Context, cred azcore.TokenCredenti
 		resourceGroupName,
 		networkInterfaceFaceName,
 		armnetwork.Interface{
-			Location:   to.Ptr(location),
-			Properties: &armnetwork.InterfacePropertiesFormat{},
+			Location: to.Ptr(location),
+			Properties: &armnetwork.InterfacePropertiesFormat{
+				NetworkSecurityGroup: &armnetwork.SecurityGroup{
+					ID: networkSecurityGroup.ID,
+				},
+				IPConfigurations: []*armnetwork.InterfaceIPConfiguration{
+					{
+						Name: to.Ptr(iPConfigurationName),
+						Properties: &armnetwork.InterfaceIPConfigurationPropertiesFormat{
+							PrivateIPAllocationMethod: to.Ptr(armnetwork.IPAllocationMethodDynamic),
+							Subnet: &armnetwork.Subnet{
+								ID: subnet.ID,
+							},
+							PublicIPAddress: &armnetwork.PublicIPAddress{
+								ID: publicIPAdress.ID,
+							},
+						},
+					},
+				},
+			},
 		},
 		nil,
 	)
@@ -306,8 +334,6 @@ func createNetworkInterFaceClient(ctx context.Context, cred azcore.TokenCredenti
 	}
 	return &resp.Interface, nil
 }
-
-
 
 // func MyFunc[T any] (poller T) {
 
