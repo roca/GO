@@ -7,8 +7,8 @@ import (
 	"os"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/runtime"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/arm"
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore/runtime"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/to"
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/network/armnetwork"
@@ -360,6 +360,20 @@ func findVnet(ctx context.Context, cred azcore.TokenCredential, subscriptionID s
 	return &resp.VirtualNetwork, nil
 }
 
-func MyFunc(poller *runtime.Poller) {
+type MyPollerResp interface {
+	*runtime.Poller[armnetwork.VirtualNetworksClientCreateOrUpdateResponse] |
+		*runtime.Poller[armnetwork.SubnetsClientCreateOrUpdateResponse] |
+		*runtime.Poller[armnetwork.PublicIPAddressesClientCreateOrUpdateResponse] |
+		*runtime.Poller[armnetwork.SecurityGroupsClientCreateOrUpdateResponse] |
+		*runtime.Poller[armnetwork.InterfacesClientCreateOrUpdateResponse]
 
+		PollUntilDone(ctx context.Context, options *runtime.PollUntilDoneOptions) (interface{}, error)
+}
+
+func MyFunc[T MyPollerResp](ctx context.Context, pollerResp T) (interface{} ,error){
+	resp, err := pollerResp.PollUntilDone(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
