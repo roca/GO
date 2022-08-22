@@ -90,10 +90,16 @@ func launchInstance(ctx context.Context, cred azcore.TokenCredential, subscripti
 		return err
 	}
 
-	// Create virtual network
-	if _, err := createVirtualNetwork(ctx, cred, subscriptionID); err != nil {
-
+	// Create virtual network if not exists
+	found, err := findVnet(ctx, cred, subscriptionID)
+	if err != nil {
 		return err
+	}
+
+	if !found {
+		if _, err := createVirtualNetwork(ctx, cred, subscriptionID); err != nil {
+			return err
+		}
 	}
 
 	// Create subnet
@@ -283,13 +289,13 @@ func createNetworkSecurityGroup(ctx context.Context, cred azcore.TokenCredential
 }
 
 func createNetworkInterFaceClient(
-	ctx context.Context, 
-	cred azcore.TokenCredential, 
-	subscriptionID string, 
-	networkSecurityGroup *armnetwork.SecurityGroup, 
+	ctx context.Context,
+	cred azcore.TokenCredential,
+	subscriptionID string,
+	networkSecurityGroup *armnetwork.SecurityGroup,
 	subnet *armnetwork.Subnet,
 	publicIPAdress *armnetwork.PublicIPAddress,
-	) (*armnetwork.Interface, error) {
+) (*armnetwork.Interface, error) {
 	interfacesClient, err := armnetwork.NewInterfacesClient(subscriptionID, cred, nil)
 	if err != nil {
 		return nil, err
@@ -334,6 +340,16 @@ func createNetworkInterFaceClient(
 	}
 	return &resp.Interface, nil
 }
+
+func findVnet(ctx context.Context, cred azcore.TokenCredential, subscriptionID string) (bool, error) {
+	virtualNetworksClient, err := armnetwork.NewVirtualNetworksClient(subscriptionID, cred, nil)
+	if err != nil {
+		return false, err
+	}
+	// TODO: Find a better way to check if the vnet exists
+	return true, nil
+}
+
 
 // func MyFunc[T any] (poller T) {
 
