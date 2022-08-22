@@ -336,7 +336,8 @@ func createNetworkInterFaceClient(
 		return nil, err
 	}
 
-	resp, err := pollerResp.PollUntilDone(ctx, nil)
+	//esp, err := pollerResp.PollUntilDone(ctx, nil)
+	resp, err := MyFunc(ctx, pollerResp)
 	if err != nil {
 		return nil, err
 	}
@@ -361,19 +362,18 @@ func findVnet(ctx context.Context, cred azcore.TokenCredential, subscriptionID s
 }
 
 type MyPollerResp interface {
-	*runtime.Poller[armnetwork.VirtualNetworksClientCreateOrUpdateResponse] |
-		*runtime.Poller[armnetwork.SubnetsClientCreateOrUpdateResponse] |
-		*runtime.Poller[armnetwork.PublicIPAddressesClientCreateOrUpdateResponse] |
-		*runtime.Poller[armnetwork.SecurityGroupsClientCreateOrUpdateResponse] |
-		*runtime.Poller[armnetwork.InterfacesClientCreateOrUpdateResponse]
-
-		PollUntilDone(ctx context.Context, options *runtime.PollUntilDoneOptions) (interface{}, error)
+	armnetwork.VirtualNetworksClientCreateOrUpdateResponse |
+		armnetwork.SubnetsClientCreateOrUpdateResponse |
+		armnetwork.PublicIPAddressesClientCreateOrUpdateResponse |
+		armnetwork.SecurityGroupsClientCreateOrUpdateResponse |
+		armnetwork.InterfacesClientCreateOrUpdateResponse
 }
 
-func MyFunc[T MyPollerResp](ctx context.Context, pollerResp T) (interface{} ,error){
+func MyFunc[T MyPollerResp](ctx context.Context, pollerResp *runtime.Poller[T]) (T, error) {
+	fmt.Println("Using MyFunc a generic func")
 	resp, err := pollerResp.PollUntilDone(ctx, nil)
 	if err != nil {
-		return nil, err
+		return resp, err
 	}
 	return resp, nil
 }
