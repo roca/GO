@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore/runtime"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/arm"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/to"
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
@@ -359,6 +360,6 @@ func findVnet(ctx context.Context, cred azcore.TokenCredential, subscriptionID s
 	return &resp.VirtualNetwork, nil
 }
 
-// func MyFunc[T any] (poller T) {
+func MyFunc(poller *runtime.Poller) {
 
-// }
+}
