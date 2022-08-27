@@ -9,6 +9,8 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/google/go-github/v47/github"
+	"golang.org/x/oauth2"
 	v1 "k8s.io/api/apps/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -67,6 +69,17 @@ func getClient(inCluster bool) (*kubernetes.Clientset, error) {
 	}
 
 	return clientSet, nil
+}
+
+func getGihubClient(accessToken string) *github.Client {
+	ctx := context.Background()
+	ts := oauth2.StaticTokenSource(
+		&oauth2.Token{AccessToken: accessToken},
+	)
+	tc := oauth2.NewClient(ctx, ts)
+
+	return github.NewClient(tc)
+
 }
 
 func deploy(ctx context.Context, client *kubernetes.Clientset) (map[string]string, int32, error) {
