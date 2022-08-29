@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/google/go-github/v47/github"
 	"k8s.io/client-go/kubernetes"
@@ -29,10 +30,29 @@ func (s server) webhook(w http.ResponseWriter, req *http.Request) {
 	}
 	switch event := event.(type) {
 	case *github.PushEvent:
+		files := getFiles(event.Commits)
+		fmt.Printf("Files: %s\n", strings.Join(files, ", "))
 
 	default:
 		w.WriteHeader(500)
 		fmt.Printf("Event not found %s\n", event)
 		return
 	}
+}
+
+func getFiles(commits []*github.HeadCommit) []string {
+	allFiles := []string{}
+	for _, commit := range commits {
+		allFiles = append(allFiles, commit.Added...)
+		allFiles = append(allFiles, commit.Modified...)
+	}
+	allUniqueFilesMap := make(map[string]bool)
+	for _, file := range allFiles {
+		allUniqueFilesMap[file] = true
+	}
+	allUniqueFilesSlice := []string{}
+	for filename := range allUniqueFilesMap {
+		allUniqueFilesSlice = append(allUniqueFilesSlice, filename)
+	}
+	return allUniqueFilesSlice
 }
