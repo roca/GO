@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"path/filepath"
 	"time"
 
@@ -24,18 +25,15 @@ import (
 
 func main() {
 	var (
-		client *kubernetes.Clientset
-		//err    error
+		err error
 	)
-	// if client, err = getClient(false); err != nil {
-	// 	fmt.Printf("Error: %v\n", err)
-	// 	os.Exit(1)
-	// }
-
-	s := server{
-		client: client,
+	ctx := context.Background()
+	s := server{}
+	if s.client, err = getClient(false); err != nil {
+		fmt.Printf("Error: %v\n", err)
+		os.Exit(1)
 	}
-
+	s.githubClient = getGithubClient(ctx, os.Getenv("GITHUB_TOKEN"))
 	http.HandleFunc("/webhook", s.webhook)
 	http.ListenAndServe(":8080", nil)
 }
@@ -71,8 +69,10 @@ func getClient(inCluster bool) (*kubernetes.Clientset, error) {
 	return clientSet, nil
 }
 
-func getGihubClient(accessToken string) *github.Client {
-	ctx := context.Background()
+func getGithubClient(ctx context.Context, accessToken string) *github.Client {
+	if accessToken == "" {
+		return github.NewClient(nil)
+	}
 	ts := oauth2.StaticTokenSource(
 		&oauth2.Token{AccessToken: accessToken},
 	)
