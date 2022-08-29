@@ -28,7 +28,7 @@ func main() {
 		err error
 	)
 	ctx := context.Background()
-	s := server{}
+	s := server{webhookSecretKey: os.Getenv("WEBHOOK_SECRET")}
 	if s.client, err = getClient(false); err != nil {
 		fmt.Printf("Error: %v\n", err)
 		os.Exit(1)
