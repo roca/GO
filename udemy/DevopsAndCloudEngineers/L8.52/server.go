@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"strings"
@@ -32,7 +33,20 @@ func (s server) webhook(w http.ResponseWriter, req *http.Request) {
 	case *github.PushEvent:
 		files := getFiles(event.Commits)
 		fmt.Printf("Files: %s\n", strings.Join(files, ", "))
-
+		for _, file := range files {
+			downLoadedFile, _, err := s.githubClient.Repositories.DownloadContents(
+				context.Background(),
+				*event.Repo.Owner.Name,
+				*event.Repo.Name,
+				file,
+				&github.RepositoryContentGetOptions{},
+			)
+			if err != nil {
+				w.WriteHeader(500)
+				fmt.Printf("DownloadContents error: %v\n", err)
+				return
+			}
+		}
 	default:
 		w.WriteHeader(500)
 		fmt.Printf("Event not found %s\n", event)
