@@ -4,7 +4,6 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -30,12 +29,17 @@ func main() {
 	ctx := context.Background()
 	s := server{webhookSecretKey: os.Getenv("WEBHOOK_SECRET")}
 	if s.client, err = getClient(false); err != nil {
-		fmt.Printf("Error: %v\n", err)
+		fmt.Printf("getClient error: %v\n", err)
 		os.Exit(1)
 	}
 	s.githubClient = getGithubClient(ctx, os.Getenv("GITHUB_TOKEN"))
 	http.HandleFunc("/webhook", s.webhook)
-	http.ListenAndServe(":8080", nil)
+	err = http.ListenAndServe(":8080", nil)
+	if err != nil {
+		fmt.Printf("ListenAndServe error: %v\n", err)
+		os.Exit(1)
+	}
+	fmt.Println("Listening on port 8080")
 }
 
 func getClient(inCluster bool) (*kubernetes.Clientset, error) {
@@ -82,15 +86,13 @@ func getGithubClient(ctx context.Context, accessToken string) *github.Client {
 
 }
 
-func deploy(ctx context.Context, client *kubernetes.Clientset) (map[string]string, int32, error) {
+func deploy(ctx context.Context, client *kubernetes.Clientset, appFile []byte) (map[string]string, int32, error) {
 	var deployment *v1.Deployment
 
-	appFile, err := ioutil.ReadFile("app.yaml")
-	if err != nil {
-		return nil, 0, fmt.Errorf("error reading yaml file: %v", err)
-	}
-
 	obj, groupVersionKind, err := scheme.Codecs.UniversalDeserializer().Decode(appFile, nil, nil)
+	if err != nil {
+		return nil, 0, fmt.Errorf("Decode error: %s", err)
+	}
 	switch obj.(type) {
 	case *v1.Deployment:
 		deployment = obj.(*v1.Deployment)
