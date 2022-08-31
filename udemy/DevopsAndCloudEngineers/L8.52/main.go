@@ -34,12 +34,12 @@ func main() {
 	}
 	s.githubClient = getGithubClient(ctx, os.Getenv("GITHUB_TOKEN"))
 	http.HandleFunc("/webhook", s.webhook)
+	fmt.Println("Listening on port 8080")
 	err = http.ListenAndServe(":8080", nil)
 	if err != nil {
 		fmt.Printf("ListenAndServe error: %v\n", err)
 		os.Exit(1)
 	}
-	fmt.Println("Listening on port 8080")
 }
 
 func getClient(inCluster bool) (*kubernetes.Clientset, error) {
