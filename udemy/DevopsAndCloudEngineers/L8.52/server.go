@@ -32,6 +32,8 @@ func (s server) webhook(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	switch event := event.(type) {
+	case *github.Hook:
+		fmt.Printf("Hook event: %v\n", event)
 	case *github.PushEvent:
 		files := getFiles(event.Commits)
 		fmt.Printf("Files: %s\n", strings.Join(files, ", "))
