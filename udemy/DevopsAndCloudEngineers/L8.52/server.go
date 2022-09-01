@@ -42,7 +42,9 @@ func (s server) webhook(w http.ResponseWriter, req *http.Request) {
 					*event.Repo.Owner.Name,
 					*event.Repo.Name,
 					filename,
-					&github.RepositoryContentGetOptions{},
+					&github.RepositoryContentGetOptions{
+						Ref: "staging",
+					},
 				)
 				if err != nil {
 					w.WriteHeader(500)
