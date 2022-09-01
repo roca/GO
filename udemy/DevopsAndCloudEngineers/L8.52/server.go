@@ -64,7 +64,7 @@ func (s server) webhook(w http.ResponseWriter, req *http.Request) {
 					fmt.Printf("Deployment error: %v\n", err)
 					return
 				}
-				fmt.Printf("Deployment of %s finished\n", filename)
+				fmt.Printf("Deployment of %s finished\n body: \n %s", filename, string(fileBody))
 			}
 		}
 	default:
