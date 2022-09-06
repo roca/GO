@@ -1,8 +1,57 @@
 package ssh
 
-import "fmt"
+import (
+	"fmt"
+	"net"
+
+	"golang.org/x/crypto/ssh"
+)
 
 func StartServer(privateKey, authorizedKeys []byte) error {
-	fmt.Println("StartServer")
+	authorizedKeysMap := map[string]bool{}
+	for len(authorizedKeys) > 0 {
+		pubKey, _, _, rest, err := ssh.ParseAuthorizedKey(authorizedKeys)
+		if err != nil {
+			return fmt.Errorf("Failed to parse authorized_keys, err: %v", err)
+		}
+		authorizedKeysMap[string(pubKey.Marshal())] = true
+		authorizedKeys = rest
+	}
+
+	// An SSH server is represented by a ServerConfig, which holds
+	// certificate details and handles authentication of ServerConns.
+	config := &ssh.ServerConfig{
+		PublicKeyCallback: func(c ssh.ConnMetadata, pubKey ssh.PublicKey) (*ssh.Permissions, error) {
+			if authorizedKeysMap[string(pubKey.Marshal())] {
+				return &ssh.Permissions{
+					// Record the public key used for authentication.
+					Extensions: map[string]string{
+						"pubkey-fp": ssh.FingerprintSHA256(pubKey),
+					},
+				}, nil
+			}
+			return nil, fmt.Errorf("unknown public key for %q", c.User())
+		},
+	}
+
+	private, err := ssh.ParsePrivateKey(privateKey)
+	if err != nil {
+		fmt.Errorf("Failed to parse private key: ", err)
+	}
+
+	config.AddHostKey(private)
+
+	// Once a ServerConfig has been configured, connections can be
+	// accepted.
+	listener, err := net.Listen("tcp", "0.0.0.0:2022")
+	if err != nil {
+		fmt.Errorf("failed to listen for connection: ", err)
+	}
+	nConn, err := listener.Accept()
+	if err != nil {
+		fmt.Errorf("failed to accept incoming connection: ", err)
+	}
+
+	fmt.Println("Starting Server...")
 	return nil
 }
