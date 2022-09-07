@@ -2,6 +2,7 @@ package ssh
 
 import (
 	"fmt"
+	"log"
 	"net"
 
 	"golang.org/x/crypto/ssh"
@@ -12,7 +13,7 @@ func StartServer(privateKey, authorizedKeys []byte) error {
 	for len(authorizedKeys) > 0 {
 		pubKey, _, _, rest, err := ssh.ParseAuthorizedKey(authorizedKeys)
 		if err != nil {
-			return fmt.Errorf("Failed to parse authorized_keys, err: %v", err)
+			return fmt.Errorf("Failed to parse authorized_keys, err: %s", err)
 		}
 		authorizedKeysMap[string(pubKey.Marshal())] = true
 		authorizedKeys = rest
@@ -36,7 +37,7 @@ func StartServer(privateKey, authorizedKeys []byte) error {
 
 	private, err := ssh.ParsePrivateKey(privateKey)
 	if err != nil {
-		fmt.Errorf("Failed to parse private key: ", err)
+		return fmt.Errorf("Failed to parse private key: ", err)
 	}
 
 	config.AddHostKey(private)
@@ -45,13 +46,25 @@ func StartServer(privateKey, authorizedKeys []byte) error {
 	// accepted.
 	listener, err := net.Listen("tcp", "0.0.0.0:2022")
 	if err != nil {
-		fmt.Errorf("failed to listen for connection: ", err)
-	}
-	nConn, err := listener.Accept()
-	if err != nil {
-		fmt.Errorf("failed to accept incoming connection: ", err)
+		return fmt.Errorf("failed to listen for connection: %s", err)
 	}
 
 	fmt.Println("Starting Server...")
-	return nil
+	for {
+		nConn, err := listener.Accept()
+		if err != nil {
+			fmt.Printf("failed to accept incoming connection: %s\n", err)
+		}
+
+		// Before use, a handshake must be performed on the incoming
+		// net.Conn.
+		conn, _, _, err := ssh.NewServerConn(nConn, config)
+		if err != nil {
+			fmt.Printf("failed to handshake: %s\n", err)
+		}
+		if conn != nil && conn.Permissions != nil {
+			log.Printf("logged in with key %s", conn.Permissions.Extensions["pubkey-fp"])
+		}
+	}
+
 }
