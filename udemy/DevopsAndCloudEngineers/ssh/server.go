@@ -6,6 +6,7 @@ import (
 	"net"
 
 	"golang.org/x/crypto/ssh"
+	"golang.org/x/crypto/ssh/terminal"
 )
 
 func StartServer(privateKey, authorizedKeys []byte) error {
@@ -58,13 +59,56 @@ func StartServer(privateKey, authorizedKeys []byte) error {
 
 		// Before use, a handshake must be performed on the incoming
 		// net.Conn.
-		conn, _, _, err := ssh.NewServerConn(nConn, config)
+		conn, chans, reqs, err := ssh.NewServerConn(nConn, config)
 		if err != nil {
 			fmt.Printf("failed to handshake: %s\n", err)
 		}
 		if conn != nil && conn.Permissions != nil {
 			log.Printf("logged in with key %s", conn.Permissions.Extensions["pubkey-fp"])
 		}
+		go ssh.DiscardRequests(reqs)
+
+		go handleConnection(conn,channs)
+
+		// Service the incoming Channel channel.
+		for newChannel := range chans {
+			// Channels have a type, depending on the application level
+			// protocol intended. In the case of a shell, the type is
+			// "session" and ServerShell may be used to present a simple
+			// terminal interface.
+			if newChannel.ChannelType() != "session" {
+				newChannel.Reject(ssh.UnknownChannelType, "unknown channel type")
+				continue
+			}
+			channel, requests, err := newChannel.Accept()
+			if err != nil {
+				log.Printf("Could not accept channel: %v\n", err)
+			}
+
+			// Sessions have out-of-band requests such as "shell",
+			// "pty-req" and "env".  Here we handle only the
+			// "shell" request.
+			go func(in <-chan *ssh.Request) {
+				for req := range in {
+					req.Reply(req.Type == "shell", nil)
+				}
+			}(requests)
+
+			term := terminal.NewTerminal(channel, "> ")
+
+			go func() {
+				defer channel.Close()
+				for {
+					line, err := term.ReadLine()
+					if err != nil {
+						break
+					}
+					fmt.Println(line)
+				}
+			}()
+		}
 	}
 
 }
+
+func handleConnection( conn *ssh.ServerConn, chans <-chan ssh.NewChannel){}
