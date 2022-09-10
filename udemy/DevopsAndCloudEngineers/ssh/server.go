@@ -1,6 +1,7 @@
 package ssh
 
 import (
+	"bytes"
 	"fmt"
 	"log"
 	"net"
@@ -98,12 +99,12 @@ func handleConnection(conn *ssh.ServerConn, chans <-chan ssh.NewChannel) {
 			for req := range in {
 				fmt.Printf("Request Type made by client: %s\n", req.Type)
 				switch req.Type {
-				// case "exec":
-				// 	payload := bytes.TrimPrefix(req.Payload, []byte{0, 0, 0, 6})
-				// 	channel.Write([]byte(execSomething(conn, payload)))
-				// 	channel.SendRequest("exit-status", false, []byte{0, 0, 0, 0})
-				// 	req.Reply(true, nil)
-				// 	channel.Close()
+				case "exec":
+					payload := bytes.TrimPrefix(req.Payload, []byte{0, 0, 0, 6})
+					channel.Write([]byte(execSomething(conn, payload)))
+					channel.SendRequest("exit-status", false, []byte{0, 0, 0, 0})
+					req.Reply(true, nil)
+					channel.Close()
 				case "shell":
 					req.Reply(true, nil)
 				case "pty-req":
@@ -129,8 +130,7 @@ func createTerminal(conn *ssh.ServerConn, channel ssh.Channel) {
 			}
 			switch line {
 			case "whoami":
-				//termInstance.Write([]byte(execSomething(conn, []byte("whoami"))))
-				termInstance.Write([]byte(fmt.Sprintf("You are: %s", conn.User())))
+				termInstance.Write([]byte(execSomething(conn, []byte("whoami"))))
 			case "":
 			case "quit":
 				termInstance.Write([]byte("Goodbye!\n"))
