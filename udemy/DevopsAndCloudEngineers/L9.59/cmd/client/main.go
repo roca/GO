@@ -54,5 +54,5 @@ func main() {
 	if err != nil {
 		log.Fatalf("Session output error: %s", err)
 	}
-	log.Printf("%s", string(out))	
+	log.Printf("Output is: %s", string(out))	
 }
