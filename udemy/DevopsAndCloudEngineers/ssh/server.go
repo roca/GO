@@ -98,12 +98,16 @@ func handleConnection(conn *ssh.ServerConn, chans <-chan ssh.NewChannel) {
 		go func(in <-chan *ssh.Request) {
 			for req := range in {
 				fmt.Printf("Request Type made by client: %s\n", req.Type)
+				fmt.Printf("Request payload from client: %s\n", string(req.Payload))
 				switch req.Type {
 				case "exec":
 					payload := bytes.TrimPrefix(req.Payload, []byte{0, 0, 0, 6})
 					channel.Write([]byte(execSomething(conn, payload)))
 					channel.SendRequest("exit-status", false, []byte{0, 0, 0, 0})
 					req.Reply(true, nil)
+					// var data []byte
+					// channel.Read(data)
+					// fmt.Printf("Data from channel: %s", string(data))
 					channel.Close()
 				case "shell":
 					req.Reply(true, nil)
