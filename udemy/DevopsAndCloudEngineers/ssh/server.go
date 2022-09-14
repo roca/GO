@@ -105,9 +105,9 @@ func handleConnection(conn *ssh.ServerConn, chans <-chan ssh.NewChannel) {
 					channel.Write([]byte(execSomething(conn, payload)))
 					channel.SendRequest("exit-status", false, []byte{0, 0, 0, 0})
 					req.Reply(true, nil)
-					// var data []byte
-					// channel.Read(data)
-					// fmt.Printf("Data from channel: %s", string(data))
+					var data []byte
+					channel.Read(data)
+					fmt.Printf("Data from channel: %s\n", string(data))
 					channel.Close()
 				case "shell":
 					req.Reply(true, nil)
