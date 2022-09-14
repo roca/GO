@@ -82,7 +82,7 @@ func main() {
 
 		case "copy":
 			fmt.Printf("source: %s to destination: %s\n", *source, *dist)
-			SendFile(client, *source , *dist)
+			SendFile(client, *source, *dist)
 		default:
 			log.Fatalf("Can't handle this command: %s", *cmd)
 		}
