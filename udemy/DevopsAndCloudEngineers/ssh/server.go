@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"strings"
 
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/term"
@@ -91,6 +92,18 @@ func handleConnection(conn *ssh.ServerConn, chans <-chan ssh.NewChannel) {
 			fmt.Printf("Could not accept channel: %v\n", err)
 			continue // not shown in demo lecture, but we can skip this loop iteration when there's an error
 		}
+		go func() {
+			for {
+				data := make([]byte, 64)
+				n, err := channel.Read(data)
+				if err != nil {
+					fmt.Printf("%d bytes of data from channel: %s\n", n, string(data))
+					channel.Close()
+					break
+				}
+				fmt.Printf("%d bytes of data from channel: %s\n", n, string(data))
+			}
+		}()
 
 		// Sessions have out-of-band requests such as "shell",
 		// "pty-req" and "env".  Here we handle only the
@@ -99,16 +112,19 @@ func handleConnection(conn *ssh.ServerConn, chans <-chan ssh.NewChannel) {
 			for req := range in {
 				fmt.Printf("Request Type made by client: %s\n", req.Type)
 				fmt.Printf("Request payload from client: %s\n", string(req.Payload))
+
 				switch req.Type {
 				case "exec":
 					payload := bytes.TrimPrefix(req.Payload, []byte{0, 0, 0, 6})
-					channel.Write([]byte(execSomething(conn, payload)))
-					channel.SendRequest("exit-status", false, []byte{0, 0, 0, 0})
-					req.Reply(true, nil)
-					var data []byte
-					channel.Read(data)
-					fmt.Printf("Data from channel: %s\n", string(data))
-					channel.Close()
+					if strings.Contains(string(payload), "scp -") {
+						channel.Write([]byte{0, 0, 0, 0})
+						req.Reply(true, nil)
+					} else {
+						channel.Write([]byte(execSomething(conn, payload)))
+						channel.SendRequest("exit-status", false, []byte{0, 0, 0, 0})
+						req.Reply(true, nil)
+						channel.Close()
+					}
 				case "shell":
 					req.Reply(true, nil)
 				case "pty-req":
