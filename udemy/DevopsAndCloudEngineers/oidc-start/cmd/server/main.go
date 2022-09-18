@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/wardviaene/golang-for-devops-course/oidc-start/pkg/server"
-	"github.com/wardviaene/golang-for-devops-course/ssh-demo"
+	"github.com/roca/GO/tree/staging/udemy/DevopsAndCloudEngineers/ssh"
+	"github.com/roca/GO/tree/staging/udemy/DevopsAndCloudEngineers/oidc-start/pkg/server"
 )
 
 const configFile = ""
