@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
-	"github.com/wardviaene/golang-for-devops-course/oidc-start/pkg/oidc"
+	"github.com/roca/GO/tree/staging/udemy/DevopsAndCloudEngineers/oidc-start/pkg/oidc"
 )
 
 func TestGetTokenFromCode(t *testing.T) {
