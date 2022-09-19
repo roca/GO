@@ -14,14 +14,14 @@ import "testing"
 //  `
 
  var configYamlFile = `
+url: https://localhost:8080
 apps:
   app1:
-    client_id: ClientID
-    client_secret: ClientSecret
+    clientID: ClientID
+    clientSecret: ClientSecret
     issuer: https://localhost:8080
-    redirect_uris:
+    redirectURIs:
       - https://localhost:8080/callback
-url: https://localhost:8080
  `
 
 func TestReadConfig(t *testing.T) {

@@ -6,8 +6,8 @@ type Config struct {
 	LoadError error
 }
 type AppConfig struct {
-	ClientID     string   `yaml:"client_id"`
-	ClientSecret string   `yaml:"client_secret"`
+	ClientID     string   `yaml:"clientID"`
+	ClientSecret string   `yaml:"clientSecret"`
 	Issuer       string   `yaml:"issuer"`
-	RedirectURIs []string `yaml:"redirect_uris"`
+	RedirectURIs []string `yaml:"redirectURIs"`
 }
