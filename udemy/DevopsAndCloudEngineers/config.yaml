@@ -1,8 +1,7 @@
+url: https://localhost:8080
 apps:
   app1:
-    client_id: Client1234
-    client_secret: hogwarts!@#
+    clientID: "1-2-3-4"
+    clientSecret: "secret"
     issuer: https://localhost:8080
-    redirect_uris:
-      - https://localhost:8080/callback
-url: https://localhost:8080
+    redirectURIs: [https://localhost:8080/callback]
