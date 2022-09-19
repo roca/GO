@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"net/http"
 )
 
@@ -27,4 +28,10 @@ func Start(httpServer *http.Server, privateKey []byte, config Config) error {
 	http.HandleFunc("/userinfo", s.userinfo)
 
 	return httpServer.ListenAndServe()
+}
+
+func returnError(w http.ResponseWriter, statusCode int, err error) {
+	w.WriteHeader(statusCode)
+	w.Write([]byte(err.Error()))
+	fmt.Printf("Error: %s\n", err)
 }
