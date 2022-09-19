@@ -12,7 +12,7 @@ import (
 	"github.com/roca/GO/tree/staging/udemy/DevopsAndCloudEngineers/ssh"
 )
 
-const configFile = ""
+const configFile = "config.yaml"
 
 func main() {
 	var (
