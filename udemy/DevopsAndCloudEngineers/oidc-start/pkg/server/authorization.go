@@ -15,7 +15,6 @@ func (s *server) authorization(w http.ResponseWriter, r *http.Request) {
 		state        string
 	)
 
-	w.Header().Set("location", "https://localhost:8080/login")
 	if clientID = r.URL.Query().Get("client_id"); clientID == "" {
 		returnError(w, http.StatusBadRequest, fmt.Errorf("client_id is missing"))
 		return
@@ -41,5 +40,31 @@ func (s *server) authorization(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	appConfig := AppConfig{}
+	for _, app := range s.Config.Apps {
+		if app.ClientID == clientID {
+			appConfig = app
+		}
+	}
+	if appConfig.ClientID == "" {
+		returnError(w, http.StatusBadRequest, fmt.Errorf("client_id not found"))
+		return
+	}
+	if appConfig.ClientSecret != clientSecret {
+		returnError(w, http.StatusBadRequest, fmt.Errorf("client_secret is invalid"))
+		return
+	}
+	found := false
+	for _, uri := range appConfig.RedirectURIs {
+		if uri == redirectURI {
+			found = true
+		}
+	}
+	if !found {
+		returnError(w, http.StatusBadRequest, fmt.Errorf("redirect_uri not whitelisted"))
+		return
+	}
+
+	w.Header().Set("location", "https://localhost:8080/login")
 	w.WriteHeader(http.StatusFound)
 }
