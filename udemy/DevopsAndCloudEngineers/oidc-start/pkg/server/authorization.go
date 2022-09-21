@@ -10,7 +10,6 @@ import (
 func (s *server) authorization(w http.ResponseWriter, r *http.Request) {
 	var (
 		clientID     string
-		clientSecret string
 		redirectURI  string
 		scope        string
 		responseType string
@@ -19,10 +18,6 @@ func (s *server) authorization(w http.ResponseWriter, r *http.Request) {
 
 	if clientID = r.URL.Query().Get("client_id"); clientID == "" {
 		returnError(w, http.StatusBadRequest, fmt.Errorf("client_id is missing"))
-		return
-	}
-	if clientSecret = r.URL.Query().Get("client_secret"); clientSecret == "" {
-		returnError(w, http.StatusBadRequest, fmt.Errorf("client_secret is missing"))
 		return
 	}
 	if redirectURI = r.URL.Query().Get("redirect_uri"); redirectURI == "" {
@@ -52,10 +47,6 @@ func (s *server) authorization(w http.ResponseWriter, r *http.Request) {
 		returnError(w, http.StatusBadRequest, fmt.Errorf("client_id not found"))
 		return
 	}
-	if appConfig.ClientSecret != clientSecret {
-		returnError(w, http.StatusBadRequest, fmt.Errorf("client_secret is invalid"))
-		return
-	}
 	found := false
 	for _, uri := range appConfig.RedirectURIs {
 		if uri == redirectURI {
@@ -81,6 +72,6 @@ func (s *server) authorization(w http.ResponseWriter, r *http.Request) {
 		State:        state,
 	}
 
-	w.Header().Set("location", "https://localhost:8080/login")
+	w.Header().Add("location", fmt.Sprintf("%s/login?session_id=%s", s.Config.Url, sessionID))
 	w.WriteHeader(http.StatusFound)
 }
