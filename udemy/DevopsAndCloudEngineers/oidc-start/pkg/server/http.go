@@ -8,12 +8,14 @@ import (
 type server struct {
 	PrivateKey []byte
 	Config     Config
+	LoginRequests map[string]LoginRequest
 }
 
 func newServer(privateKey []byte, config Config) *server {
 	return &server{
 		PrivateKey: privateKey,
 		Config:     config,
+		LoginRequests: make(map[string]LoginRequest),
 	}
 }
 

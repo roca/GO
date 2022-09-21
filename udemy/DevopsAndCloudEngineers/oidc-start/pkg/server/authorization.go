@@ -3,6 +3,8 @@ package server
 import (
 	"fmt"
 	"net/http"
+
+	"github.com/roca/GO/tree/staging/udemy/DevopsAndCloudEngineers/oidc-start/pkg/oidc"
 )
 
 func (s *server) authorization(w http.ResponseWriter, r *http.Request) {
@@ -63,6 +65,20 @@ func (s *server) authorization(w http.ResponseWriter, r *http.Request) {
 	if !found {
 		returnError(w, http.StatusBadRequest, fmt.Errorf("redirect_uri not whitelisted"))
 		return
+	}
+
+	sessionID, err := oidc.GetRandomString(128)
+	if err != nil {
+		returnError(w, http.StatusInternalServerError, fmt.Errorf("GetRandomString error: %s", err))
+		return
+	}
+
+	s.LoginRequests[sessionID] = LoginRequest{
+		ClientID:     clientID,
+		RedirectURI:  redirectURI,
+		Scope:        scope,
+		ResponseType: responseType,
+		State:        state,
 	}
 
 	w.Header().Set("location", "https://localhost:8080/login")
