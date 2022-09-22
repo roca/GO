@@ -72,6 +72,6 @@ func (s *server) authorization(w http.ResponseWriter, r *http.Request) {
 		State:        state,
 	}
 
-	w.Header().Add("location", fmt.Sprintf("%s/login?session_id=%s", s.Config.Url, sessionID))
+	w.Header().Add("location", fmt.Sprintf("%s/login?sessionID=%s", s.Config.Url, sessionID))
 	w.WriteHeader(http.StatusFound)
 }
