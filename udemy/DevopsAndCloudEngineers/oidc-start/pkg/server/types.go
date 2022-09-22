@@ -1,5 +1,11 @@
 package server
 
+import (
+	"time"
+
+	"github.com/roca/GO/tree/staging/udemy/DevopsAndCloudEngineers/oidc-start/pkg/users"
+)
+
 type Config struct {
 	Apps      map[string]AppConfig `yaml:"apps"`
 	Url       string               `yaml:"url"`
@@ -18,4 +24,6 @@ type LoginRequest struct {
 	Scope        string
 	ResponseType string
 	State        string
+	CodeIssuedAt time.Time
+	User         users.User
 }
