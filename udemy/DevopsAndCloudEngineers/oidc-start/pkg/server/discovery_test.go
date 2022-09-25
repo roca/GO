@@ -19,7 +19,7 @@ func TestDiscovery(t *testing.T) {
 	s.discovery(w, req)
 	res := w.Result()
 
-	if res.StatusCode != http.StatusFound {
+	if res.StatusCode != http.StatusOK {
 		t.Errorf("Expected status code %d, got %d", http.StatusOK, res.StatusCode)
 	}
 	defer res.Body.Close()
@@ -38,6 +38,6 @@ func TestDiscovery(t *testing.T) {
 		t.Errorf("Expected issuer %s, got %s", s.Config.Url, discovery.Issuer)
 	}
 
-	t.Log(string(body), res.StatusCode)
+	// t.Log(string(body), res.StatusCode)
 
 }
