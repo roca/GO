@@ -11,7 +11,7 @@ import (
 func (s *server) discovery(w http.ResponseWriter, r *http.Request) {
 	discovery := oidc.Discovery{
 		Issuer:                            s.Config.Url,
-		AuthorizationEndpoint:             fmt.Sprintf("%s/authorize", s.Config.Url),
+		AuthorizationEndpoint:             fmt.Sprintf("%s/authorization", s.Config.Url),
 		TokenEndpoint:                     fmt.Sprintf("%s/token", s.Config.Url),
 		UserinfoEndpoint:                  fmt.Sprintf("%s/userinfo", s.Config.Url),
 		JwksURI:                           fmt.Sprintf("%s/jwks.json", s.Config.Url),
@@ -20,13 +20,12 @@ func (s *server) discovery(w http.ResponseWriter, r *http.Request) {
 		TokenEndpointAuthMethodsSupported: []string{"client_secret"},
 	}
 
-	body, err := json.MarshalIndent(discovery, "", "  ")
+	body, err := json.Marshal(discovery)
 	if err != nil {
 		returnError(w, http.StatusInternalServerError, fmt.Errorf("json.MarshalIndent error: %s", err))
 		return
 	}
 
-	w.WriteHeader(http.StatusFound)
 	w.Write(body)
 
 }
