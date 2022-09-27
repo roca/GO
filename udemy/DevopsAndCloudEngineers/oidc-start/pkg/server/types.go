@@ -26,4 +26,5 @@ type LoginRequest struct {
 	State        string
 	CodeIssuedAt time.Time
 	User         users.User
+	AppConfig    AppConfig
 }
