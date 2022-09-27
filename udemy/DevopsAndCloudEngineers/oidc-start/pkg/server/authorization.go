@@ -70,6 +70,7 @@ func (s *server) authorization(w http.ResponseWriter, r *http.Request) {
 		Scope:        scope,
 		ResponseType: responseType,
 		State:        state,
+		AppConfig:    appConfig,
 	}
 
 	w.Header().Add("location", fmt.Sprintf("%s/login?sessionID=%s", s.Config.Url, sessionID))

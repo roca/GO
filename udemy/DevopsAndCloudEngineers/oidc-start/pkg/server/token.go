@@ -4,8 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/roca/GO/tree/staging/udemy/DevopsAndCloudEngineers/oidc-start/pkg/oidc"
+	"github.com/roca/GO/tree/staging/udemy/DevopsAndCloudEngineers/oidc-start/pkg/users"
 )
 
 func (s *server) token(w http.ResponseWriter, r *http.Request) {
@@ -48,9 +51,14 @@ func (s *server) token(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	loginRequest,ok := s.Codes[code]
+	loginRequest, ok := s.Codes[code]
 	if !ok {
 		returnError(w, http.StatusBadRequest, fmt.Errorf("code is invalid"))
+		return
+	}
+
+	if time.Now().After(loginRequest.CodeIssuedAt.Add(10*time.Minute)) == true {
+		returnError(w, http.StatusBadRequest, fmt.Errorf("code is expired"))
 		return
 	}
 
@@ -59,34 +67,103 @@ func (s *server) token(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if s.Config.Apps["app1"].ClientSecret != client_secret {
+	if loginRequest.AppConfig.ClientSecret != client_secret {
 		returnError(w, http.StatusBadRequest, fmt.Errorf("client_secret does not match"))
 		return
 	}
 
-	found := false
-
-	for _, uri := range s.Config.Apps["app1"].RedirectURIs {
-		if uri == redirect_uri {
-			found = true
-			break
-		}
-	}
-
-	if !found {
+	if loginRequest.RedirectURI != redirect_uri {
 		returnError(w, http.StatusBadRequest, fmt.Errorf("redirect_uri does not match"))
 		return
 	}
 
-	token := oidc.Token{}
-	tokenBytes, err := json.Marshal(token)
+	signedIDToken, err := generateIDJWT(loginRequest.User, loginRequest.AppConfig, s.PrivateKey)
+	if err != nil {
+		returnError(w, http.StatusInternalServerError, fmt.Errorf("error generating signedIDToken JWT: %s", err))
+		return
+	}
+
+	signedAccessToken, err := generateAccessJWT(loginRequest.User, loginRequest.AppConfig, s.PrivateKey, s.Config.Url)
+	if err != nil {
+		returnError(w, http.StatusInternalServerError, fmt.Errorf("error generating signedAccessToken JWT: %s", err))
+		return
+	}
+
+	tokenOutput := oidc.Token{
+		IDToken:     signedIDToken,
+		AccessToken: signedAccessToken,
+		TokenType:   "Bearer",
+		ExpiresIn:   60,
+	}
+
+	delete(s.Codes, code)
+
+	tokenBytes, err := json.Marshal(tokenOutput)
 	if err != nil {
 		returnError(w, http.StatusInternalServerError, fmt.Errorf("json.Marshal(token) error: %s", err))
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
+	// w.Header().Set("Content-Type", "application/json")
+	// w.WriteHeader(http.StatusOK)
 	w.Write(tokenBytes)
+
+}
+
+func generateIDJWT(user users.User, appConfig AppConfig, privateKey []byte) (string, error) {
+
+	key, err := jwt.ParseRSAPrivateKeyFromPEM(privateKey)
+	if err != nil {
+		return "", fmt.Errorf("create: parse key: %w", err)
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{
+		"sub": user.Sub,
+		"iss": appConfig.Issuer,
+		"aud": appConfig.ClientID,
+		"exp": time.Now().Add(time.Hour * 1).Unix(),
+		"nbf": time.Now().Unix(),
+		"iat": time.Now().Unix(),
+		// "authorized": true,
+		// "email":      user.Email,
+	})
+
+	token.Header["kid"] = "0-0-0-1"
+
+	signedIDToken, err := token.SignedString(key)
+	if err != nil {
+		return "", err
+	}
+
+	return signedIDToken, nil
+
+}
+
+func generateAccessJWT(user users.User, appConfig AppConfig, privateKey []byte, appURL string) (string, error) {
+
+	key, err := jwt.ParseRSAPrivateKeyFromPEM(privateKey)
+	if err != nil {
+		return "", fmt.Errorf("create: parse key: %w", err)
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{
+		"sub": user.Sub,
+		"iss": appConfig.Issuer,
+		"aud": []string{
+			appURL + "/userinfo",
+		},
+		"exp": time.Now().Add(time.Hour * 1).Unix(),
+		"nbf": time.Now().Unix(),
+		"iat": time.Now().Unix(),
+		// "authorized": true,
+		// "email":      user.Email,
+	})
+
+	token.Header["kid"] = "0-0-0-1"
+
+	signedIDToken, err := token.SignedString(key)
+	if err != nil {
+		return "", err
+	}
+
+	return signedIDToken, nil
 
 }
