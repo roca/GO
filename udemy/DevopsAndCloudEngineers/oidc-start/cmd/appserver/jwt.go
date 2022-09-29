@@ -22,6 +22,32 @@ func getTokenFromCode(tokenUrl, jwksUrl, redirectUri, clientID, clientSecret, co
 	if err != nil {
 		return nil, nil, err
 	}
+	
+	defer res.Body.Close()
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var tokenResponse oidc.Token
+
+	err = json.Unmarshal(body, &tokenResponse)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	if tokenResponse.IDToken == "" {
+		return nil, nil, err
+	}
+
+	claims := jwt.StandardClaims{}
+	_, err = jwt.ParseWithClaims(tokenResponse.IDToken, &claims, func(token *jwt.Token) (interface{}, error) {
+		privateKeyParsed, err := jwt.ParseRSAPrivateKeyFromPEM(s.PrivateKey)
+		if err != nil {
+			return nil, nil, err
+		}
+		return &privateKeyParsed.PublicKey, nil
+	})
 
 	return nil, nil, nil
 }
