@@ -2,10 +2,13 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
+	"io"
 	"net/http"
 	"net/url"
 
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/roca/GO/tree/staging/udemy/DevopsAndCloudEngineers/oidc-start/pkg/oidc"
 )
 
 // gets token from tokenUrl validating token with jwksUrl and returning token & claims
@@ -41,13 +44,13 @@ func getTokenFromCode(tokenUrl, jwksUrl, redirectUri, clientID, clientSecret, co
 	}
 
 	claims := jwt.StandardClaims{}
-	_, err = jwt.ParseWithClaims(tokenResponse.IDToken, &claims, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(tokenResponse.IDToken, &claims, func(token *jwt.Token) (interface{}, error) {
 		privateKeyParsed, err := jwt.ParseRSAPrivateKeyFromPEM(s.PrivateKey)
 		if err != nil {
-			return nil, nil, err
+			return nil, err
 		}
 		return &privateKeyParsed.PublicKey, nil
 	})
 
-	return nil, nil, nil
+	return token, &claims, nil
 }
