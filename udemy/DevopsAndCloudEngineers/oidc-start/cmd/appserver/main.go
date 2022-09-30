@@ -69,7 +69,36 @@ func (a *app) index(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *app) callback(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("callback. Code is : " + r.URL.Query().Get("code")))
+	code := r.URL.Query().Get("code")
+	configFileBytes, err := ioutil.ReadFile("config.yaml")
+	if err != nil {
+		returnError(w, fmt.Errorf("Error reading config file %s", err))
+		return
+	}
+
+	config := ReadConfig(configFileBytes)
+	oidcEndpoint := config.Url
+	discovery, err := oidc.ParseDiscovery(oidcEndpoint + "/.well-known/openid-configuration")
+	if err != nil {
+		returnError(w, fmt.Errorf("ParseDiscovery error: %s", err))
+		return
+	}
+
+	_, claims, err := getTokenFromCode(
+		discovery.TokenEndpoint,
+		discovery.JwksURI,
+		config.Apps["app1"].RedirectURIs[0],
+		config.Apps["app1"].ClientID,
+		config.Apps["app1"].ClientSecret,
+		code,
+	)
+	if err != nil {
+		returnError(w, fmt.Errorf("getTokenFromCode error: %s", err))
+		return
+	}
+
+	
+	w.Write([]byte("Token recived: " + claims.Subject))
 }
 
 func returnError(w http.ResponseWriter, err error) {
