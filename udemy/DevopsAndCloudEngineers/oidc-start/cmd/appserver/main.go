@@ -24,6 +24,7 @@ const (
 
 type app struct {
 	AuthorizationURL string
+	States           map[string]bool
 }
 
 type Config struct {
@@ -40,7 +41,9 @@ type AppConfig struct {
 
 func main() {
 
-	a := app{}
+	a := app{
+		States: make(map[string]bool),
+	}
 
 	http.HandleFunc("/", a.index)
 	http.HandleFunc("/callback", a.callback)
@@ -53,12 +56,13 @@ func main() {
 
 func (a *app) index(w http.ResponseWriter, r *http.Request) {
 
-	url, err := GetAuthorizationURL()
+	url, state, err := GetAuthorizationURL()
 	if err != nil {
 		returnError(w, fmt.Errorf("SetAuthorizationURL error %s", err))
 		return
 	}
 	a.AuthorizationURL = url
+	a.States[state] = true
 
 	err = templates["index.html"].Execute(w, a)
 	if err != nil {
@@ -70,6 +74,13 @@ func (a *app) index(w http.ResponseWriter, r *http.Request) {
 
 func (a *app) callback(w http.ResponseWriter, r *http.Request) {
 	code := r.URL.Query().Get("code")
+	state := r.URL.Query().Get("state")
+
+	if _, ok := a.States[state]; !ok {
+		returnError(w, fmt.Errorf("Invalid state"))
+		return
+	}
+
 	configFileBytes, err := ioutil.ReadFile("config.yaml")
 	if err != nil {
 		returnError(w, fmt.Errorf("Error reading config file %s", err))
@@ -84,6 +95,8 @@ func (a *app) callback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	delete(a.States, state)
+
 	_, claims, err := getTokenFromCode(
 		discovery.TokenEndpoint,
 		discovery.JwksURI,
@@ -97,7 +110,6 @@ func (a *app) callback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	
 	w.Write([]byte("Token recived: " + claims.Subject))
 }
 
@@ -107,28 +119,28 @@ func returnError(w http.ResponseWriter, err error) {
 	fmt.Printf("Error: %s\n", err)
 }
 
-func GetAuthorizationURL() (string, error) {
+func GetAuthorizationURL() (string, string, error) {
 
 	err := LoadTemplates()
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
 	configFileBytes, err := ioutil.ReadFile("config.yaml")
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
 	config := ReadConfig(configFileBytes)
 	oidcEndpoint := config.Url
 	discovery, err := oidc.ParseDiscovery(oidcEndpoint + "/.well-known/openid-configuration")
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
 	state, err := oidc.GetRandomString(64)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
 	authorizationURL := fmt.Sprintf("%s?client_id=%s&response_type=code&scope=openid&redirect_uri=%s&state=%s",
@@ -138,7 +150,7 @@ func GetAuthorizationURL() (string, error) {
 		state,
 	)
 
-	return authorizationURL, nil
+	return authorizationURL, state, nil
 }
 
 func LoadTemplates() error {
