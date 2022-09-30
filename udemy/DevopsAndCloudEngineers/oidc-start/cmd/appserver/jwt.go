@@ -1,8 +1,8 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -23,9 +23,13 @@ func getTokenFromCode(tokenUrl, jwksUrl, redirectUri, clientID, clientSecret, co
 	form.Add("client_secret", clientSecret)
 	form.Add("code", code)
 
-	res, err := http.Post(tokenUrl, "application/x-www-form-urlencoded", bytes.NewBufferString(form.Encode()))
+	res, err := http.PostForm(tokenUrl, form)
 	if err != nil {
 		return nil, nil, err
+	}
+
+	if res.StatusCode != http.StatusOK {
+		return nil, nil, fmt.Errorf("StatusCode was not 200")
 	}
 
 	defer res.Body.Close()
