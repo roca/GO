@@ -12,7 +12,7 @@ import (
 )
 
 // gets token from tokenUrl validating token with jwksUrl and returning token & claims
-func getTokenFromCode(tokenUrl, jwksUrl, redirectUri, clientID, clientSecret, code string) (*jwt.Token, *jwt.StandardClaims, error) {
+func getTokenFromCode(tokenUrl, jwksUrl, redirectUri, clientID, clientSecret, code string) (*jwt.Token, *jwt.RegisteredClaims, error) {
 
 	form := url.Values{}
 	form.Add("grant_type", "authorization_code")
@@ -40,7 +40,7 @@ func getTokenFromCode(tokenUrl, jwksUrl, redirectUri, clientID, clientSecret, co
 
 	err = json.Unmarshal(body, &tokenResponse)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, fmt.Errorf("Unmarshal token error: %s", err)
 	}
 
 	if tokenResponse.IDToken == "" {
@@ -48,26 +48,14 @@ func getTokenFromCode(tokenUrl, jwksUrl, redirectUri, clientID, clientSecret, co
 	}
 	fmt.Print(tokenResponse.IDToken)
 
-	return nil, nil, fmt.Errorf("Not implemented")
-
-	// claims := jwt.StandardClaims{}
-	// publicKey, err := ioutil.ReadFile("server.pub")
-	// if err != nil {
-	// 	return nil, nil, err
-	// }
-
-	// publicKeyParsed, _, _, _, err := ssh.ParseAuthorizedKey(publicKey)
-	// if err != nil {
-	// 	return nil, nil, err
-	// }
-
-	// token, err := jwt.ParseWithClaims(tokenResponse.IDToken, &claims, func(token *jwt.Token) (interface{}, error) {
-
-	// 	return publicKeyParsed, nil
-	// })
-	// if err != nil {
-	// 	return nil, nil, err
-	// }
+	claims := jwt.RegisteredClaims{}
+	parsedToken, err := jwt.ParseWithClaims(tokenResponse.IDToken, &claims, func(token *jwt.Token) (interface{}, error) {
+		return nil, nil
+	})
+	if err != nil {
+		return nil, nil, fmt.Errorf("Token parsing failed: %s", err)
+	}
 
 	// return token, &claims, nil
+	return parsedToken, &claims, nil
 }
