@@ -4,13 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/roca/GO/tree/staging/udemy/DevopsAndCloudEngineers/oidc-start/pkg/oidc"
-	"golang.org/x/crypto/ssh"
 )
 
 // gets token from tokenUrl validating token with jwksUrl and returning token & claims
@@ -48,22 +46,28 @@ func getTokenFromCode(tokenUrl, jwksUrl, redirectUri, clientID, clientSecret, co
 	if tokenResponse.IDToken == "" {
 		return nil, nil, err
 	}
+	fmt.Print(tokenResponse.IDToken)
 
-	claims := jwt.StandardClaims{}
-	publicKey, err := ioutil.ReadFile("server.pub")
-	if err != nil {
-		return nil, nil, err
-	}
+	return nil, nil, fmt.Errorf("Not implemented")
 
-	publicKeyParsed, _, _, _, err := ssh.ParseAuthorizedKey(publicKey)
-	if err != nil {
-		return nil, nil, err
-	}
+	// claims := jwt.StandardClaims{}
+	// publicKey, err := ioutil.ReadFile("server.pub")
+	// if err != nil {
+	// 	return nil, nil, err
+	// }
 
-	token, err := jwt.ParseWithClaims(tokenResponse.IDToken, &claims, func(token *jwt.Token) (interface{}, error) {
+	// publicKeyParsed, _, _, _, err := ssh.ParseAuthorizedKey(publicKey)
+	// if err != nil {
+	// 	return nil, nil, err
+	// }
 
-		return publicKeyParsed, nil
-	})
+	// token, err := jwt.ParseWithClaims(tokenResponse.IDToken, &claims, func(token *jwt.Token) (interface{}, error) {
 
-	return token, &claims, nil
+	// 	return publicKeyParsed, nil
+	// })
+	// if err != nil {
+	// 	return nil, nil, err
+	// }
+
+	// return token, &claims, nil
 }
