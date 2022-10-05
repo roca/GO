@@ -15,7 +15,7 @@ import (
 )
 
 // gets token from tokenUrl validating token with jwksUrl and returning token & claims
-func getTokenFromCode(tokenUrl, jwksUrl, redirectUri, clientID, clientSecret, code string) (*jwt.Token, *jwt.RegisteredClaims, error) {
+func getTokenFromCode(tokenUrl, jwksUrl, redirectUri, clientID, clientSecret, code string) (*oidc.Token, *jwt.RegisteredClaims, error) {
 
 	form := url.Values{}
 	form.Add("grant_type", "authorization_code")
@@ -52,7 +52,7 @@ func getTokenFromCode(tokenUrl, jwksUrl, redirectUri, clientID, clientSecret, co
 	// fmt.Print(tokenResponse.IDToken)
 
 	claims := jwt.RegisteredClaims{}
-	parsedToken, err := jwt.ParseWithClaims(tokenResponse.IDToken, &claims, func(token *jwt.Token) (interface{}, error) {
+	_, err = jwt.ParseWithClaims(tokenResponse.IDToken, &claims, func(token *jwt.Token) (interface{}, error) {
 		kid, ok := token.Header["kid"]
 		if !ok {
 			return nil, fmt.Errorf("kid not found in token header")
@@ -69,7 +69,7 @@ func getTokenFromCode(tokenUrl, jwksUrl, redirectUri, clientID, clientSecret, co
 	}
 
 	// return token, &claims, nil
-	return parsedToken, &claims, nil
+	return &tokenResponse, &claims, nil
 }
 
 func getPublicKeyFromJwks(jwksUrl, kid string) (*rsa.PublicKey, error) {
