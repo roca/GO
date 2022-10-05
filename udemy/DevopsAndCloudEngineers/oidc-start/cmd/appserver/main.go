@@ -4,6 +4,7 @@ import (
 	"embed"
 	"fmt"
 	"html/template"
+	"io"
 	"io/fs"
 	"io/ioutil"
 	"net/http"
@@ -97,7 +98,7 @@ func (a *app) callback(w http.ResponseWriter, r *http.Request) {
 
 	delete(a.States, state)
 
-	_, claims, err := getTokenFromCode(
+	token, _, err := getTokenFromCode(
 		discovery.TokenEndpoint,
 		discovery.JwksURI,
 		config.Apps["app1"].RedirectURIs[0],
@@ -110,7 +111,40 @@ func (a *app) callback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Write([]byte("Token recived: " + claims.Subject))
+	req, err := http.NewRequest("GET", discovery.UserinfoEndpoint, nil)
+	if err != nil {
+		returnError(w, fmt.Errorf("NewRequest error: %s", err))
+		return
+	}
+	req.Header.Add("Authorization", "Bearer "+token.AccessToken)
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		returnError(w, fmt.Errorf("Do error: %s", err))
+		return
+	}
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		returnError(w, fmt.Errorf("ReadAll error: %s", err))
+		return
+	}
+
+	// var user users.User
+
+	// err = yaml.Unmarshal(body, &user)
+	// if err != nil {
+	// 	returnError(w, fmt.Errorf("Unmarshal error: %s", err))
+	// 	return
+	// }
+
+	// out, err = json.Marshal(user)
+	// if err != nil {
+	// 	returnError(w, fmt.Errorf("Marshal error: %s", err))
+	// 	return
+	// }
+
+	w.Write(body)
 }
 
 func returnError(w http.ResponseWriter, err error) {
