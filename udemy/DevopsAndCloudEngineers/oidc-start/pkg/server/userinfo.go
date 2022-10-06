@@ -31,6 +31,13 @@ func (s *server) userinfo(w http.ResponseWriter, r *http.Request) {
 		returnError(w, http.StatusUnauthorized, fmt.Errorf("Invalid token error: %s", err))
 		return
 	}
+
+	found := claims.VerifyAudience(s.Config.Url + "/userinfo", true)
+	if !found {
+		returnError(w, http.StatusUnauthorized, fmt.Errorf("Invalid audience %s", claims["aud"]))
+		return
+	}
+
 	for _, user := range users.GetAllUsers() {
 		if user.Sub == claims["sub"].(string) {
 			bytes, err := json.Marshal(user)
