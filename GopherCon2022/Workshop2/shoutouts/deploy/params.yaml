@@ -1,0 +1,30 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Shoutouts configuration parameters
+
+Parameters:
+  slackToken:
+    Type: String
+    Description: "Slack app token"
+    Default: OverrideMe
+  metricNamespace:
+    Type: String
+    Description: "CloudWatch Metrics Namespace"
+    Default: OverrideMe
+
+Resources:
+
+  MetricNamespace:
+    Type: "AWS::SSM::Parameter"
+    Properties:
+      Name: !Sub "/${AWS::StackName}/metric-namespace"
+      Type: "String"
+      Value: !Ref metricNamespace
+      Description: "CloudWatch Metrics Namespace"
+
+  SlackToken:
+    Type: 'AWS::SecretsManager::Secret'
+    Properties:
+      Name: !Sub "/${AWS::StackName}/slack-token"
+      Description: "Slack app token"
+      SecretString: !Ref slackToken

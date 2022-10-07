@@ -120,7 +120,7 @@ func (a *app) callback(w http.ResponseWriter, r *http.Request) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		returnError(w, fmt.Errorf("Do error: %s", err))
+		returnError(w, fmt.Errorf("Do request error: %s", err))
 		return
 	}
 	defer resp.Body.Close()
@@ -144,7 +144,7 @@ func (a *app) callback(w http.ResponseWriter, r *http.Request) {
 	// 	return
 	// }
 
-	w.Write(body)
+	w.Write([]byte(fmt.Sprintf("Token received. User info: %s", body)))
 }
 
 func returnError(w http.ResponseWriter, err error) {
