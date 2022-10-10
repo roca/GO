@@ -16,3 +16,10 @@
 
 - https://go.dev/
 
+
+### Run Jenkins in Docker
+
+``` sh
+docker run -v jenkins:/var/jenkins_home -p 8090:8080 -it --rm --name jenkins jenkins/jenkins:lts
+
+
