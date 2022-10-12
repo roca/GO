@@ -15,7 +15,7 @@ import (
 )
 
 // gets token from tokenUrl validating token with jwksUrl and returning token & claims
-func getTokenFromCode(tokenUrl, jwksUrl, redirectUri, clientID, clientSecret, code string) (*oidc.Token, *jwt.RegisteredClaims, error) {
+func getTokenFromCode(tokenUrl, jwksUrl, redirectUri, clientID, clientSecret, code string) (*oidc.Token, *jwt.Token, *jwt.RegisteredClaims, error) {
 
 	form := url.Values{}
 	form.Add("grant_type", "authorization_code")
@@ -26,33 +26,33 @@ func getTokenFromCode(tokenUrl, jwksUrl, redirectUri, clientID, clientSecret, co
 
 	res, err := http.PostForm(tokenUrl, form)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil,err
 	}
 
 	if res.StatusCode != http.StatusOK {
-		return nil, nil, fmt.Errorf("StatusCode was not 200")
+		return nil, nil, nil, fmt.Errorf("StatusCode was not 200")
 	}
 
 	defer res.Body.Close()
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil,nil, err
 	}
 
 	var tokenResponse oidc.Token
 
 	err = json.Unmarshal(body, &tokenResponse)
 	if err != nil {
-		return nil, nil, fmt.Errorf("Unmarshal token error: %s", err)
+		return nil, nil, nil, fmt.Errorf("Unmarshal token error: %s", err)
 	}
 
 	if tokenResponse.IDToken == "" {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 	// fmt.Print(tokenResponse.IDToken)
 
 	claims := jwt.RegisteredClaims{}
-	_, err = jwt.ParseWithClaims(tokenResponse.IDToken, &claims, func(token *jwt.Token) (interface{}, error) {
+	parsedIDToken, err := jwt.ParseWithClaims(tokenResponse.IDToken, &claims, func(token *jwt.Token) (interface{}, error) {
 		kid, ok := token.Header["kid"]
 		if !ok {
 			return nil, fmt.Errorf("kid not found in token header")
@@ -65,11 +65,11 @@ func getTokenFromCode(tokenUrl, jwksUrl, redirectUri, clientID, clientSecret, co
 		return publiucKey, nil
 	})
 	if err != nil {
-		return nil, nil, fmt.Errorf("Token parsing failed: %s", err)
+		return nil, nil, nil, fmt.Errorf("Token parsing failed: %s", err)
 	}
 
 	// return token, &claims, nil
-	return &tokenResponse, &claims, nil
+	return &tokenResponse, parsedIDToken, &claims, nil
 }
 
 func getPublicKeyFromJwks(jwksUrl, kid string) (*rsa.PublicKey, error) {

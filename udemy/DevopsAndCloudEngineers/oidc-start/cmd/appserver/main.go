@@ -98,7 +98,7 @@ func (a *app) callback(w http.ResponseWriter, r *http.Request) {
 
 	delete(a.States, state)
 
-	token, _, err := getTokenFromCode(
+	oidcToken, idToken, _, err := getTokenFromCode(
 		discovery.TokenEndpoint,
 		discovery.JwksURI,
 		config.Apps["app1"].RedirectURIs[0],
@@ -116,7 +116,7 @@ func (a *app) callback(w http.ResponseWriter, r *http.Request) {
 		returnError(w, fmt.Errorf("NewRequest error: %s", err))
 		return
 	}
-	req.Header.Add("Authorization", "Bearer "+token.AccessToken)
+	req.Header.Add("Authorization", "Bearer "+oidcToken.AccessToken)
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
@@ -129,6 +129,8 @@ func (a *app) callback(w http.ResponseWriter, r *http.Request) {
 		returnError(w, fmt.Errorf("ReadAll error: %s", err))
 		return
 	}
+
+	fmt.Printf("IDToken: %s\n", idToken.Raw)
 
 	// var user users.User
 

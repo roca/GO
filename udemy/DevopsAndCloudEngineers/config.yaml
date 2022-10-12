@@ -1,12 +1,7 @@
-url: https://2b65-69-115-187-42.ngrok.io
+url: https://ce6d-69-115-187-42.ngrok.io
 apps:
   app1:
     clientID: "1-2-3-4"
     clientSecret: "secret"
-    issuer: https://2b65-69-115-187-42.ngrok.io
+    issuer: https://ce6d-69-115-187-42.ngrok.io
     redirectURIs: [http://localhost:8081/callback]
-  jenkins:
-    clientID: "1-2-3-5"
-    clientSecret: "secret"
-    issuer: https://2b65-69-115-187-42.ngrok.io
-    redirectURIs: [http://localhost:8090/securityRealm/finishLogin]
