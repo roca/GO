@@ -1,5 +1,7 @@
 module github.com/roca/GO/tree/staging/udemy/DevopsAndCloudEngineers
 
+replace github.com/golang/mock v1.4.3 => github.com/golang/mock v1.4.4
+
 go 1.18
 
 require (
@@ -56,6 +58,7 @@ require (
 	github.com/google/gofuzz v1.1.0 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/imdario/mergo v0.3.6 // indirect
+	github.com/inconshreveable/mousetrap v1.0.1 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
@@ -65,6 +68,7 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/pkg/browser v0.0.0-20210911075715-681adbf594b8 // indirect
+	github.com/spf13/cobra v1.6.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/wardviaene/golang-for-devops-course/azure-instance v0.0.0-20220808124401-b38a9cd3df80 // indirect
 	github.com/wardviaene/golang-for-devops-course/ssh-demo v0.0.0-20220613154127-4d821abdce2f // indirect
