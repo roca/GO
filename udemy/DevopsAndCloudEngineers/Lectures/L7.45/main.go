@@ -342,7 +342,7 @@ func createNetworkInterFaceClient(
 }
 
 func findVnet(ctx context.Context, cred azcore.TokenCredential, subscriptionID string) (bool, error) {
-	virtualNetworksClient, err := armnetwork.NewVirtualNetworksClient(subscriptionID, cred, nil)
+	_, err := armnetwork.NewVirtualNetworksClient(subscriptionID, cred, nil)
 	if err != nil {
 		return false, err
 	}

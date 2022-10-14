@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/roca/GO/tree/staging/udemy/DevopsAndCloudEngineers/L3.21-Assignment-1/pkg/api"
+	"github.com/roca/GO/tree/staging/udemy/DevopsAndCloudEngineers/Lectures/L3.21-Assignment-1/pkg/api"
 )
 
 func main() {
