@@ -98,7 +98,7 @@ func TestGetTokenFromCode(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	_, claims, err := getTokenFromCode(ts.URL+"/token", ts.URL+"/jwks.json", "http://localhost:8081", "1-2-3-4", "secret", "mycode")
+	_, _, claims, err := getTokenFromCode(ts.URL+"/token", ts.URL+"/jwks.json", "http://localhost:8081", "1-2-3-4", "secret", "mycode")
 	if err != nil {
 		t.Fatalf("getTokenFromCode error: %s", err)
 	}
