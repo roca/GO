@@ -23,9 +23,6 @@ var rootCmd = &cobra.Command{
 	Short: "tls is a command line tool for TLS",
 	Long: `tls is a command line tool for TLS.
 		Mainly used for generation of X.509 certificates, but can be extended`,
-	Run: func(cmd *cobra.Command, args []string) {
-		// Do Stuff Here
-	},
 }
 
 func Execute() {
@@ -37,7 +34,7 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize(initConfig)
-	rootCmd.PersistentFlags().StringVarP(&cfgFilePath, "config", "c", "", "config file (default is tls.yaml")
+	rootCmd.PersistentFlags().StringVarP(&cfgFilePath, "config", "c", "", "config file (default is tls.yaml)")
 }
 
 func initConfig() {
