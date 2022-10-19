@@ -53,5 +53,5 @@ func initConfig() {
 	}
 
 	// Print the config
-	fmt.Printf("Config: %+v", config)
+	fmt.Printf("Config: %+v\n", config)
 }
