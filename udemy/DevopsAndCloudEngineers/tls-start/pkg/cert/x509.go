@@ -1,10 +1,12 @@
 package cert
 
 import (
+	"bytes"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/x509"
 	"crypto/x509/pkix"
+	"encoding/pem"
 	"time"
 
 	"github.com/roca/GO/tree/staging/udemy/DevopsAndCloudEngineers/tls-start/pkg/key"
@@ -59,16 +61,31 @@ func CreateCert(cert *Cert, caKey []byte, caCert []byte, keyFilePath, certFilePa
 }
 
 func createCert(template *x509.Certificate, caKey *rsa.PrivateKey, caCert *x509.Certificate) ([]byte, []byte, error) {
+	var (
+		derBytes []byte
+		certOut  bytes.Buffer
+		keyOut   bytes.Buffer
+	)
 	privateKey, err := key.CreateRSAPrivateKey(4096)
 	if err != nil {
 		return nil, nil, err
 	}
 	if template.IsCA {
-		x509.CreateCertificate(rand.Reader, template, template, &privateKey.PublicKey, privateKey)
+		derBytes, err = x509.CreateCertificate(rand.Reader, template, template, &privateKey.PublicKey, privateKey)
+		if err != nil {
+			return nil, nil, err
+		}
 	} else {
 		//
 	}
-	return nil, nil, nil
+	if err = pem.Encode(&certOut, &pem.Block{Type: "CERTIFICATE", Bytes: derBytes}); err != nil {
+		return nil, nil, err
+	}
+	if err = pem.Encode(&keyOut, key.RSAPrivateKeyToPEM(privateKey)); err != nil {
+		return nil, nil, err
+	}
+
+	return keyOut.Bytes(), certOut.Bytes(), nil
 }
 
 func removeEmptyString(input []string) []string {
