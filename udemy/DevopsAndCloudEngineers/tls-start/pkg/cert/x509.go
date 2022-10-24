@@ -7,13 +7,14 @@ import (
 	"crypto/x509"
 	"crypto/x509/pkix"
 	"encoding/pem"
+	"io/ioutil"
 	"time"
 
 	"github.com/roca/GO/tree/staging/udemy/DevopsAndCloudEngineers/tls-start/pkg/key"
 )
 
 func CreateCACert(ca *CACert, keyFilePath, caCertFilePath string) error {
-	tempplate := &x509.Certificate{
+	template := &x509.Certificate{
 		SerialNumber: ca.Serial,
 		Subject: pkix.Name{
 			Country:            removeEmptyString([]string{ca.Subject.Country}),
@@ -32,7 +33,17 @@ func CreateCACert(ca *CACert, keyFilePath, caCertFilePath string) error {
 		KeyUsage:              x509.KeyUsageDigitalSignature | x509.KeyUsageCertSign,
 		BasicConstraintsValid: true,
 	}
-	_, _, err := createCert(tempplate, nil, nil)
+	keyBytes, certBytes, err := createCert(template, nil, nil)
+	if err != nil {
+		return err
+	}
+
+	err = ioutil.WriteFile(keyFilePath, keyBytes, 0600)
+	if err != nil {
+		return err
+	}
+
+	err = ioutil.WriteFile(caCertFilePath, certBytes, 0644)
 	if err != nil {
 		return err
 	}
@@ -40,7 +51,7 @@ func CreateCACert(ca *CACert, keyFilePath, caCertFilePath string) error {
 }
 
 func CreateCert(cert *Cert, caKey []byte, caCert []byte, keyFilePath, certFilePath string) error {
-	_ = &x509.Certificate{
+	template := &x509.Certificate{
 		SerialNumber: cert.Serial,
 		Subject: pkix.Name{
 			Country:            removeEmptyString([]string{cert.Subject.Country}),
@@ -56,6 +67,30 @@ func CreateCert(cert *Cert, caKey []byte, caCert []byte, keyFilePath, certFilePa
 		NotAfter:    time.Now().AddDate(cert.ValidForYears, 0, 0),
 		ExtKeyUsage: []x509.ExtKeyUsage{x509.ExtKeyUsageClientAuth, x509.ExtKeyUsageServerAuth},
 		KeyUsage:    x509.KeyUsageDigitalSignature,
+		DNSNames:  removeEmptyString(cert.DNSNames),
+	}
+	caKeyParsed, err := key.PrivateKeyPemToRSA(caKey)
+	if err != nil {
+		return err
+	}
+	caCertParsed, err := PemToX509(caCert)
+	if err != nil {
+		return err
+	}
+
+	keyBytes, certBytes, err := createCert(template, caKeyParsed, caCertParsed)
+	if err != nil {
+		return err
+	}
+
+	err = ioutil.WriteFile(keyFilePath, keyBytes, 0600)
+	if err != nil {
+		return err
+	}
+
+	err = ioutil.WriteFile(certFilePath, certBytes, 0644)
+	if err != nil {
+		return err
 	}
 	return nil
 }
