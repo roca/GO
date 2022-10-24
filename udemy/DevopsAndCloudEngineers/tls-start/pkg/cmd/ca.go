@@ -26,5 +26,5 @@ var createCACmd = &cobra.Command{
 func init() {
 	createCmd.AddCommand(createCACmd)
 	createCACmd.Flags().StringVarP(&caKey, "key-out", "k", "ca.key", "destination path for ca key")
-	createCACmd.Flags().StringVarP(&caCert, "cert-out", "c", "ca.crt", "destination path for ca cert")
+	createCACmd.Flags().StringVarP(&caCert, "cert-out", "o", "ca.crt", "destination path for ca cert")
 }
