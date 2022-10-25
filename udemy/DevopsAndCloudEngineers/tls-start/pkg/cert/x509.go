@@ -111,7 +111,10 @@ func createCert(template *x509.Certificate, caKey *rsa.PrivateKey, caCert *x509.
 			return nil, nil, err
 		}
 	} else {
-		//
+		derBytes, err = x509.CreateCertificate(rand.Reader, template, caCert, &privateKey.PublicKey, caKey)
+		if err != nil {
+			return nil, nil, err
+		}
 	}
 	if err = pem.Encode(&certOut, &pem.Block{Type: "CERTIFICATE", Bytes: derBytes}); err != nil {
 		return nil, nil, err
