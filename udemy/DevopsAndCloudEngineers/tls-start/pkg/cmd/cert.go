@@ -45,10 +45,10 @@ func init() {
 	createCmd.AddCommand(createCertCmd)
 	createCertCmd.Flags().StringVarP(&certKeyPath, "key-out", "k", "server.key", "destination path for cert key")
 	createCertCmd.Flags().StringVarP(&certPath, "cert-out", "o", "server.crt", "destination path for cert cert")
-	createCertCmd.Flags().StringVarP(&certName, "name", "n", "", "name of the certificate in the config file")
+	createCertCmd.Flags().StringVarP(&certName, "cert-name", "n", "", "name of the certificate in the config file")
 	createCertCmd.Flags().StringVar(&caKey, "ca-key", "ca.key", "ca key to sign certificate")
 	createCertCmd.Flags().StringVar(&caCert, "ca-cert", "ca.crt", "ca cert for certificate")
-	createCertCmd.MarkFlagRequired("name")
+	createCertCmd.MarkFlagRequired("cert-name")
 	createCertCmd.MarkFlagRequired("ca-key")
 	createCertCmd.MarkFlagRequired("ca-cert")
 }

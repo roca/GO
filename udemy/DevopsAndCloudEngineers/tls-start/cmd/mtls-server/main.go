@@ -12,6 +12,15 @@ import (
 func index(w http.ResponseWriter, req *http.Request) {
 	fmt.Fprintf(w, "it's working")
 }
+
+func showCommonName(w http.ResponseWriter, req *http.Request) {
+	var commonName string
+	if req.TLS != nil && len(req.TLS.VerifiedChains) > 0 && len(req.TLS.VerifiedChains[0]) > 0 {
+		commonName = req.TLS.VerifiedChains[0][0].Subject.CommonName
+	}
+	fmt.Fprintf(w, "Your common Name: %s", commonName)
+}
+
 func main() {
 
 	caBytes, err := ioutil.ReadFile("ca.crt")
@@ -26,6 +35,7 @@ func main() {
 	}
 
 	http.HandleFunc("/", index)
+	http.HandleFunc("/common-name", showCommonName)
 	server := http.Server{
 		Addr: ":443",
 		TLSConfig: &tls.Config{
