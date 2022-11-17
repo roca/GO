@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"sync"
 )
 
 func main() {
@@ -38,27 +39,50 @@ func run(filenames []string, op string, column int, out io.Writer) error {
 	}
 
 	consolidated := make([]float64, 0)
+	resCh := make(chan []float64)
+	errCh := make(chan error)
+	doneCh := make(chan struct{})
+
+	wg := sync.WaitGroup{}
 
 	for _, fname := range filenames {
-		f, err := os.Open(fname)
-		if err != nil {
-			return fmt.Errorf("Cannot open file %s: %w", fname, err)
-		}
+		wg.Add(1)
+		go func(fname string) {
+			defer wg.Done()
 
-		data, err := csv2float(f, column)
-		if err != nil {
-			return err
-		}
+			f, err := os.Open(fname)
+			if err != nil {
+				errCh <- fmt.Errorf("Cannot open file %s: %w", fname, err)
+				return
+			}
 
-		if err := f.Close(); err != nil {
-			return err
-		}
+			data, err := csv2float(f, column)
+			if err != nil {
+				errCh <- err
+			}
 
-		consolidated = append(consolidated, data...)
+			if err := f.Close(); err != nil {
+				errCh <- err
+			}
 
+			resCh <- data
+		}(fname)
 	}
 
-	_, err := fmt.Fprintln(out, opFunc(consolidated))
-	return err
+	go func() {
+		wg.Wait()
+		close(doneCh)
+	}()
 
+	for {
+		select {
+		case err := <-errCh:
+			return err
+		case data := <-resCh:
+			consolidated = append(consolidated, data...)
+		case <-doneCh:
+			_, err := fmt.Fprintln(out, opFunc(consolidated))
+			return err
+		}
+	}
 }
