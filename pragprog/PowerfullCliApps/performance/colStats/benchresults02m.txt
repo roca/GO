@@ -1,0 +1,7 @@
+goos: darwin
+goarch: amd64
+pkg: github.com/roca/GO/tree/staging/pragprog/PowerfullCliApps/performance/colStats
+cpu: Intel(R) Core(TM) i9-9980HK CPU @ 2.40GHz
+BenchmarkRun-16    	      10	 121487107 ns/op	215020500 B/op	 2529318 allocs/op
+PASS
+ok  	github.com/roca/GO/tree/staging/pragprog/PowerfullCliApps/performance/colStats	2.705s
