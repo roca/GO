@@ -9,24 +9,24 @@ var (
 	ErrValidation = errors.New("Validation failed")
 )
 
-type stepError struct {
+type stepErr struct {
 	step  string
 	msg   string
 	cause error
 }
 
-func (s *stepError) Error() string {
+func (s *stepErr) Error() string {
 	return fmt.Sprintf("Step: %q: %s: Cause: %v", s.step, s.msg, s.cause)
 }
 
-func (s *stepError) Is(target error) bool {
-	t, ok := target.(*stepError)
+func (s *stepErr) Is(target error) bool {
+	t, ok := target.(*stepErr)
 	if !ok {
 		return false
 	}
 	return t.step == s.step
 }
 
-func (s *stepError) Unwrap() error {
+func (s *stepErr) Unwrap() error {
 	return s.cause
 }
