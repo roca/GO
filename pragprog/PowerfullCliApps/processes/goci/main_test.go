@@ -8,13 +8,14 @@ import (
 
 func TestRun(t *testing.T) {
 	var testCases = []struct {
-		name     string
-		proj     string
-		out      string
+		name   string
+		proj   string
+		out    string
 		expErr error
 	}{
-		{name: "success", proj: "./testdata/tool/", out: "Go Build: SUCCESS\nGo Test: SUCCESS\n", expErr: nil},
+		{name: "success", proj: "./testdata/tool/", out: "Go Build: SUCCESS\nGo Test: SUCCESS\nGofmt: SUCCESS\n", expErr: nil},
 		{name: "fail", proj: "./testdata/toolErr/", out: "", expErr: &stepErr{step: "go build"}},
+		{name: "failFormat", proj: "./testdata/toolFmtErr/", out: "", expErr: &stepErr{step: "go fmt"}},
 	}
 
 	for _, tc := range testCases {
