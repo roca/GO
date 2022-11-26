@@ -14,11 +14,11 @@ var (
 	ErrNotExists = errors.New("Host not in the list")
 )
 
-type HostList struct {
+type HostsList struct {
 	Hosts []string
 }
 
-func (hl *HostList) search(host string) (bool, int) {
+func (hl *HostsList) search(host string) (bool, int) {
 	sort.Strings(hl.Hosts)
 	i := sort.SearchStrings(hl.Hosts, host)
 	if i < len(hl.Hosts) && hl.Hosts[i] == host {
@@ -27,7 +27,7 @@ func (hl *HostList) search(host string) (bool, int) {
 	return false, -1
 }
 
-func (hl *HostList) Add(host string) error {
+func (hl *HostsList) Add(host string) error {
 	if found, _ := hl.search(host); found {
 		return fmt.Errorf("%w: %s", ErrExists, host)
 	}
@@ -35,7 +35,7 @@ func (hl *HostList) Add(host string) error {
 	return nil
 }
 
-func (hl *HostList) Remove(host string) error {
+func (hl *HostsList) Remove(host string) error {
 	if found, i := hl.search(host); found {
 		hl.Hosts = append(hl.Hosts[:i], hl.Hosts[i+1:]...)
 		return nil
@@ -43,7 +43,7 @@ func (hl *HostList) Remove(host string) error {
 	return fmt.Errorf("%w: %s", ErrNotExists, host)
 }
 
-func (hl *HostList) Load(hostFile string) error {
+func (hl *HostsList) Load(hostFile string) error {
 	f, err := os.Open(hostFile)
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
@@ -59,7 +59,7 @@ func (hl *HostList) Load(hostFile string) error {
 	return nil
 }
 
-func (hl *HostList) Save(hostFile string) error {
+func (hl *HostsList) Save(hostFile string) error {
 	output := ""
 	for _, h := range hl.Hosts {
 		output += fmt.Sprintln(h)

@@ -22,7 +22,7 @@ func TestAdd(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			hl := &scan.HostList{}
+			hl := &scan.HostsList{}
 			if err := hl.Add("host1"); err != nil {
 				t.Fatal(err)
 			}
@@ -62,7 +62,7 @@ func TestRemove(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			hl := &scan.HostList{}
+			hl := &scan.HostsList{}
 			for _, h := range []string{"host1", "host2"} {
 				if err := hl.Add(h); err != nil {
 					t.Fatal(err)
@@ -96,8 +96,8 @@ func TestRemove(t *testing.T) {
 }
 
 func TestSaveLoad(t *testing.T) {
-	hl1 := &scan.HostList{}
-	hl2 := &scan.HostList{}
+	hl1 := &scan.HostsList{}
+	hl2 := &scan.HostsList{}
 
 	hostName := "host1"
 	hl1.Add(hostName)
@@ -131,7 +131,7 @@ func TestLoadNoFile(t *testing.T) {
 		t.Fatalf("Error deleting temp file: %s", err)
 	}
 
-	hl := &scan.HostList{}
+	hl := &scan.HostsList{}
 
 	if err := hl.Load(tf.Name()); err != nil {
 		t.Errorf("Expected no error, got %q instead\n", err)
