@@ -3,6 +3,7 @@ module github.com/roca/GO/tree/staging/pragprog/PowerfullCliApps
 go 1.18
 
 require (
+	github.com/roca/GO/tree/staging/pragprog/PowerfullCliApps v0.0.0
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
@@ -31,3 +32,5 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
+
+replace github.com/roca/GO/tree/staging/pragprog/PowerfullCliApps => ./
