@@ -6,13 +6,7 @@ import (
 	"net/http"
 	"os"
 	"time"
-
-	"github.com/roca/GO/tree/staging/pragprog/PowerfullCliApps/todo"
 )
-
-type todoResponse struct {
-	Results todo.List `json:"Results"`
-}
 
 func main() {
 	host := flag.String("h", "localhost", "Server host")
@@ -33,6 +27,5 @@ func main() {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
-
 
 }
