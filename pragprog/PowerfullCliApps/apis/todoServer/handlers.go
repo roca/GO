@@ -98,7 +98,7 @@ func deleteHandler(w http.ResponseWriter, r *http.Request, list *todo.List, id i
 func patchHandler(w http.ResponseWriter, r *http.Request, list *todo.List, id int, todoFile string) {
 	q := r.URL.Query()
 
-	if _, ok := q["cpmplete"]; !ok {
+	if _, ok := q["complete"]; !ok {
 		message := "Missing query parameter 'complete'"
 		replyError(w, r, http.StatusBadRequest, message)
 		return
