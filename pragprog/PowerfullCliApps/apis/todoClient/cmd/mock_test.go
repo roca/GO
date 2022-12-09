@@ -1,6 +1,9 @@
 package cmd
 
-import "net/http"
+import (
+	"net/http"
+	"net/http/httptest"
+)
 
 var testResp = map[string]struct {
 	Status int
@@ -52,10 +55,18 @@ var testResp = map[string]struct {
 	},
 	"root": {
 		Status: http.StatusOK,
-		Body: "There's an API here",
+		Body:   "There's an API here",
 	},
 	"notFound": {
 		Status: http.StatusNotFound,
 		Body:   "404 - not found",
 	},
+}
+
+func mockServer(h http.HandlerFunc) (string, func()) {
+	ts := httptest.NewServer(h)
+
+	return ts.URL, func() {
+		ts.Close()
+	}
 }
