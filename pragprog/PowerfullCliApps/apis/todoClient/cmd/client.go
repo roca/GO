@@ -17,6 +17,8 @@ var (
 	ErrNotNumber       = errors.New("Not a number")
 )
 
+const timeFormat = "Jan/02 @15:04"
+
 type item struct {
 	Task        string
 	Done        bool
@@ -67,6 +69,21 @@ func getItems(url string) ([]item, error) {
 	}
 
 	return resp.Results, nil
+}
+
+func getOne(apiRoot string, id int) (item, error) {
+	u := fmt.Sprintf("%s/todo/%d", apiRoot, id)
+
+	items, err := getItems(u)
+	if err != nil {
+		return item{}, err
+	}
+
+	if len(items) != 1 {
+		return item{}, fmt.Errorf("%w: Invalid results", ErrInvalid)
+	}
+
+	return items[0], nil
 }
 
 func getAll(apiRoot string) ([]item, error) {
