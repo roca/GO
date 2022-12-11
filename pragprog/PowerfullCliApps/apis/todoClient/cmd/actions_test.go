@@ -1,3 +1,5 @@
+//go:build !integration
+
 package cmd
 
 import (
@@ -169,13 +171,13 @@ func TestAddAction(t *testing.T) {
 			t.Errorf("Expected Content-Type: %q, got: %q", expContentType, r.Header.Get("Content-Type"))
 		}
 		w.WriteHeader(testResp["created"].Status)
-		fmt.Fprintln(w,testResp["created"].Body)
+		fmt.Fprintln(w, testResp["created"].Body)
 	})
 	defer cleanup()
 
 	var out bytes.Buffer
 
-	if  err := addAction(&out, url, args); err != nil {
+	if err := addAction(&out, url, args); err != nil {
 		t.Fatalf("Expected no error, got %q", err)
 	}
 
@@ -199,18 +201,18 @@ func TestCompleteAction(t *testing.T) {
 			t.Errorf("Expected method: %q, got: %q", expMethod, r.Method)
 		}
 
-		if _,ok := r.URL.Query()[expQuery]; !ok {
+		if _, ok := r.URL.Query()[expQuery]; !ok {
 			t.Errorf("Expected query: %q, got: %q", expQuery, r.URL.Query())
 		}
 
 		w.WriteHeader(testResp["noContent"].Status)
-		fmt.Fprintln(w,testResp["noContent0"].Body)
+		fmt.Fprintln(w, testResp["noContent0"].Body)
 	})
 	defer cleanup()
 
 	var out bytes.Buffer
 
-	if  err := completeAction(&out, url, arg); err != nil {
+	if err := completeAction(&out, url, arg); err != nil {
 		t.Fatalf("Expected no error, got %q", err)
 	}
 
@@ -235,13 +237,13 @@ func TestDelAction(t *testing.T) {
 		}
 
 		w.WriteHeader(testResp["noContent"].Status)
-		fmt.Fprintln(w,testResp["noContent"].Body)
+		fmt.Fprintln(w, testResp["noContent"].Body)
 	})
 	defer cleanup()
 
 	var out bytes.Buffer
 
-	if  err := delAction(&out, url, arg); err != nil {
+	if err := delAction(&out, url, arg); err != nil {
 		t.Fatalf("Expected no error, got %q", err)
 	}
 
