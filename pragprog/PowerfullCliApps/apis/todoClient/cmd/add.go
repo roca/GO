@@ -7,6 +7,7 @@ package cmd
 import (
 	"fmt"
 	"io"
+	"os"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -22,7 +23,7 @@ var addCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		apiRoot := viper.GetString("api-root")
 
-		return addAction(apiRoot, args)
+		return addAction(os.Stdout, apiRoot, args)
 	},
 }
 
@@ -51,6 +52,6 @@ func addAction(out io.Writer, apiRoot string, args []string) error {
 }
 
 func printAdd(out io.Writer, task string) error {
-	_, err := fmt.Fprintf(out, "Added task %q to your list.\n",task)
+	_, err := fmt.Fprintf(out, "Added task %q to your list.\n", task)
 	return err
 }
