@@ -159,8 +159,10 @@ func TestPause(t *testing.T) {
 					t.Fatal(err)
 				}
 			}
-			if err := i.Start(ctx, config, start, periodic, end); err != nil {
-				t.Fatal(err)
+			if tc.start {
+				if err := i.Start(ctx, config, start, periodic, end); err != nil {
+					t.Fatal(err)
+				}
 			}
 			i, err = pomodoro.GetInterval(config)
 			if err != nil {
@@ -182,6 +184,72 @@ func TestPause(t *testing.T) {
 				t.Fatal(err)
 			}
 
+			if i.State != tc.expState {
+				t.Errorf("Expected State %d, got %d instead.\n", tc.expState, i.State)
+			}
+			if i.ActualDuration != tc.expDuration {
+				t.Errorf("Expected ActualDuration %q, got %q instead.\n", tc.expDuration, i.ActualDuration)
+			}
+			cancel()
+		})
+	}
+}
+
+func TestStart(t *testing.T) {
+	const duration = 2 * time.Second
+	repo, cleanup := getRepo(t)
+	defer cleanup()
+	config := pomodoro.NewConfig(repo, duration, duration, duration)
+	testCases := []struct {
+		name        string
+		cancel      bool
+		expState    int
+		expDuration time.Duration
+	}{
+		{name: "Finish", cancel: false, expState: pomodoro.StateDone, expDuration: duration},
+		{name: "Cancel", cancel: true, expState: pomodoro.StateCancelled, expDuration: duration / 2},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx, cancel := context.WithCancel(context.Background())
+
+			i, err := pomodoro.GetInterval(config)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			start := func(i pomodoro.Interval) {
+				if i.State != pomodoro.StateRunning {
+					t.Errorf("Expected State %q, got %q instead.\n", pomodoro.StateRunning, i.State)
+				}
+				if i.ActualDuration >= i.PlannedDuration {
+					t.Errorf("Expected ActualDuration %q to be less than PlannedDuration %q.\n", i.ActualDuration, i.PlannedDuration)
+				}
+			}
+			end := func(i pomodoro.Interval) {
+				if i.State != tc.expState {
+					t.Errorf("Expected State %q, got %q instead.\n", tc.expState, i.State)
+				}
+				if tc.cancel {
+					t.Errorf("End callback should not be executed")
+				}
+			}
+			periodic := func(i pomodoro.Interval) {
+				if i.State != pomodoro.StateRunning {
+					t.Errorf("Expected State %q, got %q instead.\n", pomodoro.StateRunning, i.State)
+				}
+				if tc.cancel {
+					cancel()
+				}
+			}
+			if err := i.Start(ctx, config, start, periodic, end); err != nil {
+				t.Fatal(err)
+			}
+			i, err = repo.ByID(i.ID)
+			if err != nil {
+				t.Fatal(err)
+			}
 			if i.State != tc.expState {
 				t.Errorf("Expected State %d, got %d instead.\n", tc.expState, i.State)
 			}
