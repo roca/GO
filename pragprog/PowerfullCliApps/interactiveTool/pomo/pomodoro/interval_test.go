@@ -2,6 +2,7 @@ package pomodoro_test
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"testing"
 	"time"
@@ -92,33 +93,102 @@ func TestGetInterval(t *testing.T) {
 			expDuration = duration
 		}
 		testName := fmt.Sprintf("%s%d", expCategory, i)
-		t.Run(testName, func(t *testing.T){
-			res,err := pomodoro.GetInterval(config)
+		t.Run(testName, func(t *testing.T) {
+			res, err := pomodoro.GetInterval(config)
 			if err != nil {
-				t.Errorf("Expected no error, got %q.\n",err)
+				t.Errorf("Expected no error, got %q.\n", err)
 			}
 			noop := func(pomodoro.Interval) {}
 
-			if err := res.Start(context.Background(),config,noop,noop,noop); err != nil {
+			if err := res.Start(context.Background(), config, noop, noop, noop); err != nil {
 				t.Fatal(err)
 			}
 
 			if res.Category != expCategory {
-				t.Errorf("Expected Category %q, got %q instead.\n",expCategory,res.Category)
+				t.Errorf("Expected Category %q, got %q instead.\n", expCategory, res.Category)
 			}
 			if res.PlannedDuration != expDuration {
-				t.Errorf("Expected PlannedDuration %q, got %q instead.\n",expDuration,res.PlannedDuration)
+				t.Errorf("Expected PlannedDuration %q, got %q instead.\n", expDuration, res.PlannedDuration)
 			}
 			if res.State != pomodoro.StateNotStarted {
-				t.Errorf("Expected State %q, got %q instead.\n",pomodoro.StateNotStarted,res.State)
+				t.Errorf("Expected State %q, got %q instead.\n", pomodoro.StateNotStarted, res.State)
 			}
 			ui, err := repo.ByID(res.ID)
 			if err != nil {
-				t.Errorf("Expected no error. Got %q.\n",err)
+				t.Errorf("Expected no error. Got %q.\n", err)
 			}
 			if ui.State != pomodoro.StateDone {
-				t.Errorf("Expected State %q, got %q instead.\n",pomodoro.StateDone,ui.State)
+				t.Errorf("Expected State %q, got %q instead.\n", pomodoro.StateDone, ui.State)
 			}
+		})
+	}
+}
+
+func TestPause(t *testing.T) {
+	const duration = 2 * time.Second
+	repo, cleanup := getRepo(t)
+	defer cleanup()
+	config := pomodoro.NewConfig(repo, duration, duration, duration)
+	testCases := []struct {
+		name        string
+		start       bool
+		expState    int
+		expDuration time.Duration
+	}{
+		{name: "NotStarted", start: false, expState: pomodoro.StateNotStarted, expDuration: 0},
+		{name: "Paused", start: true, expState: pomodoro.StatePaused, expDuration: duration / 2},
+	}
+
+	expError := pomodoro.ErrIntervalNotRunning
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx, cancel := context.WithCancel(context.Background())
+
+			i, err := pomodoro.GetInterval(config)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			start := func(pomodoro.Interval) {}
+			end := func(pomodoro.Interval) {
+				t.Errorf("End callback should not be called")
+			}
+			periodic := func(i pomodoro.Interval) {
+				if err := i.Pause(config); err != nil {
+					t.Fatal(err)
+				}
+			}
+			if err := i.Start(ctx, config, start, periodic, end); err != nil {
+				t.Fatal(err)
+			}
+			i, err = pomodoro.GetInterval(config)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			err = i.Pause(config)
+			if err != nil {
+				if !errors.Is(err, expError) {
+					t.Errorf("Expected error %q, got %q instead.\n", expError, err)
+				}
+			}
+			if err == nil {
+				t.Errorf("Expected error %q, got nil", expError)
+			}
+
+			i, err = repo.ByID(i.ID)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if i.State != tc.expState {
+				t.Errorf("Expected State %d, got %d instead.\n", tc.expState, i.State)
+			}
+			if i.ActualDuration != tc.expDuration {
+				t.Errorf("Expected ActualDuration %q, got %q instead.\n", tc.expDuration, i.ActualDuration)
+			}
+			cancel()
 		})
 	}
 }
