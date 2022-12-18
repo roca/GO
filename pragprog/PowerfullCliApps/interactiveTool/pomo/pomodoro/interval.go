@@ -61,15 +61,15 @@ func NewConfig(repo Repository, pomodoro, shortBreak, longBreak time.Duration) *
 		LongBreakDuration:  15 * time.Minute,
 	}
 
-	if pomodoro != 0 {
+	if pomodoro > 0 {
 		c.PomodoroDuration = pomodoro
 	}
 
-	if shortBreak != 0 {
+	if shortBreak > 0 {
 		c.ShortBreakDuration = shortBreak
 	}
 
-	if longBreak != 0 {
+	if longBreak > 0 {
 		c.LongBreakDuration = longBreak
 	}
 
@@ -125,7 +125,7 @@ func tick(ctx context.Context, id int64, config *IntervalConfig, start, periodic
 	for {
 		select {
 		case <-ticker.C:
-			i, err = config.repo.ByID(id)
+			i, err := config.repo.ByID(id)
 			if err != nil {
 				return err
 			}
@@ -135,14 +135,13 @@ func tick(ctx context.Context, id int64, config *IntervalConfig, start, periodic
 			}
 
 			i.ActualDuration += time.Second
-			err = config.repo.Update(i)
 			if err := config.repo.Update(i); err != nil {
 				return err
 			}
 
 			periodic(i)
 		case <-expire:
-			i, err = config.repo.ByID(id)
+			i, err := config.repo.ByID(id)
 			if err != nil {
 				return err
 			}
@@ -150,7 +149,7 @@ func tick(ctx context.Context, id int64, config *IntervalConfig, start, periodic
 			end(i)
 			return config.repo.Update(i)
 		case <-ctx.Done():
-			i, err = config.repo.ByID(id)
+			i, err := config.repo.ByID(id)
 			if err != nil {
 				return err
 			}
