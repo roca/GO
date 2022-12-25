@@ -3,8 +3,8 @@ package pomodoro_test
 import (
 	"testing"
 
-	"github.com/roca/GO/tree/staging/pragprog/PowerfullCliApps/interactiveTool/pomo/pomodoro"
-	"github.com/roca/GO/tree/staging/pragprog/PowerfullCliApps/interactiveTool/pomo/pomodoro/repository"
+	"github.com/roca/GO/tree/staging/pragprog/PowerfullCliApps/pomodoro"
+	"github.com/roca/GO/tree/staging/pragprog/PowerfullCliApps/pomodoro/repository"
 )
 
 func getRepo(t *testing.T) (pomodoro.Repository, func()) {

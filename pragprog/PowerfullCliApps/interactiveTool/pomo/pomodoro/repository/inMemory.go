@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/roca/GO/tree/staging/pragprog/PowerfullCliApps/interactiveTool/pomo/pomodoro"
+	"github.com/roca/GO/tree/staging/pragprog/PowerfullCliApps/pomodoro"
 )
 
 type inMemoryRepo struct {

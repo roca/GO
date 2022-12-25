@@ -11,11 +11,15 @@ import (
 	"time"
 
 	"github.com/mitchellh/go-homedir"
-	"github.com/roca/GO/tree/staging/pragprog/PowerfullCliApps/interactiveTool/pomo/app"
-	"github.com/roca/GO/tree/staging/pragprog/PowerfullCliApps/interactiveTool/pomo/pomodoro"
+	"github.com/roca/GO/tree/staging/pragprog/PowerfullCliApps/app"
+	"github.com/roca/GO/tree/staging/pragprog/PowerfullCliApps/pomodoro"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
+
+// func getRepo() (pomodoro.Repository, error) {
+// 	return repository.NewInMemoryRepo(), nil
+// }
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
