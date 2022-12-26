@@ -16,7 +16,7 @@ func newGrid(b *buttonSet, w *widgets, t terminalapi.Terminal) (*container.Conta
 			grid.ColWidthPercWithOpts(30,
 				[]container.Option{
 					container.Border(linestyle.Light),
-					container.BorderTitle("Press0 to quit"),
+					container.BorderTitle("Press Q to quit"),
 				},
 				grid.RowHeightPerc(80,
 					grid.Widget(w.donTimer)),
