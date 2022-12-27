@@ -1,3 +1,4 @@
+//go:build inmemory
 // +build inmemory
 
 package repository
@@ -33,7 +34,7 @@ func (r *inMemoryRepo) Update(i pomodoro.Interval) error {
 	r.Lock()
 	defer r.Unlock()
 
-	if i.ID == 0  {
+	if i.ID == 0 {
 		return fmt.Errorf("%w: %d", pomodoro.ErrInvalidID, i.ID)
 	}
 	r.intervals[i.ID-1] = i
@@ -76,6 +77,23 @@ func (r *inMemoryRepo) Breaks(n int) ([]pomodoro.Interval, error) {
 		if len(data) == n {
 			return data, nil
 		}
-	} 
+	}
 	return data, nil
+}
+
+func (r *inMemoryRepo) CategorySummary(day time.Time, filter string) (time.Duration, error) {
+	r.RLock()
+	defer r.Unlock()
+
+	var d time.Duration
+	filter = strings.Trim(filter,"%")
+
+	for _, i := range r.intervals {
+		if i.StartTime.Year() == day.Year() && i.StartTime.YearDay() == day.YearDay() {
+			if strings.Contains(i.Category, filter) {
+				d += i.ActualDuration
+			}
+		}
+	}
+	return d, nil
 }
