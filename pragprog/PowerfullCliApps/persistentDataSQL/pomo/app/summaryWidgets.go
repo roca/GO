@@ -12,7 +12,7 @@ import (
 )
 
 type summary struct {
-	bsDay        *barchart.BarChart
+	bcDay        *barchart.BarChart
 	lcWeekly     *linechart.LineChart
 	updateDaily  chan bool
 	updateWeekly chan bool
@@ -31,7 +31,7 @@ func newSummary(ctx context.Context, config *pomodoro.IntervalConfig, redrawCh c
 	s.updateDaily = make(chan bool)
 	s.updateWeekly = make(chan bool)
 
-	s.bsDay, err = newBarChart(ctx, config, s.updateDaily, errorCh)
+	s.bcDay, err = newBarChart(ctx, config, s.updateDaily, errorCh)
 	if err != nil {
 		return nil, err
 	}
@@ -61,8 +61,8 @@ func newBarChart(ctx context.Context, config *pomodoro.IntervalConfig, update <-
 			return err
 		}
 		return bc.Values(
-			[]int{int(ds[0].Minutes())},
-			int(ds[1].Minutes()),
+			[]int{int(ds[0].Minutes()),
+			int(ds[1].Minutes())},
 			int(math.Max(
 				ds[0].Minutes(),
 				ds[1].Minutes())*1.1)+1,
@@ -81,10 +81,60 @@ func newBarChart(ctx context.Context, config *pomodoro.IntervalConfig, update <-
 			}
 		}
 	}()
-      
+
 	if err := updateWidget(); err != nil {
 		return nil, err
 	}
 
 	return bc, nil
+}
+
+func newLineChart(ctx context.Context, config *pomodoro.IntervalConfig, update <-chan bool, errorCh chan<- error) (*linechart.LineChart, error) {
+	lc, err := linechart.New(
+		linechart.AxesCellOpts(cell.FgColor(cell.ColorRed)),
+		linechart.YLabelCellOpts(cell.FgColor(cell.ColorBlue)),
+		linechart.XLabelCellOpts(cell.FgColor(cell.ColorCyan)),
+		linechart.YAxisFormattedValues(
+			linechart.ValueFormatterSingleUnitDuration(time.Second, 0),
+		),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	updateWidget := func() error {
+		ws, err := pomodoro.RangeSummary(time.Now(), 7, config)
+		if err != nil {
+			return err
+		}
+		err = lc.Series(ws[0].Name, ws[0].Values,
+			linechart.SeriesCellOpts(cell.FgColor(cell.ColorBlue)),
+			linechart.SeriesXLabels(ws[1].Labels),
+		)
+		if err != nil {
+			return err
+		}
+		return lc.Series(ws[1].Name, ws[1].Values,
+			linechart.SeriesCellOpts(cell.FgColor(cell.ColorYellow)),
+			linechart.SeriesXLabels(ws[1].Labels),
+		)
+	}
+
+	go func() {
+		for {
+			select {
+			case <-update:
+				errorCh <- updateWidget()
+			case <-ctx.Done():
+				return
+
+			}
+		}
+	}()
+
+	if err := updateWidget(); err != nil {
+		return nil, err
+	}
+
+	return lc, nil
 }

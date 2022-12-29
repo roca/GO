@@ -159,7 +159,7 @@ func (r *dbRepo) CategorySummary(day time.Time, filter string) (time.Duration, e
 
 	stmt := `SELECT SUM(actual_duration) FROM interval 
 	WHERE category like ? AND 
-	strftime('%Y-%m-%d', start_time, 'localtime) = 
+	strftime('%Y-%m-%d', start_time, 'localtime') = 
 	strftime('%Y-%m-%d', ?, 'localtime')`
 
 	var ds sql.NullInt64

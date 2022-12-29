@@ -5,7 +5,9 @@ package repository
 
 import (
 	"fmt"
+	"strings"
 	"sync"
+	"time"
 
 	"github.com/roca/GO/tree/staging/pragprog/PowerfullCliApps/pomodoro"
 )
@@ -86,7 +88,7 @@ func (r *inMemoryRepo) CategorySummary(day time.Time, filter string) (time.Durat
 	defer r.Unlock()
 
 	var d time.Duration
-	filter = strings.Trim(filter,"%")
+	filter = strings.Trim(filter, "%")
 
 	for _, i := range r.intervals {
 		if i.StartTime.Year() == day.Year() && i.StartTime.YearDay() == day.YearDay() {
