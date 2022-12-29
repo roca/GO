@@ -167,7 +167,7 @@ func (r *dbRepo) CategorySummary(day time.Time, filter string) (time.Duration, e
 
 	var d time.Duration
 	if ds.Valid {
-		d = time.Duration(ds.Int64) * time.Second
+		d = time.Duration(ds.Int64)
 	}
 
 	return d, err
