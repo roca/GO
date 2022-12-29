@@ -2,3 +2,5 @@
 rggo-code*
 code
 performance/colStats/testdata/benchmark/
+persistentDataSQL/pomo/pomo
+persistentDataSQL/pomo/pomo.sqlite
