@@ -9,7 +9,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/roca/GO/tree/staging/pragprog/PowerfullCliApps/pomodoro"
+	"github.com/roca/GO/tree/staging/pragprog/PowerfullCliApps/persistentDataSQL/pomo/pomodoro"
 )
 
 type inMemoryRepo struct {

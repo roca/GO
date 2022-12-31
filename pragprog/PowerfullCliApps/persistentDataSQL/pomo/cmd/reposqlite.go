@@ -1,10 +1,11 @@
+//go:build !inmemory
 // +build !inmemory
 
 package cmd
 
 import (
-	"github.com/roca/GO/tree/staging/pragprog/PowerfullCliApps/pomodoro"
-	"github.com/roca/GO/tree/staging/pragprog/PowerfullCliApps/pomodoro/repository"
+	"github.com/roca/GO/tree/staging/pragprog/PowerfullCliApps/persistentDataSQL/pomo/pomodoro"
+	"github.com/roca/GO/tree/staging/pragprog/PowerfullCliApps/persistentDataSQL/pomo/pomodoro/repository"
 	"github.com/spf13/viper"
 )
 

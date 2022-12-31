@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/roca/GO/tree/staging/pragprog/PowerfullCliApps/pomodoro"
+	"github.com/roca/GO/tree/staging/pragprog/PowerfullCliApps/persistentDataSQL/pomo/pomodoro"
 )
 
 func TestNewConfig(t *testing.T) {

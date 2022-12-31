@@ -8,7 +8,7 @@ import (
 	"github.com/mum4k/termdash/cell"
 	"github.com/mum4k/termdash/widgets/barchart"
 	"github.com/mum4k/termdash/widgets/linechart"
-	"github.com/roca/GO/tree/staging/pragprog/PowerfullCliApps/pomodoro"
+	"github.com/roca/GO/tree/staging/pragprog/PowerfullCliApps/persistentDataSQL/pomo/pomodoro"
 )
 
 type summary struct {
@@ -62,7 +62,7 @@ func newBarChart(ctx context.Context, config *pomodoro.IntervalConfig, update <-
 		}
 		return bc.Values(
 			[]int{int(ds[0].Minutes()),
-			int(ds[1].Minutes())},
+				int(ds[1].Minutes())},
 			int(math.Max(
 				ds[0].Minutes(),
 				ds[1].Minutes())*1.1)+1,

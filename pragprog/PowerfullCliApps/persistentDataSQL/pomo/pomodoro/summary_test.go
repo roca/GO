@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/roca/GO/tree/staging/pragprog/PowerfullCliApps/pomodoro"
+	"github.com/roca/GO/tree/staging/pragprog/PowerfullCliApps/persistentDataSQL/pomo/pomodoro"
 )
 
 func TestDailySummary(t *testing.T) {
@@ -57,8 +57,6 @@ func TestDailySummary(t *testing.T) {
 
 	config := pomodoro.NewConfig(repo, 25*time.Minute, 5*time.Minute, 15*time.Minute)
 
-
-
 	summary, err := pomodoro.DailySummary(days[0], config)
 	if err != nil {
 		t.Fatal(err)
@@ -81,6 +79,5 @@ func TestDailySummary(t *testing.T) {
 	if dBreaks != intervals[1].ActualDuration {
 		t.Fatalf("Daily breaks summary should be %s, got %s", 5*time.Minute, dBreaks)
 	}
-
 
 }
