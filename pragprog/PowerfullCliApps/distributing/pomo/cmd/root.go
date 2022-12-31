@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/mitchellh/go-homedir"
-	"github.com/roca/GO/tree/staging/pragprog/PowerfullCliApps/app"
+	"github.com/roca/GO/tree/staging/pragprog/PowerfullCliApps/distributing/pomo/app"
 	"github.com/roca/GO/tree/staging/pragprog/PowerfullCliApps/persistentDataSQL/pomo/pomodoro"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"

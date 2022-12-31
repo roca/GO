@@ -6,7 +6,7 @@ import (
 
 	"github.com/mum4k/termdash/cell"
 	"github.com/mum4k/termdash/widgets/button"
-	"github.com/roca/GO/tree/staging/pragprog/PowerfullCliApps/pomodoro"
+	"github.com/roca/GO/tree/staging/pragprog/PowerfullCliApps/interactiveTool/pomo/pomodoro"
 )
 
 type buttonSet struct {
@@ -71,6 +71,5 @@ func newButtonSet(ctx context.Context, config *pomodoro.IntervalConfig, w *widge
 		return nil, err
 	}
 
-
-	return &buttonSet{btStart,btPause}, nil
+	return &buttonSet{btStart, btPause}, nil
 }

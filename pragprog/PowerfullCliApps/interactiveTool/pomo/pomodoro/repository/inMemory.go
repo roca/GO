@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/roca/GO/tree/staging/pragprog/PowerfullCliApps/pomodoro"
+	"github.com/roca/GO/tree/staging/pragprog/PowerfullCliApps/interactiveTool/pomo/pomodoro"
 )
 
 type inMemoryRepo struct {
@@ -31,7 +31,7 @@ func (r *inMemoryRepo) Update(i pomodoro.Interval) error {
 	r.Lock()
 	defer r.Unlock()
 
-	if i.ID == 0  {
+	if i.ID == 0 {
 		return fmt.Errorf("%w: %d", pomodoro.ErrInvalidID, i.ID)
 	}
 	r.intervals[i.ID-1] = i
@@ -74,6 +74,6 @@ func (r *inMemoryRepo) Breaks(n int) ([]pomodoro.Interval, error) {
 		if len(data) == n {
 			return data, nil
 		}
-	} 
+	}
 	return data, nil
 }
