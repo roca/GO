@@ -1,5 +1,5 @@
-//go:build (!containers && ignore) || !disable_notification
-// +build !containers,ignore !disable_notification
+//go:build !containers && !disable_notification
+// +build !containers,!disable_notification
 
 package app
 
