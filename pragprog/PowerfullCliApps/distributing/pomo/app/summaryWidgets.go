@@ -8,7 +8,7 @@ import (
 	"github.com/mum4k/termdash/cell"
 	"github.com/mum4k/termdash/widgets/barchart"
 	"github.com/mum4k/termdash/widgets/linechart"
-	"github.com/roca/GO/tree/staging/pragprog/PowerfullCliApps/persistentDataSQL/pomo/pomodoro"
+	"github.com/roca/GO/tree/staging/pragprog/PowerfullCliApps/distributing/pomo/pomodoro"
 )
 
 type summary struct {

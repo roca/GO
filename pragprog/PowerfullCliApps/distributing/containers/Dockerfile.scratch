@@ -1,0 +1,12 @@
+FROM golang:1.18 as builder
+RUN mkdir /distribution
+WORKDIR /distribution
+COPY notify/ notify/
+COPY pomo/ pomo/
+WORKDIR /distribution/pomo
+RUN CGO_ENABLED=0 GOOS=linux go build -a -ldflags "-s -w" -tags=containers
+
+FROM scratch
+WORKDIR /
+COPY --from=builder /distribution/pomo/pomo .
+CMD ["/pomo"]

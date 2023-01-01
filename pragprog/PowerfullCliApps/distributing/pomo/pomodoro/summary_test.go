@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/roca/GO/tree/staging/pragprog/PowerfullCliApps/persistentDataSQL/pomo/pomodoro"
+	"github.com/roca/GO/tree/staging/pragprog/PowerfullCliApps/distributing/pomo/pomodoro"
 )
 
 func TestDailySummary(t *testing.T) {
