@@ -1,3 +1,3 @@
-module github.com/roca/toolkit
+module github.com/roca/GO/tree/staging/udemy/BuildingGoModules/toolkit
 
 go 1.18
