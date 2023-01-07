@@ -52,7 +52,8 @@ require (
 	github.com/streadway/amqp v1.0.0
 	github.com/swaggo/swag v1.7.0 // indirect
 	github.com/unrolled/secure v1.0.8 // indirect
-	golang.org/x/net v0.0.0-20210316092652-d523dce5a7f4
+	golang.org/x/net v0.2.0
+	golang.org/x/tools/gopls v0.11.0 // indirect
 	gonum.org/v1/gonum v0.9.1
 	google.golang.org/grpc v1.29.1 // indirect
 )
