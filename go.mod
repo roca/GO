@@ -19,6 +19,7 @@ require (
 	github.com/disintegration/imaging v1.6.0 // indirect
 	github.com/ernesto-jimenez/gogen v0.0.0-20180125220232-d7d4131e6607 // indirect
 	github.com/gin-gonic/gin v1.6.3
+	github.com/go-delve/delve v1.20.1 // indirect
 	github.com/go-gota/gota v0.10.1
 	github.com/go-martini/martini v0.0.0-20170121215854-22fa46961aab // indirect
 	github.com/go-playground/ansi/v3 v3.0.0 // indirect
@@ -31,7 +32,7 @@ require (
 	github.com/gofiber/fiber/v2 v2.9.0 // indirect
 	github.com/gofiber/template v1.6.9 // indirect
 	github.com/gogo/protobuf v1.3.1 // indirect
-	github.com/golang/protobuf v1.3.3
+	github.com/golang/protobuf v1.4.1
 	github.com/grassmudhorses/vader-go v0.0.0-20191126145716-003d5aacdb71 // indirect
 	github.com/hashicorp/consul/api v1.1.0
 	github.com/jboursiquot/shoutouts v0.0.0-20190724224516-20f77e089950 // indirect
