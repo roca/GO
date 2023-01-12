@@ -20,9 +20,9 @@ func routes() http.Handler {
 
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/", http.StripPrefix("/", http.FileServer(http.Dir("."))).ServeHTTP)
+	mux.Handle("/", http.StripPrefix("/", http.FileServer(http.Dir("."))))
 	mux.HandleFunc("/upload", uploadFiles)
-	mux.HandleFunc("/upload-one/", uploadOneFile)
+	mux.HandleFunc("/upload-one", uploadOneFile)
 
 	return mux
 }
@@ -52,4 +52,22 @@ func uploadFiles(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write([]byte(out))
 }
 
-func uploadOneFile(w http.ResponseWriter, r *http.Request) {}
+func uploadOneFile(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	t := toolkit.Tools{
+		MaxFileSize:      1024 * 1024 * 1024, // 1GB,
+		AllowedFileTypes: []string{"image/jpeg", "image/png", "image/gif"},
+	}
+
+	file, err := t.UploadOneFile(r, "./uploads")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	_, _ = w.Write([]byte(fmt.Sprintf("Uploaded 1 file, %s to the uploads folder, renamed to %s", file.OriginalFileName, file.NewFileName)))
+}
