@@ -1,4 +1,4 @@
-package toolkit
+package toolkit_test
 
 import (
 	"fmt"
@@ -10,10 +10,12 @@ import (
 	"os"
 	"sync"
 	"testing"
+
+	"github.com/roca/GO/tree/staging/udemy/BuildingGoModules/toolkit"
 )
 
 func TestTools_RandomString(t *testing.T) {
-	var testTools Tools
+	var testTools toolkit.Tools
 	s := testTools.RandomString(10)
 	if len(s) != 10 {
 		t.Errorf("RandomString returned a string of length %d, expected 10", len(s))
@@ -70,7 +72,7 @@ func TestTools_UploadFile(t *testing.T) {
 		request := httptest.NewRequest("POST", "/", pr)
 		request.Header.Add("Content-Type", writer.FormDataContentType())
 
-		var testTools Tools
+		var testTools toolkit.Tools
 		testTools.AllowedFileTypes = e.allowedTypes
 
 		uploadedFiles, err := testTools.UploadFiles(request, "./testdata/uploads", e.renameFile)
@@ -131,7 +133,7 @@ func TestTools_UploadOneFile(t *testing.T) {
 	request := httptest.NewRequest("POST", "/", pr)
 	request.Header.Add("Content-Type", writer.FormDataContentType())
 
-	var testTools Tools
+	var testTools toolkit.Tools
 
 	uploadedFiles, err := testTools.UploadOneFile(request, "./testdata/uploads", true)
 	if err != nil {
