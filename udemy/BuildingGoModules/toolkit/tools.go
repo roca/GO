@@ -45,7 +45,7 @@ func (t *Tools) UploadOneFile(r *http.Request, uploadDir string, rename ...bool)
 		renameFile = rename[0]
 	}
 
-	files,err := t.UploadFiles(r, uploadDir, renameFile)
+	files, err := t.UploadFiles(r, uploadDir, renameFile)
 	if err != nil {
 		return nil, err
 	}
@@ -63,6 +63,10 @@ func (t *Tools) UploadFiles(r *http.Request, uploadDir string, rename ...bool) (
 
 	if t.MaxFileSize == 0 {
 		t.MaxFileSize = 1024 * 1024 * 1024 // 1GB
+	}
+
+	if err := t.CreateDirIfNotExist(uploadDir); err != nil {
+		return nil, err
 	}
 
 	err := r.ParseMultipartForm(int64(t.MaxFileSize))
@@ -139,4 +143,16 @@ func (t *Tools) UploadFiles(r *http.Request, uploadDir string, rename ...bool) (
 		}
 	}
 	return uploadedFiles, nil
+}
+
+// CreateDirIfNotExist creates a directory, and all the parent directories if they don't exist
+func (t *Tools) CreateDirIfNotExist(path string) error {
+	const mode = 0755
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		err = os.MkdirAll(path, mode)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
