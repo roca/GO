@@ -2,7 +2,8 @@ go 1.18
 
 use (
 	./app
-	./app-upload
 	./app-dir
+	./app-slug
+	./app-upload
 	./toolkit
 )
