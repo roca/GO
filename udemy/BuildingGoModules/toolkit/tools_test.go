@@ -5,6 +5,7 @@ import (
 	"image"
 	"image/png"
 	"io"
+	"io/ioutil"
 	"mime/multipart"
 	"net/http/httptest"
 	"os"
@@ -195,4 +196,28 @@ func TestTools_Slugify(t *testing.T) {
 		})
 	}
 
+}
+
+func TestTools_DownloadStaticFile(t *testing.T) {
+	rr := httptest.NewRecorder()
+	req := httptest.NewRequest("GET", "/", nil)
+
+	tools := toolkit.Tools{}
+	tools.DownloadStaticFile(rr, req, "./testdata", "pic.jpg", "puppy.jpeg")
+
+	res := rr.Result()
+	defer res.Body.Close()
+
+	if res.Header["Content-Length"][0] != "98827" {
+		t.Errorf("expected Content-Length to be %s but got %s", "114", res.Header["Content-Length"][0])
+	}
+
+	if res.Header["Content-Disposition"][0] != "attachment; filename=\"puppy.jpeg\"" {
+		t.Errorf("expected Content-Disposition to be %s but got %s", "attachment; filename=puppy.jpeg", res.Header["Content-Disposition"][0])
+	}
+
+	_, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		t.Errorf("ReadAll failed: %v", err)
+	}
 }
