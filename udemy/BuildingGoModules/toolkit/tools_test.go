@@ -31,8 +31,8 @@ var uploadTests = []struct {
 	errorExpected bool
 }{
 	{name: "allowed no rename", allowedTypes: []string{"image/jpeg", "image/png"}, renameFile: false, errorExpected: false},
-	// {name: "allowed rename", allowedTypes: []string{"image/jpeg", "image/png"}, renameFile: true, errorExpected: false},
-	// {name: "not rename", allowedTypes: []string{"image/jpeg"}, renameFile: false, errorExpected: true},
+	{name: "allowed rename", allowedTypes: []string{"image/jpeg", "image/png"}, renameFile: true, errorExpected: false},
+	{name: "not rename", allowedTypes: []string{"image/jpeg"}, renameFile: false, errorExpected: true},
 }
 
 func TestTools_UploadFile(t *testing.T) {
@@ -231,6 +231,16 @@ var jsonTests = []struct {
 	allowUnknown  bool
 }{
 	{name: "good json", json: `{"foo": "bar"}`, errorExpected: false, maxSize: 1024, allowUnknown: false},
+	{name: "badly formatted json", json: `{"foo": }`, errorExpected: true, maxSize: 1024, allowUnknown: false},
+	{name: "incorrect type", json: `{"foo": 1}`, errorExpected: true, maxSize: 1024, allowUnknown: false},
+	{name: "two json files", json: `{"foo": "1"}{"alpha": "beta"}`, errorExpected: true, maxSize: 1024, allowUnknown: false},
+	{name: "empty body", json: ``, errorExpected: true, maxSize: 1024, allowUnknown: false},
+	{name: "syntax error in json", json: `{"foo": 1"`, errorExpected: true, maxSize: 1024, allowUnknown: false},
+	{name: "unknown field in json", json: `{"food": "1"}`, errorExpected: true, maxSize: 1024, allowUnknown: false},
+	{name: "allow unknown fields in json", json: `{"food": "1"}`, errorExpected: false, maxSize: 1024, allowUnknown: true},
+	{name: "missing field name", json: `{jack: "1"}`, errorExpected: true, maxSize: 1024, allowUnknown: true},
+	{name: "file too large", json: `{"foo": "bar"}`, errorExpected: true, maxSize: 5, allowUnknown: true},
+	{name: "not json", json: `hello world`, errorExpected: true, maxSize: 1024, allowUnknown: true},
 }
 
 func TestTools_ReadJSON(t *testing.T) {
@@ -260,7 +270,7 @@ func TestTools_ReadJSON(t *testing.T) {
 				t.Errorf("%s: no error received when one expected", e.name)
 			}
 
-			if err != nil && !e.errorExpected {
+			if !e.errorExpected && err != nil {
 				t.Errorf("%s: error received when none expected: %s", e.name, err.Error())
 			}
 
