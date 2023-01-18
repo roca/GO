@@ -8,6 +8,7 @@ import (
 	"io"
 	"io/ioutil"
 	"mime/multipart"
+	"net/http"
 	"net/http/httptest"
 	"os"
 	"sync"
@@ -276,5 +277,23 @@ func TestTools_ReadJSON(t *testing.T) {
 
 			req.Body.Close()
 		})
+	}
+}
+
+func TestTools_WriteJSON(t *testing.T) {
+	var testTool toolkit.Tools
+
+	rr := httptest.NewRecorder()
+	payload := toolkit.JSONResponse{
+		Error:   false,
+		Message: "foo",
+	}
+
+	headers := make(http.Header)
+	headers.Add("FOO", "BAR")
+
+	err := testTool.WriteJSON(rr, http.StatusOK, payload, headers)
+	if err != nil {
+		t.Errorf("failed to write JSON %v", err)
 	}
 }
