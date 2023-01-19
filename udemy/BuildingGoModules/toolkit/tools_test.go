@@ -2,6 +2,8 @@ package toolkit_test
 
 import (
 	"bytes"
+	"encoding/json"
+	"errors"
 	"fmt"
 	"image"
 	"image/png"
@@ -296,4 +298,34 @@ func TestTools_WriteJSON(t *testing.T) {
 	if err != nil {
 		t.Errorf("failed to write JSON %v", err)
 	}
+}
+
+func TestTools_ErrorJSON(t *testing.T) {
+	var testTool toolkit.Tools
+
+	rr := httptest.NewRecorder()
+	err := testTool.ErrorJSON(rr, errors.New("some error"), http.StatusServiceUnavailable)
+	if err != nil {
+		t.Errorf("failed to write JSON %v", err)
+	}
+
+	var payload toolkit.JSONResponse
+	decoder := json.NewDecoder(rr.Body)
+	err = decoder.Decode(&payload)
+	if err != nil {
+		t.Errorf("failed to decode JSON %v", err)
+	}
+
+	if !payload.Error {
+		t.Errorf("expected error to be true")
+	}
+
+	if rr.Code != http.StatusServiceUnavailable {
+		t.Errorf("expected status code to be %d but got %d", http.StatusServiceUnavailable, rr.Code)
+	}
+
+	if payload.Message != "some error" {
+		t.Errorf("expected message to be %s but got %s", "some error", payload.Message)
+	}
+
 }

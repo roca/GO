@@ -193,7 +193,6 @@ type JSONResponse struct {
 	Data    interface{} `json:"data,omitempty"`
 }
 
-
 // ReadJSON reads JSON from the request body, and unmarshals it into the data interface
 func (t *Tools) ReadJSON(w http.ResponseWriter, r *http.Request, data interface{}) error {
 	maxBytes := 1024 * 1024 // 1MB
@@ -248,7 +247,6 @@ func (t *Tools) ReadJSON(w http.ResponseWriter, r *http.Request, data interface{
 	return nil
 }
 
-
 // WriteJSON takes a response status code and arbitrary data, and writes json to the client
 func (t *Tools) WriteJSON(w http.ResponseWriter, status int, data interface{}, headers ...http.Header) error {
 	out, err := json.Marshal(data)
@@ -257,7 +255,7 @@ func (t *Tools) WriteJSON(w http.ResponseWriter, status int, data interface{}, h
 	}
 
 	if len(headers) > 0 {
-		for k, v := range headers[0]{
+		for k, v := range headers[0] {
 			w.Header()[k] = v
 		}
 	}
@@ -266,4 +264,19 @@ func (t *Tools) WriteJSON(w http.ResponseWriter, status int, data interface{}, h
 	w.WriteHeader(status)
 	_, err = w.Write(out)
 	return err
+}
+
+
+// ErrorJSON takes an error, and optionally a status code, and generates and sends a JSON error message 
+func (t *Tools) ErrorJSON(w http.ResponseWriter, err error, status ...int) error {
+	statusCode := http.StatusBadRequest
+	if len(status) > 0 {
+		statusCode = status[0]
+	}
+
+	var payload JSONResponse
+	payload.Error = true
+	payload.Message = err.Error()
+
+	return t.WriteJSON(w, statusCode, payload)
 }
