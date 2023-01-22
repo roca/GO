@@ -16,4 +16,4 @@ The included tools are:
 
 ## Installation
 
-`go get -u github.com/roca/GO/tree/staging/udemy/BuildingGoModules/toolkit`
+`go get -u github.com/roca/go-toolkit`
