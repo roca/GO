@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/roca/GO/tree/staging/udemy/BuildingGoModules/toolkit"
+	"github.com/roca/go-toolkit"
 )
 
 func main() {

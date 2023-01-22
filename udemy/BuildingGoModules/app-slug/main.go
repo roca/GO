@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/roca/GO/tree/staging/udemy/BuildingGoModules/toolkit"
+	"github.com/roca/go-toolkit"
 )
 
 func main() {

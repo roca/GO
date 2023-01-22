@@ -1,6 +1,6 @@
 package main
 
-import "github.com/roca/GO/tree/staging/udemy/BuildingGoModules/toolkit"
+import "github.com/roca/go-toolkit"
 
 func main() {
 	var tools toolkit.Tools
