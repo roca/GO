@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/roca/GO/tree/staging/udemy/BuildingGoModules/toolkit"
+	"github.com/roca/go-toolkit"
 )
 
 type RequestPayload struct {
@@ -91,7 +91,7 @@ func remoteService(w http.ResponseWriter, r *http.Request) {
 
 func simulatedService(w http.ResponseWriter, r *http.Request) {
 	payload := ResponsePayload{
-		Message:    "simulated service",
+		Message: "simulated service",
 	}
 
 	var t toolkit.Tools

@@ -16,7 +16,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/roca/GO/tree/staging/udemy/BuildingGoModules/toolkit"
+	"github.com/roca/go-toolkit"
 )
 
 type RoundTripFunc func(req *http.Request) *http.Response
