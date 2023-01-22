@@ -211,11 +211,6 @@ func (t *Tools) ReadJSON(w http.ResponseWriter, r *http.Request, data interface{
 
 	err := dec.Decode(data)
 	if err != nil {
-		return err
-	}
-
-	err = dec.Decode(&struct{}{})
-	if err != io.EOF {
 		var syntaxError *json.SyntaxError
 		var unmarshalTypeError *json.UnmarshalTypeError
 		var invalidUnmarshalError *json.InvalidUnmarshalError
@@ -243,6 +238,11 @@ func (t *Tools) ReadJSON(w http.ResponseWriter, r *http.Request, data interface{
 		default:
 			return err
 		}
+	}
+
+	err = dec.Decode(&struct{}{})
+	if err != io.EOF {
+		return errors.New("body must contain only one JSON value")
 	}
 
 	return nil

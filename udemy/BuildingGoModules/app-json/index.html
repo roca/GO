@@ -69,7 +69,7 @@
 
         headers.append("Content-Type", "application/json");
 
-        fetch("http://localhost:8081/receive-post", body)
+        fetch("http://localhost:8081/remote-service", body)
             .then((response) => response.json())
             .then((data) => {
                 serverResponse.innerHTML = JSON.stringify(data, undefined, 4);
