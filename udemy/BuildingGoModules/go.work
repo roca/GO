@@ -8,4 +8,5 @@ use (
 	./app-slug
 	./app-upload
 	./toolkit
+	./toolkit/v2
 )
