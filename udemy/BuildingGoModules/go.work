@@ -6,6 +6,7 @@ use (
 	./app-download
 	./app-json
 	./app-slug
+	./app-test
 	./app-upload
 	./toolkit
 	./toolkit/v2
