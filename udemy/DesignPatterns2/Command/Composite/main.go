@@ -25,6 +25,8 @@ func (b *BankAccount) Withdraw(amount int) bool {
 type Command interface {
 	Do()
 	Undo()
+	Succeeded() bool
+	SetSucceeded(value bool)
 }
 
 type Action int
@@ -39,6 +41,14 @@ type BankAccountCommand struct {
 	action    Action
 	amount    int
 	succeeded bool
+}
+
+func (b *BankAccountCommand) Succeeded() bool {
+	return b.succeeded
+}
+
+func (b *BankAccountCommand) SetSucceeded(value bool) {
+	b.succeeded = value
 }
 
 func NewBankAccountCommand(account *BankAccount, action Action, amount int) *BankAccountCommand {
@@ -67,11 +77,65 @@ func (b *BankAccountCommand) Undo() {
 	}
 }
 
+type CompositeBankAccountCommand struct {
+	commands []Command
+}
+
+func (c *CompositeBankAccountCommand) Do(){
+	for _, cmd := range c.commands {
+		cmd.Do()
+	}
+}
+func (c *CompositeBankAccountCommand) Undo(){
+	for i := len(c.commands)-1; i >= 0; i-- {
+		c.commands[i].Undo()
+	}
+}
+func (c *CompositeBankAccountCommand) Succeeded() bool{
+	for _, cmd := range c.commands {
+		if !cmd.Succeeded() {
+			return false
+		}
+	}
+	return true
+}
+func (c *CompositeBankAccountCommand) SetSucceeded(value bool){
+	for _, cmd := range c.commands {
+		cmd.SetSucceeded(value)
+	}
+}
+
+type MoneyTransferCommand struct {
+	CompositeBankAccountCommand
+	from, to *BankAccount
+	amount int
+}
+
+func NewMoneyTransferCommand(from, to *BankAccount, amount int) *MoneyTransferCommand {
+	c := &MoneyTransferCommand{from: from, to: to, amount: amount}
+	c.commands = append(c.commands, NewBankAccountCommand(from, Withdraw, amount))
+	c.commands = append(c.commands, NewBankAccountCommand(to, Deposit, amount))
+	return c
+}
+
+func (m *MoneyTransferCommand) Do() {
+	ok := true
+	for _, cmd := range m.commands {
+		if ok {
+			cmd.Do()
+			ok = cmd.Succeeded()
+		} else {
+			cmd.SetSucceeded(false)
+		}
+	}
+}
+
 func main() {
-	ba := BankAccount{}
-	cmd := NewBankAccountCommand(&ba, Deposit, 100)
-	cmd.Do()
-	cmd2 := NewBankAccountCommand(&ba, Withdraw, 25)
-	cmd2.Do()
-	cmd2.Undo()
+	from := &BankAccount{100}
+	to := &BankAccount{0}
+	mtc := NewMoneyTransferCommand(from, to, 25)
+	mtc.Do()
+	fmt.Println(from, to)
+	mtc.Undo()
+	fmt.Println(from, to)
 }
