@@ -5,38 +5,36 @@ import (
 	"strings"
 )
 
-// Intrusive Visitor pattern
+// Reflective Visitor pattern
 
 type Expression interface {
-	Print(sb *strings.Builder)
 }
 
 type DoubleExpression struct {
 	value float64
 }
 
-func (d *DoubleExpression) Print(sb *strings.Builder) {
-	sb.WriteString(fmt.Sprintf("%g", d.value))
-}
-
 type AdditionExpression struct {
 	left, right Expression
 }
 
-func (a *AdditionExpression) Print(sb *strings.Builder) {
-	sb.WriteString("(")
-	if a.left != nil {
-		a.left.Print(sb)
+func Print(e Expression, sb *strings.Builder) {
+	switch v := e.(type) {
+	case *DoubleExpression:
+		sb.WriteString(fmt.Sprintf("%g", v.value))
+	case *AdditionExpression:
+		sb.WriteString("(")
+		Print(v.left, sb)
+		sb.WriteString("+")
+		Print(v.right, sb)
+		sb.WriteString(")")
+	default:
+		fmt.Printf("I don't know about type %T!\n", v)
 	}
-	sb.WriteString("+")
-	if a.right != nil {
-		a.right.Print(sb)
-	}
-	sb.WriteString(")")
 }
 
 func main() {
-	// 1 + (2+3)
+	// 1 + (2+3)-
 	e := &AdditionExpression{
 		left: &DoubleExpression{1},
 		right: &AdditionExpression{
@@ -46,6 +44,6 @@ func main() {
 	}
 
 	sb := strings.Builder{}
-	e.Print(&sb)
+	Print(e, &sb)
 	fmt.Println(sb.String())
 }
