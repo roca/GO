@@ -91,6 +91,7 @@ func Test_checkNumbers(t *testing.T) {
 		{"One", "1", "1 is not prime, by definition!", false},
 		{"Negative", "-1", "Negative numbers are not prime, by definition!", false},
 		{"Four", "4", "4 is not prime, it is divisible by 2", false},
+		{"empty", "", "Please enter a whole number or 'q' to quit", false},
 	}
 
 	for _, e := range checkTests {
