@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"os"
 	"strconv"
 	"strings"
@@ -16,7 +17,7 @@ func main() {
 	doneChan := make(chan bool)
 
 	// start a goroutine to read user input and run program
-	go readUserInput(doneChan)
+	go readUserInput(os.Stdin, doneChan)
 
 	// block util the doneChan get a value
 	<-doneChan
@@ -30,8 +31,8 @@ func main() {
 }
 
 // readUserInput reads user input and runs the prime checker
-func readUserInput(doneChan chan bool) {
-	scanner := bufio.NewScanner(os.Stdin)
+func readUserInput(in io.Reader, doneChan chan bool) {
+	scanner := bufio.NewScanner(in)
 
 	for {
 		res, done := checkNumbers(scanner)
@@ -51,7 +52,8 @@ func checkNumbers(scanner *bufio.Scanner) (string, bool) {
 	scanner.Scan()
 	input := scanner.Text()
 
-	if strings.EqualFold(input, "q") {
+	// check if 'q' is at the beginning the string
+	if strings.HasPrefix(strings.ToLower(input), "q") {
 		return "Goodbye!", true
 	}
 

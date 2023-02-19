@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -110,4 +111,32 @@ func Test_checkNumbers(t *testing.T) {
 	}
 }
 
-// Test main
+// Test readInput
+func Test_readUserInput(t *testing.T) {
+	// to test this function, we nee a channel, and an instance of an io.Reader
+	doneChan := make(chan bool)
+
+	var stdin bytes.Buffer
+	stdin.Write([]byte("7\nq\n"))
+
+	// we need to capture the output of the function
+	oldOut := os.Stdout
+	r, w, _ := os.Pipe()
+	os.Stdout = w
+
+	// call the function
+	go readUserInput(&stdin, doneChan)
+	<-doneChan
+	close(doneChan)
+
+	// close the pipe and read the output
+	_ = w.Close()
+	out, _ := ioutil.ReadAll(r)
+	os.Stdout = oldOut
+
+	// check the output
+	expected := "7 is a prime number!\n-> "
+	if string(out) != expected {
+		t.Errorf("\nExpected: '%s'\nGot: '%s'", expected, string(out))
+	}
+}
