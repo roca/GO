@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 )
 
 func main() {
@@ -50,7 +51,7 @@ func checkNumbers(scanner *bufio.Scanner) (string, bool) {
 	scanner.Scan()
 	input := scanner.Text()
 
-	if input == "q" {
+	if strings.EqualFold(input, "q") {
 		return "Goodbye!", true
 	}
 
