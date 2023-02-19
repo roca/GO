@@ -84,6 +84,7 @@ func Test_checkNumbers(t *testing.T) {
 		done     bool
 	}{
 		{"Quit", "Q", "Goodbye!", true},
+		{"quit", "q", "Goodbye!", true},
 		{"Not a number", "a", "Please enter a whole number or 'q' to quit", false},
 		{"Prime", "7", "7 is a prime number!", false},
 		{"Not prime", "8", "8 is not prime, it is divisible by 2", false},
