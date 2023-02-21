@@ -18,7 +18,7 @@ func (app *application) ipFromContext(ctx context.Context) string {
 
 func (app *application) addIPToContext(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		var ctx = context.Background()
+		var ctx context.Context
 		ip, err := getIP(r)
 		if err != nil {
 			ip, _, _ = net.SplitHostPort(r.RemoteAddr)
@@ -26,7 +26,7 @@ func (app *application) addIPToContext(next http.Handler) http.Handler {
 				ip = "unknown"
 			}
 		}
-		ctx = context.WithValue(ctx, contextUserKey, ip)
+		ctx = context.WithValue(r.Context(), contextUserKey, ip)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

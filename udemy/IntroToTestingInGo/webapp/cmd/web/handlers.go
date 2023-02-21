@@ -23,6 +23,7 @@ func (app *application) render(w http.ResponseWriter, r *http.Request, t string,
 		http.Error(w, "bad request", http.StatusBadRequest)
 		return err
 	}
+	data.IP = app.ipFromContext(r.Context())
 	parsedTemplate.Execute(w, data)
 	return nil
 }
