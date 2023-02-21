@@ -3,8 +3,8 @@ package main
 import (
 	"net/http"
 
-	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 )
 
 func (app *application) routes() http.Handler {
@@ -12,6 +12,7 @@ func (app *application) routes() http.Handler {
 
 	// register middleware
 	mux.Use(middleware.Recoverer)
+	mux.Use(app.addIPToContext)
 
 	// register routes
 	mux.Get("/", app.Home)
