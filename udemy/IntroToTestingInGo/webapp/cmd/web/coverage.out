@@ -1,0 +1,23 @@
+mode: set
+webapp/cmd/web/middleware.go:14.67,17.2 2 1
+webapp/cmd/web/middleware.go:19.72,20.71 1 1
+webapp/cmd/web/middleware.go:20.71,23.17 3 1
+webapp/cmd/web/middleware.go:29.3,30.40 2 1
+webapp/cmd/web/middleware.go:23.17,25.20 2 1
+webapp/cmd/web/middleware.go:25.20,27.5 1 1
+webapp/cmd/web/middleware.go:34.45,36.16 2 1
+webapp/cmd/web/middleware.go:40.2,41.19 2 1
+webapp/cmd/web/middleware.go:45.2,46.22 2 1
+webapp/cmd/web/middleware.go:50.2,50.18 1 1
+webapp/cmd/web/middleware.go:54.2,54.16 1 1
+webapp/cmd/web/middleware.go:36.16,38.3 1 1
+webapp/cmd/web/middleware.go:41.19,43.3 1 1
+webapp/cmd/web/middleware.go:46.22,48.3 1 1
+webapp/cmd/web/middleware.go:50.18,52.3 1 0
+webapp/cmd/web/routes.go:10.47,25.2 7 1
+webapp/cmd/web/handlers.go:11.70,13.2 1 1
+webapp/cmd/web/handlers.go:20.108,22.16 2 1
+webapp/cmd/web/handlers.go:26.2,28.12 3 1
+webapp/cmd/web/handlers.go:22.16,25.3 2 0
+webapp/cmd/web/main.go:10.13,21.16 5 0
+webapp/cmd/web/main.go:21.16,23.3 1 0
