@@ -1,9 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"html/template"
 	"net/http"
 	"path"
+
+	"github.com/roca/go-toolkit/v2"
 )
 
 var pathToTemplates = "./templates/"
@@ -24,6 +27,27 @@ func (app *application) render(w http.ResponseWriter, r *http.Request, t string,
 		return err
 	}
 	data.IP = app.ipFromContext(r.Context())
-	parsedTemplate.Execute(w, data)
+	err = parsedTemplate.Execute(w, data)
+	if err != nil {
+		return err
+	}
 	return nil
+}
+
+func (app *application) Login(w http.ResponseWriter, r *http.Request) {
+
+	var data struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
+
+	var tools toolkit.Tools
+
+	err := tools.ReadJSON(w, r, &data)
+	if err != nil {
+		return
+	}
+
+	fmt.Println(data.Email, data.Password)
+
 }
