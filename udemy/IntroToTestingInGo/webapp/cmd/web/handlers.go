@@ -1,12 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"html/template"
+	"log"
 	"net/http"
 	"path"
-
-	"github.com/roca/go-toolkit/v2"
 )
 
 var pathToTemplates = "./templates/"
@@ -35,19 +33,18 @@ func (app *application) render(w http.ResponseWriter, r *http.Request, t string,
 }
 
 func (app *application) Login(w http.ResponseWriter, r *http.Request) {
+	log.Println("login")
 
-	var data struct {
-		Email    string `json:"email"`
-		Password string `json:"password"`
+	type data struct {
+		Email    string 
+		Password string 
 	}
 
-	var tools toolkit.Tools
-
-	err := tools.ReadJSON(w, r, &data)
-	if err != nil {
-		return
+	formData := data {
+		Email:    r.FormValue("email"),
+		Password: r.FormValue("password"),
 	}
 
-	fmt.Println(data.Email, data.Password)
+	log.Println(formData.Email, formData.Password)
 
 }
