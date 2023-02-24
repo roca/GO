@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -33,18 +34,17 @@ func (app *application) render(w http.ResponseWriter, r *http.Request, t string,
 }
 
 func (app *application) Login(w http.ResponseWriter, r *http.Request) {
-	log.Println("login")
-
-	type data struct {
-		Email    string 
-		Password string 
+	err := r.ParseForm()
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "bad request", http.StatusBadRequest)
+		return
 	}
 
-	formData := data {
-		Email:    r.FormValue("email"),
-		Password: r.FormValue("password"),
-	}
+	email := r.Form.Get("email")
+	password := r.Form.Get("password")
 
-	log.Println(formData.Email, formData.Password)
+	log.Println(email, password)
 
+	fmt.Fprint(w, email)
 }
