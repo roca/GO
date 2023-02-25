@@ -16,6 +16,7 @@ func Test_application_routes(t *testing.T) {
 		method string
 	}{
 		{"Home", "/", "GET"},
+		{"Login", "/login", "POST"},
 		{"static", "/static/*", "GET"},
 	}
 
