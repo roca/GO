@@ -20,7 +20,6 @@ func Test_application_routes(t *testing.T) {
 		{"static", "/static/*", "GET"},
 	}
 
-	app := application{}
 	mux := app.routes()
 
 	chiRoutes := mux.(chi.Routes)
