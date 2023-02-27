@@ -1,8 +1,11 @@
 package main
 
 import (
+	"context"
+	"io"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 )
 
@@ -35,4 +38,38 @@ func Test_application_handlers(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestAppHome(t *testing.T) {
+	req, _ := http.NewRequest("GET", "/", nil)
+	req = addContextAndSessionToRequest(req, app)
+
+	rr := httptest.NewRecorder()
+
+	handler := http.HandlerFunc(app.Home)
+
+	handler.ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusOK {
+		t.Errorf("TestAppHome returned wrong status code; expected %d but got %d", http.StatusOK, rr.Code)
+	}
+
+	body, _ := io.ReadAll(rr.Body)
+
+	if  !strings.Contains(string(body), `<small>From Session:`) {
+		t.Error("TestAppHome returned unexpected body")
+	}
+
+}
+
+func getCtx(req *http.Request) context.Context {
+	ctx := context.WithValue(req.Context(), contextUserKey, "unknown")
+	return ctx
+}
+
+func addContextAndSessionToRequest(req *http.Request, app application) *http.Request {
+	req = req.WithContext(getCtx(req))
+	ctx, _ := app.Session.Load(req.Context(), req.Header.Get("X-Session"))
+
+	return req.WithContext(ctx)
 }
