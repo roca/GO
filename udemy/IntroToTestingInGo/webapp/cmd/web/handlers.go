@@ -6,12 +6,22 @@ import (
 	"log"
 	"net/http"
 	"path"
+	"time"
 )
 
 var pathToTemplates = "./templates/"
 
 func (app *application) Home(w http.ResponseWriter, r *http.Request) {
-	_ = app.render(w, r, "home.page.gohtml", &TemplateData{})
+	var td = make(map[string]interface{})
+
+	if app.Session.Exists(r.Context(), "test") {
+		msg := app.Session.GetString(r.Context(), "test")
+		td["test"] = msg
+	} else {
+		app.Session.Put(r.Context(), "test", "Hit this page at "+time.Now().UTC().String())
+	}
+
+	_ = app.render(w, r, "home.page.gohtml", &TemplateData{Data : td})
 }
 
 type TemplateData struct {
@@ -49,7 +59,6 @@ func (app *application) Login(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, form.Errors)
 		return
 	}
-
 
 	email := r.Form.Get("email")
 	password := r.Form.Get("password")
