@@ -8,7 +8,7 @@ import (
 var app application
 
 func TestMain(m *testing.M) {
-	app = application{}
+	app.Session = getSession()
 	
 	code := m.Run()
 
