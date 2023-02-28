@@ -24,8 +24,6 @@ func Test_application_handlers(t *testing.T) {
 	ts := httptest.NewTLSServer(routes)
 	defer ts.Close()
 
-	pathToTemplates = "./../../templates/"
-
 	for _, e := range theTests {
 		t.Run(e.name, func(t *testing.T) {
 			resp, err := ts.Client().Get(ts.URL + e.url)
@@ -40,27 +38,6 @@ func Test_application_handlers(t *testing.T) {
 	}
 }
 
-// func TestAppHomeOld(t *testing.T) {
-// 	req, _ := http.NewRequest("GET", "/", nil)
-// 	req = addContextAndSessionToRequest(req, app)
-
-// 	rr := httptest.NewRecorder()
-
-// 	handler := http.HandlerFunc(app.Home)
-
-// 	handler.ServeHTTP(rr, req)
-
-// 	if rr.Code != http.StatusOK {
-// 		t.Errorf("TestAppHome returned wrong status code; expected %d but got %d", http.StatusOK, rr.Code)
-// 	}
-
-// 	body, _ := io.ReadAll(rr.Body)
-
-// 	if  !strings.Contains(string(body), `<small>From Session:`) {
-// 		t.Error("TestAppHome returned unexpected body")
-// 	}
-// }
-
 func TestAppHome(t *testing.T) {
 	var tests = []struct{
 		name string
@@ -70,7 +47,6 @@ func TestAppHome(t *testing.T) {
 		{"first visit", "", `<small>From Session:`},
 		{"second visit", "hello, world", `<small>From Session: hello, world`},
 	}
-	pathToTemplates = "./../../templates/"
 
 	for _, e := range tests {
 		t.Run(e.name, func(t *testing.T) {
@@ -98,6 +74,20 @@ func TestAppHome(t *testing.T) {
 				t.Errorf("%s: did not find %s in response body", e.name, e.expectedHTML)
 			}
 		})
+	}
+}
+
+func TestApp_renderWithBadTemplate(t *testing.T) {
+	pathToTemplates = "./testdata/"
+
+	req, _ := http.NewRequest("GET", "/", nil)
+	req = addContextAndSessionToRequest(req, app)
+	rr := httptest.NewRecorder()
+
+	err := app.render(rr, req, "badtemplate.page.gohtml", &TemplateData{})
+
+	if err == nil {
+		t.Error("expected an error but did not get one")
 	}
 }
 
