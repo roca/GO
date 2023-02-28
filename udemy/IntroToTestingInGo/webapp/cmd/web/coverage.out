@@ -1,5 +1,4 @@
 mode: set
-webapp/cmd/web/routes.go:10.47,26.2 8 1
 webapp/cmd/web/forms.go:10.42,12.26 2 1
 webapp/cmd/web/forms.go:15.2,15.22 1 1
 webapp/cmd/web/forms.go:12.26,14.3 1 1
@@ -12,17 +11,22 @@ webapp/cmd/web/forms.go:41.20,43.4 1 1
 webapp/cmd/web/forms.go:47.54,48.9 1 1
 webapp/cmd/web/forms.go:48.9,50.3 1 1
 webapp/cmd/web/forms.go:53.29,55.2 1 1
-webapp/cmd/web/handlers.go:13.70,15.2 1 1
-webapp/cmd/web/handlers.go:22.108,24.16 2 1
-webapp/cmd/web/handlers.go:28.2,30.16 3 1
-webapp/cmd/web/handlers.go:33.2,33.12 1 1
-webapp/cmd/web/handlers.go:24.16,27.3 2 0
-webapp/cmd/web/handlers.go:30.16,32.3 1 0
-webapp/cmd/web/handlers.go:36.71,38.16 2 0
-webapp/cmd/web/handlers.go:44.2,49.22 4 0
-webapp/cmd/web/handlers.go:38.16,42.3 3 0
-webapp/cmd/web/main.go:10.13,21.16 5 0
-webapp/cmd/web/main.go:21.16,23.3 1 0
+webapp/cmd/web/handlers.go:14.70,17.45 2 1
+webapp/cmd/web/handlers.go:24.2,24.68 1 1
+webapp/cmd/web/handlers.go:17.45,20.3 2 1
+webapp/cmd/web/handlers.go:20.8,22.3 1 1
+webapp/cmd/web/handlers.go:32.108,34.16 2 1
+webapp/cmd/web/handlers.go:38.2,40.16 3 1
+webapp/cmd/web/handlers.go:43.2,43.12 1 1
+webapp/cmd/web/handlers.go:34.16,37.3 2 0
+webapp/cmd/web/handlers.go:40.16,42.3 1 0
+webapp/cmd/web/handlers.go:46.71,48.16 2 0
+webapp/cmd/web/handlers.go:55.2,58.19 3 0
+webapp/cmd/web/handlers.go:63.2,68.22 4 0
+webapp/cmd/web/handlers.go:48.16,52.3 3 0
+webapp/cmd/web/handlers.go:58.19,61.3 2 0
+webapp/cmd/web/main.go:14.13,25.16 5 0
+webapp/cmd/web/main.go:25.16,27.3 1 0
 webapp/cmd/web/middleware.go:14.67,17.2 2 1
 webapp/cmd/web/middleware.go:19.72,20.71 1 1
 webapp/cmd/web/middleware.go:20.71,23.17 3 1
@@ -38,3 +42,5 @@ webapp/cmd/web/middleware.go:36.16,38.3 1 1
 webapp/cmd/web/middleware.go:41.19,43.3 1 1
 webapp/cmd/web/middleware.go:46.22,48.3 1 1
 webapp/cmd/web/middleware.go:50.18,52.3 1 0
+webapp/cmd/web/routes.go:10.47,27.2 9 1
+webapp/cmd/web/sessions.go:10.39,18.2 6 1
