@@ -70,10 +70,10 @@ func TestAppHome(t *testing.T) {
 		{"first visit", "", `<small>From Session:`},
 		{"second visit", "hello, world", `<small>From Session: hello, world`},
 	}
+	pathToTemplates = "./../../templates/"
 
 	for _, e := range tests {
 		t.Run(e.name, func(t *testing.T) {
-			pathToTemplates = "./../../templates/"
 			req, _ := http.NewRequest("GET", "/", nil)
 			req = addContextAndSessionToRequest(req, app)
 			_ = app.Session.Destroy(req.Context())
