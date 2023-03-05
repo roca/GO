@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"strings"
 	"testing"
 )
@@ -39,8 +40,8 @@ func Test_application_handlers(t *testing.T) {
 }
 
 func TestAppHome(t *testing.T) {
-	var tests = []struct{
-		name string
+	var tests = []struct {
+		name         string
 		putInSession string
 		expectedHTML string
 	}{
@@ -70,7 +71,7 @@ func TestAppHome(t *testing.T) {
 
 			body, _ := io.ReadAll(rr.Body)
 
-			if  !strings.Contains(string(body), e.expectedHTML) {
+			if !strings.Contains(string(body), e.expectedHTML) {
 				t.Errorf("%s: did not find %s in response body", e.name, e.expectedHTML)
 			}
 		})
@@ -89,7 +90,7 @@ func TestApp_renderWithBadTemplate(t *testing.T) {
 	if err == nil {
 		t.Error("expected an error but did not get one")
 	}
-	pathToTemplates =  "./../../templates/"
+	pathToTemplates = "./../../templates/"
 }
 
 func getCtx(req *http.Request) context.Context {
@@ -102,4 +103,76 @@ func addContextAndSessionToRequest(req *http.Request, app application) *http.Req
 	ctx, _ := app.Session.Load(req.Context(), req.Header.Get("X-Session"))
 
 	return req.WithContext(ctx)
+}
+
+func Test_app_Login(t *testing.T) {
+	var tests = []struct {
+		name               string
+		postedData         url.Values
+		expectedStatusCode int
+		expectedLocation   string
+	}{
+		{
+			name: "valid login",
+			postedData: url.Values{
+				"email":    {"admin@example.com"},
+				"password": {"secret"},
+			},
+			expectedStatusCode: http.StatusSeeOther,
+			expectedLocation:   "/user/profile",
+		},
+		{
+			name: "missing form data",
+			postedData: url.Values{
+				"email":    {""},
+				"password": {""},
+			},
+			expectedStatusCode: http.StatusSeeOther,
+			expectedLocation:   "/",
+		},
+		{
+			name: "bad credentials",
+			postedData: url.Values{
+				"email":    {"admin@example.com"},
+				"password": {"badPassword"},
+			},
+			expectedStatusCode: http.StatusSeeOther,
+			expectedLocation:   "/",
+		},
+		{
+			name: "user not found",
+			postedData: url.Values{
+				"email":    {"admin2@example.com"},
+				"password": {"secret"},
+			},
+			expectedStatusCode: http.StatusSeeOther,
+			expectedLocation:   "/",
+		},
+		
+	}
+
+	for _, e := range tests {
+		t.Run(e.name, func(t *testing.T) {
+			req, _ := http.NewRequest("POST", "/login", strings.NewReader(e.postedData.Encode()))
+			req = addContextAndSessionToRequest(req, app)
+			req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+			rr := httptest.NewRecorder()
+			handler := http.HandlerFunc(app.Login)
+			handler.ServeHTTP(rr, req)
+
+			if rr.Code != e.expectedStatusCode {
+				t.Errorf("TestAppLogin returned wrong status code; expected %d but got %d", e.expectedStatusCode, rr.Code)
+			}
+
+			actualLocation, err := rr.Result().Location()
+			if err == nil {
+				if actualLocation.String() != e.expectedLocation {
+					t.Errorf("TestAppLogin returned wrong location; expected %s but got %s", e.expectedLocation, actualLocation.String())
+				}
+			} else {
+				t.Errorf("%s: TestAppLogin returned no location header", e.name)
+			}
+		})
+
+	}
 }
