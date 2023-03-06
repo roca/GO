@@ -6,9 +6,10 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"webapp/pkg/data"
 )
 
-func Test_application_addIPToContest(t *testing.T) {
+func Test_app_addIPToContest(t *testing.T) {
 	tests := []struct {
 		headerName  string
 		headerValue string
@@ -55,11 +56,45 @@ func Test_application_addIPToContest(t *testing.T) {
 	}
 }
 
-func Test_application_ipFromContext(t *testing.T) {
+func Test_app_ipFromContext(t *testing.T) {
 
 	ctx := context.WithValue(context.Background(), contextUserKey, "some_ip")
 	ip := app.ipFromContext(ctx)
 	if !strings.EqualFold(ip, "some_ip") {
 		t.Error("ipFromContext returned wrong ip")
+	}
+}
+
+func Test_app_auth(t *testing.T) {
+	tests := []struct {
+		namespace string
+		isAuth    bool
+	}{
+		{"logged in ", true},
+		{"not logged in", false},
+	}
+
+	nextHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+	})
+
+	for _, e := range tests {
+		handlerToTest := app.auth(nextHandler)
+		req := httptest.NewRequest("GET", "http://testing", nil)
+		req = addContextAndSessionToRequest(req, app)
+		if e.isAuth {
+			app.Session.Put(req.Context(), "user", data.User{ID: 1})
+		}
+		rr := httptest.NewRecorder()
+		handlerToTest.ServeHTTP(rr, req)
+
+		if e.isAuth && rr.Code != http.StatusOK {
+			t.Errorf("%s: expected status code %d, got %d", e.namespace, http.StatusOK, rr.Code)
+		}
+
+		if !e.isAuth && rr.Code != http.StatusTemporaryRedirect {
+			t.Errorf("%s: expected status code %d, got %d", e.namespace, http.StatusTemporaryRedirect, rr.Code)
+		}
+
 	}
 }
