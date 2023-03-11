@@ -6,6 +6,9 @@ import (
 	"log"
 	"os"
 	"testing"
+	"time"
+	"webapp/pkg/data"
+	"webapp/pkg/repository"
 
 	_ "github.com/jackc/pgconn"
 	_ "github.com/jackc/pgx/v4"
@@ -26,6 +29,7 @@ var (
 var resource *dockertest.Resource
 var pool *dockertest.Pool
 var testDB *sql.DB
+var testRepo repository.DatabaseRepo
 
 func TestMain(m *testing.M) {
 	// connect to docker; fail if docker is not running
@@ -80,6 +84,8 @@ func TestMain(m *testing.M) {
 		log.Fatalf("Could not create tables: %v", err)
 	}
 
+	testRepo = &PostgresDBRepo{DB: testDB}
+
 	// run the tests
 	code := m.Run()
 
@@ -110,5 +116,87 @@ func Test_pingDB(t *testing.T) {
 	err := testDB.Ping()
 	if err != nil {
 		t.Error(err)
+	}
+}
+
+func TestPostgresDBRepoInsertUser(t *testing.T) {
+	// create a new user
+	testUser := data.User{
+		Email:     "admin@example.com",
+		FirstName: "Admin",
+		LastName:  "User",
+		Password:  "secret",
+		IsAdmin:   1,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+
+	id, err := testRepo.InsertUser(testUser)
+	if err != nil {
+		t.Errorf("insert user returned an error: %s", err)
+	}
+
+	if id != 1 {
+		t.Errorf("insert user returned wrone id; expected 1, but got %d", id)
+	}
+}
+
+func TestPostgresDBRepoAllUser(t *testing.T) {
+	users, err := testRepo.AllUsers()
+	if err != nil {
+		t.Errorf("all user returned an error: %s", err)
+	}
+
+	if len(users) != 1 {
+		t.Errorf("all user returned wrong number of users; expected 1, but got %d", len(users))
+	}
+
+	// create a new user
+	testUser := data.User{
+		Email:     "jsmith@example.com",
+		FirstName: "Jack",
+		LastName:  "Smith",
+		Password:  "secretAgentSmith",
+		IsAdmin:   1,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+
+	_, _ = testRepo.InsertUser(testUser)
+
+	users, err = testRepo.AllUsers()
+	if err != nil {
+		t.Errorf("all user returned an error: %s", err)
+	}
+
+	if len(users) != 2 {
+		t.Errorf("all user returned wrong number of users after insert; expected 2, but got %d", len(users))
+	}
+}
+
+func TestPostgresDBRepoGetUser(t *testing.T) {
+	user, err := testRepo.GetUser(1)
+	if err != nil {
+		t.Errorf("get user returned an error: %s", err)
+	}
+
+	if user.Email != "admin@example.com" {
+		t.Errorf("wrong email returned by GetUser; expected admin@example.com but got %s",user.Email)
+	}
+
+	user, err = testRepo.GetUser(3)
+	if err == nil {
+		t.Errorf("no error reported when getting a nonexisting user: %s", err)
+	}
+}
+
+func TestPostgresDBRepoGetUserByEmail(t *testing.T) {
+	user, err := testRepo.GetUserByEmail("jsmith@example.com")
+	if err != nil {
+		t.Errorf("get user by email returned an error: %s", err)
+	}
+
+	if user.ID != 2 {
+		t.Errorf("wrong id returned by GetUserByEmail; expected 2 but got %d",user.ID)
 	}
 }
