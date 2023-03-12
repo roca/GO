@@ -200,3 +200,49 @@ func TestPostgresDBRepoGetUserByEmail(t *testing.T) {
 		t.Errorf("wrong id returned by GetUserByEmail; expected 2 but got %d",user.ID)
 	}
 }
+
+func TestPostgresDBRepoUpdateUser(t *testing.T) {
+	user, _ := testRepo.GetUser(2)
+	user.Email = "janesmith@example.com"
+	user.FirstName = "Jane"
+	err := testRepo.UpdateUser(*user)
+	if err != nil {
+		t.Errorf("update user returned an error: %s", err)
+	}
+
+	user, _ = testRepo.GetUser(2)
+	if user.FirstName != "Jane" || user.Email != "janesmith@example.com" {
+		t.Errorf("update user failed to update user")
+	}
+}
+
+func TestPostgresDBRepoDeleteUser(t *testing.T) {
+	err := testRepo.DeleteUser(2)
+	if err != nil {
+		t.Errorf("delete user returned an error: %s", err)
+	}
+
+	_, err = testRepo.GetUser(2)
+	if err == nil {
+		t.Errorf("no error reported when deleting a nonexisting user: %s", err)
+	}
+
+}
+
+func TestPostgresDBRepoResetPassword(t *testing.T) {
+	err := testRepo.ResetPassword(1, "newPassword")
+	if err != nil {
+		t.Errorf("reset password returned an error: %s", err)
+	}
+
+	user, _ := testRepo.GetUser(1)
+	matches, err := user.PasswordMatches("newPassword")
+	if err != nil {
+		t.Errorf("password match returned an error: %s", err)
+	}
+
+	if !matches {
+		t.Errorf("password match returned false for valid password")
+	}
+
+}
