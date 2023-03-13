@@ -6,6 +6,17 @@
 			<div class="col">
 				<h1 class="mt-3">User Profile</h1>
 				<hr>
+
+				<!-- decide whether or not to display propfile pic -->
+
+				<hr>
+
+				<!-- form to update user profile image -->
+				<form action="/user/upload-profile-pic" method="POST" enctype="multipart/form-data">
+					<label for="formfile" class="form-label" >Choose an image</label>
+					<input type="file" class="form-control" id="formfile" name="image" accept="image/gif,image/jpeg,image/png">
+					<input class="btn btn-primary mt-3" type="submit" value="Upload">
+				</form>
 			</div>
 		</div>
 	</div>
