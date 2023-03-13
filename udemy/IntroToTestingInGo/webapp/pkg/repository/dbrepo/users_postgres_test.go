@@ -1,3 +1,5 @@
+//go:build integration
+
 package dbrepo
 
 import (
@@ -181,7 +183,7 @@ func TestPostgresDBRepoGetUser(t *testing.T) {
 	}
 
 	if user.Email != "admin@example.com" {
-		t.Errorf("wrong email returned by GetUser; expected admin@example.com but got %s",user.Email)
+		t.Errorf("wrong email returned by GetUser; expected admin@example.com but got %s", user.Email)
 	}
 
 	user, err = testRepo.GetUser(3)
@@ -197,7 +199,7 @@ func TestPostgresDBRepoGetUserByEmail(t *testing.T) {
 	}
 
 	if user.ID != 2 {
-		t.Errorf("wrong id returned by GetUserByEmail; expected 2 but got %d",user.ID)
+		t.Errorf("wrong id returned by GetUserByEmail; expected 2 but got %d", user.ID)
 	}
 }
 
@@ -243,6 +245,32 @@ func TestPostgresDBRepoResetPassword(t *testing.T) {
 
 	if !matches {
 		t.Errorf("password match returned false for valid password")
+	}
+
+}
+
+func TestPostgresInsertUserImage(t *testing.T) {
+	var image data.UserImage
+	image.UserID = 1
+	image.FileName = "test.jpg"
+	image.CreatedAt = time.Now()
+	image.UpdatedAt = time.Now()
+
+	newID, err := testRepo.InsertUserImage(image)
+	if err != nil {
+		t.Errorf("insert user image returned an error: %s", err)
+	}
+	if newID != 1 {
+		t.Errorf("insert user image returned wrong id; expected 1, but got %d", newID)
+	}
+
+	image.UserID = 100
+	newID, err = testRepo.InsertUserImage(image)
+	if err == nil {
+		t.Errorf("insert user image did not return an error for non-existent user id")
+	}
+	if newID != 0 {
+		t.Errorf("insert user image returned wrong id; expected 0, but got %d", newID)
 	}
 
 }
