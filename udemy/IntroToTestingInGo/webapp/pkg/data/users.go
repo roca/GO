@@ -16,6 +16,7 @@ type User struct {
 	IsAdmin   int       `json:"is_admin"`
 	CreatedAt time.Time `json:"-"`
 	UpdatedAt time.Time `json:"-"`
+	ProfilePic UserImage `json:"_"`
 }
 
 // PasswordMatches uses Go's bcrypt package to compare a user supplied password
