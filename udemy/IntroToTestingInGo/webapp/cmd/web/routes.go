@@ -22,6 +22,7 @@ func (app *application) routes() http.Handler {
 	mux.Route("/user", func(r chi.Router) {
 		r.Use(app.auth)
 		r.Get("/profile", app.Profile)
+		r.Post("/upload-profile-pic", app.UploadProfilePic)
 	})
 
 	// static assets
