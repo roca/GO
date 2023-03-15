@@ -108,3 +108,18 @@ func (app *application) authenticated(r *http.Request, user *data.User, password
 	app.Session.Put(r.Context(), "user", user)
 	return true
 }
+
+func (app *application )UploadProfilePic(w http.ResponseWriter, r *http.Request) {
+	// call a function that extracts a file from an upload (request)
+
+	// get the user from the session
+
+	// create a var of the type data.UserImage
+
+	// insert the user image into the database
+
+	// refresh the sessional variable "user"
+
+	// redirect back to the profile page
+	
+}
