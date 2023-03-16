@@ -7,6 +7,8 @@ import (
 	"path"
 	"time"
 	"webapp/pkg/data"
+
+	"github.com/roca/go-toolkit/v2"
 )
 
 var pathToTemplates = "./templates/"
@@ -89,7 +91,6 @@ func (app *application) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-
 	// prevent fixation attacks
 	_ = app.Session.RenewToken(r.Context())
 
@@ -109,8 +110,15 @@ func (app *application) authenticated(r *http.Request, user *data.User, password
 	return true
 }
 
-func (app *application )UploadProfilePic(w http.ResponseWriter, r *http.Request) {
+func (app *application) UploadProfilePic(w http.ResponseWriter, r *http.Request) {
 	// call a function that extracts a file from an upload (request)
+	var tools toolkit.Tools
+	tools.MaxFileSize = 1024 * 1024 * 5 // 2MB
+	file, err := tools.UploadOneFile(r, "./static/img")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
 	// get the user from the session
 
@@ -121,5 +129,5 @@ func (app *application )UploadProfilePic(w http.ResponseWriter, r *http.Request)
 	// refresh the sessional variable "user"
 
 	// redirect back to the profile page
-	
+
 }
