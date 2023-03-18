@@ -1,14 +1,18 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"crypto/tls"
 	"io"
+	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"os"
 	"strings"
 	"testing"
+	"webapp/pkg/data"
 )
 
 func Test_application_handlers(t *testing.T) {
@@ -198,4 +202,53 @@ func Test_app_Login(t *testing.T) {
 		})
 
 	}
+}
+
+func Test_app_UploadProfilePic(t *testing.T) {
+	uploadPath = "./testdata/uploads"
+	filePath := "./testdata/img.jpeg"
+
+	// specify a field name for the form
+	fieldName := "file"
+
+	// create a bytes.Buffer to act as the request body
+	body := &bytes.Buffer{}
+
+	// creat a new multipart writer
+	mw := multipart.NewWriter(body)
+
+	file, err := os.Open(filePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	w, err := mw.CreateFormFile(fieldName, filePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if _, err := io.Copy(w, file); err != nil {
+		t.Fatal(err)
+	}
+	mw.Close()
+
+	req, _ := http.NewRequest("POST", "/upload", body)
+	req = addContextAndSessionToRequest(req, app)
+	app.Session.Put(req.Context(), "user", data.User{ID: 1})
+	req.Header.Set("Content-Type", mw.FormDataContentType())
+
+	rr := httptest.NewRecorder()
+
+	handler := http.HandlerFunc(app.UploadProfilePic)
+
+	handler.ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusSeeOther {
+		t.Errorf("TestAppUploadProfilePic returned wrong status code; expected %d but got %d", http.StatusSeeOther, rr.Code)
+	}
+
+	// cleanup
+	os.RemoveAll("./testdata/uploads")
+	os.Mkdir("./testdata/uploads", 0777)
+
 }
