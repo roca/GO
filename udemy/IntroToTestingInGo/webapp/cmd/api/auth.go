@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"strings"
 	"time"
@@ -23,6 +24,8 @@ type Claims struct {
 }
 
 func (app *application) getTokenFromHeaderAndVerify(w http.ResponseWriter, r *http.Request) (string, *Claims, error) {
+	// we expect the token to be in the Authorization header like this:
+	// Bearer <token>
 	// add a header
 	w.Header().Add("Vary", "Authorization")
 
@@ -42,7 +45,7 @@ func (app *application) getTokenFromHeaderAndVerify(w http.ResponseWriter, r *ht
 
 	// check to see if we have the word "Bearer" in the first part
 	if headerParts[0] != "Bearer" {
-		return "", nil, errors.New("invalid authorization header")
+		return "", nil, errors.New("invalid authorization header, no Bearer token")
 	}
 
 	token := headerParts[1]
@@ -54,9 +57,24 @@ func (app *application) getTokenFromHeaderAndVerify(w http.ResponseWriter, r *ht
 	_, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
 		// validate the signing algorithm
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, errors.New("invalid signing algorithm")
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		return []byte(app.config.jwt.secret), nil
+		return []byte(app.JWTSecret), nil
 	})
 
+	// check for error; not that this catches both expired and invalid tokens as well
+	if err != nil {
+		if strings.HasPrefix(err.Error(), "token is expired by") {
+			return "", nil, errors.New("token is expired")
+		}
+		return "", nil, err
+	}
+
+	// make sure that we issued this token
+	if claims.Issuer != app.Domain {
+		return "", nil, errors.New("incorrect issuer")
+	}
+
+	// valodation passed
+	return token, claims, nil
 }
