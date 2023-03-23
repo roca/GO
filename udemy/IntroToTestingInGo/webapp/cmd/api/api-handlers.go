@@ -1,27 +1,64 @@
 package main
 
-import "net/http"
+import (
+	"errors"
+	"log"
+	"net/http"
 
-func (app *application) authenticate(w http.ResponseWriter, r *http.Request){
-	// read a json payload
+	"github.com/roca/go-toolkit/v2"
+	"golang.org/x/crypto/bcrypt"
+)
 
-	// look up the user by email address
-
-	// check the password
-
-	// generate a tokens
-
-	// send token to user
+type Credentials struct {
+	Username string `json:"email"`
+	Password string `json:"password"`
 }
 
-func (app *application) refresh(w http.ResponseWriter, r *http.Request){}
+func (app *application) authenticate(w http.ResponseWriter, r *http.Request) {
+	var tools toolkit.Tools
 
-func (app *application) allUser(w http.ResponseWriter, r *http.Request){}
+	// read a json payload
+	var creds Credentials
+	err := tools.ReadJSON(w, r, &creds)
+	log.Println(creds)
+	if err != nil {
+		tools.ErrorJSON(w, errors.New("unauthorized"), http.StatusUnauthorized)
+		return
+	}
 
-func (app *application) getUser(w http.ResponseWriter, r *http.Request){}
+	// look up the user by email address
+	user, err := app.DB.GetUserByEmail(creds.Username)
+	if err != nil {
+		tools.ErrorJSON(w, errors.New("unauthorized"), http.StatusUnauthorized)
+		return
+	}
 
-func (app *application) updateUser(w http.ResponseWriter, r *http.Request){}
+	// check the password
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(creds.Password))
+	if err != nil {
+		tools.ErrorJSON(w, errors.New("unauthorized"), http.StatusUnauthorized)
+		return
+	}
 
-func (app *application) deleteUser(w http.ResponseWriter, r *http.Request){}
+	// generate a tokens
+	tokenPairs, err := app.generateTokenPair(user)
+	if err != nil {
+		tools.ErrorJSON(w, errors.New("unauthorized"), http.StatusUnauthorized)
+		return
+	}
 
-func (app *application) insertUser(w http.ResponseWriter, r *http.Request){}
+	// send token to user
+	_ = tools.WriteJSON(w, http.StatusOK, tokenPairs, nil)
+}
+
+func (app *application) refresh(w http.ResponseWriter, r *http.Request) {}
+
+func (app *application) allUser(w http.ResponseWriter, r *http.Request) {}
+
+func (app *application) getUser(w http.ResponseWriter, r *http.Request) {}
+
+func (app *application) updateUser(w http.ResponseWriter, r *http.Request) {}
+
+func (app *application) deleteUser(w http.ResponseWriter, r *http.Request) {}
+
+func (app *application) insertUser(w http.ResponseWriter, r *http.Request) {}
