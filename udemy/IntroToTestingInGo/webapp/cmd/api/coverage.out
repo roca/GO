@@ -1,4 +1,9 @@
 mode: set
+webapp/cmd/api/routes.go:11.47,23.64 5 0
+webapp/cmd/api/routes.go:34.2,34.43 1 0
+webapp/cmd/api/routes.go:44.2,44.12 1 0
+webapp/cmd/api/routes.go:23.64,31.3 3 0
+webapp/cmd/api/routes.go:34.43,42.3 5 0
 webapp/cmd/api/api-handlers.go:17.78,24.16 5 1
 webapp/cmd/api/api-handlers.go:30.2,31.16 2 1
 webapp/cmd/api/api-handlers.go:37.2,38.16 2 1
@@ -14,6 +19,14 @@ webapp/cmd/api/api-handlers.go:58.74,58.75 0 0
 webapp/cmd/api/api-handlers.go:60.77,60.78 0 0
 webapp/cmd/api/api-handlers.go:62.77,62.78 0 0
 webapp/cmd/api/api-handlers.go:64.77,64.78 0 0
+webapp/cmd/api/api-middleware.go:5.68,6.71 1 1
+webapp/cmd/api/api-middleware.go:6.71,8.28 2 1
+webapp/cmd/api/api-middleware.go:8.28,13.4 4 1
+webapp/cmd/api/api-middleware.go:13.9,15.4 1 1
+webapp/cmd/api/api-middleware.go:19.70,20.71 1 0
+webapp/cmd/api/api-middleware.go:20.71,22.17 2 0
+webapp/cmd/api/api-middleware.go:26.3,26.23 1 0
+webapp/cmd/api/api-middleware.go:22.17,25.4 2 0
 webapp/cmd/api/auth.go:27.118,37.22 3 1
 webapp/cmd/api/auth.go:42.2,43.27 2 1
 webapp/cmd/api/auth.go:48.2,48.32 1 1
@@ -50,8 +63,3 @@ webapp/cmd/api/main.go:21.13,30.16 7 0
 webapp/cmd/api/main.go:33.2,40.16 5 0
 webapp/cmd/api/main.go:30.16,32.3 1 0
 webapp/cmd/api/main.go:40.16,42.3 1 0
-webapp/cmd/api/routes.go:11.47,23.64 5 0
-webapp/cmd/api/routes.go:34.2,34.43 1 0
-webapp/cmd/api/routes.go:44.2,44.12 1 0
-webapp/cmd/api/routes.go:23.64,31.3 3 0
-webapp/cmd/api/routes.go:34.43,42.3 5 0
