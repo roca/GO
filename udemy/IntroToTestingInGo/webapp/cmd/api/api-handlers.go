@@ -4,7 +4,9 @@ import (
 	"errors"
 	"log"
 	"net/http"
+	"time"
 
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/roca/go-toolkit/v2"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -14,8 +16,9 @@ type Credentials struct {
 	Password string `json:"password"`
 }
 
+var tools toolkit.Tools
+
 func (app *application) authenticate(w http.ResponseWriter, r *http.Request) {
-	var tools toolkit.Tools
 
 	// read a json payload
 	var creds Credentials
@@ -51,7 +54,29 @@ func (app *application) authenticate(w http.ResponseWriter, r *http.Request) {
 	_ = tools.WriteJSON(w, http.StatusOK, tokenPairs, nil)
 }
 
-func (app *application) refresh(w http.ResponseWriter, r *http.Request) {}
+func (app *application) refresh(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	refreshToken := r.Form.Get("refresh_token")
+	claims := &Claims{}
+
+	_, err = jwt.ParseWithClaims(refreshToken, claims, func(token *jwt.Token) (interface{}, error) {
+		return []byte(app.JWTSecret), nil
+	})
+	if err != nil {
+		tools.ErrorJSON(w, err, http.StatusBadRequest)
+		return
+	}
+
+	if time.Unix(claims.ExpiresAt.Unix(), 0).Sub(time.Now()) > 30*time.Second {
+		tools.ErrorJSON(w, errors.New("refresh token does not need renewal yet"), http.StatusTooEarly)
+		return
+	}
+}
 
 func (app *application) allUser(w http.ResponseWriter, r *http.Request) {}
 

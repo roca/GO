@@ -55,12 +55,14 @@ func Test_app_authRequired(t *testing.T) {
 	tokens, _ := app.generateTokenPair(&testUser)
 
 	var tests = []struct {
-		name            string
-		token           string
+		name               string
+		token              string
 		expectedAuthorized bool
-		setHeader       bool
+		setHeader          bool
 	}{
 		{"valid token", fmt.Sprintf("Bearer %s", tokens.Token), true, true},
+		{"no token", "", false, false},
+		{"invalid token", fmt.Sprintf("Bearer %s", expiredToken), false, true},
 	}
 
 	for _, e := range tests {
@@ -75,7 +77,7 @@ func Test_app_authRequired(t *testing.T) {
 			handlerToTest.ServeHTTP(rr, req)
 
 			if e.expectedAuthorized && rr.Code == http.StatusUnauthorized {
-				t.Errorf("%s: got code 402, and should not have", e.name)
+				t.Errorf("%s: got code 401, and should not have", e.name)
 			}
 
 			if !e.expectedAuthorized && rr.Code != http.StatusUnauthorized {
