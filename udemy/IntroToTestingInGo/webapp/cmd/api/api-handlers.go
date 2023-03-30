@@ -4,6 +4,7 @@ import (
 	"errors"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -76,6 +77,40 @@ func (app *application) refresh(w http.ResponseWriter, r *http.Request) {
 		tools.ErrorJSON(w, errors.New("refresh token does not need renewal yet"), http.StatusTooEarly)
 		return
 	}
+
+	// get the user id from the claims
+	userID, err := strconv.Atoi(claims.Subject)
+	if err != nil {
+		tools.ErrorJSON(w, err, http.StatusBadRequest)
+		return
+	}
+
+	user, err := app.DB.GetUser(userID)
+	if err != nil {
+		tools.ErrorJSON(w, errors.New("Unknown user"), http.StatusBadRequest)
+		return
+	}
+
+	// generate a tokens
+	tokenPairs, err := app.generateTokenPair(user)
+	if err != nil {
+		tools.ErrorJSON(w, err, http.StatusUnauthorized)
+		return
+	}
+
+	http.SetCookie(w, &http.Cookie{
+		Name:     "__Host-refresh_token",
+		Path:     "/",
+		Value:    tokenPairs.RefreshToken,
+		Expires:  time.Now().Add(refreshTokenExpiry),
+		MaxAge:   int(refreshTokenExpiry.Seconds()),
+		SameSite: http.SameSiteStrictMode,
+		Domain:   "localhost",
+		HttpOnly: true,
+		Secure:   true,
+	})
+
+	_ = tools.WriteJSON(w, http.StatusOK, tokenPairs, nil)
 }
 
 func (app *application) allUser(w http.ResponseWriter, r *http.Request) {}
