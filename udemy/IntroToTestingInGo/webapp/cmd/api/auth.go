@@ -11,8 +11,8 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
-const jwtTokenExpiry = 15 * time.Minute
-const refreshTokenExpiry = 24 * time.Hour
+var jwtTokenExpiry = 15 * time.Minute
+var refreshTokenExpiry = 24 * time.Hour
 
 type TokenPairs struct {
 	Token        string `json:"access_token"`
