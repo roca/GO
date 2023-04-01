@@ -2,6 +2,7 @@ package dbrepo
 
 import (
 	"database/sql"
+	"errors"
 	"time"
 	"webapp/pkg/data"
 )
@@ -20,10 +21,17 @@ func (m *TestDBRepo) AllUsers() ([]*data.User, error) {
 
 // GetUser returns one user by id
 func (m *TestDBRepo) GetUser(id int) (*data.User, error) {
-	var user = data.User{
-		ID: 1,
+	var user = data.User{}
+	if id == 1 {
+		user = data.User{
+			ID:        1,
+			FirstName: "Admin",
+			LastName:  "User",
+			Email:     "admin@example.com",
+		}
+		return &user, nil
 	}
-	return &user, nil
+	return nil, errors.New("user not found")
 }
 
 // GetUserByEmail returns one user by email address

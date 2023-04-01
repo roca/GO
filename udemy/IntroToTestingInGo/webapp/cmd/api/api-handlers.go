@@ -6,7 +6,9 @@ import (
 	"net/http"
 	"strconv"
 	"time"
+	"webapp/pkg/data"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/roca/go-toolkit/v2"
 	"golang.org/x/crypto/bcrypt"
@@ -113,12 +115,74 @@ func (app *application) refresh(w http.ResponseWriter, r *http.Request) {
 	_ = tools.WriteJSON(w, http.StatusOK, tokenPairs, nil)
 }
 
-func (app *application) allUser(w http.ResponseWriter, r *http.Request) {}
+func (app *application) allUser(w http.ResponseWriter, r *http.Request) {
+	users, err := app.DB.AllUsers()
+	if err != nil {
+		tools.ErrorJSON(w, err, http.StatusBadRequest)
+		return
+	}
+	_ = tools.WriteJSON(w, http.StatusOK, users, nil)
+}
 
-func (app *application) getUser(w http.ResponseWriter, r *http.Request) {}
+func (app *application) getUser(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "userID"))
+	if err != nil {
+		tools.ErrorJSON(w, err, http.StatusBadRequest)
+		return
+	}
 
-func (app *application) updateUser(w http.ResponseWriter, r *http.Request) {}
+	user, err := app.DB.GetUser(id)
+	if err != nil {
+		tools.ErrorJSON(w, err, http.StatusBadRequest)
+		return
+	}
+	_ = tools.WriteJSON(w, http.StatusOK, user, nil)
+}
 
-func (app *application) deleteUser(w http.ResponseWriter, r *http.Request) {}
+func (app *application) updateUser(w http.ResponseWriter, r *http.Request) {
+	var user data.User
+	err := tools.ReadJSON(w, r, &user)
+	if err != nil {
+		tools.ErrorJSON(w, err, http.StatusBadRequest)
+		return
+	}
 
-func (app *application) insertUser(w http.ResponseWriter, r *http.Request) {}
+	err = app.DB.UpdateUser(user)
+	if err != nil {
+		tools.ErrorJSON(w, err, http.StatusBadRequest)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func (app *application) deleteUser(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "userID"))
+	if err != nil {
+		tools.ErrorJSON(w, err, http.StatusBadRequest)
+		return
+	}
+	
+	err = app.DB.DeleteUser(id)
+	if err != nil {
+		tools.ErrorJSON(w, err, http.StatusBadRequest)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+
+}
+
+func (app *application) insertUser(w http.ResponseWriter, r *http.Request) {
+	var user data.User
+	err := tools.ReadJSON(w, r, &user)
+	if err != nil {
+		tools.ErrorJSON(w, err, http.StatusBadRequest)
+		return
+	}
+	
+	_, err = app.DB.InsertUser(user)
+	if err != nil {
+		tools.ErrorJSON(w, err, http.StatusBadRequest)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}
