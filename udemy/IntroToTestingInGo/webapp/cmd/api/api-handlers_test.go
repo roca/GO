@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -9,6 +10,8 @@ import (
 	"testing"
 	"time"
 	"webapp/pkg/data"
+
+	"github.com/go-chi/chi/v5"
 )
 
 func Test_app_authenticate(t *testing.T) {
@@ -93,4 +96,61 @@ func Test_app_refresh(t *testing.T) {
 		refreshTokenExpiry = oldRefreshTime
 	}
 
+}
+
+func Test_app_userHandlers(t *testing.T) {
+	var tests = []struct {
+		name               string
+		method             string
+		json               string
+		paramID            string
+		handler            http.HandlerFunc
+		expectedStatusCode int
+	}{
+		{"allUsers", "GET", "", "", app.allUser, http.StatusOK},
+		{"deleteUsers", "DELETE", "", "1", app.deleteUser, http.StatusNoContent},
+		{"getUser valid", "GET", "", "1", app.getUser, http.StatusOK},
+		{"getUser invalid", "GET", "", "100", app.getUser, http.StatusBadRequest},
+		{
+			"updateUser valid",
+			"PATCH",
+			`{"id":1,"first_name":"Administrator","last_name":"User","email":"admin@example.com"}`,
+			"",
+			app.updateUser,
+			http.StatusNoContent,
+		},
+		{
+			"updateUser invalid",
+			"PATCH",
+			`{"id":100,"first_name":"Administrator","last_name":"User","email":"admin@example.com"}`,
+			"",
+			app.updateUser,
+			http.StatusBadRequest,
+		},
+	}
+
+	for _, e := range tests {
+		t.Run(e.name, func(t *testing.T) {
+			var req *http.Request
+			if e.json == "" {
+				req, _ = http.NewRequest(e.method, "/", nil)
+			} else {
+				req, _ = http.NewRequest(e.method, "/", strings.NewReader(e.json))
+			}
+
+			if e.paramID != "" {
+				chiCtx := chi.NewRouteContext()
+				chiCtx.URLParams.Add("userID", e.paramID)
+				req = req.WithContext(context.WithValue(req.Context(), chi.RouteCtxKey, chiCtx))
+			}
+
+			rr := httptest.NewRecorder()
+			handler := http.HandlerFunc(e.handler)
+			handler.ServeHTTP(rr, req)
+
+			if rr.Code != e.expectedStatusCode {
+				t.Errorf("%s: expected status code %d, got %d", e.name, e.expectedStatusCode, rr.Code)
+			}
+		})
+	}
 }
