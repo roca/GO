@@ -54,7 +54,10 @@ func (m *TestDBRepo) GetUserByEmail(email string) (*data.User, error) {
 
 // UpdateUser updates one user in the database
 func (m *TestDBRepo) UpdateUser(u data.User) error {
-	return nil
+	if  u.ID == 1 {
+		return nil
+	}
+	return errors.New("update failed - no user found")
 }
 
 // DeleteUser deletes one user from the database, by id
