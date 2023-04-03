@@ -109,8 +109,10 @@ func Test_app_userHandlers(t *testing.T) {
 	}{
 		{"allUsers", "GET", "", "", app.allUser, http.StatusOK},
 		{"deleteUsers", "DELETE", "", "1", app.deleteUser, http.StatusNoContent},
+		{"deleteUsers bad URL param", "DELETE", "", "Y", app.deleteUser, http.StatusBadRequest},
 		{"getUser valid", "GET", "", "1", app.getUser, http.StatusOK},
 		{"getUser invalid", "GET", "", "100", app.getUser, http.StatusBadRequest},
+		{"getUser bad URL param", "GET", "", "Y", app.getUser, http.StatusBadRequest},
 		{
 			"updateUser valid",
 			"PATCH",
@@ -125,6 +127,30 @@ func Test_app_userHandlers(t *testing.T) {
 			`{"id":100,"first_name":"Administrator","last_name":"User","email":"admin@example.com"}`,
 			"",
 			app.updateUser,
+			http.StatusBadRequest,
+		},
+		{
+			"insertUser valid",
+			"PUT",
+			`{"first_name":"Jack","last_name":"Smith","email":"Jack@example.com"}`,
+			"",
+			app.insertUser,
+			http.StatusNoContent,
+		},
+		{
+			"insertUser invalid",
+			"PUT",
+			`{"foo": "bar", "first_name":"Jack","last_name":"Smith","email":"Jack@example.com"}`,
+			"",
+			app.insertUser,
+			http.StatusBadRequest,
+		},
+		{
+			"insertUser invalid json",
+			"PUT",
+			`{first_name":"Jack","last_name":"Smith","email":"Jack@example.com"}`,
+			"",
+			app.insertUser,
 			http.StatusBadRequest,
 		},
 	}
