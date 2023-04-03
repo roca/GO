@@ -9,7 +9,7 @@ import (
 	"webapp/pkg/repository/dbrepo"
 )
 
-const port = 8080
+const port = 8090
 
 type application struct {
 	DSN       string
