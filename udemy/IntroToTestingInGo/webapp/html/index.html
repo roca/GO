@@ -61,6 +61,69 @@
 </div>
 
 <script>
+    // we stor our access token in memory - thie only safe place to store it
+    let access_oken = "";
+    let refresh_token = "";
+
+    // get references to UI elements
+    let loginForm = document.getElementById("login-form");
+    let loginBtn = document.getElementById("login");
+    let userBtn = document.getElementById("getUserBtn");
+    let useerOutput = document.getElementById("user-output");
+    let tokensDiv = document.getElementById("tokens");
+    let tokenDisplay = document.getElementById("token");
+    let refreshTokenDisplay = document.getElementById("refresh");
+    let logoutBtn = document.getElementById("logout");
+
+    login.addEventListener("click",function() {
+        const payload = {
+            email : document.getElementById("email").value,
+            password : document.getElementById("password").value
+        }
+
+        const requestOptions = {
+            method: "POST",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+        }
+
+        fetch(`/web/auth`, requestOptions)
+            .then((response) => response.json())
+            .then((data) => {
+                if(data.access_token){
+                    access_token = data.access_token;
+                    refresh_token = data.refresh_token;
+                    setUI(true);
+                }
+            })
+            .catch((error) => {
+                alert(error);
+            });
+
+       
+    })
+
+    function setUI(loggedIn) {
+        if(loggedIn) {
+            tokensDiv.classList.remove("d-none");
+            loginForm.classList.add("d-none");
+            logoutBtn.classList.remove("d-none");
+            tokenDisplay.innerHTML = access_token;
+            refreshTokenDisplay.innerHTML = refresh_token;
+        } else {
+            tokenssDiv.classList.add("d-none");
+            loginForm.classList.remove("d-none");
+            logoutBtn.classList.add("d-none");
+            document.getElementById("password").value = "";
+            useerOutput.innerHTML = "Nothing from server yet...";
+            tokenDisplay.innerHTML = " No token!";
+            refreshTokenDisplay.innerHTML = "No refresh token!";
+
+        }
+    }
 
 </script>
 
