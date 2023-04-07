@@ -53,6 +53,18 @@ func (app *application) authenticate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	http.SetCookie(w, &http.Cookie{
+		Name:     "_Host-refresh_token",
+		Path:     "/",
+		Value:    tokenPairs.RefreshToken,
+		Expires:  time.Now().Add(refreshTokenExpiry),
+		MaxAge:   int(refreshTokenExpiry.Seconds()),
+		SameSite: http.SameSiteStrictMode,
+		Domain:   "localhost",
+		HttpOnly: true,
+		Secure:   true,
+	})
+
 	// send token to user
 	_ = tools.WriteJSON(w, http.StatusOK, tokenPairs, nil)
 }
@@ -75,10 +87,10 @@ func (app *application) refresh(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if time.Unix(claims.ExpiresAt.Unix(), 0).Sub(time.Now()) > 30*time.Second {
-		tools.ErrorJSON(w, errors.New("refresh token does not need renewal yet"), http.StatusTooEarly)
-		return
-	}
+	// if time.Unix(claims.ExpiresAt.Unix(), 0).Sub(time.Now()) > 30*time.Second {
+	// 	tools.ErrorJSON(w, errors.New("refresh token does not need renewal yet"), http.StatusTooEarly)
+	// 	return
+	// }
 
 	// get the user id from the claims
 	userID, err := strconv.Atoi(claims.Subject)
@@ -101,7 +113,7 @@ func (app *application) refresh(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.SetCookie(w, &http.Cookie{
-		Name:     "__Host-refresh_token",
+		Name:     "_Host-refresh_token",
 		Path:     "/",
 		Value:    tokenPairs.RefreshToken,
 		Expires:  time.Now().Add(refreshTokenExpiry),
@@ -113,6 +125,61 @@ func (app *application) refresh(w http.ResponseWriter, r *http.Request) {
 	})
 
 	_ = tools.WriteJSON(w, http.StatusOK, tokenPairs, nil)
+}
+
+func (app *application) refreshUsingCookie(w http.ResponseWriter, r *http.Request) {
+	for _, cookie := range r.Cookies() {
+		if cookie.Name == "_Host-refresh_token" {
+			claims := &Claims{}
+			refreshToken := cookie.Value
+
+			_, err := jwt.ParseWithClaims(refreshToken, claims, func(token *jwt.Token) (interface{}, error) {
+				return []byte(app.JWTSecret), nil
+			})
+			if err != nil {
+				tools.ErrorJSON(w, err, http.StatusBadRequest)
+				return
+			}
+		
+			if time.Unix(claims.ExpiresAt.Unix(), 0).Sub(time.Now()) > 30*time.Second {
+				tools.ErrorJSON(w, errors.New("refresh token does not need renewal yet"), http.StatusTooEarly)
+				return
+			}
+		
+			// get the user id from the claims
+			userID, err := strconv.Atoi(claims.Subject)
+			if err != nil {
+				tools.ErrorJSON(w, err, http.StatusBadRequest)
+				return
+			}
+		
+			user, err := app.DB.GetUser(userID)
+			if err != nil {
+				tools.ErrorJSON(w, errors.New("Unknown user"), http.StatusBadRequest)
+				return
+			}
+		
+			// generate a tokens
+			tokenPairs, err := app.generateTokenPair(user)
+			if err != nil {
+				tools.ErrorJSON(w, err, http.StatusUnauthorized)
+				return
+			}
+		
+			http.SetCookie(w, &http.Cookie{
+				Name:     "_Host-refresh_token",
+				Path:     "/",
+				Value:    tokenPairs.RefreshToken,
+				Expires:  time.Now().Add(refreshTokenExpiry),
+				MaxAge:   int(refreshTokenExpiry.Seconds()),
+				SameSite: http.SameSiteStrictMode,
+				Domain:   "localhost",
+				HttpOnly: true,
+				Secure:   true,
+			})
+		
+		}
+	}
 }
 
 func (app *application) allUser(w http.ResponseWriter, r *http.Request) {
