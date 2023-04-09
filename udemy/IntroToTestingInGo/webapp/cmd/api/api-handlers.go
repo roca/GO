@@ -87,10 +87,10 @@ func (app *application) refresh(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// if time.Unix(claims.ExpiresAt.Unix(), 0).Sub(time.Now()) > 30*time.Second {
-	// 	tools.ErrorJSON(w, errors.New("refresh token does not need renewal yet"), http.StatusTooEarly)
-	// 	return
-	// }
+	if time.Unix(claims.ExpiresAt.Unix(), 0).Sub(time.Now()) > 30*time.Second {
+		tools.ErrorJSON(w, errors.New("refresh token does not need renewal yet"), http.StatusTooEarly)
+		return
+	}
 
 	// get the user id from the claims
 	userID, err := strconv.Atoi(claims.Subject)
@@ -140,32 +140,32 @@ func (app *application) refreshUsingCookie(w http.ResponseWriter, r *http.Reques
 				tools.ErrorJSON(w, err, http.StatusBadRequest)
 				return
 			}
-		
-			if time.Unix(claims.ExpiresAt.Unix(), 0).Sub(time.Now()) > 30*time.Second {
-				tools.ErrorJSON(w, errors.New("refresh token does not need renewal yet"), http.StatusTooEarly)
-				return
-			}
-		
+
+			// if time.Unix(claims.ExpiresAt.Unix(), 0).Sub(time.Now()) > 30*time.Second {
+			// 	tools.ErrorJSON(w, errors.New("refresh token does not need renewal yet"), http.StatusTooEarly)
+			// 	return
+			// }
+
 			// get the user id from the claims
 			userID, err := strconv.Atoi(claims.Subject)
 			if err != nil {
 				tools.ErrorJSON(w, err, http.StatusBadRequest)
 				return
 			}
-		
+
 			user, err := app.DB.GetUser(userID)
 			if err != nil {
 				tools.ErrorJSON(w, errors.New("Unknown user"), http.StatusBadRequest)
 				return
 			}
-		
+
 			// generate a tokens
 			tokenPairs, err := app.generateTokenPair(user)
 			if err != nil {
 				tools.ErrorJSON(w, err, http.StatusUnauthorized)
 				return
 			}
-		
+
 			http.SetCookie(w, &http.Cookie{
 				Name:     "_Host-refresh_token",
 				Path:     "/",
@@ -177,9 +177,13 @@ func (app *application) refreshUsingCookie(w http.ResponseWriter, r *http.Reques
 				HttpOnly: true,
 				Secure:   true,
 			})
-		
+
+			// send token to user
+			_ = tools.WriteJSON(w, http.StatusOK, tokenPairs, nil)
+			return
 		}
 	}
+	tools.ErrorJSON(w, errors.New("UnAuthorized"), http.StatusUnauthorized)
 }
 
 func (app *application) allUser(w http.ResponseWriter, r *http.Request) {
@@ -228,7 +232,7 @@ func (app *application) deleteUser(w http.ResponseWriter, r *http.Request) {
 		tools.ErrorJSON(w, err, http.StatusBadRequest)
 		return
 	}
-	
+
 	err = app.DB.DeleteUser(id)
 	if err != nil {
 		tools.ErrorJSON(w, err, http.StatusBadRequest)
@@ -245,7 +249,7 @@ func (app *application) insertUser(w http.ResponseWriter, r *http.Request) {
 		tools.ErrorJSON(w, err, http.StatusBadRequest)
 		return
 	}
-	
+
 	_, err = app.DB.InsertUser(user)
 	if err != nil {
 		tools.ErrorJSON(w, err, http.StatusBadRequest)

@@ -81,6 +81,23 @@
         refreshTokens();
     })
 
+    let refreshRunning = false;
+    let refreshTime = new Date();
+    let secondsRemaining = (600 - refreshTime.getSeconds()) * 1000; // every 10 minutes
+    // let secondsRemaining = (5 - refreshTime.getSeconds()) * 1000; // every 5 seconds
+
+    function autoRefresh() {
+        if (!refreshRunning) {
+            setTimeout(function (){
+                if(access_token !== "") {
+                    setInterval(refreshTokens, 10 * 60 * 1000); // every 10 minutes
+                    // setInterval(refreshTokens, 5 * 1000); // every 5 seconds
+                }
+            }, secondsRemaining);
+        }
+        refreshRunning = true;
+    }
+
     loginBtn.addEventListener("click",function() {
         const payload = {
             email : document.getElementById("email").value,
@@ -103,6 +120,7 @@
                     access_token = data.access_token;
                     refresh_token = data.refresh_token;
                     setUI(true);
+                    autoRefresh();
                 }
             })
             .catch((error) => {
@@ -126,6 +144,7 @@
                     access_token = data.access_token;
                     refresh_token = data.refresh_token;
                     setUI(true);
+                    autoRefresh();
                 } else {
                     setUI(false);
                 }
