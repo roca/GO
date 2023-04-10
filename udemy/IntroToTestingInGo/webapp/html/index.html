@@ -62,7 +62,7 @@
 
 <script>
     // we stor our access token in memory - thie only safe place to store it
-    let access_oken = "";
+    let access_token = "";
     let refresh_token = "";
 
     // get references to UI elements
@@ -130,6 +130,26 @@
        
     })
 
+    userBtn.addEventListener("click",function() {
+        const myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        myHeaders.append("Authorization", "Bearer " + access_token);
+
+        const requestOptions = {
+            method: "GET",
+            headers: myHeaders,
+        }
+
+        fetch(`/users/1`, requestOptions)
+            .then((response) => response.json())
+            .then((data) => {
+                useerOutput.innerHTML = JSON.stringify(data, undefined, 4);
+            })
+            .catch((error) => {
+                useerOutput.innerHTML = "Log in first!";
+            });
+    })
+
     function refreshTokens() {
         // we'll send a get request which incdudes the refresh token in the header if it exists
         const requestOptions = {
@@ -162,7 +182,7 @@
             tokenDisplay.innerHTML = access_token;
             refreshTokenDisplay.innerHTML = refresh_token;
         } else {
-            tokenssDiv.classList.add("d-none");
+            tokensDiv.classList.add("d-none");
             loginForm.classList.remove("d-none");
             logoutBtn.classList.add("d-none");
             document.getElementById("password").value = "";
@@ -172,6 +192,19 @@
 
         }
     }
+
+    logoutBtn.addEventListener("click",function() {
+        access_token = "";
+        refresh_token = "";
+
+        fetch("/web/logout", {method: "GET"})
+            .then(response =>  {
+                setUI(false);
+            })
+            .catch((error) => {
+                 useerOutput.innerHTML = error;
+            });
+    })
 
 </script>
 
