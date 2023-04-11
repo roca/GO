@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 	"webapp/pkg/data"
 )
 
@@ -86,4 +87,63 @@ func Test_app_authRequired(t *testing.T) {
 		})
 	}
 
+}
+
+func Test_app_refreshUsingCookie(t *testing.T) {
+	testUser := data.User{
+		ID:        1,
+		FirstName: "Admin",
+		LastName:  "User",
+		Email:     "admin@example.com",
+	}
+	tokens, _ := app.generateTokenPair(&testUser)
+
+	testCookie := &http.Cookie{
+		Name:     "_Host-refresh_token",
+		Path:     "/",
+		Value:    tokens.RefreshToken,
+		Expires:  time.Now().Add(refreshTokenExpiry),
+		MaxAge:   int(refreshTokenExpiry.Seconds()),
+		SameSite: http.SameSiteStrictMode,
+		Domain:   "localhost",
+		HttpOnly: true,
+		Secure:   true,
+	}
+
+	badCookie := &http.Cookie{
+		Name:     "_Host-refresh_token",
+		Path:     "/",
+		Value:    "bad-token",
+		Expires:  time.Now().Add(refreshTokenExpiry),
+		MaxAge:   int(refreshTokenExpiry.Seconds()),
+		SameSite: http.SameSiteStrictMode,
+		Domain:   "localhost",
+		HttpOnly: true,
+		Secure:   true,
+	}
+
+	var tests = []struct {
+		name                string
+		addCookie           bool
+		cookie              *http.Cookie
+		expectedStatusCoder int
+	}{
+		{"valid cookie", true, testCookie, http.StatusOK},
+		{"invalid cookie", true, badCookie, http.StatusUnauthorized},
+		//{"no cookie", false, nil, http.StatusUnauthorized},
+	}
+
+	for _, e := range tests {
+		t.Run(e.name, func(t *testing.T) {
+			rr := httptest.NewRecorder()
+
+			req, _ := http.NewRequest("GET", "http://", nil)
+			if e.addCookie {
+				req.AddCookie(e.cookie)
+			}
+
+			handler := http.HandlerFunc(app.refreshUsingCookie)
+
+		})
+	}
 }
