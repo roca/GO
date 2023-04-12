@@ -123,14 +123,14 @@ func Test_app_refreshUsingCookie(t *testing.T) {
 	}
 
 	var tests = []struct {
-		name                string
-		addCookie           bool
-		cookie              *http.Cookie
-		expectedStatusCoder int
+		name               string
+		addCookie          bool
+		cookie             *http.Cookie
+		expectedStatusCode int
 	}{
 		{"valid cookie", true, testCookie, http.StatusOK},
-		{"invalid cookie", true, badCookie, http.StatusUnauthorized},
-		//{"no cookie", false, nil, http.StatusUnauthorized},
+		{"invalid cookie", true, badCookie, http.StatusBadRequest},
+		{"no cookie", false, nil, http.StatusUnauthorized},
 	}
 
 	for _, e := range tests {
@@ -143,7 +143,37 @@ func Test_app_refreshUsingCookie(t *testing.T) {
 			}
 
 			handler := http.HandlerFunc(app.refreshUsingCookie)
+			handler.ServeHTTP(rr, req)
+
+			if rr.Code != e.expectedStatusCode {
+				t.Errorf("%s: Expected status code %d, got %d", e.name, e.expectedStatusCode, rr.Code)
+			}
 
 		})
+	}
+}
+
+func Test_app_deleteRefreshCookie(t *testing.T) {
+	req, _ := http.NewRequest("GET", "/logout", nil)
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(app.deleteRefreshCookie)
+	handler.ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusAccepted {
+		t.Errorf("Expected status code %d, got %d", http.StatusAccepted, rr.Code)
+	}
+
+	foundCookie := false
+	for _, c := range rr.Result().Cookies() {
+		if c.Name == "_Host-refresh_token" {
+			foundCookie = true
+			if c.Expires.After(time.Now()) {
+				t.Errorf("Expected cookie to be expired, but it was not %v", c.Expires.UTC())
+			}
+		}
+	}
+
+	if !foundCookie {
+		t.Errorf("Expected to find cookie, but did not")
 	}
 }
