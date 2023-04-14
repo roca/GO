@@ -30,6 +30,7 @@ func (app *App) makeUI() (*widget.Label, *widget.Entry, *widget.Button) {
 	btn := widget.NewButton("Enter", func() {
 		app.output.SetText(entry.Text)
 	})
+	btn.Importance = widget.HighImportance
 
 	app.output = output
 
