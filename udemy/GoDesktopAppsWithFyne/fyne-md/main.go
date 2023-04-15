@@ -25,9 +25,11 @@ func main() {
 
 	// get the user interface
 	edit, preview := cfg.makeUI()
+	cfg.createMenuItems(win)
 
 	// set the content of the window
 	win.SetContent(container.NewHSplit(edit, preview))
+	
 
 	// show window and run app
 	win.Resize(fyne.Size{Width: 800, Height: 500})
@@ -47,4 +49,16 @@ func (app *config) makeUI() (*widget.Entry, *widget.RichText) {
 
 	// return widgets
 	return edit, preview
+}
+
+func (app *config) createMenuItems(win fyne.Window) {
+
+	openMenutItem := fyne.NewMenuItem("Open...", func() {})
+	saveMenutItem := fyne.NewMenuItem("Save", func() {})
+	saveAsMenutItem := fyne.NewMenuItem("Save As...", func() {})
+
+	menu := fyne.NewMenu("File", openMenutItem, saveMenutItem, saveAsMenutItem)
+
+	win.SetMainMenu(fyne.NewMainMenu(menu))
+	
 }
