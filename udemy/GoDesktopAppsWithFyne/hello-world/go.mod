@@ -1,4 +1,4 @@
-module fynehw
+module fynemw
 
 go 1.19
 
