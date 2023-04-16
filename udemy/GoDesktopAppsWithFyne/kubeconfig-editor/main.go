@@ -47,14 +47,16 @@ func main() {
 	w := a.NewWindow("Kubeconfig Editor")
 	w.Resize(fyne.NewSize(400, 400))
 
-	text := widget.NewRichTextWithText(string(data))
-	// treeMap := make(map[string][]string)
-	// treeMap["config"] = []string{config.ApiVersion, config.Kind}
+	//text := widget.NewRichTextWithText(string(data))
+	treeMap := make(map[string][]string)
 
-	// tree := widget.NewTreeWithStrings(treeMap)
+	tree := widget.NewTreeWithStrings(treeMap)
 
-	c := container.NewMax(container.NewScroll(text))
+	c := container.NewMax(container.NewScroll(tree))
 
+	treeMap["config"] = []string{"apiVersion: " + config.ApiVersion, "kind: " + config.Kind}
+	tree.Root = widget.TreeNodeID("config")
+	
 	w.SetContent(c)
 
 	w.ShowAndRun()
