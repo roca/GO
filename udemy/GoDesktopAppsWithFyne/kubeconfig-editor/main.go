@@ -3,25 +3,59 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
+	"io/ioutil"
 	"os"
 
-	"k8s.io/client-go/tools/clientcmd"
+	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/app"
+	"fyne.io/fyne/v2/widget"
+	"gopkg.in/yaml.v2"
 )
 
 var (
-	kubeconfig string
+	kubeConfigPath string
 )
 
 func main() {
-	defaultPath := fmt.Sprintf("%s/.kube/config",os.Getenv("HOME"))
-	flag.StringVar(&kubeconfig, "kubeconfig",  defaultPath, "Path to kube config file")
+	defaultPath := fmt.Sprintf("%s/.kube/config", os.Getenv("HOME"))
+	flag.StringVar(&kubeConfigPath, "kubeConfigPath", defaultPath, "Path to kube config file")
 	flag.Parse()
 
-	config, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
+	// Read the file
+	data, err := ioutil.ReadFile(kubeConfigPath)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
+		return
+	}
+	// fmt.Println(string(data))
+
+	var config kubeconfig
+	//var config map[string]interface{}
+
+	// Unmarshal the YAML data into the struct
+	err = yaml.Unmarshal(data, &config)
+	if err != nil {
+		fmt.Println(err)
+		return
 	}
 
+	// Print the data
 	fmt.Println(config)
+
+	a := app.New()
+	w := a.NewWindow("Kubeconfig Editor")
+	w.Resize(fyne.NewSize(400, 400))
+
+	text := widget.NewRichTextWithText(string(data))
+	// treeMap := make(map[string][]string)
+	// treeMap["config"] = []string{config.ApiVersion, config.Kind}
+
+	// tree := widget.NewTreeWithStrings(treeMap)
+
+	c := container.NewMax(container.NewScroll(text))
+
+	w.SetContent(c)
+
+	w.ShowAndRun()
 }
