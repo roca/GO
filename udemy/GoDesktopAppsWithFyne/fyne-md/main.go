@@ -110,7 +110,7 @@ func (app *config) openFunc(win fyne.Window) func() {
 func (app *config) saveFunc(win fyne.Window) func() {
 	return func() {
 		if app.CurrentFile != nil {
-			writer,err := storage.Writer(app.CurrentFile)
+			writer, err := storage.Writer(app.CurrentFile)
 			if err != nil {
 				dialog.ShowError(err, win)
 				return
