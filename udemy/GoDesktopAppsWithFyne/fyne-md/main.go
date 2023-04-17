@@ -108,12 +108,22 @@ func (app *config) openFunc(win fyne.Window) func() {
 }
 
 func (app *config) saveFunc(win fyne.Window) func() {
-	return func() {}
+	return func() {
+		if app.CurrentFile != nil {
+			writer,err := storage.Writer(app.CurrentFile)
+			if err != nil {
+				dialog.ShowError(err, win)
+				return
+			}
+			defer writer.Close()
+			writer.Write([]byte(app.EditWidget.Text))
+		}
+	}
 }
 
 func (app *config) saveAsFunc(win fyne.Window) func() {
 	return func() {
-		saveDiaglog := dialog.NewFileSave(func(writer fyne.URIWriteCloser, err error) {
+		saveAsDiaglog := dialog.NewFileSave(func(writer fyne.URIWriteCloser, err error) {
 			if err != nil {
 				dialog.ShowError(err, win)
 				return
@@ -136,8 +146,8 @@ func (app *config) saveAsFunc(win fyne.Window) func() {
 			win.SetTitle(win.Title() + ": " + app.CurrentFile.Name())
 			app.SaveMenuItem.Disabled = false
 		}, win)
-		saveDiaglog.SetFileName("Untitled.md")
-		saveDiaglog.SetFilter(filter)
-		saveDiaglog.Show()
+		saveAsDiaglog.SetFileName("Untitled.md")
+		saveAsDiaglog.SetFilter(filter)
+		saveAsDiaglog.Show()
 	}
 }
