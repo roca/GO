@@ -1,4 +1,0 @@
-*.o
-.vagrant
-*.log
-monitor-exec
