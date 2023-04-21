@@ -31,10 +31,13 @@ func main() {
 	// create a database repository using the Repo interface
 
 	// create and size a fyne window
-	myApp.MainWindow = myApp.App.NewWindow("GoldWatcher")
+	myApp.MainWindow = fyneApp.NewWindow("GoldWatcher")
 	myApp.MainWindow.Resize(fyne.NewSize(300, 200))
 	myApp.MainWindow.SetFixedSize(true)
 	myApp.MainWindow.CenterOnScreen()
+	myApp.MainWindow.SetMaster()
+
+	myApp.makeUI()
 
 	// show and run the application
 	myApp.MainWindow.ShowAndRun()
