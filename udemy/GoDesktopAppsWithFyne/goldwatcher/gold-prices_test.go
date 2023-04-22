@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-func Test_client(t *testing.T) {
+func TestGold_NewTestClient(t *testing.T) {
 
 	client := NewTestClient(func(req *http.Request) *http.Response {
 		return &http.Response{
