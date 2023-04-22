@@ -68,12 +68,16 @@ func (g *Gold) GetPrices() (*Price, error) {
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Printf("Reading body of the response: %v", err)
+		return nil, fmt.Errorf("error getting gold prices: %v", err)
+	}
 
 	gold := Gold{}
 	var previous, current, change float64
 	err = json.Unmarshal(body, &gold)
 	if err != nil {
-		log.Printf("error getting gold prices: %v", err)
+		log.Printf("error unmarshalling gold prices: %v", err)
 		return nil, fmt.Errorf("error getting gold prices: %v", err)
 	}
 
