@@ -7,6 +7,7 @@ import (
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
+	"fyne.io/fyne/v2/widget"
 )
 
 type Config struct {
@@ -15,6 +16,7 @@ type Config struct {
 	ErrorLog       *log.Logger
 	MainWindow     fyne.Window
 	PriceContainer *fyne.Container
+	ToolBar        *widget.Toolbar
 	HttpClient     *http.Client
 }
 
