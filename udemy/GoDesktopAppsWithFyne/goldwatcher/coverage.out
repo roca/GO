@@ -1,0 +1,19 @@
+mode: set
+goldwatcher/gold-prices.go:49.44,50.21 1 1
+goldwatcher/gold-prices.go:54.2,59.16 4 1
+goldwatcher/gold-prices.go:63.2,64.16 2 1
+goldwatcher/gold-prices.go:68.2,71.16 3 1
+goldwatcher/gold-prices.go:76.2,79.16 4 1
+goldwatcher/gold-prices.go:84.2,92.8 2 1
+goldwatcher/gold-prices.go:50.21,52.3 1 0
+goldwatcher/gold-prices.go:59.16,61.3 1 0
+goldwatcher/gold-prices.go:64.16,67.3 2 0
+goldwatcher/gold-prices.go:71.16,74.3 2 0
+goldwatcher/gold-prices.go:79.16,82.3 2 0
+goldwatcher/main.go:21.13,46.2 11 0
+goldwatcher/price-text.go:11.77,16.16 4 0
+goldwatcher/price-text.go:24.2,25.37 2 0
+goldwatcher/price-text.go:29.2,41.30 10 0
+goldwatcher/price-text.go:16.16,22.3 5 0
+goldwatcher/price-text.go:25.37,27.3 1 0
+goldwatcher/ui.go:5.29,25.2 5 0
