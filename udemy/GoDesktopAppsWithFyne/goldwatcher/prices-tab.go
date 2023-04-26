@@ -8,17 +8,44 @@ import (
 	"image/png"
 	"io/ioutil"
 	"os"
+	"strings"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
+	"fyne.io/fyne/v2/container"
 )
 
 // Image URL: https://goldprice.org/charts/gold_3d_b_o_usd_x.png
 
-func (app *Config) pricesTab() *fyne.Container {}
+func (app *Config) pricesTab() *fyne.Container {
+	chart := app.getChart()
+	charContainer := container.NewVBox(chart)
+	app.PriceChartContainer = charContainer
+
+	return charContainer
+}
 
 func (app *Config) getChart() *canvas.Image {
-	return nil
+	apiURL := fmt.Sprintf("https://goldprice.org/charts/gold_3d_b_o_%s_x.png", strings.ToLower(currency))
+	var img *canvas.Image
+
+	err := app.downloadFile(apiURL, "gold.png")
+	if err != nil {
+		// use bundled image
+		img = canvas.NewImageFromResource(resourceUnreachablePng)
+
+	} else {
+		img = canvas.NewImageFromFile("gold.png")
+	}
+
+	img.SetMinSize(fyne.Size{
+		Width:  400,
+		Height: 400,
+	})
+
+	img.FillMode = canvas.ImageFillContain
+
+	return img
 }
 
 func (app *Config) downloadFile(URL, filename string) error {

@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"image/color"
 
-	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/canvas"
 )
 
-func (app *Config) getGoldText() (*canvas.Text, *canvas.Text, *canvas.Text) {
+func (app *Config) getPriceText() (*canvas.Text, *canvas.Text, *canvas.Text) {
 	var g Gold
 	var open, current, change *canvas.Text
 	g.Client = app.HttpClient
