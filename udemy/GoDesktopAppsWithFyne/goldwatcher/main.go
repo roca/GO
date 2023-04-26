@@ -11,13 +11,14 @@ import (
 )
 
 type Config struct {
-	App            fyne.App
-	InfoLog        *log.Logger
-	ErrorLog       *log.Logger
-	MainWindow     fyne.Window
-	PriceContainer *fyne.Container
-	ToolBar        *widget.Toolbar
-	HttpClient     *http.Client
+	App                 fyne.App
+	InfoLog             *log.Logger
+	ErrorLog            *log.Logger
+	MainWindow          fyne.Window
+	PriceContainer      *fyne.Container
+	ToolBar             *widget.Toolbar
+	PriceChartContainer *fyne.Container
+	HttpClient          *http.Client
 }
 
 var myApp Config
