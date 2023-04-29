@@ -19,6 +19,7 @@ require (
 	github.com/disintegration/imaging v1.6.0 // indirect
 	github.com/ernesto-jimenez/gogen v0.0.0-20180125220232-d7d4131e6607 // indirect
 	github.com/gin-gonic/gin v1.6.3
+	github.com/glebarez/go-sqlite v1.21.1 // indirect
 	github.com/go-delve/delve v1.20.1 // indirect
 	github.com/go-gota/gota v0.10.1
 	github.com/go-martini/martini v0.0.0-20170121215854-22fa46961aab // indirect
