@@ -17,7 +17,7 @@ func TestMain(m *testing.M) {
 
 	db, err := sql.Open("sqlite", path)
 	if err != nil {
-		log.Println(err)
+		log.Fatal(err)
 	}
 	testRepo = NewSQLiteRepository(db)
 	os.Exit(m.Run())
