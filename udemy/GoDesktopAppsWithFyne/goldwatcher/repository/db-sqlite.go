@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"errors"
 	"time"
 )
 
@@ -66,6 +67,57 @@ func (repo *SQLiteRepository) AllHoldings() ([]Holdings, error) {
 	return holdings, nil
 }
 
-func (repo *SQLiteRepository) GetHoldingByID(id int) (*Holdings, error)
-func (repo *SQLiteRepository) UpdateHolding(id int64, updated Holdings) error
-func (repo *SQLiteRepository) DeleteHolding(id int64) error
+func (repo *SQLiteRepository) GetHoldingByID(id int64) (*Holdings, error) {
+	stmt := `SELECT id, amount, purchase_date, purchase_price FROM holdings WHERE id = ?`
+	row := repo.Conn.QueryRow(stmt, id)
+
+	var h Holdings
+	var unixTime int64
+	err := row.Scan(&h.ID, &h.Amount, &unixTime, &h.PurchasePrice)
+	if err != nil {
+		return nil, err
+	}
+	h.PurchaseDate = time.Unix(unixTime, 0)
+	return &h, nil
+}
+
+func (repo *SQLiteRepository) UpdateHolding(id int64, updated Holdings) error {
+	if id == 0 {
+		return errors.New("invalid id")
+	}
+
+	stmt := `UPDATE holdings SET amount = ?, purchase_date = ?, purchase_price = ? WHERE id = ?`
+	res, err := repo.Conn.Exec(stmt, updated.Amount, updated.PurchaseDate.Unix(), updated.PurchasePrice, id)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return errUpdateFailed
+	}
+
+	return nil
+}
+
+func (repo *SQLiteRepository) DeleteHolding(id int64) error {
+	stmt := `DELETE FROM holdings WHERE id = ?`
+	res, err := repo.Conn.Exec(stmt, id)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return errUpdateFailed
+	}
+	return nil
+}
