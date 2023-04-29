@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"errors"
 	"time"
+
+	_ "github.com/glebarez/go-sqlite"
 )
 
 type SQLiteRepository struct {
