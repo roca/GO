@@ -10,15 +10,26 @@ import (
 )
 
 var testRepo *SQLiteRepository
+var path = "./testdata/sql.db"
 
-func TestMain(m *testing.M) {
-	path := "./testdata/test.db"
-	_ = os.Remove(path)
-
+func setup() {
 	db, err := sql.Open("sqlite", path)
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	log.Println("setup complete")
+	
 	testRepo = NewSQLiteRepository(db)
-	os.Exit(m.Run())
+}
+
+func teardown() {
+	_ = os.Remove(path)
+}
+
+func TestMain(m *testing.M) {
+	setup()
+	code := m.Run()
+	teardown()
+	os.Exit(code)
 }
