@@ -18,8 +18,6 @@ func setup() {
 		log.Fatal(err)
 	}
 
-	log.Println("setup complete")
-	
 	testRepo = NewSQLiteRepository(db)
 }
 
