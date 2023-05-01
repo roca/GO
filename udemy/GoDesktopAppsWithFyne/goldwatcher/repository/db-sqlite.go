@@ -12,7 +12,7 @@ type SQLiteRepository struct {
 	Conn *sql.DB
 }
 
-func NewSQLiteRepository(db *sql.DB) *SQLiteRepository {
+func NewSQLiteRepository(db *sql.DB) Repository {
 	return &SQLiteRepository{Conn: db}
 }
 
