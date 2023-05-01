@@ -9,7 +9,7 @@ import (
 	_ "github.com/glebarez/go-sqlite"
 )
 
-var testRepo *SQLiteRepository
+var testRepo Repository
 var path = "./testdata/sql.db"
 
 func setup() {

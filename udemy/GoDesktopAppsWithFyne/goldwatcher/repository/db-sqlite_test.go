@@ -107,4 +107,9 @@ func TestSQLiteRepository_DeleteHolding(t *testing.T) {
 	if holding != nil {
 		t.Error("invalid non-existing holding returned: ", holding)
 	}
+
+	err = testRepo.DeleteHolding(0)
+	if err == nil {
+		t.Error("invalid non-existing holding id should return error")
+	}
 }
