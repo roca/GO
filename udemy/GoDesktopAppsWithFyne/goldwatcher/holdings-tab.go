@@ -6,6 +6,8 @@ import (
 	"strconv"
 
 	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 )
 
@@ -14,7 +16,35 @@ func (app *Config) holdingsTab() *fyne.Container {
 }
 
 func (app *Config) getholdingsTable() *widget.Table {
-	return nil
+	data := app.getHoldingsSlice()
+	t := widget.NewTable(
+		func() (int, int) {
+			return len(data), len(data[0])
+		},
+		func() fyne.CanvasObject {
+			ctr := container.NewVBox(widget.NewLabel(""))
+			return ctr
+		},
+		func(id widget.TableCellID, obj fyne.CanvasObject) {
+			if id.Col == (len(data[0])-1) && id.Row != 0 {
+				// last cell is a button
+				w := widget.NewButtonWithIcon("Delete", theme.DeleteIcon(), func() {
+					
+				})
+			} else {
+				// we're just putting in textual data
+				obj.(*fyne.Container).Objects = []fyne.CanvasObject{
+					widget.NewLabel(data[id.Row][id.Col].(string)),
+				}
+			}
+		})
+
+	colWidths := []float32{50, 200, 200, 200, 110}
+	for i, w := range colWidths {
+		t.SetColumnWidth(i, w)
+	}
+
+	return t
 }
 
 func (app *Config) getHoldingsSlice() [][]interface{} {
