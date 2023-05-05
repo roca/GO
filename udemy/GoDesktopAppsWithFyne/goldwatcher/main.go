@@ -23,6 +23,8 @@ type Config struct {
 	MainWindow          fyne.Window
 	PriceContainer      *fyne.Container
 	ToolBar             *widget.Toolbar
+	Holdings            [][]interface{}
+	HoldingsTable       *widget.Table
 	PriceChartContainer *fyne.Container
 	HttpClient          *http.Client
 }
