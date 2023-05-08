@@ -10,8 +10,8 @@ import (
 )
 
 const (
-	SeleniumLogPath = "/home/matija/go/src/github.com/matijakrajnik/rgb_go_selenium/selenium.log"
-	XGBLogPath      = "/home/matija/go/src/github.com/matijakrajnik/rgb_go_selenium/xgb.log"
+	SeleniumLogPath = pwd + "/selenium.log"
+	XGBLogPath      = pwd + "/xgb.log"
 )
 
 // StartSelenium starts Selenium server. Log output is saved to SeleniumLogPath file.
@@ -27,6 +27,8 @@ func StartSelenium() (*selenium.Service, error) {
 		selenium.ChromeDriver(chromeDriverPath), // Specify the path to ChromeDriver in order to use Chrome.
 		selenium.Output(logFile),                // Output debug information to selenium.log file.
 	}
+
+	log.Info().Str("seleniumPath", seleniumPath).Msg("Starting Selenium server.")
 
 	service, err := selenium.NewSeleniumService(seleniumPath, conf.Port, opts...)
 	if err != nil {

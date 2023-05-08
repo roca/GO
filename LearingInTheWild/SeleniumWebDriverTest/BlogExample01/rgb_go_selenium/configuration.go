@@ -26,9 +26,10 @@ const (
 	Firefox Browser = "firefox"
 
 	// Paths to necessarry binaries. Chenge these to match to binary locations on your machine.
-	seleniumPath     = "./downloads/selenium-server-4.9.0.jar"
-	geckoDriverPath  = "./geckodriver"
-	chromeDriverPath = "./chromedriver"
+	pwd              = "/Users/romelcampbell/GOCODE/LearingInTheWild/SeleniumWebDriverTest/BlogExample01"
+	seleniumPath     = pwd + "/downloads/selenium-server-4.9.0.jar"
+	geckoDriverPath  = pwd + "/geckodriver"
+	chromeDriverPath = pwd + "/chromedriver"
 
 	// Default timeout for WebDriver.
 	DefTimeout = 5 * time.Second
