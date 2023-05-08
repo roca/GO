@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/matijakrajnik/rgb_go_selenium"
+	. "rgb_go_selenium"
 
 	"github.com/BurntSushi/xgbutil"
 	"github.com/rs/zerolog/log"
