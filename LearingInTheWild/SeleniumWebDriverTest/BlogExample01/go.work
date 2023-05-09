@@ -1,6 +1,7 @@
 go 1.19
 
 use (
+	./excample01
 	./rgb_go_selenium
 	./user
 )
