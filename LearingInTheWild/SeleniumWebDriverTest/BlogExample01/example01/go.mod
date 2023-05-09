@@ -1,4 +1,4 @@
-module rgb_go_selenium
+module example01
 
 go 1.19
 

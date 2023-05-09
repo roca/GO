@@ -5,6 +5,7 @@ go 1.12
 require (
 	github.com/360EntSecGroup-Skylar/excelize v1.4.1 // indirect
 	github.com/99designs/gqlgen v0.11.3 // indirect
+	github.com/BurntSushi/xgbutil v0.0.0-20190907113008-ad855c713046 // indirect
 	github.com/JesusIslam/tldr v0.6.0 // indirect
 	github.com/Obaied/RAKE.Go v0.0.0-20191109090147-068a9e43b194 // indirect
 	github.com/Shopify/sarama v1.19.0
