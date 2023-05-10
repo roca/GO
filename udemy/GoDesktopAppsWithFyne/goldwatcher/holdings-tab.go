@@ -13,34 +13,42 @@ import (
 )
 
 func (app *Config) holdingsTab() *fyne.Container {
+	app.Holdings = app.getHoldingsSlice()
+
 	app.HoldingsTable = app.getholdingsTable()
 
-	holdingsContainer := container.NewVBox(app.HoldingsTable)
+	holdingsContainer := container.NewBorder(
+		nil,
+		nil,
+		nil,
+		nil,
+		container.NewAdaptiveGrid(1, app.HoldingsTable),
+	)
 
 	return holdingsContainer
 }
 
 func (app *Config) getholdingsTable() *widget.Table {
-	data := app.getHoldingsSlice()
-	app.Holdings = data
 
 	t := widget.NewTable(
 		func() (int, int) {
-			return len(data), len(data[0])
+			return len(app.Holdings), len(app.Holdings[0])
 		},
 		func() fyne.CanvasObject {
 			ctr := container.NewVBox(widget.NewLabel(""))
 			return ctr
 		},
 		func(i widget.TableCellID, obj fyne.CanvasObject) {
-			if i.Col == (len(data[0])-1) && i.Row != 0 {
+			if i.Col == (len(app.Holdings[0])-1) && i.Row != 0 {
 				// last cell is a button
 				w := widget.NewButtonWithIcon("Delete", theme.DeleteIcon(), func() {
 					dialog.ShowConfirm("Delete", "Are you sure you want to delete this holding?", func(deleted bool) {
-						id, _ := strconv.Atoi(data[i.Row][0].(string))
-						err := app.DB.DeleteHolding(int64(id))
-						if err != nil {
-							app.ErrorLog.Println(err)
+						if deleted {
+							id, _ := strconv.Atoi(app.Holdings[i.Row][0].(string))
+							err := app.DB.DeleteHolding(int64(id))
+							if err != nil {
+								app.ErrorLog.Println(err)
+							}
 						}
 						// refresh holdings table
 						app.refreshHoldingsTable()
@@ -51,7 +59,7 @@ func (app *Config) getholdingsTable() *widget.Table {
 			} else {
 				// we're just putting i textual data
 				obj.(*fyne.Container).Objects = []fyne.CanvasObject{
-					widget.NewLabel(data[i.Row][i.Col].(string)),
+					widget.NewLabel(app.Holdings[i.Row][i.Col].(string)),
 				}
 			}
 		})
