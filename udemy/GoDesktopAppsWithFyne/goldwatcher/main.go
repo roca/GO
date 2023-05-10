@@ -52,7 +52,7 @@ func main() {
 
 	// create and size a fyne window
 	myApp.MainWindow = fyneApp.NewWindow("GoldWatcher")
-	myApp.MainWindow.Resize(fyne.NewSize(770, 410))
+	myApp.MainWindow.Resize(fyne.NewSize(800, 410))
 	myApp.MainWindow.SetFixedSize(true)
 	myApp.MainWindow.CenterOnScreen()
 	myApp.MainWindow.SetMaster()
