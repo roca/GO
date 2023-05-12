@@ -24,7 +24,7 @@ type Repository interface {
 
 type Holdings struct {
 	ID            int64     `json:"id"`
-	Amount        float64   `json:"amount"`
+	Amount        int   `json:"amount"`
 	PurchaseDate  time.Time `json:"purchase_date"`
 	PurchasePrice int       `json:"purchase_price"`
 }

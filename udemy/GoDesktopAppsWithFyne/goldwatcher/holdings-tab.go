@@ -86,7 +86,7 @@ func (app *Config) getHoldingsSlice() [][]interface{} {
 	for _, h := range holdings {
 		var currentRow []interface{}
 		currentRow = append(currentRow, strconv.FormatInt(h.ID, 10))
-		currentRow = append(currentRow, fmt.Sprintf("%.2f", h.Amount))
+		currentRow = append(currentRow, fmt.Sprintf("%d", h.Amount))
 		currentRow = append(currentRow, fmt.Sprintf("%.2f", float32(h.PurchasePrice)/100))
 		currentRow = append(currentRow, h.PurchaseDate.Format("2006-01-02"))
 		// Last column is a button to delete the row

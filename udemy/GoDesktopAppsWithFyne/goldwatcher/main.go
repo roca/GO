@@ -27,6 +27,9 @@ type Config struct {
 	HoldingsTable       *widget.Table
 	PriceChartContainer *fyne.Container
 	HttpClient          *http.Client
+	AddHoldingsPurchaseAmountEntry *widget.Entry
+	AddHoldingsPurchaseDateEntry *widget.Entry
+	AddHoldingsPurchasePriceEntry *widget.Entry
 }
 
 func main() {
