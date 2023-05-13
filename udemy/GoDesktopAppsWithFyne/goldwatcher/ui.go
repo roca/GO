@@ -51,7 +51,7 @@ func (app *Config) makeUI() {
 }
 
 func (app *Config) refreshPriceContent() {
-	app.InfoLog.Println("Refreshing price content")
+	//app.InfoLog.Println("Refreshing price content")
 	open, current, change := app.getPriceText()
 	app.PriceContainer.Objects = []fyne.CanvasObject{open, current, change}
 	app.PriceContainer.Refresh()
