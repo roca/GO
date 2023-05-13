@@ -53,6 +53,8 @@ func main() {
 	// create a database repository using the Repo interface
 	myApp.setupDB(sqlDb)
 
+	currency = fyneApp.Preferences().StringWithFallback("currency", "USD")
+
 	// create and size a fyne window
 	myApp.MainWindow = fyneApp.NewWindow("GoldWatcher")
 	myApp.MainWindow.Resize(fyne.NewSize(800, 410))
@@ -74,7 +76,7 @@ func (app *Config) connectSQL() (*sql.DB, error) {
 	} else {
 		path = app.App.Storage().RootURI().Path() + "/sql.db"
 	}
-	app.InfoLog.Println("DB Path: ", path)
+	//app.InfoLog.Println("DB Path: ", path)
 
 	db, err := sql.Open("sqlite", path)
 	if err != nil {

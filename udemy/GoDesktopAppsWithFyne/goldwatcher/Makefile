@@ -1,4 +1,3 @@
-
 BINARY_NAME=GoldWatcher.app
 APP_NAME=GoldWatcher
 VERSION=1.0.1
