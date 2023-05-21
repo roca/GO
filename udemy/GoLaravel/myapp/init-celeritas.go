@@ -19,8 +19,9 @@ func initApplication() *application {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	cel.AppName = "myapp"
-	cel.Debug = true
+	cel.InfoLog.Println("Debug is set to", cel.Debug)
 
 	app := &application{App: cel}
 
