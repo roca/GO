@@ -3,6 +3,7 @@
 		"celeritas",
 		"godotenv",
 		"joho",
-		"Logggers"
+		"Logggers",
+		"tmpl"
 	]
 }
