@@ -1,6 +1,10 @@
 package data
 
-import "time"
+import (
+	"time"
+
+	up "github.com/upper/db/v4"
+)
 
 type User struct {
 	ID        int       `db:"id,omitempty"`
@@ -11,5 +15,11 @@ type User struct {
 	Password  string    `db:"password"`
 	CreatedAt time.Time `db:"created_at"`
 	UpdatedAt time.Time `db:"updated_at"`
-	Token Token `db:"-"`
+	Token     Token     `db:"-"`
 }
+
+func (u *User) Table() string {
+	return "users"
+}
+
+func (u *User) GetAll(condition up.Cond)
