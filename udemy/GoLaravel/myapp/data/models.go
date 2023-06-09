@@ -2,7 +2,6 @@ package data
 
 import (
 	"database/sql"
-	"fmt"
 	"os"
 
 	db2 "github.com/upper/db/v4"
@@ -16,6 +15,8 @@ var upper db2.Session
 type Models struct {
 	// any models inserted here ( and in the New function)
 	// are easily accessible from throughout the entire application
+	Users  User
+	Tokens Token
 }
 
 func New(databasePool *sql.DB) Models {
@@ -28,14 +29,19 @@ func New(databasePool *sql.DB) Models {
 		upper, _ = postgresql.New(db)
 	}
 
-	return Models{}
+	return Models{
+		Users:  User{},
+		Tokens: Token{},
+	}
 }
 
-func getInsertID(i db2.ID) int {
+func getInsertedID(i db2.ID) int {
 	switch v := i.(type) {
 	case int64:
 		return int(v)
+	case int:
+		return v
 	default:
-		return i.(int)
+		return v.(int)
 	}
 }

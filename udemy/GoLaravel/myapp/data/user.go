@@ -1,6 +1,7 @@
 package data
 
 import (
+	"errors"
 	"time"
 
 	up "github.com/upper/db/v4"
@@ -125,7 +126,7 @@ func (u *User) Insert(theUser User) (int, error) {
 		return 0, err
 	}
 
-	id := getInsertID(res.ID)
+	id := getInsertedID(res.ID())
 
 	return id, nil
 
@@ -149,7 +150,7 @@ func (u *User) ResetPassword(id int, password string) error {
 		return err
 	}
 
-	theUser,err := u.Get(id)
+	theUser, err := u.Get(id)
 	if err != nil {
 		return err
 	}
@@ -161,4 +162,17 @@ func (u *User) ResetPassword(id int, password string) error {
 	}
 
 	return nil
+}
+
+func (u *User) PasswordMatches(plainText string) (bool, error) {
+	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(plainText))
+	if err != nil {
+		switch {
+		case errors.Is(err, bcrypt.ErrMismatchedHashAndPassword):
+			return false, nil
+		default:
+			return false, err
+		}
+	}
+	return true, nil
 }
