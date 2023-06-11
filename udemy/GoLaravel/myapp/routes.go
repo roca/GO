@@ -36,6 +36,19 @@ func (a *application) routes() *chi.Mux {
 
 	})
 
+	a.App.Routes.Get("/get-all-users", func(w http.ResponseWriter, r *http.Request) {
+		users,err := a.Models.Users.GetAll()
+		if err != nil {
+			a.App.ErrorLog.Println(err)
+			return
+		}
+
+		for _, u := range users {
+			fmt.Fprintf(w, "%s %s\n", u.FirstName, u.LastName)
+		}
+
+	})
+
 	// static routes
 	fileServer := http.FileServer(http.Dir("./public"))
 	a.App.Routes.Handle("/public/*", http.StripPrefix("/public", fileServer))
