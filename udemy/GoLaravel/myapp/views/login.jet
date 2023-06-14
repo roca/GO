@@ -1,0 +1,29 @@
+{{extends "./layouts/base.jet"}}
+
+{{block browserTitle()}}
+Login
+{{end}}
+
+{{block css()}} {{end}}
+
+
+{{block pageContent()}}
+        <h2 class="mt-5 text-center">Login</h2>
+
+	<h2>
+
+	<form method="post" action="/users/login"
+		name="login-form"
+		class="d-block needs-validation"
+		auotcomplete="off" novalidation="">
+
+		<input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+
+		<div class="mb-3">
+		</div>
+
+		<button type="submit" class="btn btn-primary">Submit</button>
+	</form>
+{{end}}
+
+{{block js()}} {{end}}
