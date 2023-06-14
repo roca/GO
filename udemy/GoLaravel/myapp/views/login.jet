@@ -20,9 +20,18 @@ Login
 		<input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
 
 		<div class="mb-3">
+	            <label for="email" class="form-label">Email</label>
+		    <input type="email"  id="email" name="email" required="" auto-complete="email-new" class="form-control">
 		</div>
 
-		<button type="submit" class="btn btn-primary">Submit</button>
+		<div class="mb-3">
+	            <label for="password" class="form-label">Passord</label>
+		    <input type="password"  id="password" name="password" required="" auto-complete="password-new" class="form-control">
+		</div>
+
+		<hr>
+
+		<a href="javascript:void(0)" class="btn btn-primary" onclick="val()">Login</a>
 	</form>
 {{end}}
 
