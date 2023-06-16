@@ -36,6 +36,18 @@ func TestRun(t *testing.T) {
 		{name: "RunFailOperation", col: 2, op: "invalid", exp: "",
 			files:  []string{"./testdata/example.csv"},
 			expErr: ErrInvalidOperation},
+		{name: "RunMinFile", col: 3, op: "min", exp: "218\n",
+			files:  []string{"./testdata/example.csv"},
+			expErr: nil},
+		{name: "RunMinMultiFiles", col: 3, op: "min", exp: "218\n",
+			files:  []string{"./testdata/example.csv", "./testdata/example2.csv"},
+			expErr: nil},
+		{name: "RunMaxFile", col: 3, op: "max", exp: "238\n",
+			files:  []string{"./testdata/example.csv"},
+			expErr: nil},
+		{name: "RunMaxMultiFiles", col: 3, op: "max", exp: "238\n",
+			files:  []string{"./testdata/example.csv", "./testdata/example2.csv"},
+			expErr: nil},
 	}
 
 	for _, tc := range testCases {
@@ -64,15 +76,64 @@ func TestRun(t *testing.T) {
 	}
 }
 
-func BenchmarkRun(b *testing.B) {
+func BenchmarkRunAvg(b *testing.B) {
 	filenames , err := filepath.Glob("./testdata/benchmark/*.csv")
 	if err != nil {
 		b.Fatal(err)
 	}
 
+
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {	
 		if err := run(filenames, "avg", 2, ioutil.Discard); err != nil {
+			b.Error(err)
+		}
+	}
+
+}
+
+func BenchmarkRunSum(b *testing.B) {
+	filenames , err := filepath.Glob("./testdata/benchmark/*.csv")
+	if err != nil {
+		b.Fatal(err)
+	}
+
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {	
+		if err := run(filenames, "sum", 2, ioutil.Discard); err != nil {
+			b.Error(err)
+		}
+	}
+
+}
+
+func BenchmarkRunMin(b *testing.B) {
+	filenames , err := filepath.Glob("./testdata/benchmark/*.csv")
+	if err != nil {
+		b.Fatal(err)
+	}
+
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {	
+		if err := run(filenames, "min", 2, ioutil.Discard); err != nil {
+			b.Error(err)
+		}
+	}
+
+}
+
+func BenchmarkRunMax(b *testing.B) {
+	filenames , err := filepath.Glob("./testdata/benchmark/*.csv")
+	if err != nil {
+		b.Fatal(err)
+	}
+
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {	
+		if err := run(filenames, "max", 2, ioutil.Discard); err != nil {
 			b.Error(err)
 		}
 	}

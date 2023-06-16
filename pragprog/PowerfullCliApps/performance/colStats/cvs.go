@@ -4,10 +4,38 @@ import (
 	"encoding/csv"
 	"fmt"
 	"io"
+	"math"
 	"strconv"
 )
 
 type statsFunc func([]float64) float64
+
+func min(data []float64) float64 {
+	var min float64
+
+	if len(data) != 0 {
+		min = data[0]
+	}
+	for _, v := range data {
+		min = math.Min(min,v)
+	}
+
+	return min
+}
+
+func max(data []float64) float64 {
+	var max float64
+
+	if len(data) != 0 {
+		max = data[0]
+	}
+	for _, v := range data {
+		max = math.Max(max,v)
+	}
+
+	return max
+}
+
 
 func sum(data []float64) float64 {
 	var sum float64
