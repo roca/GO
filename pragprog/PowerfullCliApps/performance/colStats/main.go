@@ -35,6 +35,10 @@ func run(filenames []string, op string, column int, out io.Writer) error {
 		opFunc = sum
 	case "avg":
 		opFunc = avg
+	case "min":
+		opFunc = min
+	case "max":
+		opFunc = max
 	default:
 		return fmt.Errorf("%w: %s", ErrInvalidOperation, op)
 	}
