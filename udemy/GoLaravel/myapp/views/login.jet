@@ -13,20 +13,21 @@ Login
 	<h2>
 
 	<form method="post" action="/users/login"
+		id="login-form"
 		name="login-form"
 		class="d-block needs-validation"
-		auotcomplete="off" novalidation="">
+		autocomplete="off" novalidation="">
 
 		<input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
 
 		<div class="mb-3">
 	            <label for="email" class="form-label">Email</label>
-		    <input type="email"  id="email" name="email" required="" auto-complete="email-new" class="form-control">
+		    <input type="email"  id="email" name="email" required="" autocomplete="email-new" class="form-control">
 		</div>
 
 		<div class="mb-3">
 	            <label for="password" class="form-label">Passord</label>
-		    <input type="password"  id="password" name="password" required="" auto-complete="password-new" class="form-control">
+		    <input type="password"  id="password" name="password" required="" autocomplete="password-new" class="form-control">
 		</div>
 
 		<hr>
@@ -51,8 +52,13 @@ function val() {
 	let form = document.getElementById("login-form");
 	if (form.checkValidity()  === false) {
 		this.event.preventDefault();
-		this.event.stopP
+		this.event.stopPropagation();
+		form.classList.add('was-validated');
+		return;
 	}
+
+	form.classList.add('was-validated');
+	form.submit();
 }
 </script>
 
