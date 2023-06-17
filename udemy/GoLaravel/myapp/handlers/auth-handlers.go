@@ -37,4 +37,8 @@ func (h *Handlers) PostUserLogin(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Invalid password"))
 		return
 	}
+
+	h.App.Session.Put(r.Context(), "userID", user.ID)
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
