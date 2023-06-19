@@ -83,7 +83,7 @@ func (u *User) setToken() error {
 
 	collection := upper.Collection(token.Table())
 	err := collection.
-		Find(up.Cond{"user_id =": u.ID, "expiry <": time.Now()}).
+		Find(up.Cond{"user_id =": u.ID, "expiry >": time.Now()}).
 		OrderBy("created_at desc").
 		One(&token)
 	if err != nil {
