@@ -1,6 +1,9 @@
 package data
 
-import "time"
+import (
+	"time"
+	up "github.com/upper/db/v4"
+)
 
 type Token struct {
 	ID        int       `db:"id" json:"id"`
@@ -16,4 +19,33 @@ type Token struct {
 
 func (t *Token) Table() string {
 	return "tokens"
+}
+
+func (t *Token) GetUserForToken(token string) (*User, error) {
+	var u User
+	var theToken Token
+
+	collection := upper.Collection(t.Table())
+	err := collection.
+		Find(up.Cond{"token =": token}).
+		One(&theToken)
+	if err != nil {
+		if err != up.ErrNilRecord && err != up.ErrNoMoreRows {
+			return nil, err
+		}
+	}
+
+	collection = upper.Collection(u.Table())
+	err = collection.
+		Find(up.Cond{"id =": theToken.UserID}).
+		One(&u)
+	if err != nil {
+		if err != up.ErrNilRecord && err != up.ErrNoMoreRows {
+			return nil, err
+		}
+	}
+
+	u.Token = theToken
+
+	return &u, nil
 }
