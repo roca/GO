@@ -4,6 +4,9 @@ import (
 	"crypto/rand"
 	"crypto/sha256"
 	"encoding/base32"
+	"errors"
+	"net/http"
+	"strings"
 	"time"
 
 	up "github.com/upper/db/v4"
@@ -170,4 +173,40 @@ func (t *Token) GenerateToken(userID int, ttl time.Duration) (*Token, error) {
 	token.Hash = hash[:]
 
 	return &token, nil
+}
+
+// AuthenticateToken takes a request and returns a user if the token is valid
+// or an error if it is not
+func (t *Token) AuthenticateToken(r *http.Request) (*User, error) {
+	authorizationHeader := r.Header.Get("Authorization")
+	if authorizationHeader == "" {
+		return nil, errors.New("Authorization header required")
+	}
+
+	headerParts := strings.Split(authorizationHeader, " ")
+	if len(headerParts) != 2 || headerParts[0] != "Bearer" {
+		return nil, errors.New("Authorization header required")
+	}
+
+	tokenString := headerParts[1]
+
+	if len(tokenString) != 26 {
+		return nil, errors.New("Authorization header required")
+	}
+
+	token, err := t.GetByToken(tokenString)
+	if err != nil {
+		return nil, errors.New("No matching token found")
+	}
+
+	if token.Expires.Before(time.Now()) {
+		return nil, errors.New("Token expired")
+	}
+
+	user, err := token.GetUserForToken(tokenString)
+	if err != nil {
+		return nil, errors.New("No matching user found")
+	}
+
+	return user, nil
 }
