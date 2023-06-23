@@ -39,6 +39,8 @@ func getInsertedID(i db2.ID) int {
 	switch v := i.(type) {
 	case int64:
 		return int(v)
+	case int32:
+		return int(v)
 	case int:
 		return v
 	default:
