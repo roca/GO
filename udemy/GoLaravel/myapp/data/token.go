@@ -194,19 +194,38 @@ func (t *Token) AuthenticateToken(r *http.Request) (*User, error) {
 		return nil, errors.New("Authorization header required")
 	}
 
-	token, err := t.GetByToken(tokenString)
+	tkn, err := t.GetByToken(tokenString)
 	if err != nil {
 		return nil, errors.New("No matching token found")
 	}
 
-	if token.Expires.Before(time.Now()) {
+	if tkn.Expires.Before(time.Now()) {
 		return nil, errors.New("Token expired")
 	}
 
-	user, err := token.GetUserForToken(tokenString)
+	user, err := t.GetUserForToken(tokenString)
 	if err != nil {
 		return nil, errors.New("No matching user found")
 	}
 
 	return user, nil
+}
+
+// ValidToken
+
+func (t *Token) ValidToken(token string) (bool, error) {
+	user, err := t.GetUserForToken(token)
+	if err != nil {
+		return false, errors.New("No matching user found")
+	}
+
+	if user.Token.PlainText == "" {
+		return false, errors.New("No matching token found")
+	}
+
+	if user.Token.Expires.Before(time.Now()) {
+		return false, errors.New("Token expired")
+	}
+
+	return true, nil
 }
