@@ -21,7 +21,7 @@ type Models struct {
 
 func New(databasePool *sql.DB) Models {
 	db = databasePool
-
+	
 	if os.Getenv("DATABASE_TYPE") == "mysql " || os.Getenv("DATABASE_TYPE") == "mariadb" {
 		// TODO: add mysql models
 		upper, _ = mysql.New(db)
