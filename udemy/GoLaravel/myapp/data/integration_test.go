@@ -1,9 +1,15 @@
 //go:build integration
 
+// run test with this command: go test . --tags integration --count=1
+
 package data
 
 import (
 	"database/sql"
+	"fmt"
+	"io/ioutil"
+	"log"
+	"os"
 	"testing"
 
 	"github.com/ory/dockertest/v3"
@@ -32,7 +38,7 @@ var testDB *sql.DB
 var resourse *dockertest.Resource
 var pool *dockertest.Pool
 
-func TestMain(m *testing.M) {
+func setup() {
 	os.Setenv("DATABASE_TYPE", "postgres")
 
 	p, err := dockertest.NewPool("")
@@ -42,7 +48,7 @@ func TestMain(m *testing.M) {
 
 	pool = p
 
-	opts := dokcertest.RunOptions{
+	opts := dockertest.RunOptions{
 		Repository: "postgres",
 		Tag:        "13.4",
 		Env: []string{
@@ -58,9 +64,9 @@ func TestMain(m *testing.M) {
 		},
 	}
 
-	ressourse, err = pool.RunWithOptions(opts)
+	resourse, err = pool.RunWithOptions(&opts)
 	if err != nil {
-		_ = pool.Purge(ressourse)
+		_ = pool.Purge(resourse)
 		log.Fatalf("Could not start resource: %s", err)
 	}
 
@@ -73,7 +79,52 @@ func TestMain(m *testing.M) {
 
 		return testDB.Ping()
 	}); err != nil {
-		_ = pool.Purge(ressourse)
+		_ = pool.Purge(resourse)
 		log.Fatalf("Could not connect to docker: %s", err)
+	}
+
+	// Create tables
+	err = createTables(testDB)
+	if err != nil {
+		_ = pool.Purge(resourse)
+		log.Fatalf("Could not create tables: %s", err)
+	}
+
+	models = New(testDB)
+
+	return
+}
+
+func createTables(db *sql.DB) error {
+	// Read SQl text from file
+	bytes, err := ioutil.ReadFile("./users.sql")
+	if err != nil {
+		return fmt.Errorf("Could  not read users.sql file: %s", err)
+	}
+
+	// Execute SQL text string
+	_, err = db.Exec(string(bytes))
+	if err != nil {
+		return fmt.Errorf("Could not create tables: %s", err)
+	}
+
+	return nil
+}
+
+func teardown() {
+	return
+}
+
+func TestMain(m *testing.M) {
+	setup()
+	code := m.Run()
+	teardown()
+	os.Exit(code)
+}
+
+func TestUser_Table(t *testing.T) {
+	s := models.Users.Table()
+	if s != "users" {
+		t.Errorf("Wrong table name returned. Expected 'users', got '%s'", s)
 	}
 }
