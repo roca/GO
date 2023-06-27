@@ -14,6 +14,10 @@ import (
 
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
+
+	_ "github.com/jackc/pgconn"
+	_ "github.com/jackc/pgx/v4"
+	_ "github.com/jackc/pgx/v4/stdlib"
 )
 
 var (
@@ -72,8 +76,9 @@ func setup() {
 
 	if err := pool.Retry(func() error {
 		var err error
-		testDB, err = sql.Open("postgres", fmt.Sprintf(dsn, host, port, user, password, dbName))
+		testDB, err = sql.Open("pgx", fmt.Sprintf(dsn, host, port, user, password, dbName))
 		if err != nil {
+			log.Println("Error:", err)
 			return err
 		}
 
