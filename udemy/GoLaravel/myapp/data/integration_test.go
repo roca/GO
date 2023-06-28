@@ -117,6 +117,10 @@ func createTables(db *sql.DB) error {
 }
 
 func teardown() {
+	err := pool.Purge(resourse)
+	if err != nil {
+		log.Fatalf("Could not purge resource: %s", err)
+	}
 	return
 }
 
@@ -133,3 +137,5 @@ func TestUser_Table(t *testing.T) {
 		t.Errorf("Wrong table name returned. Expected 'users', got '%s'", s)
 	}
 }
+
+func TestUser_Insert(t *test.T) {}
