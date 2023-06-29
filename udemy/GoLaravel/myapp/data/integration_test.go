@@ -138,4 +138,27 @@ func TestUser_Table(t *testing.T) {
 	}
 }
 
-func TestUser_Insert(t *test.T) {}
+func TestUser_Insert(t *testing.T) {
+	id, err := models.Users.Insert(dummtUser)
+	if err != nil {
+		t.Errorf("Error inserting user: %s", err)
+	}
+
+	if id == 0 {
+		t.Errorf("No id returned, Zero id returned")
+	}
+}
+
+// Test Geting a User
+func TestUser_Get(t *testing.T) {
+	// Get the user
+	id := 1
+	user, err := models.Users.Get(id)
+	if err != nil {
+		t.Errorf("Error getting user: %s", err)
+	}
+
+	if user.ID != id {
+		t.Errorf("Wrong user returned. Expected id %d, got %d", id, user.ID)
+	}
+}
