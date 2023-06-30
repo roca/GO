@@ -116,6 +116,22 @@ func createTables(db *sql.DB) error {
 	return nil
 }
 
+func truncateTables(db *sql.DB) error {
+	// Read SQl text from file
+	bytes, err := ioutil.ReadFile("./truncate.sql")
+	if err != nil {
+		return fmt.Errorf("Could  not read truncate.sql file: %s", err)
+	}
+
+	// Execute SQL text string
+	_, err = db.Exec(string(bytes))
+	if err != nil {
+		return fmt.Errorf("Could not truncate tables: %s", err)
+	}
+
+	return nil
+}
+
 func teardown() {
 	err := pool.Purge(resourse)
 	if err != nil {
@@ -139,6 +155,12 @@ func TestUser_Table(t *testing.T) {
 }
 
 func TestUser_Insert(t *testing.T) {
+	defer func () { // Truncate tables after test
+		err := truncateTables(testDB)
+		if err != nil {
+			t.Errorf("Error truncating tables: %s", err)
+		}
+	}()
 	id, err := models.Users.Insert(dummyUser)
 	if err != nil {
 		t.Errorf("Error inserting user: %s", err)
@@ -151,11 +173,16 @@ func TestUser_Insert(t *testing.T) {
 
 // Test getting a User
 func TestUser_Get(t *testing.T) {
-	// id, err := models.Users.Insert(dummyUser)
-	// if err != nil {
-	// 	t.Errorf("Error inserting user: %s", err)
-	// }
-	id := 1
+	defer func () { // Truncate tables after test
+		err := truncateTables(testDB)
+		if err != nil {
+			t.Errorf("Error truncating tables: %s", err)
+		}
+	}()
+	id, err := models.Users.Insert(dummyUser)
+	if err != nil {
+		t.Errorf("Error inserting user: %s", err)
+	}
 	user, err := models.Users.Get(id)
 	if err != nil {
 		t.Errorf("Error getting user: %s", err)
@@ -168,10 +195,16 @@ func TestUser_Get(t *testing.T) {
 
 // Test getting all users
 func TestUser_GetAll(t *testing.T) {
-	// _, err := models.Users.Insert(dummyUser)
-	// if err != nil {
-	// 	t.Errorf("Error inserting user: %s", err)
-	// }
+	defer func () { // Truncate tables after test
+		err := truncateTables(testDB)
+		if err != nil {
+			t.Errorf("Error truncating tables: %s", err)
+		}
+	}()
+	_, err := models.Users.Insert(dummyUser)
+	if err != nil {
+		t.Errorf("Error inserting user: %s", err)
+	}
 	users, err := models.Users.GetAll()
 	if err != nil {
 		t.Errorf("Error getting users: %s", err)
@@ -184,10 +217,16 @@ func TestUser_GetAll(t *testing.T) {
 
 // Test getting a user by email
 func TestUser_GetByEmail(t *testing.T) {
-	// _, err := models.Users.Insert(dummyUser)
-	// if err != nil {
-	// 	t.Errorf("Error inserting user: %s", err)
-	// }
+	defer func (){ // Truncate tables after test
+		err := truncateTables(testDB)
+		if err != nil {
+			t.Errorf("Error truncating tables: %s", err)
+		}
+	}()
+	_, err := models.Users.Insert(dummyUser)
+	if err != nil {
+		t.Errorf("Error inserting user: %s", err)
+	}
 	user, err := models.Users.GetByEmail(dummyUser.Email)
 	if err != nil {
 		t.Errorf("Error getting user: %s", err)
@@ -201,10 +240,16 @@ func TestUser_GetByEmail(t *testing.T) {
 
 // Test updating a user
 func TestUser_Update(t *testing.T) {
-	// _, err := models.Users.Insert(dummyUser)
-	// if err != nil {
-	// 	t.Errorf("Error inserting user: %s", err)
-	// }
+	defer func () { // Truncate tables after test
+		err := truncateTables(testDB)
+		if err != nil {
+			t.Errorf("Error truncating tables: %s", err)
+		}
+	}()
+	_, err := models.Users.Insert(dummyUser)
+	if err != nil {
+		t.Errorf("Error inserting user: %s", err)
+	}
 	user, err := models.Users.GetByEmail(dummyUser.Email)
 	if err != nil {
 		t.Errorf("Error getting user: %s", err)
