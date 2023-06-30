@@ -29,7 +29,7 @@ var (
 	dsn      = "host=%s port=%s user=%s password=%s dbname=%s sslmode=disable timezone=UTC connect_timeout=5"
 )
 
-var dummtUser = User{
+var dummyUser = User{
 	FirstName: "Some",
 	LastName:  "Guy",
 	Email:     "me@here.com",
@@ -139,7 +139,7 @@ func TestUser_Table(t *testing.T) {
 }
 
 func TestUser_Insert(t *testing.T) {
-	id, err := models.Users.Insert(dummtUser)
+	id, err := models.Users.Insert(dummyUser)
 	if err != nil {
 		t.Errorf("Error inserting user: %s", err)
 	}
@@ -149,9 +149,12 @@ func TestUser_Insert(t *testing.T) {
 	}
 }
 
-// Test Geting a User
+// Test getting a User
 func TestUser_Get(t *testing.T) {
-	// Get the user
+	// id, err := models.Users.Insert(dummyUser)
+	// if err != nil {
+	// 	t.Errorf("Error inserting user: %s", err)
+	// }
 	id := 1
 	user, err := models.Users.Get(id)
 	if err != nil {
@@ -162,3 +165,64 @@ func TestUser_Get(t *testing.T) {
 		t.Errorf("Wrong user returned. Expected id %d, got %d", id, user.ID)
 	}
 }
+
+// Test getting all users
+func TestUser_GetAll(t *testing.T) {
+	// _, err := models.Users.Insert(dummyUser)
+	// if err != nil {
+	// 	t.Errorf("Error inserting user: %s", err)
+	// }
+	users, err := models.Users.GetAll()
+	if err != nil {
+		t.Errorf("Error getting users: %s", err)
+	}
+
+	if len(users) != 1 {
+		t.Errorf("Wrong number of users returned. Expected 1, got %d", len(users))
+	}
+}
+
+// Test getting a user by email
+func TestUser_GetByEmail(t *testing.T) {
+	// _, err := models.Users.Insert(dummyUser)
+	// if err != nil {
+	// 	t.Errorf("Error inserting user: %s", err)
+	// }
+	user, err := models.Users.GetByEmail(dummyUser.Email)
+	if err != nil {
+		t.Errorf("Error getting user: %s", err)
+	}
+
+	if user.Email != dummyUser.Email {
+		t.Errorf("Wrong user returned. Expected email %s, got %s", dummyUser.Email, user.Email)
+	}
+}
+
+
+// Test updating a user
+func TestUser_Update(t *testing.T) {
+	// _, err := models.Users.Insert(dummyUser)
+	// if err != nil {
+	// 	t.Errorf("Error inserting user: %s", err)
+	// }
+	user, err := models.Users.GetByEmail(dummyUser.Email)
+	if err != nil {
+		t.Errorf("Error getting user: %s", err)
+	}
+
+	user.LastName = "Smith"
+	err = user.Update(*user)
+	if err != nil {
+		t.Errorf("Error updating user: %s", err)
+	}
+
+	user, err = models.Users.GetByEmail(dummyUser.Email)
+	if err != nil {
+		t.Errorf("Error getting user: %s", err)
+	}
+
+	if user.LastName != "Smith" {
+		t.Errorf("User LastName not updated. Expected last name 'Smith', got '%s'", user.LastName)
+	}
+}
+
