@@ -271,3 +271,39 @@ func TestUser_Update(t *testing.T) {
 	}
 }
 
+// Test that password matches
+func TestUser_PasswordMatches(t *testing.T) {
+	defer func () { // Truncate tables after test
+		err := truncateTables(testDB)
+		if err != nil {
+			t.Errorf("Error truncating tables: %s", err)
+		}
+	}()
+	_, err := models.Users.Insert(dummyUser)
+	if err != nil {
+		t.Errorf("Error inserting user: %s", err)
+	}
+	user, err := models.Users.GetByEmail(dummyUser.Email)
+	if err != nil {
+		t.Errorf("Error getting user: %s", err)
+	}
+
+	matches, err := user.PasswordMatches(dummyUser.Password)
+	if err != nil {
+		t.Errorf("Error matching password: %s", err)
+	}
+
+	if !matches {
+		t.Errorf("Password does not match")
+	}
+
+	matches, err = user.PasswordMatches("wrongpassword")
+	if err != nil {
+		t.Errorf("Error matching password: %s", err)
+	}
+
+	if matches {
+		t.Errorf("Password matches")
+	}
+}
+
