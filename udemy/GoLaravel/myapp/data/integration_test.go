@@ -11,6 +11,7 @@ import (
 	"log"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
@@ -155,7 +156,7 @@ func TestUser_Table(t *testing.T) {
 }
 
 func TestUser_Insert(t *testing.T) {
-	defer func () { // Truncate tables after test
+	defer func() { // Truncate tables after test
 		err := truncateTables(testDB)
 		if err != nil {
 			t.Errorf("Error truncating tables: %s", err)
@@ -173,7 +174,7 @@ func TestUser_Insert(t *testing.T) {
 
 // Test getting a User
 func TestUser_Get(t *testing.T) {
-	defer func () { // Truncate tables after test
+	defer func() { // Truncate tables after test
 		err := truncateTables(testDB)
 		if err != nil {
 			t.Errorf("Error truncating tables: %s", err)
@@ -195,7 +196,7 @@ func TestUser_Get(t *testing.T) {
 
 // Test getting all users
 func TestUser_GetAll(t *testing.T) {
-	defer func () { // Truncate tables after test
+	defer func() { // Truncate tables after test
 		err := truncateTables(testDB)
 		if err != nil {
 			t.Errorf("Error truncating tables: %s", err)
@@ -217,7 +218,7 @@ func TestUser_GetAll(t *testing.T) {
 
 // Test getting a user by email
 func TestUser_GetByEmail(t *testing.T) {
-	defer func (){ // Truncate tables after test
+	defer func() { // Truncate tables after test
 		err := truncateTables(testDB)
 		if err != nil {
 			t.Errorf("Error truncating tables: %s", err)
@@ -237,10 +238,9 @@ func TestUser_GetByEmail(t *testing.T) {
 	}
 }
 
-
 // Test updating a user
 func TestUser_Update(t *testing.T) {
-	defer func () { // Truncate tables after test
+	defer func() { // Truncate tables after test
 		err := truncateTables(testDB)
 		if err != nil {
 			t.Errorf("Error truncating tables: %s", err)
@@ -273,7 +273,7 @@ func TestUser_Update(t *testing.T) {
 
 // Test that password matches
 func TestUser_PasswordMatches(t *testing.T) {
-	defer func () { // Truncate tables after test
+	defer func() { // Truncate tables after test
 		err := truncateTables(testDB)
 		if err != nil {
 			t.Errorf("Error truncating tables: %s", err)
@@ -307,3 +307,93 @@ func TestUser_PasswordMatches(t *testing.T) {
 	}
 }
 
+// Test resetting the users password
+func TestUser_ResetPassword(t *testing.T) {
+	defer func() { // Truncate tables after test
+		err := truncateTables(testDB)
+		if err != nil {
+			t.Errorf("Error truncating tables: %s", err)
+		}
+	}()
+	id, err := models.Users.Insert(dummyUser)
+	if err != nil {
+		t.Errorf("Error inserting user: %s", err)
+	}
+
+	err = models.Users.ResetPassword(id, "newpassword")
+	if err != nil {
+		t.Errorf("Error resetting password: %s", err)
+	}
+
+	err = models.Users.ResetPassword(id+1, "newpassword")
+	if err == nil {
+		t.Errorf("did not get error resetting password for non-existing user: %s", err)
+	}
+
+	matches, err := models.Users.PasswordMatches("newpassword")
+	if err != nil {
+		t.Errorf("Error matching password: %s", err)
+	}
+
+	if !matches {
+		t.Errorf("Password does not match")
+	}
+}
+
+// Test deleting a user
+func TestUser_Delete(t *testing.T) {
+	defer func() { // Truncate tables after test
+		err := truncateTables(testDB)
+		if err != nil {
+			t.Errorf("Error truncating tables: %s", err)
+		}
+	}()
+
+	id, err := models.Users.Insert(dummyUser)
+	if err != nil {
+		t.Errorf("Error inserting user: %s", err)
+	}
+
+	err = models.Users.Delete(id)
+	if err != nil {
+		t.Errorf("Error deleting user: %s", err)
+	}
+
+	_, err = models.Users.Get(id)
+	if err == nil {
+		t.Errorf("User not deleted")
+	}
+}
+
+// Test Table token
+func TestToken_Table(t *testing.T) {
+	token := models.Tokens
+	if token.Table() != "tokens" {
+		t.Errorf("Wrong table name returned. Expected 'tokens', got '%s'", token.Table())
+	}
+}
+
+// Test Generating a token
+func TestToken_GenerateToken(t *testing.T) {
+	defer func() { // Truncate tables after test
+		err := truncateTables(testDB)
+		if err != nil {
+			t.Errorf("Error truncating tables: %s", err)
+		}
+	}()
+
+	id, err := models.Users.Insert(dummyUser)
+	if err != nil {
+		t.Errorf("Error inserting user: %s", err)
+	}
+
+	time_duration := time.Hour * 24 * 365
+	token, err := models.Tokens.GenerateToken(id, time_duration)
+	if err != nil {
+		t.Errorf("Error generating token: %s", err)
+	}
+
+	if token.UserID != id {
+		t.Errorf("Wrong user id in token. Expected %d, got %d", id, token.UserID)
+	}
+}
