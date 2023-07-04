@@ -47,7 +47,7 @@ func (t *Token) GetUserForToken(token string) (*User, error) {
 		Find(up.Cond{"id =": theToken.UserID}).
 		One(&u)
 	if err != nil {
-		if err != up.ErrNilRecord && err != up.ErrNoMoreRows {
+		if err != up.ErrNilRecord || err != up.ErrNoMoreRows {
 			return nil, err
 		}
 	}
