@@ -428,3 +428,47 @@ func TestToken_Insert(t *testing.T) {
 		t.Errorf("Error inserting token: %s", err)
 	}
 }
+
+func TestToken_GetUserForToken(t *testing.T) {
+	defer func() { // Truncate tables after test
+		err := truncateTables(testDB)
+		if err != nil {
+			t.Errorf("Error truncating tables: %s", err)
+		}
+	}()
+
+	_, err := models.Users.Insert(dummyUser)
+	if err != nil {
+		t.Errorf("Error inserting user: %s", err)
+	}
+
+	user, err := models.Users.GetByEmail(dummyUser.Email)
+	if err != nil {
+		t.Errorf("Error getting user: %s", err)
+	}
+
+	time_duration := time.Hour * 24 * 365
+	token, err := models.Tokens.GenerateToken(user.ID, time_duration)
+	if err != nil {
+		t.Errorf("Error generating token: %s", err)
+	}
+
+	err = models.Tokens.Insert(*token, *user)
+	if err != nil {
+		t.Errorf("Error inserting token: %s", err)
+	}
+
+	user, err = models.Tokens.GetUserForToken(token.PlainText)
+	if err != nil {
+		t.Errorf("Error getting user for token: %s", err)
+	}
+
+	if user.Email != dummyUser.Email {
+		t.Errorf("Wrong user returned. Expected %s, got %s", dummyUser.Email, user.Email)
+	}
+
+	_, err = models.Tokens.GetUserForToken("wrongToken")
+	if err == nil {
+		t.Errorf("Did not get error for getting a user with a wrong token")
+	}
+}
