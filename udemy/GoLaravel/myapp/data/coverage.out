@@ -19,9 +19,9 @@ myapp/data/token.go:55.2,57.16 2 1
 myapp/data/token.go:60.60,67.16 4 1
 myapp/data/token.go:67.16,69.3 1 0
 myapp/data/token.go:71.2,71.17 1 1
-myapp/data/token.go:75.45,82.16 4 0
-myapp/data/token.go:82.16,84.3 1 0
-myapp/data/token.go:86.2,86.23 1 0
+myapp/data/token.go:75.45,82.16 4 1
+myapp/data/token.go:82.16,84.3 1 1
+myapp/data/token.go:86.2,86.23 1 1
 myapp/data/token.go:90.58,97.16 4 0
 myapp/data/token.go:97.16,99.3 1 0
 myapp/data/token.go:101.2,101.23 1 0

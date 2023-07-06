@@ -1,4 +1,4 @@
-////go:build integration
+//go:build integration
 
 // run test with this command: go test . --tags integration --count=1
 
@@ -524,7 +524,52 @@ func TestToken_GetTokensForUser(t *testing.T){
 	if tokens[0].UserID != user.ID {
 		t.Errorf("Wrong user id returned. Expected %d, got %d", user.ID, tokens[0].UserID)
 	}
+}
+
+// Get token by ID
+func TestToken_Get(t *testing.T) {
+	defer func() { // Truncate tables after test
+		err := truncateTables(testDB)
+		if err != nil {
+			t.Errorf("Error truncating tables: %s", err)
+		}
+	}()
+
+	_, err := models.Users.Insert(dummyUser)
+	if err != nil {
+		t.Errorf("Error inserting user: %s", err)
+	}
+
+	user, err := models.Users.GetByEmail(dummyUser.Email)
+	if err != nil {
+		t.Errorf("Error getting user: %s", err)
+	}
 
 
-	
+	time_duration := time.Hour * 24 * 365
+	token, err := models.Tokens.GenerateToken(user.ID, time_duration)
+	if err != nil {
+		t.Errorf("Error generating token: %s", err)
+	}
+
+	err = models.Tokens.Insert(*token, *user)
+	if err != nil {
+		t.Errorf("Error inserting token: %s", err)
+	}
+
+	tt , err := models.Tokens.Get(10)
+	if err == nil {
+		t.Errorf("Did not get error for getting a non existing token")
+	}
+
+
+	tt , err = models.Tokens.Get(token.ID)
+	if err != nil {
+		t.Errorf("Error getting token: %s", err)
+	}
+
+	if tt.ID != token.ID {
+		t.Errorf("Wrong token returned. Expected %d, got %d", token.ID, tt.ID)
+	}
+
 }
