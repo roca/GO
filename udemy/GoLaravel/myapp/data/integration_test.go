@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"net/http"
 	"os"
 	"testing"
 	"time"
@@ -473,7 +474,7 @@ func TestToken_GetUserForToken(t *testing.T) {
 	}
 }
 
-func TestToken_GetTokensForUser(t *testing.T){
+func TestToken_GetTokensForUser(t *testing.T) {
 	defer func() { // Truncate tables after test
 		err := truncateTables(testDB)
 		if err != nil {
@@ -481,13 +482,13 @@ func TestToken_GetTokensForUser(t *testing.T){
 		}
 	}()
 
-	tokens,err := models.Tokens.GetTokensForUser(1)
+	tokens, err := models.Tokens.GetTokensForUser(1)
 	if err != nil {
 		t.Errorf("Did not get error for getting tokens for a non existing user: %s", err)
 	}
 
 	if len(tokens) != 0 {
-		t.Errorf("Got tokens for a non existing user, length %d",len(tokens))
+		t.Errorf("Got tokens for a non existing user, length %d", len(tokens))
 	}
 
 	_, err = models.Users.Insert(dummyUser)
@@ -511,8 +512,7 @@ func TestToken_GetTokensForUser(t *testing.T){
 		t.Errorf("Error inserting token: %s", err)
 	}
 
-
-	tokens,err = models.Tokens.GetTokensForUser(user.ID)
+	tokens, err = models.Tokens.GetTokensForUser(user.ID)
 	if err != nil {
 		t.Errorf("Error getting tokens for user: %s", err)
 	}
@@ -545,6 +545,50 @@ func TestToken_Get(t *testing.T) {
 		t.Errorf("Error getting user: %s", err)
 	}
 
+	time_duration := time.Hour * 24 * 365
+	token, err := models.Tokens.GenerateToken(user.ID, time_duration)
+	if err != nil {
+		t.Errorf("Error generating token: %s", err)
+	}
+
+	err = models.Tokens.Insert(*token, *user)
+	if err != nil {
+		t.Errorf("Error inserting token: %s", err)
+	}
+
+	tt, err := models.Tokens.Get(10)
+	if err == nil {
+		t.Errorf("Did not get error for getting a non existing token")
+	}
+
+	tt, err = models.Tokens.Get(token.ID)
+	if err != nil {
+		t.Errorf("Error getting token: %s", err)
+	}
+
+	if tt.ID != token.ID {
+		t.Errorf("Wrong token returned. Expected %d, got %d", token.ID, tt.ID)
+	}
+}
+
+// Get token by PlainText
+func TestToken_GetByToken(t *testing.T) {
+	defer func() { // Truncate tables after test
+		err := truncateTables(testDB)
+		if err != nil {
+			t.Errorf("Error truncating tables: %s", err)
+		}
+	}()
+
+	_, err := models.Users.Insert(dummyUser)
+	if err != nil {
+		t.Errorf("Error inserting user: %s", err)
+	}
+
+	user, err := models.Users.GetByEmail(dummyUser.Email)
+	if err != nil {
+		t.Errorf("Error getting user: %s", err)
+	}
 
 	time_duration := time.Hour * 24 * 365
 	token, err := models.Tokens.GenerateToken(user.ID, time_duration)
@@ -557,19 +601,122 @@ func TestToken_Get(t *testing.T) {
 		t.Errorf("Error inserting token: %s", err)
 	}
 
-	tt , err := models.Tokens.Get(10)
+	tt, err := models.Tokens.GetByToken("10")
 	if err == nil {
 		t.Errorf("Did not get error for getting a non existing token")
 	}
 
-
-	tt , err = models.Tokens.Get(token.ID)
+	tt, err = models.Tokens.GetByToken(token.PlainText)
 	if err != nil {
 		t.Errorf("Error getting token: %s", err)
 	}
 
 	if tt.ID != token.ID {
 		t.Errorf("Wrong token returned. Expected %d, got %d", token.ID, tt.ID)
+	}
+}
+
+var authData = []struct {
+	name        string
+	token       string
+	email       string
+	errExpected bool
+	message     string
+}{
+	{"invalid token", "abcdefghijklmnopqrstuvwxyz", "a@here,com", true, "invalid token accepted as valid"},
+	{"invalid_length", "abcdefghijklmnopqrstuvwxy", "a@here,com", true, "token of wrong length token accepted as valid"},
+	{"no_user", "abcdefghijklmnopqrstuvwxyz", "a@here,com", true, "no user, but token accepted as valid"},
+	{"no_token", "", "me@here,com", true, "no token, but user is valid"},
+	{"valid", "", "me@here.com", false, "valid token reported as invalid"},
+}
+
+// AuthenticateToken
+func TestToken_AuthenticateToken(t *testing.T) {
+	defer func() { // Truncate tables after test
+		err := truncateTables(testDB)
+		if err != nil {
+			t.Errorf("Error truncating tables: %s", err)
+		}
+	}()
+
+	_, err := models.Users.Insert(dummyUser)
+	if err != nil {
+		t.Errorf("Error inserting user: %s", err)
+	}
+
+	user, err := models.Users.GetByEmail(dummyUser.Email)
+	if err != nil {
+		t.Errorf("Error getting user: %s", err)
+	}
+
+	time_duration := time.Hour * 24 * 365
+	token, err := models.Tokens.GenerateToken(user.ID, time_duration)
+	if err != nil {
+		t.Errorf("Error generating token: %s", err)
+	}
+
+	err = models.Tokens.Insert(*token, *user)
+	if err != nil {
+		t.Errorf("Error inserting token: %s", err)
+	}
+
+	for _, tt := range authData {
+		t.Run(tt.name, func(t *testing.T) {
+			req, _ := http.NewRequest("GET", "/", nil)
+			if tt.email == dummyUser.Email {
+				req.Header.Add("Authorization", "Bearer "+token.PlainText)
+			} else {
+				req.Header.Add("Authorization", "Bearer "+tt.token)
+			}
+
+			_, err := models.Tokens.AuthenticateToken(req)
+			if tt.errExpected && err == nil {
+				t.Errorf("%s: %s", tt.name, tt.message)
+			} else if !tt.errExpected && err != nil {
+				t.Errorf("%s: %s - %s", tt.name, tt.message, err)
+			}
+		})
+	}
+
+}
+
+// ValidToken
+func TestToken_ValidToken(t *testing.T) {
+	defer func() { // Truncate tables after test
+		err := truncateTables(testDB)
+		if err != nil {
+			t.Errorf("Error truncating tables: %s", err)
+		}
+	}()
+
+	_, err := models.Users.Insert(dummyUser)
+	if err != nil {
+		t.Errorf("Error inserting user: %s", err)
+	}
+
+	user, err := models.Users.GetByEmail(dummyUser.Email)
+	if err != nil {
+		t.Errorf("Error getting user: %s", err)
+	}
+
+	time_duration := time.Hour * 24 * 365
+	token, err := models.Tokens.GenerateToken(user.ID, time_duration)
+	if err != nil {
+		t.Errorf("Error generating token: %s", err)
+	}
+
+	err = models.Tokens.Insert(*token, *user)
+	if err != nil {
+		t.Errorf("Error inserting token: %s", err)
+	}
+
+	b, err := models.Tokens.ValidToken(token.PlainText)
+	if err != nil {
+		t.Errorf("Error validating token: %s", err)
+	}
+
+	if !b {
+		t.Errorf("Token should be valid")
 	}
 
 }
