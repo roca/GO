@@ -424,7 +424,7 @@ func TestToken_Insert(t *testing.T) {
 		t.Errorf("Error generating token: %s", err)
 	}
 
-	err = models.Tokens.Insert(*token, *user)
+	_, err = models.Tokens.Insert(*token, *user)
 	if err != nil {
 		t.Errorf("Error inserting token: %s", err)
 	}
@@ -454,7 +454,7 @@ func TestToken_GetUserForToken(t *testing.T) {
 		t.Errorf("Error generating token: %s", err)
 	}
 
-	err = models.Tokens.Insert(*token, *user)
+	_, err = models.Tokens.Insert(*token, *user)
 	if err != nil {
 		t.Errorf("Error inserting token: %s", err)
 	}
@@ -507,7 +507,7 @@ func TestToken_GetTokensForUser(t *testing.T) {
 		t.Errorf("Error generating token: %s", err)
 	}
 
-	err = models.Tokens.Insert(*token, *user)
+	_, err = models.Tokens.Insert(*token, *user)
 	if err != nil {
 		t.Errorf("Error inserting token: %s", err)
 	}
@@ -551,7 +551,7 @@ func TestToken_Get(t *testing.T) {
 		t.Errorf("Error generating token: %s", err)
 	}
 
-	err = models.Tokens.Insert(*token, *user)
+	tokenID, err := models.Tokens.Insert(*token, *user)
 	if err != nil {
 		t.Errorf("Error inserting token: %s", err)
 	}
@@ -561,12 +561,12 @@ func TestToken_Get(t *testing.T) {
 		t.Errorf("Did not get error for getting a non existing token")
 	}
 
-	tt, err = models.Tokens.Get(token.ID)
+	tt, err = models.Tokens.Get(tokenID)
 	if err != nil {
 		t.Errorf("Error getting token: %s", err)
 	}
 
-	if tt.ID != token.ID {
+	if tt.ID != tokenID {
 		t.Errorf("Wrong token returned. Expected %d, got %d", token.ID, tt.ID)
 	}
 }
@@ -596,7 +596,7 @@ func TestToken_GetByToken(t *testing.T) {
 		t.Errorf("Error generating token: %s", err)
 	}
 
-	err = models.Tokens.Insert(*token, *user)
+	tokenID, err := models.Tokens.Insert(*token, *user)
 	if err != nil {
 		t.Errorf("Error inserting token: %s", err)
 	}
@@ -611,7 +611,7 @@ func TestToken_GetByToken(t *testing.T) {
 		t.Errorf("Error getting token: %s", err)
 	}
 
-	if tt.ID != token.ID {
+	if tt.ID != tokenID {
 		t.Errorf("Wrong token returned. Expected %d, got %d", token.ID, tt.ID)
 	}
 }
@@ -658,7 +658,7 @@ func TestToken_AuthenticateToken(t *testing.T) {
 		t.Errorf("Error generating token: %s", err)
 	}
 
-	err = models.Tokens.Insert(*token, *user)
+	_, err = models.Tokens.Insert(*token, *user)
 	if err != nil {
 		t.Errorf("Error inserting token: %s", err)
 	}
@@ -687,12 +687,12 @@ func TestToken_AuthenticateToken(t *testing.T) {
 				}
 			}
 
-			// _, err := models.Tokens.AuthenticateToken(req)
-			// if tt.errExpected && err == nil {
-			// 	t.Errorf("%s: %s", tt.name, tt.message)
-			// } else if !tt.errExpected && err != nil {
-			// 	t.Errorf("%s: %s - %s", tt.name, tt.message, err)
-			// }
+			_, err := models.Tokens.AuthenticateToken(req)
+			if tt.errExpected && err == nil {
+				t.Errorf("%s: %s", tt.name, tt.message)
+			} else if !tt.errExpected && err != nil {
+				t.Errorf("%s: %s - %s", tt.name, tt.message, err)
+			}
 		})
 	}
 
@@ -723,7 +723,7 @@ func TestToken_ValidToken(t *testing.T) {
 		t.Errorf("Error generating token: %s", err)
 	}
 
-	err = models.Tokens.Insert(*token, *user)
+	_, err = models.Tokens.Insert(*token, *user)
 	if err != nil {
 		t.Errorf("Error inserting token: %s", err)
 	}
@@ -763,7 +763,7 @@ func TestToken_Delete(t *testing.T) {
 		t.Errorf("Error generating token: %s", err)
 	}
 
-	err = models.Tokens.Insert(*token, *user)
+	_, err = models.Tokens.Insert(*token, *user)
 	if err != nil {
 		t.Errorf("Error inserting token: %s", err)
 	}
@@ -799,7 +799,7 @@ func TestToken_ExpiredToken(t *testing.T) {
 		t.Errorf("Error generating token: %s", err)
 	}
 
-	err = models.Tokens.Insert(*token, *user)
+	_, err = models.Tokens.Insert(*token, *user)
 	if err != nil {
 		t.Errorf("Error inserting token: %s", err)
 	}
@@ -847,7 +847,7 @@ func TestToken_DeleteByToken(t *testing.T) {
 		t.Errorf("Error generating token: %s", err)
 	}
 
-	err = models.Tokens.Insert(*token, *user)
+	_, err = models.Tokens.Insert(*token, *user)
 	if err != nil {
 		t.Errorf("Error inserting token: %s", err)
 	}
