@@ -13,7 +13,7 @@ import (
 )
 
 type Token struct {
-	ID        int       `db:"id" json:"id"`
+	ID        int       `db:"id,omitempty" json:"id"`
 	UserID    int       `db:"user_id" json:"user_id"`
 	FirstName string    `db:"first_name" json:"first_name"`
 	Email     string    `db:"email" json:"email"`
@@ -128,7 +128,7 @@ func (t *Token) DeleteByToken(token string) error {
 }
 
 // Insert token
-func (t *Token) Insert(token Token, u User) error {
+func (t *Token) Insert(token Token, u User) (int, error) {
 	collection := upper.Collection(t.Table())
 
 	// delete existing tokens for this user
@@ -136,7 +136,7 @@ func (t *Token) Insert(token Token, u User) error {
 		Find(up.Cond{"user_id =": u.ID}).
 		Delete()
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	token.CreatedAt = time.Now()
@@ -146,13 +146,15 @@ func (t *Token) Insert(token Token, u User) error {
 	token.UserID = u.ID
 
 	// insert new token
-	_, err = collection.
+	res, err := collection.
 		Insert(&token)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
-	return nil
+	id := getInsertedID(res.ID())
+
+	return id, nil
 }
 
 // Generate a token
