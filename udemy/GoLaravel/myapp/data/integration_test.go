@@ -857,3 +857,16 @@ func TestToken_DeleteByToken(t *testing.T) {
 		t.Errorf("Error deleting token: %s", err)
 	}
 }
+
+func TestToken_DeleteNonExistentToken(t *testing.T) {
+	defer func() { // Truncate tables after test
+		err := truncateTables(testDB)
+		if err != nil {
+			t.Errorf("Error truncating tables: %s", err)
+		}
+	}()
+	err := models.Tokens.DeleteByToken("non-existent-token")
+	if err != nil {
+		t.Errorf("Error should be returned")
+	}
+}
