@@ -11,6 +11,7 @@ import (
 
 var db *sql.DB
 var upper db2.Session
+var dbCreated bool
 
 type Models struct {
 	// any models inserted here ( and in the New function)
@@ -21,12 +22,17 @@ type Models struct {
 
 func New(databasePool *sql.DB) Models {
 	db = databasePool
-	
-	if os.Getenv("DATABASE_TYPE") == "mysql " || os.Getenv("DATABASE_TYPE") == "mariadb" {
-		// TODO: add mysql models
-		upper, _ = mysql.New(db)
-	} else {
-		upper, _ = postgresql.New(db)
+
+	if !dbCreated {
+		switch os.Getenv("DATABASE_TYPE") {
+		case "mysql":
+			upper, _ = mysql.New(db)
+		case "mariadb":
+			upper, _ = mysql.New(db)
+		default:
+			upper, _ = postgresql.New(db)
+		}
+		dbCreated = true
 	}
 
 	return Models{
