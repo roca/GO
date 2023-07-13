@@ -728,13 +728,37 @@ func TestToken_ValidToken(t *testing.T) {
 		t.Errorf("Error inserting token: %s", err)
 	}
 
-	b, err := models.Tokens.ValidToken(token.PlainText)
+	okay, err := models.Tokens.ValidToken(token.PlainText)
 	if err != nil {
 		t.Errorf("Error validating token: %s", err)
 	}
 
-	if !b {
+	if !okay {
 		t.Errorf("Token should be valid")
+	}
+
+	okay, err = models.Tokens.ValidToken("abcdefghijklmnopqrstuvwxyz")
+	if err == nil {
+		t.Errorf("Error validating token: %s", err)
+	}
+
+	if okay {
+		t.Errorf("Token should not be valid")
+	}
+
+
+	err = models.Tokens.Delete(user.Token.ID)
+	if err != nil {
+		t.Errorf("Error deleting token: %s", err)
+	}
+
+	okay, err = models.Tokens.ValidToken(user.Token.PlainText)
+	if err == nil {
+		t.Errorf("Error validating token: %s", err)
+	}
+
+	if okay {
+		t.Errorf("no error reported when valid")
 	}
 }
 
