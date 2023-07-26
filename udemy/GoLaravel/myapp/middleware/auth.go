@@ -7,6 +7,5 @@ func (m *Middleware) Auth(next http.Handler) http.Handler {
 		if !m.App.Session.Exists(r.Context(), "userID") {
 			http.Error(w, http.StatusText(401), http.StatusUnauthorized)
 		}	
-		next.ServeHTTP(w, r)
 	})
 }
