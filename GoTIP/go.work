@@ -1,3 +1,6 @@
 go 1.20
 
-use ./Example-510541
+use (
+	./Example-509995
+	./Example-510541
+)
