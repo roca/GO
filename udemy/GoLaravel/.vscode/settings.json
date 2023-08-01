@@ -4,7 +4,8 @@
 		"godotenv",
 		"joho",
 		"Logggers",
-		"tmpl"
+		"tmpl",
+		"postgresstore"
 	],
 	"go.testTags": "integration",
 }
