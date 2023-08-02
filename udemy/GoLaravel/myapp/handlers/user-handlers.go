@@ -49,6 +49,13 @@ func (h *Handlers) UpdateUserByID(w http.ResponseWriter, r *http.Request) {
 
 	u.LastName = h.App.RandomString(10)
 
+	validator := h.App.Validator(nil)
+	validator.Check(len(u.LastName) > 20, "last_name", "last name must be 20 characters or more")
+	if !validator.Valid() {
+		fmt.Fprint(w,"failed validation")
+		return
+	}
+
 	err = h.Models.Users.Update(*u)
 	if err != nil {
 		h.App.ErrorLog.Println(err)
