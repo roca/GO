@@ -19,6 +19,9 @@ func (a *application) routes() *chi.Mux {
 	a.App.Routes.Post("/users/login", a.Handlers.PostUserLogin)
 	a.App.Routes.Get("/users/logout", a.Handlers.Logout)
 
+	a.App.Routes.Get("/form", a.Handlers.Form)
+	//a.App.Routes.Post("/form", a.Handlers.PostForm)
+
 	a.App.Routes.Get("/create-user", a.Handlers.CreateUser)
 	a.App.Routes.Get("/get-user/{id}", a.Handlers.GetUserByID)
 	a.App.Routes.Get("/update-user/{id}", a.Handlers.UpdateUserByID)
