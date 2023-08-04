@@ -14,7 +14,7 @@ type Handlers struct {
 }
 
 func (h *Handlers) Home(w http.ResponseWriter, r *http.Request) {
-	err := h.App.Render.Page(w, r, "home", nil, nil)
+	err := h.render(w, r, "home", nil, nil)
 	if err != nil {
 		h.App.ErrorLog.Println("error rendering:", err)
 	}
@@ -37,7 +37,7 @@ func (h *Handlers) JetPage(w http.ResponseWriter, r *http.Request) {
 func (h *Handlers) SessionsTest(w http.ResponseWriter, r *http.Request) {
 	myData := "this is my data"
 
-	h.App.Session.Put(r.Context(), "myData", myData)
+	h.sessionPut(r.Context(), "myData", myData)
 
 	myValue := h.App.Session.GetString(r.Context(), "myData")
 
