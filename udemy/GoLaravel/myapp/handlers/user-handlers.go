@@ -47,7 +47,7 @@ func (h *Handlers) UpdateUserByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	u.LastName = h.App.RandomString(10)
+	u.LastName = h.randomString(10)
 
 	validator := h.App.Validator(nil)
 	u.LastName = ""
