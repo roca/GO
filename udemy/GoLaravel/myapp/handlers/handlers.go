@@ -49,3 +49,44 @@ func (h *Handlers) SessionsTest(w http.ResponseWriter, r *http.Request) {
 		h.App.ErrorLog.Println("error rendering:", err)
 	}
 }
+
+func (h *Handlers) JSON(w http.ResponseWriter, r *http.Request) {
+	payload := struct {
+		ID      int64    `json:"id"`
+		Name    string   `json:"name"`
+		Hobbies []string `json:"hobbies"`
+	}{
+		ID:      10,
+		Name:    "John Doe",
+		Hobbies: []string{"hiking", "biking", "swimming"},
+	}
+
+	err := h.App.WriteJSON(w, http.StatusOK, payload)
+	if err != nil {
+		h.App.ErrorLog.Println("error rendering JSON:", err)
+	}
+}
+
+func (h *Handlers) XML(w http.ResponseWriter, r *http.Request) {
+	payload := struct {
+		ID      int64    `xml:"id"`
+		Name    string   `xml:"name"`
+		Hobbies []string `xml:"hobbies>hobby"`
+	}{
+		ID:      10,
+		Name:    "John Doe",
+		Hobbies: []string{"hiking", "biking", "swimming"},
+	}
+
+	err := h.App.WriteXML(w, http.StatusOK, payload)
+	if err != nil {
+		h.App.ErrorLog.Println("error rendering XML:", err)
+	}
+}
+
+func (h *Handlers) DownloadFile(w http.ResponseWriter, r *http.Request) {
+	err := h.App.DownloadFile(w, r, "./public/images", "celeritas.jpg")
+	if err != nil {
+		h.App.ErrorLog.Println("error downloading file:", err)
+	}
+}
