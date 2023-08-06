@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/xml"
 	"myapp/data"
 	"net/http"
 
@@ -69,6 +70,7 @@ func (h *Handlers) JSON(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handlers) XML(w http.ResponseWriter, r *http.Request) {
 	payload := struct {
+		XMLName xml.Name `xml:"person"`
 		ID      int64    `xml:"id"`
 		Name    string   `xml:"name"`
 		Hobbies []string `xml:"hobbies>hobby"`

@@ -22,6 +22,10 @@ func (a *application) routes() *chi.Mux {
 	a.get("/form", a.Handlers.Form)
 	a.post("/form", a.Handlers.PostForm)
 
+	a.get("/json", a.Handlers.JSON)
+	a.get("/xml", a.Handlers.XML)
+	a.get("/download-file", a.Handlers.DownloadFile)
+
 	a.get("/create-user", a.Handlers.CreateUser)
 	a.get("/get-user/{id}", a.Handlers.GetUserByID)
 	a.get("/update-user/{id}", a.Handlers.UpdateUserByID)
