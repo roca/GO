@@ -29,6 +29,7 @@ func (a *application) routes() *chi.Mux {
 	a.get("/create-user", a.Handlers.CreateUser)
 	a.get("/get-user/{id}", a.Handlers.GetUserByID)
 	a.get("/update-user/{id}", a.Handlers.UpdateUserByID)
+	a.get("/test_crypto",a.Handlers.TestCrypto)
 
 	// static routes
 	fileServer := http.FileServer(http.Dir("./public"))

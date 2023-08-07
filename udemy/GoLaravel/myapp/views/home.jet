@@ -33,6 +33,7 @@
                 <a href="/json" class="list-group-item list-group-item-action">JSON Response</a>
                 <a href="/xml" class="list-group-item list-group-item-action">XML Response</a>
                 <a href="/download-file" class="list-group-item list-group-item-action">Download File Respoonse</a>
+                <a href="/test_crypto" class="list-group-item list-group-item-action">TestCrypto</a>
             </div>
         </div>
 {{end}}

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/xml"
+	"fmt"
 	"myapp/data"
 	"net/http"
 
@@ -91,4 +92,26 @@ func (h *Handlers) DownloadFile(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		h.App.ErrorLog.Println("error downloading file:", err)
 	}
+}
+
+func (h *Handlers) TestCrypto(w http.ResponseWriter, r *http.Request) {
+	plainText := "Hello, world"
+	fmt.Fprint(w, "Unencrpted: " + plainText + "\n")
+	encrypted, err := h.encrypt(plainText)
+	if err != nil {
+		h.App.ErrorLog.Println(err)
+		h.App.Error500(w,r)
+		return
+	}
+
+	fmt.Fprint(w,"Encrypted: " + encrypted + "\n")
+
+	decrypted, err := h.decrypt(encrypted)
+	if err != nil {
+		h.App.ErrorLog.Println(err)
+		h.App.Error500(w,r)
+		return
+	}
+
+	fmt.Fprint(w,"Decrypted: " + decrypted + "\n")
 }
