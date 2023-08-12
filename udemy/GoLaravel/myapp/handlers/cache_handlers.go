@@ -1,6 +1,8 @@
 package handlers
 
-import "net/http"
+import (
+	"net/http"
+)
 
 func (h *Handlers) ShowCachePage(w http.ResponseWriter, r *http.Request) {
 	err := h.render(w, r, "cache", nil, nil)
@@ -40,8 +42,57 @@ func (h *Handlers) SaveInCache(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (h *Handlers) GetFromCache(w http.ResponseWriter, r *http.Request) {}
+func (h *Handlers) GetFromCache(w http.ResponseWriter, r *http.Request) {
+	var msg string
+	var inCache bool = true
 
-func (h *Handlers) DeleteFromCache(w http.ResponseWriter, r *http.Request) {}
+	var userInput struct {
+		Name string `json:"name"`
+		CSRF string `json:"csrf_token"`
+	}
+
+	err := h.App.ReadJSON(w, r, &userInput)
+	if err != nil {
+		h.App.Error500(w, r)
+		return
+	}
+
+	fromCache, err := h.App.Cache.Get(userInput.Name)
+	if err != nil {
+		msg = "Not found in cache"
+		inCache = false
+	}
+
+	var resp struct {
+		Error   bool   `json:"error"`
+		Message string `json:"message"`
+		Value   string `json:"value"`
+	}
+
+	if inCache {
+		resp.Error = false
+		resp.Message = "Success"
+		resp.Value = fromCache.(string)
+	} else {
+		resp.Error = true
+		resp.Message = msg
+		resp.Value = ""
+	}
+
+	_ = h.App.WriteJSON(w, http.StatusOK, resp)
+}
+
+func (h *Handlers) DeleteFromCache(w http.ResponseWriter, r *http.Request) {
+	var userInput struct {
+		Name string `json:"name"`
+		CSRF string `json:"csrf_token"`
+	}
+
+	err := h.App.ReadJSON(w, r, &userInput)
+	if err != nil {
+		h.App.Error500(w, r)
+		return
+	}	
+}
 
 func (h *Handlers) EmptyCache(w http.ResponseWriter, r *http.Request) {}
