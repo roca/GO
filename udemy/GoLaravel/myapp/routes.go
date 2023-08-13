@@ -29,7 +29,12 @@ func (a *application) routes() *chi.Mux {
 	a.get("/create-user", a.Handlers.CreateUser)
 	a.get("/get-user/{id}", a.Handlers.GetUserByID)
 	a.get("/update-user/{id}", a.Handlers.UpdateUserByID)
-	a.get("/test_crypto",a.Handlers.TestCrypto)
+	a.get("/test_crypto", a.Handlers.TestCrypto)
+	a.get("/test_cache", a.Handlers.ShowCachePage)
+	a.post("/api/save-in-cache", a.Handlers.SaveInCache)
+	a.post("/api/get-from-cache", a.Handlers.GetFromCache)
+	a.post("/api/delete-from-cache", a.Handlers.DeleteFromCache)
+	a.post("/api/empty-cache", a.Handlers.EmptyCache)
 
 	// static routes
 	fileServer := http.FileServer(http.Dir("./public"))
