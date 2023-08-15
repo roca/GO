@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"myapp/data"
 	"net/http"
+	"time"
 
 	"github.com/CloudyKit/jet/v6"
 	"github.com/roca/celeritas"
@@ -16,6 +17,7 @@ type Handlers struct {
 }
 
 func (h *Handlers) Home(w http.ResponseWriter, r *http.Request) {
+	defer h.App.LoadTime(time.Now())
 	err := h.render(w, r, "home", nil, nil)
 	if err != nil {
 		h.App.ErrorLog.Println("error rendering:", err)
@@ -96,22 +98,22 @@ func (h *Handlers) DownloadFile(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handlers) TestCrypto(w http.ResponseWriter, r *http.Request) {
 	plainText := "Hello, world"
-	fmt.Fprint(w, "Unencrpted: " + plainText + "\n")
+	fmt.Fprint(w, "Unencrpted: "+plainText+"\n")
 	encrypted, err := h.encrypt(plainText)
 	if err != nil {
 		h.App.ErrorLog.Println(err)
-		h.App.Error500(w,r)
+		h.App.Error500(w, r)
 		return
 	}
 
-	fmt.Fprint(w,"Encrypted: " + encrypted + "\n")
+	fmt.Fprint(w, "Encrypted: "+encrypted+"\n")
 
 	decrypted, err := h.decrypt(encrypted)
 	if err != nil {
 		h.App.ErrorLog.Println(err)
-		h.App.Error500(w,r)
+		h.App.Error500(w, r)
 		return
 	}
 
-	fmt.Fprint(w,"Decrypted: " + decrypted + "\n")
+	fmt.Fprint(w, "Decrypted: "+decrypted+"\n")
 }
