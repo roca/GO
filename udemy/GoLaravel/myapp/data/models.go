@@ -25,12 +25,12 @@ func New(databasePool *sql.DB) Models {
 
 	if !dbCreated {
 		switch os.Getenv("DATABASE_TYPE") {
-		case "mysql":
+		case "mysql", "mariadb":
 			upper, _ = mysql.New(db)
-		case "mariadb":
-			upper, _ = mysql.New(db)
-		default:
+		case "postgres", "postgresql":
 			upper, _ = postgresql.New(db)
+		default:
+			// do nothing
 		}
 		dbCreated = true
 	}
