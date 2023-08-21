@@ -1,8 +1,9 @@
-go 1.19
+go 1.21
 
 use (
 	./fyne-md
 	./goldwatcher
 	./hello-world
 	./kubeconfig-editor
+	./text-editor
 )
