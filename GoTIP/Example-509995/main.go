@@ -1,5 +1,12 @@
 package main
 
+type x struct {
+	a, b int
+}
+
+func (a x) myzero() (zero, error) {
+	return 0, nil
+}
 
 func main() {
 
@@ -10,15 +17,12 @@ func main() {
 	i := 0
 	println("ZERO", i)
 
-
 	// From the new proposal (509995)
 	// https://go-review.googlesource.com/c/go/+/509995
 
 	// Example
-	var x struct {
-		a, b int
-	}
+	a := x{}
 
-	x = zero
-	println("ZERO", x)
+	l, _ := a.myzero()
+	println("ZERO", l)
 }
