@@ -35,6 +35,7 @@
                 <a href="/download-file" class="list-group-item list-group-item-action">Download File Respoonse</a>
                 <a href="/test_crypto" class="list-group-item list-group-item-action">TestCrypto</a>
                 <a href="/test_cache" class="list-group-item list-group-item-action">TestCache</a>
+                <a href="/test_mail" class="list-group-item list-group-item-action">TestMail</a>
             </div>
         </div>
 {{end}}
