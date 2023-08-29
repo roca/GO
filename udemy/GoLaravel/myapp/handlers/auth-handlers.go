@@ -123,3 +123,11 @@ func (h *Handlers) Forgot(w http.ResponseWriter, r *http.Request) {
 		h.App.Error500(w, r)
 	}
 }
+
+func (h *Handlers) PostForgot(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		w.Write([]byte(err.Error()))
+		return
+	}
+}
