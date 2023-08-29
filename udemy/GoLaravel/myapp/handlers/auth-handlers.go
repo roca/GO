@@ -113,3 +113,13 @@ func (h *Handlers) Logout(w http.ResponseWriter, r *http.Request) {
 	h.sessionRenewToken(r.Context())
 	http.Redirect(w, r, "/users/login", http.StatusSeeOther)
 }
+
+// Forgot func renders the Forgot page
+
+func (h *Handlers) Forgot(w http.ResponseWriter, r *http.Request) {
+	err := h.render(w, r, "forgot", nil, nil)
+	if err != nil {
+		h.App.ErrorLog.Println("Error rendering forgot page:",err)
+		h.App.Error500(w, r)
+	}
+}
