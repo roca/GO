@@ -125,9 +125,20 @@ func (h *Handlers) Forgot(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handlers) PostForgot(w http.ResponseWriter, r *http.Request) {
+	// parese form
 	err := r.ParseForm()
 	if err != nil {
 		w.Write([]byte(err.Error()))
 		return
 	}
+
+	// verif that supplied email exists
+
+	// create a link to password reset form
+
+	// sign the link
+
+	// email the message
+
+	// redirect the user
 }
