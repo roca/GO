@@ -128,7 +128,7 @@ func (h *Handlers) PostForgot(w http.ResponseWriter, r *http.Request) {
 	// parese form
 	err := r.ParseForm()
 	if err != nil {
-		w.Write([]byte(err.Error()))
+		h.App.ErrorStatus(w, http.StatusBadRequest)
 		return
 	}
 
