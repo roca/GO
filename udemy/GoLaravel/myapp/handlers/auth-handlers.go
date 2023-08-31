@@ -7,6 +7,9 @@ import (
 	"myapp/data"
 	"net/http"
 	"time"
+
+	"github.com/roca/celeritas/mailer"
+	"github.com/roca/celeritas/urlsigner"
 )
 
 func (h *Handlers) UserLogin(w http.ResponseWriter, r *http.Request) {
@@ -119,7 +122,7 @@ func (h *Handlers) Logout(w http.ResponseWriter, r *http.Request) {
 func (h *Handlers) Forgot(w http.ResponseWriter, r *http.Request) {
 	err := h.render(w, r, "forgot", nil, nil)
 	if err != nil {
-		h.App.ErrorLog.Println("Error rendering forgot page:",err)
+		h.App.ErrorLog.Println("Error rendering forgot page:", err)
 		h.App.Error500(w, r)
 	}
 }
@@ -132,13 +135,34 @@ func (h *Handlers) PostForgot(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// verif that supplied email exists
+	// verify that supplied email exists
+	var u *data.User
+	email := r.Form.Get("email")
+	u, err = u.GetByEmail(email)
+	if err != nil {
+		h.App.ErrorStatus(w, http.StatusBadRequest)
+		return
+	}
 
 	// create a link to password reset form
+	link := fmt.Sprintf("%s/reset-password?email=%s", h.App.Server.URL, u.Email)
+
+	signer := urlsigner.Signer{
+		Secret: []byte(h.App.EncryptionKey),
+	}
 
 	// sign the link
+	signedLink := signer.GenerateTokenFromString(link)
+	h.App.InfoLog.Println("Signed link is:", signedLink)
 
 	// email the message
+	message := mailer.Message{
+		To:      u.Email,
+		From:    fmt.Sprintf("%s <%s>", h.App.Server.ServerName, h.App.Server.URL),
+		Subject: "Password Reset",
+		Data:    fmt.Sprintf(`<a href="%s">Click here to reset your password</a>`, signedLink),
+	}
+	h.App.Mail.Send(message)
 
 	// redirect the user
 }
