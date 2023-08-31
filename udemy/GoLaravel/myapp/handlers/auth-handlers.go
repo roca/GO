@@ -156,13 +156,25 @@ func (h *Handlers) PostForgot(w http.ResponseWriter, r *http.Request) {
 	h.App.InfoLog.Println("Signed link is:", signedLink)
 
 	// email the message
-	message := mailer.Message{
-		To:      u.Email,
-		From:    fmt.Sprintf("%s <%s>", h.App.Server.ServerName, h.App.Server.URL),
-		Subject: "Password Reset",
-		Data:    fmt.Sprintf(`<a href="%s">Click here to reset your password</a>`, signedLink),
+	var data struct {
+		Link string
 	}
-	h.App.Mail.Send(message)
+	data.Link = signedLink
+
+	message := mailer.Message{
+		To:       u.Email,
+		Subject:  "Password Reset",
+		Template: "password-reset",
+		Data:     data,
+		From:     "admin@example.com",
+	}
+	h.App.Mail.Jobs <- message
+	res := <-h.App.Mail.Results
+	if res.Error != nil {
+		h.App.ErrorStatus(w, http.StatusBadRequest)
+		return
+	}
 
 	// redirect the user
+	http.Redirect(w, r, "/users/login", http.StatusSeeOther)
 }
