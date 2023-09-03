@@ -44,6 +44,9 @@ func (h *Handlers) PostUserLogin(w http.ResponseWriter, r *http.Request) {
 
 	if !matches {
 		w.Write([]byte("Invalid password"))
+		// Maybe send a flash message
+		// h.App.Session.Put(r.Context(), "error","Invalid password")
+		// http.Redirect(w, r, "/users/login", http.StatusSeeOther)
 		return
 	}
 
@@ -208,7 +211,7 @@ func (h *Handlers) ResetPasswordForm(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// display the form
-	encryptedEmail,_ := h.encrypt(email)
+	encryptedEmail, _ := h.encrypt(email)
 
 	vars := make(jet.VarMap)
 	vars.Set("email", encryptedEmail)
@@ -218,4 +221,37 @@ func (h *Handlers) ResetPasswordForm(w http.ResponseWriter, r *http.Request) {
 		h.App.ErrorLog.Println("Error rendering:", err)
 		return
 	}
+}
+
+func (h *Handlers) PostResetPassword(w http.ResponseWriter, r *http.Request) {
+	// parese form
+	err := r.ParseForm()
+	if err != nil {
+		h.App.Error500(w, r)
+		return
+	}
+
+	// get and decrypted the email
+	decryptedEmail, err := h.decrypt(r.Form.Get("email"))
+	if err != nil {
+		h.App.Error500(w, r)
+		return
+	}
+	// get the user
+	var u  data.User
+	user, err := u.GetByEmail(decryptedEmail)
+	if err != nil {
+		h.App.Error500(w, r)
+		return
+	}
+	// reset the password
+	err = user.ResetPassword(user.ID,r.Form.Get("password"))
+	if err != nil {
+		h.App.Error500(w, r)
+		return
+	}
+
+        // redirect the user
+	h.App.Session.Put(r.Context(), "flash","Password reset. You can now log in.")
+	http.Redirect(w, r, "/users/login", http.StatusSeeOther)
 }
