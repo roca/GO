@@ -12,6 +12,12 @@ Login
 
 	<h2>
 
+	{{if .Flash != ""}}
+	<div class="alert alert-info text-center">
+		{{.Flash}}
+	</div>
+	{{end}}
+
 	<form method="post" action="/users/login"
 		id="login-form"
 		name="login-form"
