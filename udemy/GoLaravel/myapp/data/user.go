@@ -186,7 +186,6 @@ func (u *User) PasswordMatches(plainText string) (bool, error) {
 	return true, nil
 }
 
-
 func (u *User) CheckForRememberToken(id int, token string) bool {
 	var rememberToken RememberToken
 	rt := RememberToken{}
