@@ -1,3 +1,7 @@
 go 1.21.0
 
-use ./excercise-1
+use (
+	./excercise-1
+	./excercise-3-1
+	./excercise-3-2
+)
