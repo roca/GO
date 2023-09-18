@@ -1,0 +1,23 @@
+# https://taskfile.dev
+
+version: '3'
+
+vars:
+  NAME: go-optimize-s3-30k
+
+
+tasks:
+  buildg:
+    desc: Build binaries for linux graviton instances
+    cmds:
+      - env GOOS=linux GOARCH=arm go build -o create30k-g  main.go
+
+  buildi:
+    desc: Build binaries for linux intel instances
+    cmds:
+      - env GOOS=linux GOARCH=amd64 go build -o create30k-i  main.go
+
+  run:
+    desc: Run locally
+    cmds:
+      - go run main.go
