@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"encoding/json"
+	"fmt"
+)
 
 type Entry struct {
 	EventVersion string `json:"EventVersion"`
@@ -25,5 +28,10 @@ func main() {
 	message.Records = make([]Entry, 1)
 	message.Records[0] = entry
 
+	var bytes []byte
+
+	bytes, _ = json.MarshalIndent(message, "", "  ")
+
 	fmt.Println(message)
+	fmt.Println(string(bytes))
 }
