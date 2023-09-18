@@ -4,4 +4,5 @@ use (
 	./excercise-1
 	./excercise-3-1
 	./excercise-3-2
+	./excercise-5-1
 )
