@@ -6,6 +6,7 @@ use (
 	./excercise-3-2
 	./excercise-5-1
 	./excercise-6-1
+	./excercise-7-1
 // ./go-on-aws-source/go-the-language/modules/simple
 // ./go-on-aws-source/go-the-language/modules/nested
 )
