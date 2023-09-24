@@ -9,4 +9,6 @@ use (
 	./excercise-7-1
 // ./go-on-aws-source/go-the-language/modules/simple
 // ./go-on-aws-source/go-the-language/modules/nested
+	./go-on-aws-source/aws-go-sdk-v2/listbuckets
+	./go-on-aws-source/aws-go-sdk-v2/ec2/listinstances
 )
