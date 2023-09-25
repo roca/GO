@@ -7,8 +7,9 @@ use (
 	./excercise-5-1
 	./excercise-6-1
 	./excercise-7-1
-// ./go-on-aws-source/go-the-language/modules/simple
-// ./go-on-aws-source/go-the-language/modules/nested
-	./go-on-aws-source/aws-go-sdk-v2/listbuckets
+	./excercise-9-1
 	./go-on-aws-source/aws-go-sdk-v2/ec2/listinstances
+	// ./go-on-aws-source/go-the-language/modules/simple
+	// ./go-on-aws-source/go-the-language/modules/nested
+	./go-on-aws-source/aws-go-sdk-v2/listbuckets
 )
