@@ -1,0 +1,6 @@
+# Full-Day Workshop: Go for Experienced Programmers
+
+- [link](https://www.gophercon.com/agenda/session/1161573)
+- [What is OpenTelemetry?](https://opentelemetry.io/docs/what-is-opentelemetry/)
+- [code](https://github.com/jboursiquot/go-for-experienced-programmers)
+- [wiki] (https://github.com/jboursiquot/go-for-experienced-programmers/wiki)
