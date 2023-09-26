@@ -6,3 +6,10 @@
 - [wiki](https://github.com/jboursiquot/go-for-experienced-programmers/wiki)A
 - [Go playground](https://go.dev/play/)
 - [Tutorial: Getting started with multi-module workspaces](https://go.dev/doc/tutorial/workspaces)
+
+-[honeycomb.io](https://docs.honeycomb.io/quickstart/)
+
+```
+export OTEL_SERVICE_NAME=romelcampbell-gettingstarted
+export HONEYCOMB_API_KEY=As5ffge3yGtAzvfShqvubo
+```
