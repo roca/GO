@@ -7,11 +7,12 @@ import (
 )
 
 type intTypes interface {
-	uint | uint8 | uint16 | uint32 | uint64 | uintptr
+	//uint | uint8 | uint16 | uint32 | uint64 | uintptr
+	constraints.Unsigned
 }
 
-func sumSlice[T constraints.Unsigned](s []T) T {
-	var sum T
+func sumSlice[S []E, E intTypes](s S) E {
+	var sum E
 	for _, v := range s {
 		sum += v
 	}
