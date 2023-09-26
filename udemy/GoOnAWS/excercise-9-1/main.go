@@ -1,64 +1,17 @@
 package main
 
 import (
-	"context"
+	"excercise-9-1/instanceLister"
 	"fmt"
-	"log"
-
-	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/service/ec2"
 )
 
-var client *ec2.Client
-
-func init() {
-	cfg, err := config.LoadDefaultConfig(context.TODO())
-	if err != nil {
-		panic("configuration error, " + err.Error())
-	}
-	client = ec2.NewFromConfig(cfg)
-
-}
-
 func main() {
-	parms := &ec2.DescribeInstancesInput{
-		MaxResults: aws.Int32(10),
-	}
-	// result, err := client.DescribeInstances(context.TODO(), parms)
-
-	paginator := ec2.NewDescribeInstancesPaginator(client, parms, func(dipo *ec2.DescribeInstancesPaginatorOptions) {
-		dipo.Limit = 10
-	})
-
-	pageNum := 0
-	for paginator.HasMorePages() && pageNum < 10 {
-		output, err := paginator.NextPage(context.TODO())
-		if err != nil {
-			log.Printf("error: %v", err)
-			return
-		}
-		count := len(output.Reservations)
-		fmt.Println("Instances: ", count)
-
-		for i, reservation := range output.Reservations {
-			for k, instance := range reservation.Instances {
-				fmt.Println("Instance number: ", i, "-", k, "Id: ", instance.InstanceId)
-			}
-		}
-		pageNum++
+	instances, err := instanceLister.ListInstances(instanceLister.Client)
+	if err != nil {
+		fmt.Println("Error with listing instances: ", err)
 	}
 
-	// if err != nil {
-	// 	fmt.Println("Error calling ec2: ", err)
-	// 	return
-	// }
-	// count := len(result.Reservations)
-	// fmt.Println("Instances: ", count)
-
-	// for i, reservation := range result.Reservations {
-	// 	for k, instance := range reservation.Instances {
-	// 		fmt.Println("Instance number: ", i, "-", k, "Id: ", instance.InstanceId)
-	// 	}
-	// }
+	for _, instance := range instances {
+		fmt.Printf("Instance %s is %s\n", instance.Name, instance.State)
+	}
 }
