@@ -7,17 +7,33 @@ import (
 )
 
 func main() {
-	stackName := flag.String("stack_name", "", "Stack name")
+	stackName := flag.String("stack_name", "", "List resources from a stack")
+	allStacks := flag.Bool("all", false, "List all stacks")
 	flag.Parse()
 
-	fmt.Println(*stackName)
+	if *allStacks {
+		stacks, err := stacks.ListStacks(stacks.Client)
+		if err != nil {
+			panic(err)
+		}
+		Print(stacks)
+	} else {
 
-	resources, err := stacks.ListStackResources(stacks.Client, *stackName)
-	if err != nil {
-		panic(err)
+		fmt.Println("Resources for stack:", *stackName)
+		resources, err := stacks.ListStackResources(stacks.Client, *stackName)
+		if err != nil {
+			panic(err)
+		}
+		Print(resources)
 	}
+}
 
-	for _, resource := range resources {
-		fmt.Println(resource.LogicalID, resource.Status)
+type X interface {
+	stacks.Resource | stacks.Stack
+}
+
+func Print[S []E, E X](s S) {
+	for _, v := range s {
+		fmt.Println(v)
 	}
 }
