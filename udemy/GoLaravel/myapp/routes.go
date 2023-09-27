@@ -6,13 +6,20 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/roca/celeritas/mailer"
+
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
 func (a *application) routes() *chi.Mux {
+
 	// middle must come before any routes
 	a.use(a.Middleware.CheckRemember)
 
 	// add routes here
+	handler := http.HandlerFunc(a.Handlers.Home)
+	wrappedHandler := otelhttp.NewHandler(handler, "test")
+	a.get("/test", wrappedHandler.ServeHTTP)
+
 	a.get("/", a.Handlers.Home)
 	a.get("/go-page", a.Handlers.GoPage)
 	a.get("/jet-page", a.Handlers.JetPage)
