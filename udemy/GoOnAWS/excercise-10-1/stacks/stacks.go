@@ -15,11 +15,19 @@ type Stack struct {
 	Status string
 }
 
+func (s Stack) String() string {
+	return s.Name + " " + s.Status
+}
+
 type Stacks []Stack
 
 type Resource struct {
 	LogicalID string
 	Status string
+}
+
+func (r Resource) String() string {
+	return r.LogicalID + " " + r.Status
 }
 
 type Resources []Resource
@@ -33,7 +41,7 @@ func init() {
 
 }
 
-func ListStacks(client *cloudformation.Client) (Stacks, error) {
+func ListStacks(client *cloudformation.Client) ([]Stack, error) {
 	stacks := Stacks{}
 
 	input := &cloudformation.DescribeStacksInput{}
@@ -49,7 +57,7 @@ func ListStacks(client *cloudformation.Client) (Stacks, error) {
 	return stacks, nil
 }
 
-func ListStackResources(client *cloudformation.Client, stackName string) (Resources, error) {
+func ListStackResources(client *cloudformation.Client, stackName string) ([]Resource, error) {
 	resources := Resources{}
 
 	input := &cloudformation.DescribeStackResourcesInput{
