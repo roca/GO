@@ -4,28 +4,29 @@ import (
 	"excercise-10-1/stacks"
 	"flag"
 	"fmt"
+	"log"
 )
 
 func main() {
-	stackName := flag.String("stack_name", "", "List resources from a stack")
-	allStacks := flag.Bool("all", false, "List all stacks")
+	stackName := flag.String("s", "", "List resources from a stack by name")
+	allStacks := flag.Bool("a", false, "List all stacks")
 	flag.Parse()
 
 	if *allStacks {
 		stacks, err := stacks.ListStacks(stacks.Client)
 		if err != nil {
-			panic(err)
+			log.Fatal(err)
 		}
 		Print(stacks)
-	} else {
-
-		fmt.Println("Resources for stack:", *stackName)
-		resources, err := stacks.ListStackResources(stacks.Client, *stackName)
-		if err != nil {
-			panic(err)
-		}
-		Print(resources)
+		return
 	}
+
+	resources, err := stacks.StackResources(stacks.Client, stackName)
+	if err != nil {
+		log.Fatalf("Stack with id %s does not exist", *stackName)
+	}
+	fmt.Println("Resources for stack:", *stackName)
+	Print(resources)
 }
 
 type X interface {

@@ -3,7 +3,6 @@ package stacks
 import (
 	"context"
 
-	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/cloudformation"
 )
@@ -19,18 +18,14 @@ func (s Stack) String() string {
 	return s.Name + " " + s.Status
 }
 
-type Stacks []Stack
-
 type Resource struct {
 	LogicalID string
-	Status string
+	Status    string
 }
 
 func (r Resource) String() string {
 	return r.LogicalID + " " + r.Status
 }
-
-type Resources []Resource
 
 func init() {
 	cfg, err := config.LoadDefaultConfig(context.TODO())
@@ -42,7 +37,7 @@ func init() {
 }
 
 func ListStacks(client *cloudformation.Client) ([]Stack, error) {
-	stacks := Stacks{}
+	stacks := []Stack{}
 
 	input := &cloudformation.DescribeStacksInput{}
 	resp, _ := client.DescribeStacks(context.TODO(), input)
@@ -57,11 +52,11 @@ func ListStacks(client *cloudformation.Client) ([]Stack, error) {
 	return stacks, nil
 }
 
-func ListStackResources(client *cloudformation.Client, stackName string) ([]Resource, error) {
-	resources := Resources{}
+func StackResources(client *cloudformation.Client, stackName *string) ([]Resource, error) {
+	resources := []Resource{}
 
 	input := &cloudformation.DescribeStackResourcesInput{
-		StackName: aws.String(stackName),
+		StackName: stackName,
 	}
 
 	resp, err := client.DescribeStackResources(context.TODO(), input)
@@ -71,7 +66,7 @@ func ListStackResources(client *cloudformation.Client, stackName string) ([]Reso
 	for _, resource := range resp.StackResources {
 		resources = append(resources, Resource{
 			LogicalID: *resource.LogicalResourceId,
-			Status: string(resource.ResourceStatus),
+			Status:    string(resource.ResourceStatus),
 		})
 	}
 
