@@ -1,7 +1,7 @@
 package main
 
 import (
-	share "excercise-10-2"
+	s3share "excercise-10-2"
 	"flag"
 	"fmt"
 	"log"
@@ -13,12 +13,21 @@ func main() {
 	bucketName := flag.String("bucket", "", "The bucket name")
 	flag.Parse()
 
-	err := share.UploadToS3(share.Client, fileName, bucketName)
+	if *fileName == "" {
+		flag.Usage()
+		log.Fatal("You must supply a file name")
+	}
+	if *bucketName == "" {
+		flag.Usage()
+		log.Fatal("You must supply a bucket name")
+	}
+
+	err := s3share.UploadToS3(s3share.Client, fileName, bucketName)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	url, err := share.GetS3Url(share.Client, bucketName, fileName)
+	url, err := s3share.GetS3Url(s3share.Client, bucketName, fileName)
 	if err != nil {
 		log.Fatal(err)
 	}

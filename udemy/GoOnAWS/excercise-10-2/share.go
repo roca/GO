@@ -1,4 +1,4 @@
-package share
+package s3share
 
 import (
 	"context"
