@@ -8,7 +8,7 @@ import (
 )
 
 func GetS3Url(client *s3.Client, bucketName *string, key *string) (string, error) {
-	lifetTimeSec := int64(3600)
+	lifeTimeSec := int64(3600)
 	s3PresignClient := s3.NewPresignClient(client)
 
 	req, err := s3PresignClient.PresignGetObject(
@@ -18,7 +18,7 @@ func GetS3Url(client *s3.Client, bucketName *string, key *string) (string, error
 			Key:    key,
 		},
 		func(opts *s3.PresignOptions) {
-			opts.Expires = time.Duration(lifetTimeSec * int64(time.Second))
+			opts.Expires = time.Duration(lifeTimeSec * int64(time.Second))
 		})
 
 	if err != nil {
