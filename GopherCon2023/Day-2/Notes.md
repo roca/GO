@@ -1,14 +1,14 @@
-# Day 1 talks morning
+# Day 1
 
 ## Opening keynote
 
 - Opt in Telemetry data
 
-## Idiomatic Go
+## Idiomatic Go Tells a Story
 
 - Make your package organization like a story
 
-## Obsorbing Go changes into K8s releases
+## Reliably Absorbing a Go Release: Learnings from the Kubernetes Community
 
 - releasing cycling is not in sync
 
@@ -22,8 +22,5 @@
 - 80 billion took 6 days (using concurrency) down from from 361 days (sequentially)
 - [Blog](https://cloud.google.com/blog/products/databases/bitly-migrates-link-data-from-mysql-to-bigtable-for-scalability)
 - [Github](https://github.com/zoemccormick/migrating-data-using-go)
-
-
-# Lighting talks 
 
 ## Go Microservices for ML at the Edge
