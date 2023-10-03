@@ -17,4 +17,5 @@ use (
 	./go-on-aws-source/aws-go-sdk-v2/dynamodb/crud/go/create-table
 	./go-on-aws-source/aws-go-sdk-v2/dynamodb/crud/go/read-struct
 	./go-on-aws-source/aws-go-sdk-v2/listbuckets
+	./go-on-aws-source/aws-go-sdk-v2/assume-role
 )
