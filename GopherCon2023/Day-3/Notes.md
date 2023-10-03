@@ -17,3 +17,9 @@
 ## Automatically Instrument Your Go Source Code with Orchestrion
 
 ## Closing Keynote: Vulnerability Management for Go
+
+- [Blog Post](https://go.dev/blog/vuln)
+
+```sh
+  go install golang.org/x/vuln/cmd/govulncheck@latest
+```
