@@ -18,4 +18,5 @@ use (
 	./go-on-aws-source/aws-go-sdk-v2/dynamodb/crud/go/read-struct
 	./go-on-aws-source/aws-go-sdk-v2/listbuckets
 	./go-on-aws-source/aws-go-sdk-v2/assume-role
+	./go-on-aws-source/infrastructure-as-go/cdk-go/cdktable-init
 )
