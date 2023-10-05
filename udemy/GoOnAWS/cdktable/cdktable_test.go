@@ -1,4 +1,4 @@
-package  cdktable
+package  cdktable_test
 
 // import (
 // 	"testing"

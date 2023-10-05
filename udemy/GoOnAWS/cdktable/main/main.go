@@ -15,7 +15,7 @@ func main() {
 	app := awscdk.NewApp(nil)
 
 	cdktable.NewCdktableStack(app, "CdktableStack", &cdktable.CdktableStackProps{
-		awscdk.StackProps{
+		StackProps: awscdk.StackProps{
 			Env: env(),
 		},
 	})
