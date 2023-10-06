@@ -4,10 +4,14 @@ version: '3'
 
 vars:
   GREETING: Hello, World!
+  version: 2.99.1
+  PROFILE: go-aws-sdk
+
+env:
+  AWS_DEFAULT_REGION: us-east-1
+  CDK_DEFAULT_REGION: us-east-1
 
 tasks:
-
-  
 
   build:
     desc: build go
@@ -28,9 +32,9 @@ tasks:
     deps: [build]
     vars:
       FN:      
-        sh: aws ssm get-parameter --name "simplefunction" --query "Parameter.Value" --output text
+        sh: aws ssm get-parameter --name "simplefunction" --query "Parameter.Value" --output text --profile {{.PROFILE}} --region us-east-1
     cmds:
-      - aws lambda update-function-code --function-name  {{.FN}} --zip-file fileb://../dist/main.zip
+      - aws lambda update-function-code --function-name  {{.FN}} --zip-file fileb://../dist/main.zip --profile {{.PROFILE}} --region us-east-1
 
   test:
     desc: all go test

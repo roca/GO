@@ -22,4 +22,6 @@ use (
 	./cdktable
 	./go-on-aws-source/lambda-go/lambda-cdk/hello-world/app
 	./go-on-aws-source/lambda-go/lambda-cdk/hello-world/infra
+	./excercise-15-1/app
+	./excercise-15-1/infra
 )
