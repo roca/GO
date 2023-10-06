@@ -3,15 +3,15 @@
 version: '3'
 
 vars:
-  version: 2.80.0
-  PROFILE: letstrain
+  version: 2.99.1
+  PROFILE: go-aws-sdk
 
 
 env:
-  AWS_DEFAULT_REGION: eu-central-1
-  CDK_DEFAULT_REGION: eu-central-1
+  AWS_DEFAULT_REGION: us-east-1
+  CDK_DEFAULT_REGION: us-east-1
   CDK_DEFAULT_ACCOUNT: 
-    sh: aws sts get-caller-identity --query Account --output text
+    sh: aws sts get-caller-identity --query Account --output text --profile go-aws-sdk
 
 tasks:
 
@@ -23,13 +23,13 @@ tasks:
   list:
     desc: List stacks 
     cmds:
-      - npx aws-cdk@{{.version}} ls
+      - npx aws-cdk@{{.version}} ls --profile {{.PROFILE}}
     
 
   diff:
     desc: Show stack differences
     cmds:
-      - npx aws-cdk@{{.version}} diff
+      - npx aws-cdk@{{.version}} diff --profile {{.PROFILE}}
     
   deploy:
     desc: deploy stack without asking
