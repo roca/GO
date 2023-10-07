@@ -2,7 +2,10 @@ module app
 
 go 1.21.0
 
+replace dslapp => ../app
+
 require (
+	dslapp v0.0.0
 	github.com/PaddleHQ/go-aws-ssm v0.8.0
 	github.com/aws/aws-lambda-go v1.19.1
 	github.com/aws/aws-sdk-go-v2 v1.11.2

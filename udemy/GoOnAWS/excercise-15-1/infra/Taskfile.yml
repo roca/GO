@@ -3,13 +3,14 @@
 version: '3'
 
 vars:
-  version: 2.80.0
-  PROFILE: letstrain
+  version: 2.99.1
+  PROFILE: go-aws-sdk
 
 
 env:
-  AWS_DEFAULT_REGION: eu-central-1
-  CDK_DEFAULT_REGION: eu-central-1
+  AWS_DEFAULT_REGION: us-east-1
+  AWS_DEFAULT_PROFILE: go-aws-sdk
+  CDK_DEFAULT_REGION: us-east-1
   CDK_DEFAULT_ACCOUNT: 
     sh: aws sts get-caller-identity --query Account --output text
 

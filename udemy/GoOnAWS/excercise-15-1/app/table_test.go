@@ -1,4 +1,4 @@
-package dsl_test
+package dslapp_test
 
 import (
 	"reflect"
@@ -12,23 +12,21 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 
-	"dsl"
+	"dslapp"
 )
 
 const testkey = "kjhkjjhollymolly"
 
-
 func TestPutItem(t *testing.T) {
 	t.Log("App - DynamodD Put Item")
-	PutItemMock := func(ctx context.Context, params *dynamodb.PutItemInput)(*dynamodb.PutItemOutput, error) {
-		
+	PutItemMock := func(ctx context.Context, params *dynamodb.PutItemInput) (*dynamodb.PutItemOutput, error) {
+
 		item := params.Item["itemID"]
-		
-		
+
 		expected := &types.AttributeValueMemberS{
 			Value: testkey,
 		}
-		assert.Equal(t,ptrToValue(expected),ptrToValue(item))
+		assert.Equal(t, ptrToValue(expected), ptrToValue(item))
 		return &dynamodb.PutItemOutput{}, nil
 	}
 
@@ -37,12 +35,10 @@ func TestPutItem(t *testing.T) {
 	mockCfg.AddHandler(PutItemMock)
 	client := dynamodb.NewFromConfig(mockCfg.AwsConfig())
 
-
-
-	err := dsl.PutItem(client,testkey, "egal")
+	err := dslapp.PutItem(client, testkey, "egal")
 	assert.NilError(t, err, "Error should be nil")
 
-	// PutItem(tt.args.client, tt.args.itemID, tt.args.tableName); 
+	// PutItem(tt.args.client, tt.args.itemID, tt.args.tableName);
 
 }
 
