@@ -1,4 +1,4 @@
-package dsl_test
+package dslapp_test
 
 import (
 	"context"
@@ -11,12 +11,11 @@ import (
 	paddle "github.com/PaddleHQ/go-aws-ssm"
 	"gotest.tools/assert"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"github.com/aws/aws-sdk-go-v2/aws"
-	
 )
 
 var params *paddle.Parameters
@@ -51,7 +50,7 @@ func init() {
 func TestAppInvokeLambdaWithEvent(t *testing.T) {
 	if os.Getenv("I_TEST") != "yes" {
 		t.Skip("Skipping testing in non Integration environment")
-	  }
+	}
 	table := params.GetValueByName("table")
 	bucket := params.GetValueByName("bucket")
 
@@ -71,9 +70,9 @@ func TestAppInvokeLambdaWithEvent(t *testing.T) {
 	_, err := ClientD.DeleteItem(context.TODO(), parmsDDBDelete)
 	assert.NilError(t, err, "Delete Item should work")
 	parmsDDBGet := &dynamodb.GetItemInput{
-		Key:                      key,
-		TableName:                &table,
-		ConsistentRead:           aws.Bool(true),
+		Key:            key,
+		TableName:      &table,
+		ConsistentRead: aws.Bool(true),
 	}
 	responseDDB, err := ClientD.GetItem(context.TODO(), parmsDDBGet)
 	assert.Equal(t, 0, len(responseDDB.Item), "Delete should work")
@@ -103,4 +102,3 @@ func TestAppInvokeLambdaWithEvent(t *testing.T) {
 	assert.Equal(t, 2, len(responseDDB.Item))
 
 }
-

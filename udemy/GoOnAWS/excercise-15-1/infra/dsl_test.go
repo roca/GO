@@ -19,7 +19,7 @@ func TestInfraDslStack(t *testing.T) {
 	stack := dsl.NewDslStack(app, "MyStack", nil)
 
 	// THEN
-	template := assertions.Template_FromStack(stack)
+	template := assertions.Template_FromStack(stack, &assertions.TemplateParsingOptions{})
 
 	template.HasResourceProperties(aws.String("AWS::Lambda::Function"), map[string]interface{}{
 		"Runtime": "go1.x",

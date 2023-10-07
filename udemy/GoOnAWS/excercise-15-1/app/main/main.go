@@ -1,39 +1,36 @@
 package main
 
-
 import (
 	"context"
+	"dslapp"
 	"os"
-	"dsl"
+
 	//begin events
 	"github.com/aws/aws-lambda-go/events"
 
 	//end events
 	"github.com/aws/aws-lambda-go/lambda"
-
-
 )
+
 // HandleRequest S3 Event
-//begin events
+// begin events
 func handler(ctx context.Context, s3Event events.S3Event) {
-//end events
+	//end events
 	// See https://github.com/aws/aws-lambda-go/tree/master/events
 	// Handle only one event
 	//begin logic
-	s3input := dsl.ExtractKey(s3Event);
+	s3input := dslapp.ExtractKey(s3Event)
 	tableName := os.Getenv("TableName")
 
-	err := dsl.PutItem(dsl.Client, s3input,tableName)
+	err := dslapp.PutItem(dslapp.Client, s3input, tableName)
 	//end logic
-	if err != nil{
+	if err != nil {
 		panic(err)
 	}
 }
-
 
 func main() {
 
 	lambda.Start(handler)
 
 }
-

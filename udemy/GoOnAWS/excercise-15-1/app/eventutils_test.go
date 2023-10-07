@@ -1,24 +1,27 @@
-//begin package 
-package dsl_test
+// begin package
+package dslapp_test
+
 //end package
 
 import (
+	"encoding/json"
+	"io/ioutil"
 	"os"
 	"testing"
-    "io/ioutil"
-	"encoding/json"
+
 	"gotest.tools/assert"
-	
+
+	"dslapp"
+
 	"github.com/aws/aws-lambda-go/events"
-	"dsl"
 )
 
-//begin testfunction
-func TestAppExtractObject(t *testing.T){
+// begin testfunction
+func TestAppExtractObject(t *testing.T) {
 	//end testfunction
 
 	//begin mockevent
-	var s3event events.S3Event;
+	var s3event events.S3Event
 
 	const testfile = "testdata/put.json"
 	jsonFile, err := os.Open(testfile)
@@ -34,13 +37,13 @@ func TestAppExtractObject(t *testing.T){
 	}
 
 	err = json.Unmarshal([]byte(byteValue), &s3event)
-	assert.Equal(t,nil,err);
+	assert.Equal(t, nil, err)
 	//end mockevent
 
 	//begin assertion
 	expectedKey := "my2etestkey.txt"
-	realKey := dsl.ExtractKey(s3event);
-	assert.Equal(t, expectedKey,realKey)
+	realKey := dslapp.ExtractKey(s3event)
+	assert.Equal(t, expectedKey, realKey)
 	//end assertion
-	
+
 }

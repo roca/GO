@@ -4,8 +4,13 @@
 
 version: '3'
 # begin env
+vars:
+  version: 2.99.1
+  PROFILE: go-aws-sdk
 env:
-  AWS_DEFAULT_REGION: eu-central-1
+  AWS_DEFAULT_REGION: us-east-1
+  AWS_DEFAULT_PROFILE: go-aws-sdk
+  
 #end env
 tasks:
   default:
