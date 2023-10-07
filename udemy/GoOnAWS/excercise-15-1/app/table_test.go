@@ -35,7 +35,7 @@ func TestPutItem(t *testing.T) {
 	mockCfg.AddHandler(PutItemMock)
 	client := dynamodb.NewFromConfig(mockCfg.AwsConfig())
 
-	err := dslapp.PutItem(client, testkey, "egal")
+	err := dslapp.PutItem(client, testkey, "egal", "someBucket")
 	assert.NilError(t, err, "Error should be nil")
 
 	// PutItem(tt.args.client, tt.args.itemID, tt.args.tableName);

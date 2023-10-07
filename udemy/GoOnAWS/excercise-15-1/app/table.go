@@ -26,7 +26,7 @@ func init() {
 	Client = dynamodb.NewFromConfig(cfg)
 }
 
-func PutItem(client *dynamodb.Client, itemID string, tableName string) error {
+func PutItem(client *dynamodb.Client, itemID string, tableName string, s3BucketName string) error {
 
 	t := time.Now()
 	//begin dynamodbput
@@ -37,6 +37,9 @@ func PutItem(client *dynamodb.Client, itemID string, tableName string) error {
 			},
 			"time": &types.AttributeValueMemberS{
 				Value: t.String(),
+			},
+			"s3BucketName": &types.AttributeValueMemberS{
+				Value: s3BucketName,
 			},
 		},
 		TableName: aws.String(tableName),
