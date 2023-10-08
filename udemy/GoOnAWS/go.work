@@ -24,4 +24,5 @@ use (
 	./excercise-6-1
 	./excercise-7-1
 	./excercise-9-1
+	./go-on-aws-source/go-the-language/L20-exercise-function-basics/code-task2
 )
