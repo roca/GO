@@ -2,20 +2,20 @@ package people_test
 
 import (
 	"testing"
-	"walkintoabar/people"
+	"walkintoabar/testdata/people-fail"
 )
 
 func TestMoodString(t *testing.T) {
 	//begin expected
 	tests := []struct {
-		mood         people.Mood
-		expectedStr  string
+		mood        people.Mood
+		expectedStr string
 	}{
 		{people.Neutral, "neural"},
 		{people.Mood(100), "unknown"}, // Test case for unknown mood
 	}
 	//end expected
-	
+
 	//begin test
 	for _, test := range tests {
 		result := test.mood.String()
