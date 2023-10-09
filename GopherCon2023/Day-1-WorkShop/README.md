@@ -10,6 +10,7 @@
 ## Project 4 Iteration 1
 
 -[honeycomb.io](https://docs.honeycomb.io/quickstart/)
+-[honeycomb sandbox](https://play.honeycomb.io/sandbox/environments/analyze-debug-tour)
 
 ### Step 1
 
