@@ -5,3 +5,5 @@
 [Course slides](https://www.go-on-aws.com/)
 
 [cdkstat command](https://github.com/megaproaktiv/cdkstats)
+
+[Step-by-Step Guide to Building a Serverless Text to Speech Solution using Golang on AWS](https://itnext.io/step-by-step-guide-to-building-a-serverless-text-to-speech-solution-using-golang-on-aws-d80037416688)
