@@ -8,4 +8,10 @@
 
 - 4. Generate Go source code from protobuf definition
 
+```sh
+protoc --go_out=. --go_opt=paths=source_relative \
+--go-grpc_out=. --go-grpc_opt=paths=source_relative \
+./hello.proto
+```
+
 - 5. Write Go application to create new Hello and display it
