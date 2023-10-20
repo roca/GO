@@ -4,6 +4,6 @@ syntax = "proto3";
 option go_package = "project01/hello";
 
 message Hello {
-	string name = 1;
+  string name = 1;
 }
 
