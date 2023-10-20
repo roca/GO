@@ -2,7 +2,7 @@ package basic
 
 import (
 	"log"
-	"project01/hello"
+	"project01/hello/protogen"
 )
 
 func BasicHello() {

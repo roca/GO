@@ -1,0 +1,11 @@
+
+syntax = "proto3";
+
+option go_package = "project01/hello";
+
+message User {
+  uint32 id = 1;
+  string username = 2;
+  bool is_active = 3;
+  bytes password = 4;
+}

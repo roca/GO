@@ -16,5 +16,6 @@ func (writer logWriter) Write(bytes []byte) (int, error) {
 func main() {
 	log.SetFlags(0)
 	log.SetOutput(new(logWriter))
-	basic.BasicHello()
+	// basic.BasicHello()
+	basic.BasicUser()
 }
