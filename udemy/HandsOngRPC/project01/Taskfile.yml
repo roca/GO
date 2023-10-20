@@ -4,4 +4,14 @@ tasks:
   build:
     dir: './hello'
     cmds:
-      - protoc --go_out=. --go_opt=paths=source_relative ./hello.proto
+      - mkdir -p ./protogen
+      - protoc --go_out=./protogen --go_opt=paths=source_relative ./*.proto
+  run:
+    dir: '.'
+    deps: [build]
+    cmds:
+      - go run main.go
+  execute:
+    dir: '.'
+    cmds:
+      - go run main.go

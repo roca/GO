@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	pb "project01/hello"
+	pb "project01/hello/protogen"
 )
 
 func getHello(w http.ResponseWriter, r *http.Request) {
