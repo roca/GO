@@ -1,0 +1,7 @@
+version: '3'
+
+tasks:
+  build:
+    dir: './hello'
+    cmds:
+      - protoc --go_out=. --go_opt=paths=source_relative ./hello.proto
