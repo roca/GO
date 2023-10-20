@@ -12,7 +12,7 @@ func getHello(w http.ResponseWriter, r *http.Request) {
 	req := pb.Hello{
 		Name: name,
 	}
-	w.Write([]byte(req.Name))
+	w.Write([]byte("Hello " + req.Name))
 }
 
 func main() {
