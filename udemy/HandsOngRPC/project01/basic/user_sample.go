@@ -10,7 +10,7 @@ func BasicUser() {
 		Username: "Superman",
 		IsActive: true,
 		Password: []byte("supermanpassword"),
-		Id:       1,
+		Id:       11,
 	}
 	log.Println(&u)
 }
