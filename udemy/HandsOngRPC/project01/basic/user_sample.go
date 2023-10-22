@@ -7,10 +7,12 @@ import (
 
 func BasicUser() {
 	u := hello.User{
+		Id:       11,
 		Username: "Superman",
 		IsActive: true,
 		Password: []byte("supermanpassword"),
-		Id:       11,
+		Emails:   []string{"superman@movie.com", "superman@dc.com"},
+		Gender:   hello.Gender_GENDER_MALE,
 	}
 	log.Println(&u)
 }
