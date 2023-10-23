@@ -41,22 +41,10 @@ func JsonToProtoUser() {
 		"password": "batmannpassword",
 		"emails": [
 			"batman@movie.com",
-			"batman@dc.com",
+			"batman@dc.com"
 		],
 		"gender": "GENDER_MALE"
 	}`)
-
-	// jsonBytes := []byte(`{
-	// 	"id":97, 
-	// 	"username": "batman", 
-	// 	"is_active": true, 
-	// 	"password": "batmannpassword", 
-	// 	"emails":[
-	// 		"batman@movie.com", 
-	// 		"batman@dc.com"
-	// 	], 
-	// 	"gender": "GENDER_MALE"
-	// 	}`)
 
 	var p hello.User
 
