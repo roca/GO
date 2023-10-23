@@ -17,5 +17,7 @@ func main() {
 	log.SetFlags(0)
 	log.SetOutput(new(logWriter))
 	// basic.BasicHello()
-	basic.BasicUser()
+	// basic.BasicUser()
+	//basic.ProtoToJsonUser()
+	basic.JsonToProtoUser()
 }
