@@ -16,4 +16,11 @@ message User {
   bytes password = 4;
   repeated string emails = 16;
   Gender gender = 17;
+  Address address = 18;
+}
+
+message  Address {
+  string street = 1;
+  string city = 2;
+  string country = 3;
 }

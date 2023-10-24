@@ -8,6 +8,13 @@ import (
 )
 
 func BasicUser() {
+
+	addr := &hello.Address{
+		Street: "Daily Planet",
+		City: "Metropolis",
+		Country: "US",
+	}
+
 	u := hello.User{
 		Id:       11,
 		Username: "Superman",
@@ -15,8 +22,11 @@ func BasicUser() {
 		Password: []byte("supermanpassword"),
 		Emails:   []string{"superman@movie.com", "superman@dc.com"},
 		Gender:   hello.Gender_GENDER_MALE,
+		Address: addr,
 	}
-	log.Println(&u)
+
+	jsonBytes, _ := protojson.Marshal(&u)
+	log.Println(string(jsonBytes))
 }
 
 func ProtoToJsonUser() {
