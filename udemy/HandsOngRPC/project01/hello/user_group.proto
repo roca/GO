@@ -1,14 +1,16 @@
 
 syntax = "proto3";
 
-import "project01/hello/user.proto";
+import "./user.proto";
 
 option go_package = "project01/hello";
 
 message UserGroup {
-  uint32 group_id = 1;
-  string group_namwe = 2;
+  uint32 group_id = 1 [json_name = "group_id"];
+  string group_name = 2 [json_name = "group_name"];
   repeated string roles = 3;
   repeated User users = 4;
-  string description = 5;
+  
+  
+  string description = 16;
 }
