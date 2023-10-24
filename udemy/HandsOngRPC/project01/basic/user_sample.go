@@ -13,6 +13,10 @@ func BasicUser() {
 		Street: "Daily Planet",
 		City: "Metropolis",
 		Country: "US",
+		Coordinate: &hello.Address_Coordinate{
+			Latitude: 40.70797893425118,
+			Longitude: -74.01163838107261,
+		},
 	}
 
 	u := hello.User{
