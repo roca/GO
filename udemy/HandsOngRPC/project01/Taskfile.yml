@@ -1,12 +1,29 @@
 version: '3'
 
 tasks:
-  build:
-    dir: './proto/basic'
+  build_basic:
+    dir: './proto'
     cmds:
-      - mkdir -p ./protogen
-      - protoc --go_out=./protogen --go_opt=paths=source_relative ./*.proto
+      - mkdir -p ./basic/protogen
+      - protoc --go_out=./basic/protogen --go_opt=paths=source_relative ./basic/*.proto
       - go mod tidy
+  build_dummy:
+    dir: './proto'
+    cmds:
+      - mkdir -p ./dummy/protogen
+      - protoc --go_out=./dummy/protogen --go_opt=paths=source_relative ./dummy/*.proto
+      - go mod tidy
+  build_jobsearch:
+    dir: './proto'
+    cmds:
+      - mkdir -p ./jobsearch/protogen
+      - protoc --go_out=./jobsearch/protogen --go_opt=paths=source_relative ./jobsearch/*.proto
+      - go mod tidy
+  build:
+    cmds:
+      - task build_basic
+      - task build_dummy
+      - task build_jobsearch
   run:
     dir: '.'
     deps: [build]

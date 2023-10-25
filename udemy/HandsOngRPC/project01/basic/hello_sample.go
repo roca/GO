@@ -2,7 +2,7 @@ package basic
 
 import (
 	"log"
-	pb "project01/proto/basic/protogen"
+	pb "project01/proto/basic/protogen/basic"
 )
 
 func Basicpb() {
