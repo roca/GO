@@ -2,11 +2,11 @@ package basic
 
 import (
 	"log"
-	hello "project01/hello/protogen"
+	pb "project01/proto/basic/protogen"
 )
 
-func BasicHello() {
-	h := hello.Hello{
+func Basicpb() {
+	h := pb.Hello{
 		Name: "Clark Kent",
 	}
 	log.Println(&h)

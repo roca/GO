@@ -2,40 +2,40 @@ package basic
 
 import (
 	"log"
-	hello "project01/hello/protogen"
+	pb "project01/proto/basic/protogen"
 
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
 func BasicUserGroup() {
-	batman := hello.User{
+	batman := pb.User{
 		Id:       97,
 		Username: "batman",
 		IsActive: true,
 		Password: []byte("batmanpassword"),
-		Gender:   hello.Gender_GENDER_MALE,
+		Gender:   pb.Gender_GENDER_MALE,
 	}
 
-	nightwing := hello.User{
+	nightwing := pb.User{
 		Id:       96,
 		Username: "nightwing",
 		IsActive: true,
 		Password: []byte("nightwingpassword"),
-		Gender:   hello.Gender_GENDER_MALE,
+		Gender:   pb.Gender_GENDER_MALE,
 	}
 
-	robin := hello.User{
+	robin := pb.User{
 		Id:       96,
 		Username: "robin",
 		IsActive: true,
 		Password: []byte("robinpassword"),
-		Gender:   hello.Gender_GENDER_MALE,
+		Gender:   pb.Gender_GENDER_MALE,
 	}
 
-	batFamily := hello.UserGroup{
+	batFamily := pb.UserGroup{
 		GroupId:     999,
 		GroupName:   "Bat Family",
-		Users:       []*hello.User{&batman, &nightwing, &robin},
+		Users:       []*pb.User{&batman, &nightwing, &robin},
 		Description: "The classic bat family",
 	}
 

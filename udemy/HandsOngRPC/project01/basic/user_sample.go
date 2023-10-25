@@ -2,30 +2,30 @@ package basic
 
 import (
 	"log"
-	hello "project01/hello/protogen"
+	pb "project01/proto/basic/protogen"
 
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
 func BasicUser() {
 
-	addr := &hello.Address{
+	addr := &pb.Address{
 		Street: "Daily Planet",
 		City: "Metropolis",
 		Country: "US",
-		Coordinate: &hello.Address_Coordinate{
+		Coordinate: &pb.Address_Coordinate{
 			Latitude: 40.70797893425118,
 			Longitude: -74.01163838107261,
 		},
 	}
 
-	u := hello.User{
+	u := pb.User{
 		Id:       11,
 		Username: "Superman",
 		IsActive: true,
 		Password: []byte("supermanpassword"),
 		Emails:   []string{"superman@movie.com", "superman@dc.com"},
-		Gender:   hello.Gender_GENDER_MALE,
+		Gender:   pb.Gender_GENDER_MALE,
 		Address: addr,
 	}
 
@@ -34,13 +34,13 @@ func BasicUser() {
 }
 
 func ProtoToJsonUser() {
-	u := hello.User{
+	u := pb.User{
 		Id:       99,
 		Username: "wonderwoman",
 		IsActive: true,
 		Password: []byte("wonderwomanpassword"),
 		Emails:   []string{"wonderwoman@movie.com", "wonderwoman@dc.com"},
-		Gender:   hello.Gender_GENDER_FEMALE,
+		Gender:   pb.Gender_GENDER_FEMALE,
 	}
 
 	jsonBytes, _ := protojson.Marshal(&u)
@@ -60,7 +60,7 @@ func JsonToProtoUser() {
 		"gender": "GENDER_MALE"
 	}`)
 
-	var p hello.User
+	var p pb.User
 
 	err := protojson.Unmarshal(jsonBytes, &p)
 
