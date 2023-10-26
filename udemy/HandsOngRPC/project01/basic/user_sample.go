@@ -30,6 +30,15 @@ func BasicUser() {
 		SocialMediaUsername: "batman",
 	}
 
+	skills := map[string]uint32{
+		"Go":     9,
+		"Python": 8,
+		"Java":   6,
+		"Kotlin": 7,
+		"Ruby":   9,
+	}
+	
+
 	u := pb.User{
 		Id:                   11,
 		Username:             "Superman",
@@ -42,6 +51,7 @@ func BasicUser() {
 		ElectronicCommChannel: &pb.User_SocialMedia{
 			SocialMedia: socialMedia,
 		},
+		SkillRating: skills,
 	}
 
 	jsonBytes, _ := protojson.Marshal(&u)
