@@ -18,11 +18,11 @@ func main() {
 	log.SetOutput(new(logWriter))
 
 	// basic.BasicHello()
-	// basic.BasicUser()
+	basic.BasicUser()
 	// basic.ProtoToJsonUser()
 	// basic.JsonToProtoUser()
 	//basic.BasicUserGroup()
 	//jobsearch.JobSearchSoftware()
 	//jobsearch.JobSearchCandidate()
-	basic.BasicUnMarshalAynKnown()
+	// basic.BasicUnMarshalAynKnown()
 }

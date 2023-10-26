@@ -1,8 +1,8 @@
 
 syntax = "proto3";
 
+import "basic/communication.proto";
 import "google/protobuf/any.proto";
-// import "basic/communication.proto";
 
 option go_package = "project01/proto/basic";
 
@@ -23,13 +23,12 @@ message User {
   google.protobuf.Any communication_channel = 19 [
     json_name = "communication_channel"
   ];
-  // oneof communication_channel {
-  //   PaperMail paper_mail = 19 [json_name = "paper_mail"];
-  //   SocialMedia social_media = 20 [json_name = "social_media"];
-  //   InstantMessaging instant_messaging = 21 [
-  //     json_name = "instant_messaging"
-  //   ];
-  // }
+  oneof electronic_comm_channel {
+    SocialMedia social_media = 20 [json_name = "social_media"];
+    InstantMessaging instant_messaging = 21 [
+      json_name = "instant_messaging"
+    ];
+  }
 }
 
 message  Address {
