@@ -5,6 +5,8 @@ import (
 	pb "project01/proto/basic/protogen/basic"
 
 	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/anypb"
 )
 
 func BasicUser() {
@@ -16,18 +18,25 @@ func BasicUser() {
 		Coordinate: &pb.Address_Coordinate{Latitude: 40.70797893425118, Longitude: -74.01163838107261},
 	}
 
-	// a := anypb.Any{}
+	a := &anypb.Any{}
+	paperMail := &pb.PaperMail{PaperMailAddress: "Daily Planet, Metropolis, US"}
+	err := anypb.MarshalFrom(a, paperMail, proto.MarshalOptions{})
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	u := pb.User{
-		Id:       11,
-		Username: "Superman",
-		IsActive: true,
-		Password: []byte("supermanpassword"),
-		Emails:   []string{"superman@movie.com", "superman@dc.com"},
-		Gender:   pb.Gender_GENDER_MALE,
-		Address:  addr,
-		CommunicationChannel: &pb.User_PaperMail{
-			PaperMail: &pb.PaperMail{PaperMailAddress: "Daily Planet, Metropolis, US"},
-		},
+		Id:                   11,
+		Username:             "Superman",
+		IsActive:             true,
+		Password:             []byte("supermanpassword"),
+		Emails:               []string{"superman@movie.com", "superman@dc.com"},
+		Gender:               pb.Gender_GENDER_MALE,
+		Address:              addr,
+		CommunicationChannel: a,
+		// CommunicationChannel: &pb.User_PaperMail{
+		// 	PaperMail: paperMail,
+		// },
 	}
 
 	jsonBytes, _ := protojson.Marshal(&u)
@@ -69,5 +78,36 @@ func JsonToProtoUser() {
 		log.Fatal(err)
 	}
 	log.Println(&p)
+}
 
+func BasicUnMarshalAynKnown() {
+	socailMedia := &pb.SocialMedia{
+		SocialMediaPlatform: "Twitter",
+		SocialMediaUsername: "batman",
+	}
+
+	var a anypb.Any
+	err := anypb.MarshalFrom(&a, socailMedia, proto.MarshalOptions{})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	sm := &pb.SocialMedia{}
+
+	if err := a.UnmarshalTo(sm); err != nil {
+		log.Fatal(err)
+	}
+
+	jsonBytes, _ := protojson.Marshal(sm)
+	log.Println(string(jsonBytes))
+
+	if a.MessageIs(&pb.SocialMedia{}) {
+		unmarsheled, err := a.UnmarshalNew()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		log.Println("Unmarshled as:", unmarsheled.ProtoReflect().Descriptor().FullName())
+		log.Println("It's a SocialMedia type")
+	}
 }
