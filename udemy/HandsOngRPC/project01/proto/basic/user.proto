@@ -1,8 +1,8 @@
 
 syntax = "proto3";
 
-//import "google/protobuf/any.proto";
-import "basic/communication.proto";
+import "google/protobuf/any.proto";
+// import "basic/communication.proto";
 
 option go_package = "project01/proto/basic";
 
@@ -20,16 +20,16 @@ message User {
   repeated string emails = 16;
   Gender gender = 17;
   Address address = 18;
-  // google.protobuf.Any communication_channel = 19 [
-  //   json_name = "communication_channel"
-  // ];
-  oneof communication_channel {
-    PaperMail paper_mail = 19 [json_name = "paper_mail"];
-    SocialMedia social_media = 20 [json_name = "social_media"];
-    InstantMessaging instant_messaging = 21 [
-      json_name = "instant_messaging"
-    ];
-  }
+  google.protobuf.Any communication_channel = 19 [
+    json_name = "communication_channel"
+  ];
+  // oneof communication_channel {
+  //   PaperMail paper_mail = 19 [json_name = "paper_mail"];
+  //   SocialMedia social_media = 20 [json_name = "social_media"];
+  //   InstantMessaging instant_messaging = 21 [
+  //     json_name = "instant_messaging"
+  //   ];
+  // }
 }
 
 message  Address {
