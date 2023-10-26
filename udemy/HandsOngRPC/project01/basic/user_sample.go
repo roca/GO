@@ -25,6 +25,11 @@ func BasicUser() {
 		log.Fatal(err)
 	}
 
+	socialMedia := &pb.SocialMedia{
+		SocialMediaPlatform: "Twitter",
+		SocialMediaUsername: "batman",
+	}
+
 	u := pb.User{
 		Id:                   11,
 		Username:             "Superman",
@@ -34,9 +39,9 @@ func BasicUser() {
 		Gender:               pb.Gender_GENDER_MALE,
 		Address:              addr,
 		CommunicationChannel: a,
-		// CommunicationChannel: &pb.User_PaperMail{
-		// 	PaperMail: paperMail,
-		// },
+		ElectronicCommChannel: &pb.User_SocialMedia{
+			SocialMedia: socialMedia,
+		},
 	}
 
 	jsonBytes, _ := protojson.Marshal(&u)
@@ -81,13 +86,13 @@ func JsonToProtoUser() {
 }
 
 func BasicUnMarshalAynKnown() {
-	socailMedia := &pb.SocialMedia{
+	socialMedia := &pb.SocialMedia{
 		SocialMediaPlatform: "Twitter",
 		SocialMediaUsername: "batman",
 	}
 
 	var a anypb.Any
-	err := anypb.MarshalFrom(&a, socailMedia, proto.MarshalOptions{})
+	err := anypb.MarshalFrom(&a, socialMedia, proto.MarshalOptions{})
 	if err != nil {
 		log.Fatal(err)
 	}
