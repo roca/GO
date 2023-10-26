@@ -29,6 +29,7 @@ message User {
       json_name = "instant_messaging"
     ];
   }
+  map<string, uint32> skill_rating = 22 [json_name = "skill_rating"];
 }
 
 message  Address {
