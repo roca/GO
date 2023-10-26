@@ -81,7 +81,11 @@ type User struct {
 	Emails   []string `protobuf:"bytes,16,rep,name=emails,proto3" json:"emails,omitempty"`
 	Gender   Gender   `protobuf:"varint,17,opt,name=gender,proto3,enum=Gender" json:"gender,omitempty"`
 	Address  *Address `protobuf:"bytes,18,opt,name=address,proto3" json:"address,omitempty"`
-	// google.protobuf.Any communication_channel = 19;
+	// google.protobuf.Any communication_channel = 19 [
+	//
+	//	json_name = "communication_channel"
+	//
+	// ];
 	//
 	// Types that are assignable to CommunicationChannel:
 	//

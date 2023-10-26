@@ -4,13 +4,19 @@ syntax = "proto3";
 option go_package = "project01/proto/basic";
 
 message PaperMail {
-  string address = 1;
+  string paper_mail_address = 1 [json_name = "paper_mail_address"];
 }
 
 message SocialMedia {
-
+  string social_media_platform = 1 [json_name = "social_media_platform"];
+  string social_media_username = 2 [json_name = "social_media_username"];
 }
 
 message InstantMessaging {
-
+  string instant_messaging_product = 1 [
+    json_name = "instant_messaging_product"
+  ];
+  string instant_messaging_username = 2 [
+    json_name = "instant_messaging_username"
+  ];
 }

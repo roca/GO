@@ -16,7 +16,7 @@ func BasicUser() {
 		Coordinate: &pb.Address_Coordinate{Latitude: 40.70797893425118, Longitude: -74.01163838107261},
 	}
 
-	//a:= anypb.Any{}
+	// a := anypb.Any{}
 	u := pb.User{
 		Id:       11,
 		Username: "Superman",
@@ -26,7 +26,7 @@ func BasicUser() {
 		Gender:   pb.Gender_GENDER_MALE,
 		Address:  addr,
 		CommunicationChannel: &pb.User_PaperMail{
-			PaperMail: &pb.PaperMail{Address: "Daily Planet, Metropolis, US"},
+			PaperMail: &pb.PaperMail{PaperMailAddress: "Daily Planet, Metropolis, US"},
 		},
 	}
 

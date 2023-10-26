@@ -20,11 +20,15 @@ message User {
   repeated string emails = 16;
   Gender gender = 17;
   Address address = 18;
-  // google.protobuf.Any communication_channel = 19;
+  // google.protobuf.Any communication_channel = 19 [
+  //   json_name = "communication_channel"
+  // ];
   oneof communication_channel {
     PaperMail paper_mail = 19 [json_name = "paper_mail"];
     SocialMedia social_media = 20 [json_name = "social_media"];
-    InstantMessaging instant_messaging = 21 [json_name = "instant_messaging"];
+    InstantMessaging instant_messaging = 21 [
+      json_name = "instant_messaging"
+    ];
   }
 }
 
