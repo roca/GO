@@ -10,15 +10,13 @@ import (
 func BasicUser() {
 
 	addr := &pb.Address{
-		Street: "Daily Planet",
-		City: "Metropolis",
-		Country: "US",
-		Coordinate: &pb.Address_Coordinate{
-			Latitude: 40.70797893425118,
-			Longitude: -74.01163838107261,
-		},
+		Street:     "Daily Planet",
+		City:       "Metropolis",
+		Country:    "US",
+		Coordinate: &pb.Address_Coordinate{Latitude: 40.70797893425118, Longitude: -74.01163838107261},
 	}
 
+	//a:= anypb.Any{}
 	u := pb.User{
 		Id:       11,
 		Username: "Superman",
@@ -26,7 +24,10 @@ func BasicUser() {
 		Password: []byte("supermanpassword"),
 		Emails:   []string{"superman@movie.com", "superman@dc.com"},
 		Gender:   pb.Gender_GENDER_MALE,
-		Address: addr,
+		Address:  addr,
+		CommunicationChannel: &pb.User_PaperMail{
+			PaperMail: &pb.PaperMail{Address: "Daily Planet, Metropolis, US"},
+		},
 	}
 
 	jsonBytes, _ := protojson.Marshal(&u)

@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
-	"project01/jobsearch"
+	"project01/basic"
 	"time"
 )
 
@@ -18,10 +18,10 @@ func main() {
 	log.SetOutput(new(logWriter))
 
 	// basic.BasicHello()
-	// basic.BasicUser()
+	basic.BasicUser()
 	// basic.ProtoToJsonUser()
 	// basic.JsonToProtoUser()
 	//basic.BasicUserGroup()
-	jobsearch.JobSearchSoftware()
-	jobsearch.JobSearchCandidate()
+	//jobsearch.JobSearchSoftware()
+	//jobsearch.JobSearchCandidate()
 }

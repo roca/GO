@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+
+option go_package = "project01/proto/basic";
+
+message PaperMail {
+  string address = 1;
+}
+
+message SocialMedia {
+
+}
+
+message InstantMessaging {
+
+}
