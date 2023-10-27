@@ -37,7 +37,6 @@ func BasicUser() {
 		"Kotlin": 7,
 		"Ruby":   9,
 	}
-	
 
 	u := pb.User{
 		Id:                   11,
@@ -56,6 +55,7 @@ func BasicUser() {
 
 	jsonBytes, _ := protojson.Marshal(&u)
 	log.Println(string(jsonBytes))
+
 }
 
 func ProtoToJsonUser() {
