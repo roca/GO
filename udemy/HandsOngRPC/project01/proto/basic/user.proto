@@ -44,3 +44,11 @@ message  Address {
     double longitude = 2;
   }
 }
+
+message UserContent {
+  uint32 user_content_id  = 1 [json_name = "user_content_id"];
+  string slug = 2;
+  string title = 3;
+  string html_content = 4 [json_name = "html_content"];
+  uint32 author_id = 5 [json_name = "author_id"];
+}
