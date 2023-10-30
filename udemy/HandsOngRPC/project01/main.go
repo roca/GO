@@ -34,8 +34,11 @@ func main() {
 	// basic.BasicReadUserContentV1()
 
 	//basic.BasicWriteUserContentV2()
-	basic.BasicReadUserContentV2()
+	//basic.BasicReadUserContentV2()
 
-	// nbasic.BasicWriteUserContentV3()
-	basic.BasicReadUserContentV3()
+	//basic.BasicWriteUserContentV3()
+	//basic.BasicReadUserContentV3()
+
+	// basic.BasicWriteUserContentV4()
+	basic.BasicReadUserContentV4()
 }
