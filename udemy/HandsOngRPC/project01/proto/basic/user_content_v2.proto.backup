@@ -8,4 +8,6 @@ message UserContent {
   string title = 3;
   string html_content = 4 [json_name = "html_content"];
   uint32 author_id = 5 [json_name = "author_id"];
+  // version 2
+  string category = 6;
 }
