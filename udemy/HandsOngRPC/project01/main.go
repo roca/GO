@@ -29,6 +29,6 @@ func main() {
 	//basic.ReadFromFileSample()
 	//basic. WriteToFileJSONSample()
 	//basic.ReadFromFileJSONSample()
-	//basic.WriteBasicUserContentSample()
-	basic. ReadBasicUserContentSample()
+	basic.BasicUserContentV1()
+	basic.BasicReadUserContentV1()
 }
