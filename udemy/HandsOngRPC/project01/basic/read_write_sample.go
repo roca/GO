@@ -49,7 +49,7 @@ func ReadProtoFromFile(fname string, dest proto.Message) {
 		log.Fatal(err)
 	}
 
-	log.Println(dest)
+	// log.Println(dest)
 }
 
 func ReadProtoJSONFromFile(fname string, dest proto.Message) {
@@ -64,7 +64,7 @@ func ReadProtoJSONFromFile(fname string, dest proto.Message) {
 		log.Fatal(err)
 	}
 
-	log.Println(dest)
+	// log.Println(dest)
 }
 
 func dummyUser() basic.User {
