@@ -30,8 +30,8 @@ func main() {
 	//basic. WriteToFileJSONSample()
 	//basic.ReadFromFileJSONSample()
 
-	// basic.BasicWriteUserContentV1()
-	// basic.BasicReadUserContentV1()
+	basic.BasicWriteUserContentV1()
+	basic.BasicReadUserContentV1()
 
 	//basic.BasicWriteUserContentV2()
 	//basic.BasicReadUserContentV2()
@@ -40,5 +40,8 @@ func main() {
 	//basic.BasicReadUserContentV3()
 
 	// basic.BasicWriteUserContentV4()
-	basic.BasicReadUserContentV4()
+	//basic.BasicReadUserContentV4()
+
+	
+	basic.BasicReadUserPayment()
 }
