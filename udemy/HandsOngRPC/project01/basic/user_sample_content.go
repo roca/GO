@@ -11,9 +11,9 @@ func BasicWriteUserContentV1() {
 	uc := basic.UserContent{
 		UserContentId: 1,
 		Slug:          "/this-is-v1",
-		// Title:         "10 Strongest People In The World",
-		// HtmlContent:   "<p>Just dummy content for 10 Strongest People In The World</p>",
-		// AuthorId:      99,
+		Title:         "10 Strongest People In The World",
+		HtmlContent:   "<p>Just dummy content for 10 Strongest People In The World</p>",
+		AuthorId:      99,
 	}
 	WriteProtoToFile(&uc, "basic_user_content_v1.bin")
 }
@@ -58,7 +58,7 @@ func BasicWriteUserContentV3() {
 	uc := basic.UserContent{
 		UserContentId: 3,
 		Slug:          "/this-is-v3",
-		// Title:         "10 Strongest People In The World Version 3",
+		Title:         "10 Strongest People In The World Version 3",
 		// HtmlContent:   "<p>Just dummy content for 10 Strongest People In The World Version 3</p>",
 		// AuthorId:      99,
 		// Category: "NEWS",
