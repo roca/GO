@@ -3,6 +3,9 @@ syntax = "proto3";
 
 import "basic/communication.proto";
 import "google/protobuf/any.proto";
+import "google/protobuf/timestamp.proto";
+import "google/type/date.proto";
+import "google/type/latlng.proto";
 
 option go_package = "project01/proto/basic";
 
@@ -30,6 +33,15 @@ message User {
     ];
   }
   map<string, uint32> skill_rating = 22 [json_name = "skill_rating"];
+
+  google.protobuf.Timestamp last_login_timestamp = 23 [
+    json_name = "last_login_timestamp"
+  ];
+
+  google.type.Date birth_date = 24 [json_name = "birth_date"];
+  google.type.LatLng last_known_location = 25 [
+    json_name = "last_known_location"
+  ];
 }
 
 message  Address {
