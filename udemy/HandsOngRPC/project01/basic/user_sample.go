@@ -4,6 +4,8 @@ import (
 	"log"
 	pb "project01/proto/basic/protogen/basic"
 
+	"google.golang.org/genproto/googleapis/type/date"
+	"google.golang.org/genproto/googleapis/type/latlng"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
@@ -53,7 +55,15 @@ func BasicUser() {
 		},
 		SkillRating:        skills,
 		LastLoginTimestamp: timestamppb.Now(),
-		//BirthDate:          timestamppb.,
+		BirthDate: &date.Date{
+			Year:  1978,
+			Month: 12,
+			Day:   15,
+		},
+		LastKnownLocation: &latlng.LatLng{
+			Latitude:  40.70797893425118,
+			Longitude: -74.01163838107261,
+		},
 	}
 
 	jsonBytes, _ := protojson.Marshal(&u)
