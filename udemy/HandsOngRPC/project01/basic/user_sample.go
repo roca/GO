@@ -7,6 +7,7 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func BasicUser() {
@@ -50,7 +51,9 @@ func BasicUser() {
 		ElectronicCommChannel: &pb.User_SocialMedia{
 			SocialMedia: socialMedia,
 		},
-		SkillRating: skills,
+		SkillRating:        skills,
+		LastLoginTimestamp: timestamppb.Now(),
+		//BirthDate:          timestamppb.,
 	}
 
 	jsonBytes, _ := protojson.Marshal(&u)
