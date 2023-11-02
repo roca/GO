@@ -3,3 +3,5 @@
 - [gRPC.io](https://grpc.io/docs/languages/go/quickstart/)
 
 - [jsonformatter](https://jsonformatter.curiousconcept.com)
+
+- [protoc-gen-validate](https://github.com/bufbuild/protoc-gen-validate/releases)
