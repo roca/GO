@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
-	"project01/basic"
+	"project01/car"
 	"time"
 )
 
@@ -18,30 +18,31 @@ func main() {
 	log.SetOutput(new(logWriter))
 
 	// basic.BasicHello()
-	basic.BasicUser()
+	// basic.BasicUser()
 	// basic.ProtoToJsonUser()
 	// basic.JsonToProtoUser()
-	//basic.BasicUserGroup()
-	//jobsearch.JobSearchSoftware()
-	//jobsearch.JobSearchCandidate()
+	// basic.BasicUserGroup()
+	// jobsearch.JobSearchSoftware()
+	// jobsearch.JobSearchCandidate()
 	// basic.BasicUnMarshalAynKnown()
-	//basic. WriteToFileSample()
-	//basic.ReadFromFileSample()
-	//basic. WriteToFileJSONSample()
-	//basic.ReadFromFileJSONSample()
+	// basic. WriteToFileSample()
+	// basic.ReadFromFileSample()
+	// basic. WriteToFileJSONSample()
+	// basic.ReadFromFileJSONSample()
 
 	// basic.BasicWriteUserContentV1()
 	// basic.BasicReadUserContentV1()
 
-	//basic.BasicWriteUserContentV2()
-	//basic.BasicReadUserContentV2()
+	// basic.BasicWriteUserContentV2()
+	// basic.BasicReadUserContentV2()
 
-	//basic.BasicWriteUserContentV3()
-	//basic.BasicReadUserContentV3()
+	// basic.BasicWriteUserContentV3()
+	// basic.BasicReadUserContentV3()
 
 	// basic.BasicWriteUserContentV4()
-	//basic.BasicReadUserContentV4()
+	// basic.BasicReadUserContentV4()
 
-	
 	// basic.BasicReadUserPayment()
+
+	car.ValidateCar()
 }
