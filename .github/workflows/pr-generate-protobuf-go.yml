@@ -1,0 +1,8 @@
+name: Pull Request Generate Protobuf Go
+
+on:
+  push:
+    branches:
+      - staging
+    paths:
+      - 'udemy/HandsOngRPC/proto/**.proto'
