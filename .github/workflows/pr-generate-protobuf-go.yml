@@ -7,9 +7,18 @@ on:
     paths:
       - 'udemy/HandsOngRPC/proto/**.proto'
 jobs:
-  # List directory files
-  list-files:
+  generate-protobuf-go:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout source
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head.ref }}
+      - name: Setup Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.21
+          check-latest: false
+          cache: true
       - name: List files
         run: ls -la
