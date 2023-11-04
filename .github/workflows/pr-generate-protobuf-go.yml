@@ -6,3 +6,10 @@ on:
       - staging
     paths:
       - 'udemy/HandsOngRPC/proto/**.proto'
+jobs:
+  # List directory files
+  list-files:
+    runs-on: ubuntu-latest
+    steps:
+      - name: List files
+        run: ls -la
