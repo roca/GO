@@ -4,12 +4,14 @@ syntax = "proto3";
 package hello;
 option go_package = "protogen/go/hello";
 
+// Hello World
+
 message HelloRequest {
   string name = 1;
 }
 
 message HelloResponse {
-  string greet = 1;
+  string greet = 10;
 }
 
 service HelloService {
