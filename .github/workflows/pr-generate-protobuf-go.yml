@@ -14,7 +14,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          sparse-checkout: udemy/HandsOngRPC/proto
+          sparse-checkout: |
+            udemy/HandsOngRPC/proto
       # - name: Setup Go
       #   uses: actions/setup-go@v3
       #   with:
