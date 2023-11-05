@@ -36,11 +36,15 @@ jobs:
           sudo mv bin/task /usr/local/bin/task
       - name: Clean out old generated protogen folder
         run: |
+          cd udemy/HandsOngRPC/proto
           rm -rf protogen
           mkdir protogen
+          ls -lah
       - name: Generate Protobuf Go
         run: |
+          cd udemy/HandsOngRPC/proto
           task build
+          ls -lah
       - name: Commit changes
         run: |
           git config --global user.name "github-actions[bot]"
