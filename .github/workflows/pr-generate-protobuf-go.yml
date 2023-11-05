@@ -16,10 +16,9 @@ jobs:
           fetch-depth: 0
           sparse-checkout: udemy/HandsOngRPC/proto
           sparse-checkout-cone-mode: false
-      - name: Move files to root
+      - name: Navigate to working directory
         run: |
-          mv udemy/HandsOngRPC/proto/* .
-          rm -rf udemy
+          cd udemy/HandsOngRPC/proto
           ls -lah
       - name: Install Go
         uses: actions/setup-go@v3
