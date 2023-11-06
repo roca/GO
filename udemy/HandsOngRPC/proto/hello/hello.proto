@@ -8,7 +8,7 @@ option go_package = "protogen/go/hello";
 
 message HelloRequest {
   string name = 1;
-  string language = 20;
+  string language = 2;
 }
 
 message HelloResponse {
