@@ -14,9 +14,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          no-checkout: true
-          filter:
-            blob:none
+          submodules: false
+          filter: blob:none
           sparse-checkout: udemy/HandsOngRPC/proto
           sparse-checkout-cone-mode: false
       - name: Navigate to working directory
