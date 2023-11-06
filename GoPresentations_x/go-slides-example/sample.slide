@@ -1,9 +1,0 @@
-Title of presentation
-6 April 2023
-
-Romel Campbell
-romel.campbell@regeneron.com 
-
-* The Go programming language
-.image Gopher.webp
-.play hello.go /^func main/,/^}/
