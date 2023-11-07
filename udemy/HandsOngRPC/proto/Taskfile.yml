@@ -4,7 +4,7 @@ tasks:
   build_hello:
     dir: '.'
     cmds:
-      - protoc --go_out=./protogen --go_opt=paths=source_relative ./hello/*.proto
+      - protoc --go_out=./protogen --go-grpc_out=. --go_opt=paths=source_relative ./hello/*.proto
       - go mod tidy
   build_payment:
     dir: '.'
