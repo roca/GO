@@ -2,7 +2,7 @@ package grpc
 
 import (
 	"grpc-go-server/internal/port"
-	"proto/protogen/hello"
+	"proto/protogen/go/hello"
 
 	"google.golang.org/grpc"
 )
