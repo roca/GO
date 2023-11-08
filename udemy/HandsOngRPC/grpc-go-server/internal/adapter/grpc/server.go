@@ -43,3 +43,7 @@ func (a *GrpcAdapter) Run() {
 		log.Fatalf("Failed to serve gRPC server over port %d : %v\n", a.grpcPort, err)
 	}
 }
+
+func (a *GrpcAdapter) Stop() {
+	a.server.Stop()
+}
