@@ -1,6 +1,7 @@
 go 1.21.0
 
 use (
+	./grpc-go-client
 	./grpc-go-server
 	./project01
 	./proto
