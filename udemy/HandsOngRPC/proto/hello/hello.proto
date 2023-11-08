@@ -6,7 +6,7 @@ option go_package = "protogen/go/hello";
 
 message HelloRequest {
   string name = 1;
-  uint32 age = 16;
+  uint32 age = 15;
 }
 
 message HelloResponse {
@@ -18,3 +18,4 @@ service HelloService {
 }
 
 
+5
