@@ -1,0 +1,26 @@
+version: '3'
+
+vars:
+  BIN_FILENAME:  my-ggrpc-server
+
+tasks:
+
+  build_bin:
+    dir: '.'
+    cmds:
+      - go mod tidy
+      - go build -o ./bin/{{.BIN_FILENAME}} ./cmd
+
+  build:
+    cmds:
+      - task build_bin
+
+  run:
+    cmds:
+      - task build_bin
+      - ./bin/{{.BIN_FILENAME}}
+
+  execute:
+    cmds:
+      - ./bin/{{.BIN_FILENAME}}
+

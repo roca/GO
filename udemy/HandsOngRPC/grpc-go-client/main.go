@@ -19,6 +19,16 @@ func (writer logWriter) Write(bytes []byte) (int, error) {
 }
 
 func main() {
+
+	cc := grpc.ClientConn{}
+	defer cc.Close()
+
+	client := pb.NewHelloServiceClient(&cc)
+	runHello(client)
+
+}
+
+func runHello(client pb.HelloServiceClient) {
 	req := &pb.HelloRequest{
 		Name: "Joe",
 		Age:  32,
@@ -29,10 +39,7 @@ func main() {
 	jsonBytes, _ := protojson.Marshal(req)
 	log.Println(string(jsonBytes))
 
-	cc := grpc.ClientConn{}
 	opts := []grpc.CallOption{}
-
-	client := pb.NewHelloServiceClient(&cc)
 
 	resp, err := client.SayHello(context.Background(), req, opts...)
 	if err != nil {
