@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
-	pb "proto/protogen/hello"
+	pb "proto/protogen/go/hello"
 	"time"
 
 	"google.golang.org/protobuf/encoding/protojson"
