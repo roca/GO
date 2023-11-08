@@ -16,6 +16,3 @@ message HelloResponse {
 service HelloService {
   rpc SayHello(HelloRequest) returns (HelloResponse) {};
 }
-
-
-5
