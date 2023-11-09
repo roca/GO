@@ -7,6 +7,7 @@ import (
 	pb "proto/protogen/go/hello"
 	"time"
 
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/protobuf/encoding/protojson"
 
 	grpc "google.golang.org/grpc"
@@ -20,10 +21,13 @@ func (writer logWriter) Write(bytes []byte) (int, error) {
 
 func main() {
 
-	cc := grpc.ClientConn{}
-	defer cc.Close()
+	var opts []grpc.DialOption
+	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
 
-	client := pb.NewHelloServiceClient(&cc)
+	conn, _ := grpc.Dial("localhost:9090", opts...)
+	defer conn.Close()
+
+	client := pb.NewHelloServiceClient(conn)
 	runHello(client)
 
 }
