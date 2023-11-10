@@ -27,9 +27,9 @@ func main() {
 		log.Fatalln("Can not create HelloAdapter:", err)
 	}
 
-	runSayHello(helloAdapter, "Bruce Wayne")
+	//runSayHello(helloAdapter, "Bruce Wayne")
+	runSayManyHellos(helloAdapter, "Bruce Wayne")
 }
-
 func runSayHello(adapter *hello.HelloAdapter, name string) {
 	greet, err := adapter.SayHello(context.Background(), name)
 	if err != nil {
@@ -37,4 +37,11 @@ func runSayHello(adapter *hello.HelloAdapter, name string) {
 	}
 
 	log.Println(greet.Greet)
+}
+
+func runSayManyHellos(adapter *hello.HelloAdapter, name string) {
+	err := adapter.SayManyHellos(context.Background(), name)
+	if err != nil {
+		log.Fatalln("Can not invoke SayManyHellos on the HelloAdapter:", err)
+	}
 }

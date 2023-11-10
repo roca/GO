@@ -3,6 +3,7 @@ package grpc
 import (
 	"context"
 	pb "proto/protogen/go/hello"
+	"time"
 )
 
 func (a *GrpcAdapter) SayHello(ctx context.Context, req *pb.HelloRequest) (*pb.HelloResponse, error) {
@@ -11,4 +12,19 @@ func (a *GrpcAdapter) SayHello(ctx context.Context, req *pb.HelloRequest) (*pb.H
 	return &pb.HelloResponse{
 		Greet: greet,
 	}, nil
+}
+
+func (a *GrpcAdapter) SayManyHellos(req *pb.HelloRequest, stream pb.HelloService_SayManyHellosServer) error {
+	hellos := a.helloService.GenerateManyHellos(req.Name, 10)
+	for _, hello := range hellos {
+		err := stream.Send(&pb.HelloResponse{
+			Greet: hello,
+		})
+		if err != nil {
+			return err
+		}
+		time.Sleep(500 * time.Millisecond)
+	}
+
+	return nil
 }
