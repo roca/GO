@@ -9,3 +9,5 @@
 - [HTTP2 demo](https://www.http2demo.io)
 
 - [grpccurl](https://github.com/fullstorydev/grpcurl)
+
+- [Hexagonal Architecture](https://medium.com/ssense-tech/hexagonal-architecture-there-are-always-two-sides-to-every-story-bc0780ed7d9c)
