@@ -30,27 +30,24 @@ func (a *GrpcAdapter) SayManyHellos(req *pb.HelloRequest, stream pb.HelloService
 	return nil
 }
 
+var names []string
+var res string
 func (a *GrpcAdapter) SayHelloToEveryone(stream pb.HelloService_SayHelloToEveryoneServer) error {
-	names := []string{}
-	res := ""
-
+	
 	for {
 		req, err := stream.Recv()
 		if err == io.EOF {
-			
+			res = a.helloService.GenerateHelloToEveryone(names)
+			names = nil
 			return stream.SendAndClose(&pb.HelloResponse{
 				Greet: res,
 			},
 			)
 		}
-
 		if err != nil {
 			return err
 		}
 
-		names := append(names, req.Name)
-		res = a.helloService.GenerateHelloToEveryone(names)
-
-		
+		names = append(names, req.Name)
 	}
 }

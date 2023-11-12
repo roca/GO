@@ -62,3 +62,31 @@ func (a *HelloAdapter) SayManyHellos(ctx context.Context, name string) error {
 
 	return nil
 }
+
+func (a *HelloAdapter) SayHelloToEveryone(ctx context.Context, names []string) error {
+	
+	stream,err  := a.helloClient.SayHelloToEveryone(ctx)
+	if err != nil {
+		log.Println("Error getting stream on SayHelloToEveryone:", err)
+		return err
+	}
+
+	for _, name := range names {
+		err := stream.Send(&pb.HelloRequest{
+			Name: name,
+		})
+		if err != nil {
+			log.Println("Error sending name on stream SayHelloToEveryone:", err)
+			return err
+		}
+	}
+
+	greet, err := stream.CloseAndRecv()
+	if err != nil {
+		log.Println("Error closing and receiving response on stream SayHelloToEveryone:", err)
+		return err
+	}
+
+	log.Println(greet.Greet)
+	return nil
+}
