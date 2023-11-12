@@ -5,6 +5,7 @@ import (
 	"grpc-go-client/internal/port"
 	"io"
 	"log"
+	"time"
 
 	"google.golang.org/grpc"
 
@@ -64,8 +65,8 @@ func (a *HelloAdapter) SayManyHellos(ctx context.Context, name string) error {
 }
 
 func (a *HelloAdapter) SayHelloToEveryone(ctx context.Context, names []string) error {
-	
-	stream,err  := a.helloClient.SayHelloToEveryone(ctx)
+
+	stream, err := a.helloClient.SayHelloToEveryone(ctx)
 	if err != nil {
 		log.Println("Error getting stream on SayHelloToEveryone:", err)
 		return err
@@ -79,6 +80,7 @@ func (a *HelloAdapter) SayHelloToEveryone(ctx context.Context, names []string) e
 			log.Println("Error sending name on stream SayHelloToEveryone:", err)
 			return err
 		}
+		time.Sleep(500 * time.Millisecond)
 	}
 
 	greet, err := stream.CloseAndRecv()
