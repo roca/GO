@@ -6,20 +6,24 @@ import (
 	"log"
 	"net"
 	"proto/protogen/go/hello"
+	"proto/protogen/go/bank"
 
 	"google.golang.org/grpc"
 )
 
 type GrpcAdapter struct {
 	helloService port.HelloServicePort
+	bankService port.BankServicePort
 	grpcPort     int
 	server       *grpc.Server
 	hello.HelloServiceServer
+	bank.BankServiceServer
 }
 
-func NewGrpcAdapter(helloService port.HelloServicePort, grpcPort int) *GrpcAdapter {
+func NewGrpcAdapter(helloService port.HelloServicePort, bankService port.BankServicePort, grpcPort int) *GrpcAdapter {
 	return &GrpcAdapter{
 		helloService: helloService,
+		bankService: bankService,
 		grpcPort:     grpcPort,
 	}
 }
@@ -38,6 +42,7 @@ func (a *GrpcAdapter) Run() {
 	a.server = grpsServer
 
 	hello.RegisterHelloServiceServer(grpsServer, a)
+	bank.RegisterBankServiceServer(grpsServer,a)
 
 	if err := grpsServer.Serve(listen); err != nil {
 		log.Fatalf("Failed to serve gRPC server over port %d : %v\n", a.grpcPort, err)

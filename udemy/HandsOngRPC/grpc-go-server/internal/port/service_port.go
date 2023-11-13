@@ -6,3 +6,7 @@ type HelloServicePort interface {
 	GenerateHelloToEveryone(names []string) string
 	GenerateContinuousHello(name string, count int) <-chan string
 }
+
+type BankServicePort interface {
+	GetCurrentBalance(account_id int) float32
+}
