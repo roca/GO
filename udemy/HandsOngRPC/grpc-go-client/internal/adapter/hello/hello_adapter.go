@@ -92,3 +92,24 @@ func (a *HelloAdapter) SayHelloToEveryone(ctx context.Context, names []string) e
 	log.Println(greet.Greet)
 	return nil
 }
+
+func (a *HelloAdapter) SayHelloContinuous(ctx context.Context, names []string) error {
+	stream,err := a.helloClient.SayHelloContinuous(ctx)
+	if err != nil {
+		log.Println("Error getting stream on SayHelloContinuoue:", err)
+		return err
+	}
+
+	for _, name := range names {
+		err := stream.Send(&pb.HelloRequest{
+			Name: name,
+		})
+		if err != nil {
+			log.Println("Error sending name on stream SayHelloToEveryone:", err)
+			return err
+		}
+		time.Sleep(500 * time.Millisecond)
+
+		//greet, err := stream.Recv()
+	}
+}
