@@ -10,7 +10,7 @@ message CurrentBalanceRequest {
   uint32 account_number = 1 [json_name = "account_number"];
 }
 
-message CurrentBalanceresponse {
+message CurrentBalanceResponse {
   float amount = 1;
   google.type.Date current_date = 10 [json_name = "current_date"];
 }
