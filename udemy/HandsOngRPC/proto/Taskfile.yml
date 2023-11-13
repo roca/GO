@@ -19,7 +19,7 @@ tasks:
   build_bank:
     dir: '.'
     cmds:
-      - protoc --go_out=. --go-grpc_out=. ./transaction/*.proto
+      - protoc --go_out=. --go-grpc_out=. ./bank/*.proto
       - go mod tidy
   build:
     cmds:
