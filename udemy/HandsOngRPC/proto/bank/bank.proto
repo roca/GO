@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package bank;
+
+import "google/type/date.proto";
+
+option go_package = "protogen/go/bank";
+
+message CurrentBalanceRequest {
+  uint32 account_number = 1 [json_name = "account_number"];
+}
+
+message CurrentBalanceresponse {
+  float amount = 1;
+  google.type.Date current_date = 24 [json_name = "current_date"];
+}
+
+service BankService {
+  rpc GetCurrentBalance (CurrentBalanceRequest) returns 
+  (CurrentBalanceResponse) {};
+}
