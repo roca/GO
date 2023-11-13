@@ -29,7 +29,8 @@ func main() {
 
 	// runSayHello(helloAdapter, "Bruce Wayne")
 	// runSayManyHellos(helloAdapter, "Bruce Wayne")
-	runSayHelloToEveryone(helloAdapter, []string{"Bruce Wayne", "Clark Kent", "Diana Prince"})
+	// runSayHelloToEveryone(helloAdapter, []string{"Bruce Wayne", "Clark Kent", "Diana Prince"})
+	runSayHelloContinuous(helloAdapter, []string{"Anna", "Bella", "Carol", "Diana", "Emma" })
 }
 func runSayHello(adapter *hello.HelloAdapter, name string) {
 	greet, err := adapter.SayHello(context.Background(), name)
@@ -51,5 +52,12 @@ func runSayHelloToEveryone(adapter *hello.HelloAdapter, names []string) {
 	err := adapter.SayHelloToEveryone(context.Background(), names)
 	if err != nil {
 		log.Fatalln("Can not invoke SayHelloToEveryone on the HelloAdapter:", err)
+	}
+}
+
+func runSayHelloContinuous(adapter *hello.HelloAdapter, names []string) {
+	err := adapter.SayHelloContinuous(context.Background(), names)
+	if err != nil {
+		log.Fatalln("Can not invoke SayHelloContinuouse on the HelloAdapter:", err)
 	}
 }
