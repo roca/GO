@@ -28,3 +28,12 @@ func (a *HelloService) GenerateHelloToEveryone(names []string) string {
 	log.Println(hellos)
 	return strings.Join(hellos, ", ")
 }
+
+func (a *HelloService) GenerateContinuousHello(name string, count int) <-chan string {
+	ch := make(chan string)
+	go func() {
+		ch <- fmt.Sprintf("[%d] %s", count, a.GenerateHello(name))
+		close(ch)
+	}()
+	return ch
+}
