@@ -94,22 +94,42 @@ func (a *HelloAdapter) SayHelloToEveryone(ctx context.Context, names []string) e
 }
 
 func (a *HelloAdapter) SayHelloContinuous(ctx context.Context, names []string) error {
-	stream,err := a.helloClient.SayHelloContinuous(ctx)
+	stream, err := a.helloClient.SayHelloContinuous(ctx)
 	if err != nil {
 		log.Println("Error getting stream on SayHelloContinuoue:", err)
 		return err
 	}
 
-	for _, name := range names {
-		err := stream.Send(&pb.HelloRequest{
-			Name: name,
-		})
-		if err != nil {
-			log.Println("Error sending name on stream SayHelloToEveryone:", err)
-			return err
-		}
-		time.Sleep(500 * time.Millisecond)
+	greetChan := make(chan struct{})
 
-		//greet, err := stream.Recv()
-	}
+	go func() {
+
+		for _, name := range names {
+			err := stream.Send(&pb.HelloRequest{
+				Name: name,
+			})
+			if err != nil {
+				log.Println("Error sending name on stream SayHelloContinuous:", err)
+			}
+		}
+		stream.CloseSend()
+	}()
+
+	go func() {
+		for {
+			greet, err := stream.Recv()
+			if err == io.EOF {
+				break
+			}
+			if err != nil {
+				log.Println("Error on receiving on SayHelloContinuous:", err)
+			}
+			log.Println(greet.Greet)
+		}
+		close(greetChan)
+	}()
+
+	<-greetChan
+
+	return nil
 }
