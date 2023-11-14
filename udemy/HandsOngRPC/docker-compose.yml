@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+
+#  start Postgres, and ensure that data is stored to a mounted volume
+  postgres:
+    image: 'postgres:13.4'
+    ports:
+      - "5432:5432"
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: celeritas
+    volumes:
+      - ./db-data/postgres/:/var/lib/postgresql/data/
