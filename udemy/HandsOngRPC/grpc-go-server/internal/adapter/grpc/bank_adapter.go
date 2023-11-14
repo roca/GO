@@ -9,13 +9,15 @@ import (
 )
 
 func (a *GrpcAdapter) GetCurrentBalance(ctx context.Context, req *pb.CurrentBalanceRequest) (*pb.CurrentBalanceResponse, error) {
-	cb := &pb.CurrentBalanceResponse{
-		Amount: a.bankService.GetCurrentBalance(int(req.AccountNumber)),
+	now := time.Now()
+	bal := a.bankService.FindCurrentBalance(req.AccountNumber)
+
+	return &pb.CurrentBalanceResponse{
+		Amount: bal,
 		CurrentDate: &date.Date{
-			Year:  int32(time.Now().Year()),
-			Month: int32(time.Now().Month()),
-			Day:   int32(time.Now().Day()),
+			Year:  int32(now.Year()),
+			Month: int32(now.Month()),
+			Day:   int32(now.Day()),
 		},
-	}
-	return cb, nil
+	}, nil
 }
