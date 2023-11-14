@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             v3.12.4
-// source: bank/bank.proto
+// source: bank/type/account.proto
 
 package bank
 
@@ -105,5 +105,5 @@ var BankService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "bank/bank.proto",
+	Metadata: "bank/type/account.proto",
 }
