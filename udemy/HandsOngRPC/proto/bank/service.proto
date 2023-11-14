@@ -6,7 +6,6 @@ import "bank/type/account.proto";
 
 option go_package = "protogen/go/bank";
 
-
 service BankService {
   rpc GetCurrentBalance (CurrentBalanceRequest) returns 
   (CurrentBalanceResponse) {};
