@@ -8,5 +8,5 @@ type HelloServicePort interface {
 }
 
 type BankServicePort interface {
-	GetCurrentBalance(account_id int) float32
+	FindCurrentBalance(acct string) float64
 }
