@@ -2,6 +2,9 @@
 	"protoc": {
 		"options": [
 			"--proto_path=${workspaceRoot}/project01",
-		],
+			"--proto_path=${workspaceRoot}/proto",
+			"--proto_path=${workspaceRoot}/grpc-go-server",
+			"--proto_path=${workspaceRoot}/grpc-go-client"
+		]
 	}
 }
