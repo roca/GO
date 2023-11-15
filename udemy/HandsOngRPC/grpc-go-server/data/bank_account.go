@@ -3,14 +3,19 @@ package data
 import (
 	"time"
 
+	"github.com/google/uuid"
 	up "github.com/upper/db/v4"
 )
 
 // BankAccount struct
 type BankAccount struct {
-	ID        int       `db:"id,omitempty"`
-	CreatedAt time.Time `db:"created_at"`
-	UpdatedAt time.Time `db:"updated_at"`
+	ID              uuid.UUID `db:"account_uuid,omitempty"`
+	AccountNumber   string    `db:"account_number"`
+	AccountName     string    `db:"account_name"`
+	Currency        string    `db:"currency"`
+	CurrencyBalance float64   `db:"currency_balance"`
+	CreatedAt       time.Time `db:"created_at"`
+	UpdatedAt       time.Time `db:"updated_at"`
 }
 
 // Table returns the table name
@@ -69,7 +74,7 @@ func (t *BankAccount) Delete(id int) error {
 }
 
 // Insert inserts a model into the database, using upper
-func (t *BankAccount) Insert(m BankAccount) (int, error) {
+func (t *BankAccount) Insert(m BankAccount) (up.ID, error) {
 	m.CreatedAt = time.Now()
 	m.UpdatedAt = time.Now()
 	collection := upper.Collection(t.Table())
@@ -78,9 +83,9 @@ func (t *BankAccount) Insert(m BankAccount) (int, error) {
 		return 0, err
 	}
 
-	id := getInsertedID(res.ID())
+	//id := getInsertedID(res.ID())
 
-	return id, nil
+	return res.ID, nil
 }
 
 // Builder is an example of using upper's sql builder

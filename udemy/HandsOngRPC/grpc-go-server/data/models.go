@@ -13,11 +13,23 @@ var db *sql.DB
 var upper db2.Session
 var dbCreated bool
 
+type Model interface {
+	Table() string
+	GetAll(condition db2.Cond) ([]Model, error)
+	Get(id int) (Model, error)
+	Update(m Model) error
+	Delete(id int) error
+	Insert(m Model) (int, error)
+	Builder(id int) ([]Model, error)
+}
+
 type Models struct {
 	// any models inserted here ( and in the New function)
 	// are easily accessible from throughout the entire application
-	// Users  User
-	// Tokens Token
+	BankAccounts      BankAccount
+	BankExchangeRates BankExchangeRate
+	BankTransactions  BankTransaction
+	BankTransfers     BankTransfer
 }
 
 func New(databasePool *sql.DB) Models {
@@ -36,8 +48,10 @@ func New(databasePool *sql.DB) Models {
 	}
 
 	return Models{
-		// Users:  User{},
-		// Tokens: Token{},
+		BankAccounts:      BankAccount{},
+		BankExchangeRates: BankExchangeRate{},
+		BankTransactions:  BankTransaction{},
+		BankTransfers:     BankTransfer{},
 	}
 }
 
