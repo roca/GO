@@ -1,9 +1,10 @@
-CREATE TABLE bank_accounts (
-    account_uuid uuid PRIMARY KEY,
-    account_number VARCHAR ( 20 ) NOT NULL,
-    account_name VARCHAR ( 100 ) NOT NULL,
-    currency VARCHAR ( 5 ) NOT NULL,
-    currency_balance NUMERIC ( 15, 2 ) NOT NULL,
+CREATE TABLE bank_exchange_rates (
+    exchange_rate_uuid uuid PRIMARY KEY,
+    from_currency VARCHAR(5) NOT NULL,
+    to_currency VARCHAR(5) NOT NULL,
+    rate NUMERIC(20, 10) NOT NULL,
+    valid_from_timestamp TIMESTAMP NOT NULL,
+    valid_to_timestamp TIMESTAMP NOT NULL,
     created_at TIMESTAMP,
     updated_at TIMESTAMP
 );
@@ -19,6 +20,6 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER set_timestamp
-    BEFORE UPDATE ON bank_accounts
+    BEFORE UPDATE ON bank_exchange_rates
     FOR EACH ROW
     EXECUTE PROCEDURE trigger_set_timestamp();
