@@ -15,15 +15,6 @@ tasks:
     cmds:
       - task build_bin
 
-  run:
-    cmds:
-      - task build_bin
-      - ./bin/{{.BIN_FILENAME}}
-
-  execute:
-    cmds:
-      - ./bin/{{.BIN_FILENAME}}
-
   docker-compose-up:
     cmds:
       - docker-compose down
@@ -34,4 +25,15 @@ tasks:
       - task docker-compose-up
       - sleep 20
       - celeritas migrate reset
+
+  run:
+    cmds:
+      - task build_bin
+      - task dbreset
+      - ./bin/{{.BIN_FILENAME}}
+
+  execute:
+    cmds:
+      - task dbreset
+      - ./bin/{{.BIN_FILENAME}}
 
