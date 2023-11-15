@@ -24,3 +24,14 @@ tasks:
     cmds:
       - ./bin/{{.BIN_FILENAME}}
 
+  docker-compose-up:
+    cmds:
+      - docker-compose down
+      - docker-compose up -d
+
+  dbreset:
+    cmds:
+      - task docker-compose-up
+      - sleep 20
+      - celeritas migrate reset
+
