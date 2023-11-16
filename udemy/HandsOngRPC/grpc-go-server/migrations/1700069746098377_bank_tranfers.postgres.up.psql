@@ -7,7 +7,9 @@ CREATE TABLE bank_transfers (
     transfer_timestamp TIMESTAMP NOT NULL,
     transfer_success BOOLEAN NOT NULL,
     created_at TIMESTAMP,
-    updated_at TIMESTAMP
+    updated_at TIMESTAMP,
+    CONSTRAINT fk_from_account_id FOREIGN KEY (from_account_id) REFERENCES bank_accounts (account_uuid) ON DELETE NO ACTION,
+    CONSTRAINT fk_to_account_id FOREIGN KEY (to_account_id) REFERENCES bank_accounts (account_uuid) ON DELETE NO ACTION
 );
 
 -- add auto update of updated_at. If you already have this trigger
