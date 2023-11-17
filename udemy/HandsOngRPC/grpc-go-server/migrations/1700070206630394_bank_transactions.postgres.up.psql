@@ -6,8 +6,8 @@ CREATE TABLE bank_transactions (
     transaction_type VARCHAR(25) NOT NULL,
     notes TEXT,
     created_at TIMESTAMP,
-    updated_at TIMESTAMP
-    CONSTRAINT fk_account_uuid FOREIGN KEY(account_uuid) REFERENCES bank_accounts(account_uuid) ON DELETE NO ACTION
+    updated_at TIMESTAMP,
+    CONSTRAINT fk_account_uuid FOREIGN KEY (account_uuid) REFERENCES bank_accounts(account_uuid) ON DELETE NO ACTION
 );
 
 -- add auto update of updated_at. If you already have this trigger
