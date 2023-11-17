@@ -1,12 +1,12 @@
 CREATE TABLE bank_transactions (
     transaction_uuid uuid PRIMARY KEY,
     account_uuid uuid NOT NULL,
-    transaction_timestamp TIMESTAMP NOT NULL,
+    transaction_timestamp TIMESTAMPTZ NOT NULL,
     amount NUMERIC(15,2) NOT NULL,
     transaction_type VARCHAR(25) NOT NULL,
     notes TEXT,
-    created_at TIMESTAMP,
-    updated_at TIMESTAMP,
+    created_at TIMESTAMPTZ,
+    updated_at TIMESTAMPTZ,
     CONSTRAINT fk_account_uuid FOREIGN KEY (account_uuid) REFERENCES bank_accounts(account_uuid) ON DELETE NO ACTION
 );
 

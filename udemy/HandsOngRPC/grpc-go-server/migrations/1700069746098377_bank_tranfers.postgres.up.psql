@@ -4,10 +4,10 @@ CREATE TABLE bank_transfers (
     to_account_id uuid,
     currency VARCHAR ( 5 ) NOT NULL,
     amount NUMERIC ( 15, 2 ) NOT NULL,
-    transfer_timestamp TIMESTAMP NOT NULL,
+    transfer_timestamp TIMESTAMPTZ NOT NULL,
     transfer_success BOOLEAN NOT NULL DEFAULT FALSE,
-    created_at TIMESTAMP,
-    updated_at TIMESTAMP,
+    created_at TIMESTAMPTZ,
+    updated_at TIMESTAMPTZ,
     CONSTRAINT fk_from_account_id FOREIGN KEY (from_account_id) REFERENCES bank_accounts (account_uuid) ON DELETE NO ACTION,
     CONSTRAINT fk_to_account_id FOREIGN KEY (to_account_id) REFERENCES bank_accounts (account_uuid) ON DELETE NO ACTION
 );

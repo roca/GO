@@ -4,8 +4,8 @@ CREATE TABLE bank_accounts (
     account_name VARCHAR ( 100 ) NOT NULL,
     currency VARCHAR ( 5 ) NOT NULL,
     current_balance NUMERIC ( 15, 2 ) NOT NULL,
-    created_at TIMESTAMP,
-    updated_at TIMESTAMP
+    created_at TIMESTAMPTZ,
+    updated_at TIMESTAMPTZ
 );
 
 -- add auto update of updated_at. If you already have this trigger
