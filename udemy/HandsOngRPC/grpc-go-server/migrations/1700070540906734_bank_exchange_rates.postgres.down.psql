@@ -1,1 +1,1 @@
-drop table bank_exchange_rates;
+drop table if exists bank_exchange_rates cascade;

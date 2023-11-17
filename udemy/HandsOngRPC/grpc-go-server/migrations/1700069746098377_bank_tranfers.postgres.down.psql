@@ -1,1 +1,1 @@
-drop table bank_transfers;
+drop table if exists bank_transfers cascade;

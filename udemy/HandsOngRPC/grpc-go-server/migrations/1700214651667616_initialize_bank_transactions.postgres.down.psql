@@ -1,0 +1,1 @@
+DELETE FROM bank_transactions; 
