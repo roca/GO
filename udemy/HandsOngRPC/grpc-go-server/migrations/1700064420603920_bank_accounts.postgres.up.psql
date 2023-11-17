@@ -3,7 +3,7 @@ CREATE TABLE bank_accounts (
     account_number VARCHAR ( 20 ) NOT NULL,
     account_name VARCHAR ( 100 ) NOT NULL,
     currency VARCHAR ( 5 ) NOT NULL,
-    currency_balance NUMERIC ( 15, 2 ) NOT NULL,
+    current_balance NUMERIC ( 15, 2 ) NOT NULL,
     created_at TIMESTAMP,
     updated_at TIMESTAMP
 );
