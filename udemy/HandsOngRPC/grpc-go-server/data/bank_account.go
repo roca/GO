@@ -9,13 +9,13 @@ import (
 
 // BankAccount struct
 type BankAccount struct {
-	ID              uuid.UUID `db:"account_uuid,omitempty"`
-	AccountNumber   string    `db:"account_number"`
-	AccountName     string    `db:"account_name"`
-	Currency        string    `db:"currency"`
-	CurrencyBalance float64   `db:"currency_balance"`
-	CreatedAt       time.Time `db:"created_at"`
-	UpdatedAt       time.Time `db:"updated_at"`
+	ID             uuid.UUID `db:"account_uuid,omitempty"`
+	AccountNumber  string    `db:"account_number"`
+	AccountName    string    `db:"account_name"`
+	Currency       string    `db:"currency"`
+	CurrentBalance float64   `db:"current_balance"`
+	CreatedAt      time.Time `db:"created_at"`
+	UpdatedAt      time.Time `db:"updated_at"`
 }
 
 // Table returns the table name
@@ -38,11 +38,11 @@ func (t *BankAccount) GetAll(condition up.Cond) ([]*BankAccount, error) {
 }
 
 // Get gets one record from the database, by id, using upper
-func (t *BankAccount) Get(id int) (*BankAccount, error) {
+func (t *BankAccount) Get(id string) (*BankAccount, error) {
 	var one BankAccount
 	collection := upper.Collection(t.Table())
 
-	res := collection.Find(up.Cond{"id": id})
+	res := collection.Find(up.Cond{"account_uuid": id})
 	err := res.One(&one)
 	if err != nil {
 		return nil, err

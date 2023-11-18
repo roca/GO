@@ -5,31 +5,36 @@ import (
 	mygrpc "grpc-go-server/internal/adapter/grpc"
 	app "grpc-go-server/internal/application"
 	"log"
+	"os"
 
-	"github.com/google/uuid"
+	"github.com/roca/celeritas"
 )
 
-func main() {
+var cel *celeritas.Celeritas
+
+func init() {
+	cel = &celeritas.Celeritas{}
+	cel.AppName = "grpc-go-server"
+	path, err := os.Getwd()
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = cel.New(path)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	log.SetFlags(0)
 	log.SetOutput(logWriter{})
+}
+
+func main() {
 
 	hs := &app.HelloService{}
 	bs := &app.BankService{}
 
-	c := initApplication()
-	//c.App.ListenAndServe()
-	bankAccount := data.BankAccount{
-		ID:              uuid.New(),
-		AccountNumber:   "1234567890",
-		AccountName:     "John Doe",
-		Currency:        "PHP",
-		CurrencyBalance: 1000.00,
-	}
-
-	id, _ := c.Models.BankAccounts.Insert(bankAccount)
-	log.Println("Inserted", id)
-
 	grpcadapter := mygrpc.NewGrpcAdapter(hs, bs, 9090)
+	grpcadapter.Models = data.New(cel.DB.Pool)
 
 	grpcadapter.Run()
 }
