@@ -73,6 +73,7 @@ func (t *BankTransaction) Delete(id int) error {
 func (t *BankTransaction) Insert(m BankTransaction) (int, error) {
 	m.CreatedAt = time.Now()
 	m.UpdatedAt = time.Now()
+	m.ID = uuid.New()
 	collection := upper.Collection(t.Table())
 	res, err := collection.Insert(m)
 	if err != nil {

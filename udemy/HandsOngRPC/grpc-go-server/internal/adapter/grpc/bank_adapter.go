@@ -9,12 +9,12 @@ import (
 )
 
 func (a *GrpcAdapter) GetCurrentBalance(ctx context.Context, req *pb.CurrentBalanceRequest) (*pb.CurrentBalanceResponse, error) {
-	account, _ := a.Models.BankAccounts.Get(req.AccountNumber)
+	balance := a.BankService.FindCurrentBalance(req.AccountNumber)
 
 	now := time.Now()
 
 	return &pb.CurrentBalanceResponse{
-		CurrentBalance: account.CurrentBalance,
+		CurrentBalance: balance,
 		CurrentDate: &date.Date{
 			Year:  int32(now.Year()),
 			Month: int32(now.Month()),

@@ -1,5 +1,11 @@
 package port
 
+import (
+	"grpc-go-server/data"
+
+	"github.com/google/uuid"
+)
+
 type HelloServicePort interface {
 	GenerateHello(name string) string
 	GenerateManyHellos(name string, count int) []string
@@ -8,5 +14,6 @@ type HelloServicePort interface {
 }
 
 type BankServicePort interface {
-	FindCurrentBalance(acct string) float64
+	Save(data data.BankAccount) (uuid.UUID, error)
+	FindCurrentBalance(uuid string) float64
 }
