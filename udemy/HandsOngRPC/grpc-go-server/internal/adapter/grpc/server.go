@@ -2,7 +2,6 @@ package grpc
 
 import (
 	"fmt"
-	"grpc-go-server/data"
 	"grpc-go-server/internal/port"
 	"log"
 	"net"
@@ -14,21 +13,18 @@ import (
 
 type GrpcAdapter struct {
 	helloService port.HelloServicePort
-	bankService  port.BankServicePort
+	BankService  port.BankServicePort
 	grpcPort     int
 	server       *grpc.Server
 	hello.HelloServiceServer
 	bank.BankServiceServer
-	data.Models
 }
 
 func NewGrpcAdapter(helloService port.HelloServicePort, bankService port.BankServicePort, grpcPort int) *GrpcAdapter {
-	//cel := &celeritas.Celeritas{}
 	return &GrpcAdapter{
 		helloService: helloService,
-		bankService:  bankService,
+		BankService:  bankService,
 		grpcPort:     grpcPort,
-		//Models:       data.New(cel.DB.Pool),
 	}
 }
 

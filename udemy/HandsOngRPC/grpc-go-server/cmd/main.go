@@ -31,10 +31,11 @@ func init() {
 func main() {
 
 	hs := &app.HelloService{}
-	bs := &app.BankService{}
+	bs := &app.BankService{
+		Models: data.New(cel.DB.Pool),
+	}
 
 	grpcadapter := mygrpc.NewGrpcAdapter(hs, bs, 9090)
-	grpcadapter.Models = data.New(cel.DB.Pool)
-
+	 
 	grpcadapter.Run()
 }
