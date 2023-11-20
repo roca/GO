@@ -7,12 +7,12 @@ import "google/type/date.proto";
 option go_package = "protogen/go/bank";
 
 
-message ExcahnageRateRequest {
+message ExchangeRateRequest {
   double from_currency = 1 [json_name = "from_currency" ];
   double to_currency = 2 [json_name = "to_currency" ];
 }
 
-message ExcahnageRateResponse {
+message ExchangeRateResponse {
   double from_currency = 1 [json_name = "from_currency" ];
   double to_currency = 2 [json_name = "to_currency" ];
   double rate = 3;
