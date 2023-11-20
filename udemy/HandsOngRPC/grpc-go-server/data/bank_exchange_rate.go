@@ -75,7 +75,7 @@ func (t *BankExchangeRate) Delete(id int) error {
 }
 
 // Insert inserts a model into the database, using upper
-func (t *BankExchangeRate) Insert(m BankExchangeRate) (int, error) {
+func (t *BankExchangeRate) Insert(m BankExchangeRate) (up.ID, error) {
 	// m.CreatedAt = time.Now()
 	// m.UpdatedAt = time.Now()
 	m.ID = uuid.New()
@@ -85,9 +85,9 @@ func (t *BankExchangeRate) Insert(m BankExchangeRate) (int, error) {
 		return 0, err
 	}
 
-	id := getInsertedID(res.ID())
+	// id := getInsertedID(res.ID())
 
-	return id, nil
+	return res.ID, nil
 }
 
 // Builder is an example of using upper's sql builder
