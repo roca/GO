@@ -2,19 +2,16 @@ syntax = "proto3";
 
 package bank;
 
-import "google/type/date.proto";
-
 option go_package = "protogen/go/bank";
 
-
 message ExchangeRateRequest {
-  double from_currency = 1 [json_name = "from_currency" ];
-  double to_currency = 2 [json_name = "to_currency" ];
+  string from_currency = 1 [json_name = "from_currency" ];
+  string to_currency = 2 [json_name = "to_currency" ];
 }
 
 message ExchangeRateResponse {
-  double from_currency = 1 [json_name = "from_currency" ];
-  double to_currency = 2 [json_name = "to_currency" ];
+  string from_currency = 1 [json_name = "from_currency" ];
+  string to_currency = 2 [json_name = "to_currency" ];
   double rate = 3;
-  google.type.Date timestamp = 4;
+  string timestamp = 4;
 }
