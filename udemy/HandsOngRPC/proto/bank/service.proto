@@ -3,7 +3,7 @@ syntax = "proto3";
 package bank;
 
 import "bank/type/account.proto";
-import "bank/type/exchange_rate.proto";
+import "bank/type/exchange.proto";
 
 option go_package = "protogen/go/bank";
 
