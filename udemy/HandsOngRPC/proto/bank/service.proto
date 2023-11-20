@@ -3,10 +3,13 @@ syntax = "proto3";
 package bank;
 
 import "bank/type/account.proto";
+import "bank/type/exchange_rate.proto";
 
 option go_package = "protogen/go/bank";
 
 service BankService {
   rpc GetCurrentBalance (CurrentBalanceRequest) returns 
   (CurrentBalanceResponse) {};
+  rpc FetchExchangeRates(ExchangeRateRequest) returns 
+  (stream ExchangeRateResponse) {};
 }
