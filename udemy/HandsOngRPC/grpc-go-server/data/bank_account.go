@@ -52,7 +52,7 @@ func (t *BankAccount) Get(id string) (*BankAccount, error) {
 
 // Update updates a record in the database, using upper
 func (t *BankAccount) Update(m BankAccount) error {
-	m.UpdatedAt = time.Now()
+	// m.UpdatedAt = time.Now()
 	collection := upper.Collection(t.Table())
 	res := collection.Find(m.ID)
 	err := res.Update(&m)
@@ -75,8 +75,8 @@ func (t *BankAccount) Delete(id int) error {
 
 // Insert inserts a model into the database, using upper
 func (t *BankAccount) Insert(m BankAccount) (up.ID, error) {
-	m.CreatedAt = time.Now()
-	m.UpdatedAt = time.Now()
+	// m.CreatedAt = time.Now()
+	// m.UpdatedAt = time.Now()
 	m.ID = uuid.New()
 	collection := upper.Collection(t.Table())
 	res, err := collection.Insert(m)

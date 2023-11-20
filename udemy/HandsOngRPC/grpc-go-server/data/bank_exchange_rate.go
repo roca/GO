@@ -9,9 +9,14 @@ import (
 
 // BankExchangeRate struct
 type BankExchangeRate struct {
-	ID        uuid.UUID `db:"exchange_rate_uuid,omitempty"`
-	CreatedAt time.Time `db:"created_at"`
-	UpdatedAt time.Time `db:"updated_at"`
+	ID                 uuid.UUID `db:"exchange_rate_uuid,omitempty"`
+	FromCurrency       string    `db:"from_currency"`
+	ToCurrency         string    `db:"to_currency"`
+	Rate               float64   `db:"rate"`
+	ValidFromTimestamp time.Time `db:" valid_from_timestamp"`
+	ValidToTimestamp   time.Time `db:" valid_to_timestamp"`
+	CreatedAt          time.Time `db:"created_at"`
+	UpdatedAt          time.Time `db:"updated_at"`
 }
 
 // Table returns the table name
@@ -48,7 +53,7 @@ func (t *BankExchangeRate) Get(id int) (*BankExchangeRate, error) {
 
 // Update updates a record in the database, using upper
 func (t *BankExchangeRate) Update(m BankExchangeRate) error {
-	m.UpdatedAt = time.Now()
+	// m.UpdatedAt = time.Now()
 	collection := upper.Collection(t.Table())
 	res := collection.Find(m.ID)
 	err := res.Update(&m)
@@ -71,8 +76,8 @@ func (t *BankExchangeRate) Delete(id int) error {
 
 // Insert inserts a model into the database, using upper
 func (t *BankExchangeRate) Insert(m BankExchangeRate) (int, error) {
-	m.CreatedAt = time.Now()
-	m.UpdatedAt = time.Now()
+	// m.CreatedAt = time.Now()
+	// m.UpdatedAt = time.Now()
 	m.ID = uuid.New()
 	collection := upper.Collection(t.Table())
 	res, err := collection.Insert(m)
