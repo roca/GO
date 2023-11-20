@@ -40,7 +40,7 @@ func main() {
 
 	grpcadapter := mygrpc.NewGrpcAdapter(hs, bs, 9090)
 
-	go bs.InsertExchangeRatesAtInterval(exit, 3*time.Second)
+	go bs.InsertExchangeRatesAtInterval(exit, "USD", "IDR", 5*time.Second)
 
 	grpcadapter.Run()
 }
