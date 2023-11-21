@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"grpc-go-server/data"
 	mygrpc "grpc-go-server/internal/adapter/grpc"
 	app "grpc-go-server/internal/application"
@@ -31,7 +32,10 @@ func init() {
 
 func main() {
 	exit := make(chan bool)
-	defer func() { exit <- true }()
+	defer func() {
+		exit <- true
+		fmt.Println("Finished InsertExchangeRatesAtInterval")
+	}()
 
 	hs := &app.HelloService{}
 	bs := &app.BankService{
