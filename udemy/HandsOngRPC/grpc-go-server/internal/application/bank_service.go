@@ -42,6 +42,7 @@ func (b *BankService) InsertExchangeRatesAtInterval(exit chan bool, fromCurrency
 		//b.Models.BankExchangeRates.Insert(*er)
 		bytes, _ := json.Marshal(er)
 		fmt.Println("# b.Models.BankExchangeRates.Insert(m BankExchangeRate):", string(bytes))
+		b.Models.BankExchangeRates.Insert(*er)
 	}
 	stop := runFuncAtInterval(insertFunc, interval)
 	<-exit
