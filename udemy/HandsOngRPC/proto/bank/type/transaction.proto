@@ -4,9 +4,15 @@ package bank;
 
 option go_package = "protogen/go/bank";
 
+enum TransactionType {
+  TRANSACTION_TYPE_UNSPECIFIED = 0;
+  TRANSACTION_TYPE_DEPOSIT = 1;
+  TRANSACTION_TYPE_WITHDRAWAL = 2;
+}
+
 message Transaction {
   string account_number = 1 [json_name = "account_number"];
-  string transaction_type = 2 [json_name = "transaction_type"];
+  TransactionType transaction_type = 2 [json_name = "transaction_type"];
   double amount = 3;
   string timestamp = 4;
 }
