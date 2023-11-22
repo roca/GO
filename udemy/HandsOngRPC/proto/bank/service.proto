@@ -4,6 +4,7 @@ package bank;
 
 import "bank/type/account.proto";
 import "bank/type/exchange.proto";
+import "bank/type/transaction.proto";
 
 option go_package = "protogen/go/bank";
 
@@ -13,4 +14,7 @@ service BankService {
   
   rpc FetchExchangeRates (ExchangeRateRequest) returns 
   (stream ExchangeRateResponse) {};
+
+  rpc SummarizeTransactions(stream Transaction) returns 
+  (TransactionSummary) {};
 }
