@@ -7,7 +7,6 @@ import (
 	app "grpc-go-server/internal/application"
 	"log"
 	"os"
-	"time"
 
 	"github.com/roca/celeritas"
 )
@@ -45,7 +44,7 @@ func main() {
 
 	grpcadapter := mygrpc.NewGrpcAdapter(hs, bs, 9090)
 
-	go bs.InsertExchangeRatesAtInterval(exit, "USD", "IDR", 5*time.Second)
+	//go bs.InsertExchangeRatesAtInterval(exit, "USD", "IDR", 5*time.Second)
 
 	grpcadapter.Run()
 }

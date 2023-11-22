@@ -7,6 +7,12 @@ import (
 	"github.com/google/uuid"
 )
 
+type Transaction struct {
+	AccountNumber   string
+	TransactionType string
+	Amount          float64
+}
+
 type HelloServicePort interface {
 	GenerateHello(name string) string
 	GenerateManyHellos(name string, count int) []string
@@ -20,4 +26,5 @@ type BankServicePort interface {
 	InsertExchangeRatesAtInterval(exit chan bool, fromCurrency, toCurrency string, interval time.Duration)
 	GetExchangeRateAtTimestamp(fromCurrency, toCurrency string, timestamp time.Time) (*data.BankExchangeRate, error)
 	StopExchangeRatesAtInterval()
+	ExecuteBankTransactions(transactions []*Transaction) (float64, error)
 }
