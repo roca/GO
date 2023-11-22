@@ -2,6 +2,8 @@ package grpc
 
 import (
 	"context"
+	"grpc-go-server/internal/port"
+	"io"
 	"log"
 	pb "proto/protogen/go/bank"
 	"time"
@@ -48,5 +50,42 @@ func (a *GrpcAdapter) FetchExchangeRates(req *pb.ExchangeRateRequest, stream pb.
 			log.Printf("Exchange rate sent to client, %v to %v : %v\n", req.FromCurrency, req.ToCurrency, rate.Rate)
 			time.Sleep(3 * time.Second)
 		}
+	}
+}
+
+func (a *GrpcAdapter) SummarizeTransactions(stream pb.BankService_SummarizeTransactionsServer) error {
+	var transactions []*port.Transaction
+	var pbTransactions []*pb.Transaction
+	var accountNumber string
+	for {
+		req, err := stream.Recv()
+		if err == io.EOF {
+			balance, err := a.BankService.ExecuteBankTransactions(transactions)
+			if err != nil {
+				return err
+			}
+			transactions = nil
+			pbTransactions = nil
+			return stream.SendAndClose(&pb.TransactionSummary{
+				AccountNumber: accountNumber,
+				Balance:       balance,
+				Transactions:  pbTransactions,
+			},
+			)
+		}
+		if err != nil {
+			return err
+		}
+		accountNumber = req.AccountNumber
+		transactions = append(transactions, &port.Transaction{
+			AccountNumber:   req.AccountNumber,
+			TransactionType: req.TransactionType,
+			Amount:          req.Amount,
+		})
+		pbTransactions = append(pbTransactions, &pb.Transaction{
+			AccountNumber:   req.AccountNumber,
+			TransactionType: req.TransactionType,
+			Amount:          req.Amount,
+		})
 	}
 }

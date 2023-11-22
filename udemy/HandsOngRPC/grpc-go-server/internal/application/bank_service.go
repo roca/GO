@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"grpc-go-server/data"
+	"grpc-go-server/internal/port"
 	"math/rand"
 	"time"
 
@@ -61,6 +62,18 @@ func (b *BankService) GetExchangeRateAtTimestamp(fromCurrency, toCurrency string
 		return nil, err
 	}
 	return rates[0], nil
+}
+
+func (b *BankService) ExecuteBankTransactions(transactions []*port.Transaction) (float64, error) {
+	balance := 0.0
+	for _,t := range transactions {
+		if t.TransactionType == "DEBIT" {
+			balance -= t.Amount
+		} else {
+			balance += t.Amount
+		}
+	}
+	return balance, nil
 }
 
 func runFuncAtInterval(f func(), seconds time.Duration) chan bool {
