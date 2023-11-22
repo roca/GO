@@ -19,4 +19,5 @@ type BankServicePort interface {
 	FindCurrentBalance(uuid string) float64
 	InsertExchangeRatesAtInterval(exit chan bool, fromCurrency, toCurrency string, interval time.Duration)
 	GetExchangeRateAtTimestamp(fromCurrency, toCurrency string, timestamp time.Time) (*data.BankExchangeRate, error)
+	StopExchangeRatesAtInterval()
 }

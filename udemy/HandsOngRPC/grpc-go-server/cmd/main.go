@@ -39,7 +39,8 @@ func main() {
 
 	hs := &app.HelloService{}
 	bs := &app.BankService{
-		Models: data.New(cel.DB.Pool),
+		Models:   data.New(cel.DB.Pool),
+		ExitChan: exit,
 	}
 
 	grpcadapter := mygrpc.NewGrpcAdapter(hs, bs, 9090)

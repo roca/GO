@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package bank;
+
+option go_package = "protogen/go/bank";
+
+message Transaction {
+  string account_number = 1 [json_name = "account_number"];
+  string transaction_type = 2 [json_name = "transaction_type"];
+  double amount = 3;
+  string timestamp = 4;
+}
+
+message TransactionSummary {
+  string account_number = 1 [json_name = "account_number"];
+  double balance = 2;
+  repeated Transaction transactions = 3;
+}

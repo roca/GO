@@ -30,7 +30,7 @@ func (a *GrpcAdapter) FetchExchangeRates(req *pb.ExchangeRateRequest, stream pb.
 		select {
 		case <-context.Done():
 			log.Println("Client has cancelled stream")
-			return nil
+			//a.BankService.StopExchangeRatesAtInterval()
 		default:
 			now := time.Now().Truncate(time.Second)
 			rate, err := a.BankService.GetExchangeRateAtTimestamp(req.FromCurrency, req.ToCurrency, now)

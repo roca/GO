@@ -12,7 +12,8 @@ import (
 )
 
 type BankService struct {
-	Models data.Models
+	Models   data.Models
+	ExitChan chan bool
 }
 
 func (b *BankService) Save(data data.BankAccount) (uuid.UUID, error) {
@@ -48,6 +49,9 @@ func (b *BankService) InsertExchangeRatesAtInterval(exit chan bool, fromCurrency
 	<-exit
 	fmt.Println("Finished InsertExchangeRatesAtInterval")
 	stop <- true
+}
+func (b *BankService) StopExchangeRatesAtInterval() {
+	b.ExitChan <- true
 }
 
 func (b *BankService) GetExchangeRateAtTimestamp(fromCurrency, toCurrency string, timestamp time.Time) (*data.BankExchangeRate, error) {
