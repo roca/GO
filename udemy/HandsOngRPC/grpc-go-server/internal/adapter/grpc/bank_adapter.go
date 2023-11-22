@@ -79,7 +79,7 @@ func (a *GrpcAdapter) SummarizeTransactions(stream pb.BankService_SummarizeTrans
 		accountNumber = req.AccountNumber
 		transactions = append(transactions, &port.Transaction{
 			AccountNumber:   req.AccountNumber,
-			TransactionType: req.TransactionType,
+			TransactionType: port.TransactionType(req.TransactionType),
 			Amount:          req.Amount,
 		})
 		pbTransactions = append(pbTransactions, &pb.Transaction{
