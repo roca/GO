@@ -7,9 +7,18 @@ import (
 	"github.com/google/uuid"
 )
 
+type TransactionType int32
+
+const (
+	TransactionType_TRANSACTION_TYPE_UNSPECIFIED TransactionType = 0
+	TransactionType_TRANSACTION_TYPE_DEPOSIT     TransactionType = 1
+	TransactionType_TRANSACTION_TYPE_WITHDRAWAL  TransactionType = 2
+)
+
+
 type Transaction struct {
 	AccountNumber   string
-	TransactionType string
+	TransactionType TransactionType
 	Amount          float64
 }
 

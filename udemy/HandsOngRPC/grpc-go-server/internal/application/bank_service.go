@@ -67,7 +67,7 @@ func (b *BankService) GetExchangeRateAtTimestamp(fromCurrency, toCurrency string
 func (b *BankService) ExecuteBankTransactions(transactions []*port.Transaction) (float64, error) {
 	balance := 0.0
 	for _,t := range transactions {
-		if t.TransactionType == "DEBIT" {
+		if t.TransactionType == port.TransactionType_TRANSACTION_TYPE_WITHDRAWAL {
 			balance -= t.Amount
 		} else {
 			balance += t.Amount
