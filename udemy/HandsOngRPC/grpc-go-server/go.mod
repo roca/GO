@@ -3,6 +3,7 @@ module grpc-go-server
 go 1.21.0
 
 require (
+	github.com/DATA-DOG/go-sqlmock v1.5.0
 	github.com/google/uuid v1.3.1
 	github.com/roca/celeritas v1.0.0
 	github.com/upper/db/v4 v4.7.0
