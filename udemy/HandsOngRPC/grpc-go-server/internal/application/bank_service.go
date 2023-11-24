@@ -2,6 +2,7 @@ package application
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"grpc-go-server/data"
 	"grpc-go-server/internal/port"
@@ -65,15 +66,25 @@ func (b *BankService) GetExchangeRateAtTimestamp(fromCurrency, toCurrency string
 }
 
 func (b *BankService) ExecuteBankTransactions(transactions []*port.Transaction) (float64, error) {
-	balance := 0.0
-	for _,t := range transactions {
-		if t.TransactionType == port.TransactionType_TRANSACTION_TYPE_WITHDRAWAL {
-			balance -= t.Amount
-		} else {
-			balance += t.Amount
-		}
+	account, err := b.Models.BankAccounts.Get(transactions[0].AccountNumber)
+	if err != nil {
+		return 0, errors.New("account not found")
 	}
-	return balance, nil
+
+	var dbTransactions []data.BankTransaction
+	for _, t := range transactions {
+
+		dbTransactions = append(dbTransactions, data.BankTransaction{
+			AccountID:            account.ID,
+			TransactionTimestamp: time.Now(),
+			Amount:               t.Amount,
+			TransactionType:      port.TransactionMap[t.TransactionType],
+			Notes:                "",
+			CreatedAt:            time.Now(),
+			UpdatedAt:            time.Now(),
+		})
+	}
+	return b.Models.BankTransactions.BulkInsert(account.CurrentBalance, dbTransactions)
 }
 
 func runFuncAtInterval(f func(), seconds time.Duration) chan bool {

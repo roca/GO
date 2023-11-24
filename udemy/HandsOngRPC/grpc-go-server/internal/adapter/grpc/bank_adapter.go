@@ -54,18 +54,16 @@ func (a *GrpcAdapter) FetchExchangeRates(req *pb.ExchangeRateRequest, stream pb.
 }
 
 func (a *GrpcAdapter) SummarizeTransactions(stream pb.BankService_SummarizeTransactionsServer) error {
-	var transactions []*port.Transaction
-	var pbTransactions []*pb.Transaction
-	var accountNumber string
+	var portTransactions []*port.Transaction = nil
+	var pbTransactions []*pb.Transaction = nil
+	var accountNumber string = ""
 	for {
 		req, err := stream.Recv()
 		if err == io.EOF {
-			balance, err := a.BankService.ExecuteBankTransactions(transactions)
+			balance, err := a.BankService.ExecuteBankTransactions(portTransactions)
 			if err != nil {
 				return err
 			}
-			transactions = nil
-			pbTransactions = nil
 			return stream.SendAndClose(&pb.TransactionSummary{
 				AccountNumber: accountNumber,
 				Balance:       balance,
@@ -77,7 +75,7 @@ func (a *GrpcAdapter) SummarizeTransactions(stream pb.BankService_SummarizeTrans
 			return err
 		}
 		accountNumber = req.AccountNumber
-		transactions = append(transactions, &port.Transaction{
+		portTransactions = append(portTransactions, &port.Transaction{
 			AccountNumber:   req.AccountNumber,
 			TransactionType: port.TransactionType(req.TransactionType),
 			Amount:          req.Amount,

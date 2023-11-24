@@ -1,6 +1,7 @@
 package data
 
 import (
+	"errors"
 	"time"
 
 	"github.com/google/uuid"
@@ -9,9 +10,15 @@ import (
 
 // BankTransaction struct
 type BankTransaction struct {
-	ID        uuid.UUID `db:"transaction_uuid,omitempty"`
-	CreatedAt time.Time `db:"created_at"`
-	UpdatedAt time.Time `db:"updated_at"`
+	ID uuid.UUID `db:"transaction_uuid,omitempty"`
+
+	AccountID            uuid.UUID `db:"account_uuid"`
+	TransactionTimestamp time.Time `db:"transaction_timestamp"`
+	Amount               float64   `db:"amount"`
+	TransactionType      string    `db:"transaction_type"`
+	Notes                string    `db:"notes"`
+	CreatedAt            time.Time `db:"created_at"`
+	UpdatedAt            time.Time `db:"updated_at"`
 }
 
 // Table returns the table name
@@ -70,7 +77,7 @@ func (t *BankTransaction) Delete(id int) error {
 }
 
 // Insert inserts a model into the database, using upper
-func (t *BankTransaction) Insert(m BankTransaction) (int, error) {
+func (t *BankTransaction) Insert(m BankTransaction) (up.ID, error) {
 	m.CreatedAt = time.Now()
 	m.UpdatedAt = time.Now()
 	m.ID = uuid.New()
@@ -80,9 +87,35 @@ func (t *BankTransaction) Insert(m BankTransaction) (int, error) {
 		return 0, err
 	}
 
-	id := getInsertedID(res.ID())
+	//id := getInsertedID(res.ID())
 
-	return id, nil
+	return res.ID, nil
+}
+
+func (t *BankTransaction) BulkInsert(currentBalance float64, m []BankTransaction) (float64, error) {
+	balance := currentBalance
+	err := upper.Tx(func(tx up.Session) error {
+		for _, v := range m {
+			switch v.TransactionType {
+			case "DEPOSIT":
+				balance += v.Amount
+			case "WITHDRAWAL":
+				balance -= v.Amount
+			}
+			if balance < 0 {
+				return errors.New("Insufficient balance")
+			}
+			_, err := t.Insert(v)
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		return currentBalance, err
+	}
+	return balance, err
 }
 
 // Builder is an example of using upper's sql builder

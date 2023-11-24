@@ -15,11 +15,16 @@ const (
 	TransactionType_TRANSACTION_TYPE_WITHDRAWAL  TransactionType = 2
 )
 
-
 type Transaction struct {
 	AccountNumber   string
 	TransactionType TransactionType
 	Amount          float64
+}
+
+var TransactionMap = map[TransactionType]string{
+	TransactionType_TRANSACTION_TYPE_UNSPECIFIED: "UNSPECIFIED",
+	TransactionType_TRANSACTION_TYPE_DEPOSIT:     "DEPOSIT",
+	TransactionType_TRANSACTION_TYPE_WITHDRAWAL:  "WITHDRAWAL",
 }
 
 type HelloServicePort interface {
