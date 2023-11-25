@@ -58,7 +58,7 @@ func (b *BankService) StopExchangeRatesAtInterval() {
 
 func (b *BankService) GetExchangeRateAtTimestamp(fromCurrency, toCurrency string, timestamp time.Time) (*data.BankExchangeRate, error) {
 	cond := up.Cond{"from_currency": fromCurrency, "to_currency": toCurrency}
-	rates, err := b.Models.BankExchangeRates.GetAll(cond)
+	rates, err := b.Models.BankExchangeRate.GetAll(cond)
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +66,7 @@ func (b *BankService) GetExchangeRateAtTimestamp(fromCurrency, toCurrency string
 }
 
 func (b *BankService) ExecuteBankTransactions(transactions []*port.Transaction) (float64, error) {
-	account, err := b.Models.BankAccounts.Get(transactions[0].AccountNumber)
+	account, err := b.Models.BankAccount.Get(transactions[0].AccountNumber)
 	if err != nil {
 		return 0, errors.New("account not found")
 	}
@@ -84,7 +84,7 @@ func (b *BankService) ExecuteBankTransactions(transactions []*port.Transaction) 
 			UpdatedAt:            time.Now(),
 		})
 	}
-	return b.Models.BankTransactions.BulkInsert(account.CurrentBalance, dbTransactions)
+	return b.Models.BankTransaction.BulkInsert(account.CurrentBalance, dbTransactions)
 }
 
 func runFuncAtInterval(f func(), seconds time.Duration) chan bool {

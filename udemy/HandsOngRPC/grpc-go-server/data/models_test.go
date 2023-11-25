@@ -20,12 +20,12 @@ func TestNew(t *testing.T) {
 		t.Errorf("Wrong type. Expected data.Models type, got %T", m)
 	}
 
-	if fmt.Sprintf("%T", m.BankAccounts) != "data.BankAccount" {
-		t.Errorf("Wrong type. Expected data.BankAccount type, got %T", m.BankAccounts)
+	if fmt.Sprintf("%T", m.BankAccount) != "data.BankAccount" {
+		t.Errorf("Wrong type. Expected data.BankAccount type, got %T", m.BankAccount)
 	}
 
-	if fmt.Sprintf("%T", m.BankTransactions) != "data.BankTransaction" {
-		t.Errorf("Wrong type. Expected data.BankTransaction type, got %T", m.BankTransactions)
+	if fmt.Sprintf("%T", m.BankTransaction) != "data.BankTransaction" {
+		t.Errorf("Wrong type. Expected data.BankTransaction type, got %T", m.BankTransaction)
 	}
 }
 
