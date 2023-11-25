@@ -26,10 +26,10 @@ type Model interface {
 type Models struct {
 	// any models inserted here ( and in the New function)
 	// are easily accessible from throughout the entire application
-	BankAccounts      BankAccount
-	BankExchangeRates BankExchangeRate
-	BankTransactions  BankTransaction
-	BankTransfers     BankTransfer
+	BankAccount
+	BankExchangeRate
+	BankTransaction
+	BankTransfer
 }
 
 func New(databasePool *sql.DB) Models {
@@ -48,10 +48,10 @@ func New(databasePool *sql.DB) Models {
 	}
 
 	return Models{
-		BankAccounts:      BankAccount{},
-		BankExchangeRates: BankExchangeRate{},
-		BankTransactions:  BankTransaction{},
-		BankTransfers:     BankTransfer{},
+		BankAccount:      BankAccount{},
+		BankExchangeRate: BankExchangeRate{},
+		BankTransaction:  BankTransaction{},
+		BankTransfer:     BankTransfer{},
 	}
 }
 
