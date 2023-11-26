@@ -25,7 +25,7 @@ func (b *BankService) Save(data data.BankAccount) (uuid.UUID, error) {
 func (b *BankService) FindCurrentBalance(uuid string) float64 {
 	// log.Println(acct)
 
-	account, _ := b.Models.BankAccounts.Get(uuid)
+	account, _ := b.Models.BankAccount.Get(uuid)
 
 	return account.CurrentBalance
 }
@@ -45,7 +45,7 @@ func (b *BankService) InsertExchangeRatesAtInterval(exit chan bool, fromCurrency
 		//b.Models.BankExchangeRates.Insert(*er)
 		bytes, _ := json.Marshal(er)
 		fmt.Println("# b.Models.BankExchangeRates.Insert(m BankExchangeRate):", string(bytes))
-		b.Models.BankExchangeRates.Insert(*er)
+		b.Models.BankExchangeRate.Insert(*er)
 	}
 	stop := runFuncAtInterval(insertFunc, interval)
 	<-exit
@@ -84,7 +84,7 @@ func (b *BankService) ExecuteBankTransactions(transactions []*port.Transaction) 
 			UpdatedAt:            time.Now(),
 		})
 	}
-	return b.Models.BankTransaction.BulkInsert(account.CurrentBalance, dbTransactions)
+	return b.Models.BankTransaction.BulkInsert(*account, dbTransactions)
 }
 
 func runFuncAtInterval(f func(), seconds time.Duration) chan bool {

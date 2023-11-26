@@ -92,8 +92,8 @@ func (t *BankTransaction) Insert(m BankTransaction) (up.ID, error) {
 	return res.ID, nil
 }
 
-func (t *BankTransaction) BulkInsert(currentBalance float64, m []BankTransaction) (float64, error) {
-	balance := currentBalance
+func (t *BankTransaction) BulkInsert(account BankAccount, m []BankTransaction) (float64, error) {
+	balance := account.CurrentBalance
 	err := upper.Tx(func(tx up.Session) error {
 		for _, v := range m {
 			switch v.TransactionType {
@@ -110,10 +110,21 @@ func (t *BankTransaction) BulkInsert(currentBalance float64, m []BankTransaction
 				return err
 			}
 		}
+		updatedBankAccount := BankAccount{
+			ID:             account.ID,
+			CurrentBalance: balance,
+			AccountNumber:  account.AccountNumber,
+			AccountName:    account.AccountName,
+			Currency:       account.Currency,
+			CreatedAt:      account.CreatedAt,
+			UpdatedAt:      time.Now(),
+		}
+		account.Update(updatedBankAccount)
+
 		return nil
 	})
 	if err != nil {
-		return currentBalance, err
+		return account.CurrentBalance, err
 	}
 	return balance, err
 }

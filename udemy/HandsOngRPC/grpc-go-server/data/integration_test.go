@@ -29,13 +29,12 @@ var (
 	dsn      = "host=%s port=%s user=%s password=%s dbname=%s sslmode=disable timezone=UTC connect_timeout=5"
 )
 
-// var dummyUser = User{
-// 	FirstName: "Some",
-// 	LastName:  "Guy",
-// 	Email:     "me@here.com",
-// 	Active:    1,
-// 	Password:  "password",
-// }
+var dummyBankAccount = BankAccount{
+	AccountNumber:  "1234567890",
+	AccountName:    "John Doe",
+	Currency:       "USD",
+	CurrentBalance: 1000.00,
+}
 
 var models Models
 var testDB *sql.DB
@@ -119,7 +118,7 @@ func createTables(db *sql.DB) error {
 
 func truncateTables(db *sql.DB) error {
 	// Read SQl text from file
-	bytes, err := ioutil.ReadFile("./truncate.sql")
+	bytes, err := ioutil.ReadFile("../migrations/1700064420603920_bank_accounts.postgres.down.psql")
 	if err != nil {
 		return fmt.Errorf("Could  not read truncate.sql file: %s", err)
 	}
@@ -154,16 +153,16 @@ func TestBankAccount_Table(t *testing.T) {
 		t.Errorf("Wrong table name returned. Expected 'bank_accounts', got '%s'", s)
 	}
 }
-/*
 
-func TestUser_Insert(t *testing.T) {
+
+func TestBankAccount_Insert(t *testing.T) {
 	defer func() { // Truncate tables after test
 		err := truncateTables(testDB)
 		if err != nil {
 			t.Errorf("Error truncating tables: %s", err)
 		}
 	}()
-	id, err := models.bank_accounts.Insert(dummyUser)
+	id, err := models.BankAccount.Insert(dummyBankAccount)
 	if err != nil {
 		t.Errorf("Error inserting user: %s", err)
 	}
@@ -173,15 +172,17 @@ func TestUser_Insert(t *testing.T) {
 	}
 }
 
-// Test getting a User
-func TestUser_Get(t *testing.T) {
+/*
+
+// Test getting a BankAccount
+func TestBankAccount_Get(t *testing.T) {
 	defer func() { // Truncate tables after test
 		err := truncateTables(testDB)
 		if err != nil {
 			t.Errorf("Error truncating tables: %s", err)
 		}
 	}()
-	id, err := models.bank_accounts.Insert(dummyUser)
+	id, err := models.bank_accounts.Insert(dummyBankAccount)
 	if err != nil {
 		t.Errorf("Error inserting user: %s", err)
 	}
@@ -196,14 +197,14 @@ func TestUser_Get(t *testing.T) {
 }
 
 // Test getting all bank_accounts
-func TestUser_GetAll(t *testing.T) {
+func TestBankAccount_GetAll(t *testing.T) {
 	defer func() { // Truncate tables after test
 		err := truncateTables(testDB)
 		if err != nil {
 			t.Errorf("Error truncating tables: %s", err)
 		}
 	}()
-	_, err := models.bank_accounts.Insert(dummyUser)
+	_, err := models.bank_accounts.Insert(dummyBankAccount)
 	if err != nil {
 		t.Errorf("Error inserting user: %s", err)
 	}
@@ -218,40 +219,40 @@ func TestUser_GetAll(t *testing.T) {
 }
 
 // Test getting a user by email
-func TestUser_GetByEmail(t *testing.T) {
+func TestBankAccount_GetByEmail(t *testing.T) {
 	defer func() { // Truncate tables after test
 		err := truncateTables(testDB)
 		if err != nil {
 			t.Errorf("Error truncating tables: %s", err)
 		}
 	}()
-	_, err := models.bank_accounts.Insert(dummyUser)
+	_, err := models.bank_accounts.Insert(dummyBankAccount)
 	if err != nil {
 		t.Errorf("Error inserting user: %s", err)
 	}
-	user, err := models.bank_accounts.GetByEmail(dummyUser.Email)
+	user, err := models.bank_accounts.GetByEmail(dummyBankAccount.Email)
 	if err != nil {
 		t.Errorf("Error getting user: %s", err)
 	}
 
-	if user.Email != dummyUser.Email {
-		t.Errorf("Wrong user returned. Expected email %s, got %s", dummyUser.Email, user.Email)
+	if user.Email != dummyBankAccount.Email {
+		t.Errorf("Wrong user returned. Expected email %s, got %s", dummyBankAccount.Email, user.Email)
 	}
 }
 
 // Test updating a user
-func TestUser_Update(t *testing.T) {
+func TestBankAccount_Update(t *testing.T) {
 	defer func() { // Truncate tables after test
 		err := truncateTables(testDB)
 		if err != nil {
 			t.Errorf("Error truncating tables: %s", err)
 		}
 	}()
-	_, err := models.bank_accounts.Insert(dummyUser)
+	_, err := models.bank_accounts.Insert(dummyBankAccount)
 	if err != nil {
 		t.Errorf("Error inserting user: %s", err)
 	}
-	user, err := models.bank_accounts.GetByEmail(dummyUser.Email)
+	user, err := models.bank_accounts.GetByEmail(dummyBankAccount.Email)
 	if err != nil {
 		t.Errorf("Error getting user: %s", err)
 	}
@@ -262,34 +263,34 @@ func TestUser_Update(t *testing.T) {
 		t.Errorf("Error updating user: %s", err)
 	}
 
-	user, err = models.bank_accounts.GetByEmail(dummyUser.Email)
+	user, err = models.bank_accounts.GetByEmail(dummyBankAccount.Email)
 	if err != nil {
 		t.Errorf("Error getting user: %s", err)
 	}
 
 	if user.LastName != "Smith" {
-		t.Errorf("User LastName not updated. Expected last name 'Smith', got '%s'", user.LastName)
+		t.Errorf("BankAccount LastName not updated. Expected last name 'Smith', got '%s'", user.LastName)
 	}
 }
 
 // Test that password matches
-func TestUser_PasswordMatches(t *testing.T) {
+func TestBankAccount_PasswordMatches(t *testing.T) {
 	defer func() { // Truncate tables after test
 		err := truncateTables(testDB)
 		if err != nil {
 			t.Errorf("Error truncating tables: %s", err)
 		}
 	}()
-	_, err := models.bank_accounts.Insert(dummyUser)
+	_, err := models.bank_accounts.Insert(dummyBankAccount)
 	if err != nil {
 		t.Errorf("Error inserting user: %s", err)
 	}
-	user, err := models.bank_accounts.GetByEmail(dummyUser.Email)
+	user, err := models.bank_accounts.GetByEmail(dummyBankAccount.Email)
 	if err != nil {
 		t.Errorf("Error getting user: %s", err)
 	}
 
-	matches, err := user.PasswordMatches(dummyUser.Password)
+	matches, err := user.PasswordMatches(dummyBankAccount.Password)
 	if err != nil {
 		t.Errorf("Error matching password: %s", err)
 	}
@@ -309,14 +310,14 @@ func TestUser_PasswordMatches(t *testing.T) {
 }
 
 // Test resetting the bank_accounts password
-func TestUser_ResetPassword(t *testing.T) {
+func TestBankAccount_ResetPassword(t *testing.T) {
 	defer func() { // Truncate tables after test
 		err := truncateTables(testDB)
 		if err != nil {
 			t.Errorf("Error truncating tables: %s", err)
 		}
 	}()
-	id, err := models.bank_accounts.Insert(dummyUser)
+	id, err := models.bank_accounts.Insert(dummyBankAccount)
 	if err != nil {
 		t.Errorf("Error inserting user: %s", err)
 	}
@@ -342,7 +343,7 @@ func TestUser_ResetPassword(t *testing.T) {
 }
 
 // Test deleting a user
-func TestUser_Delete(t *testing.T) {
+func TestBankAccount_Delete(t *testing.T) {
 	defer func() { // Truncate tables after test
 		err := truncateTables(testDB)
 		if err != nil {
@@ -350,7 +351,7 @@ func TestUser_Delete(t *testing.T) {
 		}
 	}()
 
-	id, err := models.bank_accounts.Insert(dummyUser)
+	id, err := models.bank_accounts.Insert(dummyBankAccount)
 	if err != nil {
 		t.Errorf("Error inserting user: %s", err)
 	}
@@ -362,7 +363,7 @@ func TestUser_Delete(t *testing.T) {
 
 	_, err = models.bank_accounts.Get(id)
 	if err == nil {
-		t.Errorf("User not deleted")
+		t.Errorf("BankAccount not deleted")
 	}
 }
 
@@ -383,7 +384,7 @@ func TestToken_GenerateToken(t *testing.T) {
 		}
 	}()
 
-	id, err := models.bank_accounts.Insert(dummyUser)
+	id, err := models.bank_accounts.Insert(dummyBankAccount)
 	if err != nil {
 		t.Errorf("Error inserting user: %s", err)
 	}
@@ -394,8 +395,8 @@ func TestToken_GenerateToken(t *testing.T) {
 		t.Errorf("Error generating token: %s", err)
 	}
 
-	if token.UserID != id {
-		t.Errorf("Wrong user id in token. Expected %d, got %d", id, token.UserID)
+	if token.BankAccountID != id {
+		t.Errorf("Wrong user id in token. Expected %d, got %d", id, token.BankAccountID)
 	}
 }
 
@@ -408,12 +409,12 @@ func TestToken_Insert(t *testing.T) {
 		}
 	}()
 
-	_, err := models.bank_accounts.Insert(dummyUser)
+	_, err := models.bank_accounts.Insert(dummyBankAccount)
 	if err != nil {
 		t.Errorf("Error inserting user: %s", err)
 	}
 
-	user, err := models.bank_accounts.GetByEmail(dummyUser.Email)
+	user, err := models.bank_accounts.GetByEmail(dummyBankAccount.Email)
 	if err != nil {
 		t.Errorf("Error getting user: %s", err)
 	}
@@ -430,7 +431,7 @@ func TestToken_Insert(t *testing.T) {
 	}
 }
 
-func TestToken_GetUserForToken(t *testing.T) {
+func TestToken_GetBankAccountForToken(t *testing.T) {
 	defer func() { // Truncate tables after test
 		err := truncateTables(testDB)
 		if err != nil {
@@ -438,12 +439,12 @@ func TestToken_GetUserForToken(t *testing.T) {
 		}
 	}()
 
-	_, err := models.bank_accounts.Insert(dummyUser)
+	_, err := models.bank_accounts.Insert(dummyBankAccount)
 	if err != nil {
 		t.Errorf("Error inserting user: %s", err)
 	}
 
-	user, err := models.bank_accounts.GetByEmail(dummyUser.Email)
+	user, err := models.bank_accounts.GetByEmail(dummyBankAccount.Email)
 	if err != nil {
 		t.Errorf("Error getting user: %s", err)
 	}
@@ -459,22 +460,22 @@ func TestToken_GetUserForToken(t *testing.T) {
 		t.Errorf("Error inserting token: %s", err)
 	}
 
-	user, err = models.Tokens.GetUserForToken(token.PlainText)
+	user, err = models.Tokens.GetBankAccountForToken(token.PlainText)
 	if err != nil {
 		t.Errorf("Error getting user for token: %s", err)
 	}
 
-	if user.Email != dummyUser.Email {
-		t.Errorf("Wrong user returned. Expected %s, got %s", dummyUser.Email, user.Email)
+	if user.Email != dummyBankAccount.Email {
+		t.Errorf("Wrong user returned. Expected %s, got %s", dummyBankAccount.Email, user.Email)
 	}
 
-	_, err = models.Tokens.GetUserForToken("wrongToken")
+	_, err = models.Tokens.GetBankAccountForToken("wrongToken")
 	if err == nil {
 		t.Errorf("Did not get error for getting a user with a wrong token")
 	}
 }
 
-func TestToken_GetTokensForUser(t *testing.T) {
+func TestToken_GetTokensForBankAccount(t *testing.T) {
 	defer func() { // Truncate tables after test
 		err := truncateTables(testDB)
 		if err != nil {
@@ -482,7 +483,7 @@ func TestToken_GetTokensForUser(t *testing.T) {
 		}
 	}()
 
-	tokens, err := models.Tokens.GetTokensForUser(1)
+	tokens, err := models.Tokens.GetTokensForBankAccount(1)
 	if err != nil {
 		t.Errorf("Did not get error for getting tokens for a non existing user: %s", err)
 	}
@@ -491,12 +492,12 @@ func TestToken_GetTokensForUser(t *testing.T) {
 		t.Errorf("Got tokens for a non existing user, length %d", len(tokens))
 	}
 
-	_, err = models.bank_accounts.Insert(dummyUser)
+	_, err = models.bank_accounts.Insert(dummyBankAccount)
 	if err != nil {
 		t.Errorf("Error inserting user: %s", err)
 	}
 
-	user, err := models.bank_accounts.GetByEmail(dummyUser.Email)
+	user, err := models.bank_accounts.GetByEmail(dummyBankAccount.Email)
 	if err != nil {
 		t.Errorf("Error getting user: %s", err)
 	}
@@ -512,7 +513,7 @@ func TestToken_GetTokensForUser(t *testing.T) {
 		t.Errorf("Error inserting token: %s", err)
 	}
 
-	tokens, err = models.Tokens.GetTokensForUser(user.ID)
+	tokens, err = models.Tokens.GetTokensForBankAccount(user.ID)
 	if err != nil {
 		t.Errorf("Error getting tokens for user: %s", err)
 	}
@@ -521,8 +522,8 @@ func TestToken_GetTokensForUser(t *testing.T) {
 		t.Errorf("No tokens returned")
 	}
 
-	if tokens[0].UserID != user.ID {
-		t.Errorf("Wrong user id returned. Expected %d, got %d", user.ID, tokens[0].UserID)
+	if tokens[0].BankAccountID != user.ID {
+		t.Errorf("Wrong user id returned. Expected %d, got %d", user.ID, tokens[0].BankAccountID)
 	}
 }
 
@@ -535,12 +536,12 @@ func TestToken_Get(t *testing.T) {
 		}
 	}()
 
-	_, err := models.bank_accounts.Insert(dummyUser)
+	_, err := models.bank_accounts.Insert(dummyBankAccount)
 	if err != nil {
 		t.Errorf("Error inserting user: %s", err)
 	}
 
-	user, err := models.bank_accounts.GetByEmail(dummyUser.Email)
+	user, err := models.bank_accounts.GetByEmail(dummyBankAccount.Email)
 	if err != nil {
 		t.Errorf("Error getting user: %s", err)
 	}
@@ -580,12 +581,12 @@ func TestToken_GetByToken(t *testing.T) {
 		}
 	}()
 
-	_, err := models.bank_accounts.Insert(dummyUser)
+	_, err := models.bank_accounts.Insert(dummyBankAccount)
 	if err != nil {
 		t.Errorf("Error inserting user: %s", err)
 	}
 
-	user, err := models.bank_accounts.GetByEmail(dummyUser.Email)
+	user, err := models.bank_accounts.GetByEmail(dummyBankAccount.Email)
 	if err != nil {
 		t.Errorf("Error getting user: %s", err)
 	}
@@ -642,12 +643,12 @@ func TestToken_AuthenticateToken(t *testing.T) {
 		}
 	}()
 
-	_, err := models.bank_accounts.Insert(dummyUser)
+	_, err := models.bank_accounts.Insert(dummyBankAccount)
 	if err != nil {
 		t.Errorf("Error inserting user: %s", err)
 	}
 
-	user, err := models.bank_accounts.GetByEmail(dummyUser.Email)
+	user, err := models.bank_accounts.GetByEmail(dummyBankAccount.Email)
 	if err != nil {
 		t.Errorf("Error getting user: %s", err)
 	}
@@ -666,7 +667,7 @@ func TestToken_AuthenticateToken(t *testing.T) {
 	for _, tt := range authData {
 		t.Run(tt.name, func(t *testing.T) {
 			req, _ := http.NewRequest("GET", "/", nil)
-			if tt.email == dummyUser.Email {
+			if tt.email == dummyBankAccount.Email {
 				req.Header.Add("Authorization", "Bearer "+token.PlainText)
 			} else {
 				req.Header.Add("Authorization", "Bearer "+tt.token)
@@ -707,12 +708,12 @@ func TestToken_ValidToken(t *testing.T) {
 		}
 	}()
 
-	_, err := models.bank_accounts.Insert(dummyUser)
+	_, err := models.bank_accounts.Insert(dummyBankAccount)
 	if err != nil {
 		t.Errorf("Error inserting user: %s", err)
 	}
 
-	user, err := models.bank_accounts.GetByEmail(dummyUser.Email)
+	user, err := models.bank_accounts.GetByEmail(dummyBankAccount.Email)
 	if err != nil {
 		t.Errorf("Error getting user: %s", err)
 	}
@@ -771,12 +772,12 @@ func TestToken_Delete(t *testing.T) {
 		}
 	}()
 
-	_, err := models.bank_accounts.Insert(dummyUser)
+	_, err := models.bank_accounts.Insert(dummyBankAccount)
 	if err != nil {
 		t.Errorf("Error inserting user: %s", err)
 	}
 
-	user, err := models.bank_accounts.GetByEmail(dummyUser.Email)
+	user, err := models.bank_accounts.GetByEmail(dummyBankAccount.Email)
 	if err != nil {
 		t.Errorf("Error getting user: %s", err)
 	}
@@ -807,12 +808,12 @@ func TestToken_ExpiredToken(t *testing.T) {
 		}
 	}()
 
-	_, err := models.bank_accounts.Insert(dummyUser)
+	_, err := models.bank_accounts.Insert(dummyBankAccount)
 	if err != nil {
 		t.Errorf("Error inserting user: %s", err)
 	}
 
-	user, err := models.bank_accounts.GetByEmail(dummyUser.Email)
+	user, err := models.bank_accounts.GetByEmail(dummyBankAccount.Email)
 	if err != nil {
 		t.Errorf("Error getting user: %s", err)
 	}
@@ -855,12 +856,12 @@ func TestToken_DeleteByToken(t *testing.T) {
 		}
 	}()
 
-	_, err := models.bank_accounts.Insert(dummyUser)
+	_, err := models.bank_accounts.Insert(dummyBankAccount)
 	if err != nil {
 		t.Errorf("Error inserting user: %s", err)
 	}
 
-	user, err := models.bank_accounts.GetByEmail(dummyUser.Email)
+	user, err := models.bank_accounts.GetByEmail(dummyBankAccount.Email)
 	if err != nil {
 		t.Errorf("Error getting user: %s", err)
 	}
