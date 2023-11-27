@@ -88,8 +88,13 @@ func (b *BankService) ExecuteBankTransactions(transactions []*port.Transaction) 
 	}
 	return b.Models.BankTransaction.BulkInsert(*account, dbTransactions)
 }
-func (b *BankService) ExecuteBankTransfer(*pb.TransferRequest) (*pb.TransferResponse, error) {
-	return nil, errors.New("Not Implemented yet")
+func (b *BankService) ExecuteBankTransfers(*pb.TransferRequest) <-chan *pb.TransferResponse {
+	ch := make(chan *pb.TransferResponse)
+	go func() {
+		ch <- &pb.TransferResponse{}
+		close(ch)
+	}()
+	return ch
 }
 
 func runFuncAtInterval(f func(), seconds time.Duration) chan bool {

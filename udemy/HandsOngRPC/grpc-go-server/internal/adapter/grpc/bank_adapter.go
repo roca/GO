@@ -89,8 +89,6 @@ func (a *GrpcAdapter) SummarizeTransactions(stream pb.BankService_SummarizeTrans
 }
 
 func (a *GrpcAdapter) TransferMultiple(stream pb.BankService_TransferMultipleServer) error {
-
-	i := 0
 	for {
 		req, err := stream.Recv()
 		if err == io.EOF {
@@ -100,17 +98,14 @@ func (a *GrpcAdapter) TransferMultiple(stream pb.BankService_TransferMultipleSer
 			return err
 		}
 
-		for {
-			resp, err := a.BankService.ExecuteBankTransfer(req)
-			if err != nil {
-				return err
-			}
-			err = stream.Send(resp)
+		for resp := range a.BankService.ExecuteBankTransfers(req) {
+			err := stream.Send(resp)
 			if err != nil {
 				return err
 			}
 			time.Sleep(500 * time.Millisecond)
-			i++
 		}
+
 	}
+
 }
