@@ -4,15 +4,17 @@ import (
 	"grpc-go-server/data"
 	"time"
 
+	pb "proto/protogen/go/bank"
+
 	"github.com/google/uuid"
 )
 
 type TransactionType int32
 
 const (
-	TransactionType_TRANSACTION_TYPE_UNSPECIFIED TransactionType = 0
-	TransactionType_TRANSACTION_TYPE_DEPOSIT     TransactionType = 1
-	TransactionType_TRANSACTION_TYPE_WITHDRAWAL  TransactionType = 2
+	TRANSACTION_TYPE_UNSPECIFIED TransactionType = 0
+	TRANSACTION_TYPE_DEPOSIT     TransactionType = 1
+	TRANSACTION_TYPE_WITHDRAWAL  TransactionType = 2
 )
 
 type Transaction struct {
@@ -22,9 +24,23 @@ type Transaction struct {
 }
 
 var TransactionMap = map[TransactionType]string{
-	TransactionType_TRANSACTION_TYPE_UNSPECIFIED: "UNSPECIFIED",
-	TransactionType_TRANSACTION_TYPE_DEPOSIT:     "DEPOSIT",
-	TransactionType_TRANSACTION_TYPE_WITHDRAWAL:  "WITHDRAWAL",
+	TRANSACTION_TYPE_UNSPECIFIED: "UNSPECIFIED",
+	TRANSACTION_TYPE_DEPOSIT:     "DEPOSIT",
+	TRANSACTION_TYPE_WITHDRAWAL:  "WITHDRAWAL",
+}
+
+type TransferStatusType int32
+
+const (
+	TRANSFER_STATUS_TYPE_UNSPECIFIED TransferStatusType = 0
+	TRANSFER_STATUS_TYPE_SUCCESS     TransferStatusType = 1
+	TRANSFER_STATUS_TYPE_FAILED      TransferStatusType = 2
+)
+
+var TransferStatusTypeMap = map[TransferStatusType]string{
+	TRANSFER_STATUS_TYPE_UNSPECIFIED: "UNSPECIFIED",
+	TRANSFER_STATUS_TYPE_SUCCESS:     "SUCCESS",
+	TRANSFER_STATUS_TYPE_FAILED:      "FAILED",
 }
 
 type HelloServicePort interface {
@@ -41,4 +57,5 @@ type BankServicePort interface {
 	GetExchangeRateAtTimestamp(fromCurrency, toCurrency string, timestamp time.Time) (*data.BankExchangeRate, error)
 	StopExchangeRatesAtInterval()
 	ExecuteBankTransactions(transactions []*Transaction) (float64, error)
+	ExecuteBankTransfer(*pb.TransferRequest) (*pb.TransferResponse, error)
 }

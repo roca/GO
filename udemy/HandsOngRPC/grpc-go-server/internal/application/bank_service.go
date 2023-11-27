@@ -9,6 +9,8 @@ import (
 	"math/rand"
 	"time"
 
+	pb "proto/protogen/go/bank"
+
 	"github.com/google/uuid"
 	up "github.com/upper/db/v4"
 )
@@ -85,6 +87,9 @@ func (b *BankService) ExecuteBankTransactions(transactions []*port.Transaction) 
 		})
 	}
 	return b.Models.BankTransaction.BulkInsert(*account, dbTransactions)
+}
+func (b *BankService) ExecuteBankTransfer(*pb.TransferRequest) (*pb.TransferResponse, error) {
+	return nil, errors.New("Not Implemented yet")
 }
 
 func runFuncAtInterval(f func(), seconds time.Duration) chan bool {

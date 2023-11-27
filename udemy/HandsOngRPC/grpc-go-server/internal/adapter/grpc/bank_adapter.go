@@ -87,3 +87,30 @@ func (a *GrpcAdapter) SummarizeTransactions(stream pb.BankService_SummarizeTrans
 		})
 	}
 }
+
+func (a *GrpcAdapter) TransferMultiple(stream pb.BankService_TransferMultipleServer) error {
+
+	i := 0
+	for {
+		req, err := stream.Recv()
+		if err == io.EOF {
+			return nil
+		}
+		if err != nil {
+			return err
+		}
+
+		for {
+			resp, err := a.BankService.ExecuteBankTransfer(req)
+			if err != nil {
+				return err
+			}
+			err = stream.Send(resp)
+			if err != nil {
+				return err
+			}
+			time.Sleep(500 * time.Millisecond)
+			i++
+		}
+	}
+}
