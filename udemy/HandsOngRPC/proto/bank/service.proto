@@ -5,6 +5,7 @@ package bank;
 import "bank/type/account.proto";
 import "bank/type/exchange.proto";
 import "bank/type/transaction.proto";
+import "bank/type/transfer.proto";
 
 option go_package = "protogen/go/bank";
 
