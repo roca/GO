@@ -7,11 +7,34 @@ import (
 	up "github.com/upper/db/v4"
 )
 
+/*
+message TransferRequest {
+  string from_account_number = 1 [json_name = "from_account_number"];
+  string to_account_number = 2 [json_name = "to_account_number"];
+  string currency = 3;
+  double ammount = 4;
+}
+
+message TransferResponse {
+  string from_account_number = 1 [json_name = "from_account_number"];
+  string to_account_number = 2 [json_name = "to_account_number"];
+  string currency = 3;
+  double ammount = 4;
+  TransferStatusType transfer_status = 5 [json_name = "transfer_status"];
+  google.type.Date transfer_timestamp = 6 [json_name = "transfer_timestamp"];
+}
+*/
 // BankTransfer struct
 type BankTransfer struct {
-	ID        uuid.UUID `db:"transfer_uuid,omitempty"`
-	CreatedAt time.Time `db:"created_at"`
-	UpdatedAt time.Time `db:"updated_at"`
+	ID                uuid.UUID `db:"transfer_uuid,omitempty"`
+	FromAccountID     uuid.UUID `db:"from_account_id"`
+	ToAccountID       uuid.UUID `db:"to_account_id"`
+	Currency          string    `db:"currency"`
+	Amount            float64   `db:"amount"`
+	TransferTimestamp time.Time `db:"transfer_timestamp"`
+	TransferSuccess   bool      `db:"transfer_success"`
+	CreatedAt         time.Time `db:"created_at"`
+	UpdatedAt         time.Time `db:"updated_at"`
 }
 
 // Table returns the table name
