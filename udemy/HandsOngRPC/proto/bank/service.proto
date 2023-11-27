@@ -17,4 +17,8 @@ service BankService {
 
   rpc SummarizeTransactions(stream Transaction) returns 
   (TransactionSummary) {};
+
+  rpc TransferMultiple(stream TransferRequest) returns 
+  (stream TransferResponse) {};
+
 }

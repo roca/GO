@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package bank;
 
+import "google/type/date.proto";
+
 option go_package = "protogen/go/bank";
 
 enum TransactionType {
@@ -10,15 +12,37 @@ enum TransactionType {
   TRANSACTION_TYPE_WITHDRAWAL = 2;
 }
 
+enum TransferStatusType {
+  TRANSFER_STATUS_TYPE_UNSPECIFIED = 0;
+  TRANSFER_STATUS_TYPE_SUCCESS = 1;
+  TRANSFER_STATUS_TYPE_FAILURE = 2;
+}
+
 message Transaction {
   string account_number = 1 [json_name = "account_number"];
   TransactionType transaction_type = 2 [json_name = "transaction_type"];
   double amount = 3;
-  string timestamp = 4;
+  google.type.Date timestamp = 4;
 }
 
 message TransactionSummary {
   string account_number = 1 [json_name = "account_number"];
   double balance = 2;
   repeated Transaction transactions = 3;
+}
+
+message TransferRequest {
+  string from_account_number = 1 [json_name = "from_account_number"];
+  string to_account_number = 2 [json_name = "to_account_number"];
+  string currency = 3;
+  double ammount = 4;
+}
+
+message TransferResponse {
+  string from_account_number = 1 [json_name = "from_account_number"];
+  string to_account_number = 2 [json_name = "to_account_number"];
+  string currency = 3;
+  double ammount = 4;
+  TransferStatusType transfer_status = 5 [json_name = "transfer_status"];
+  google.type.Date transfer_timestamp = 6 [json_name = "transfer_timestamp"];
 }
