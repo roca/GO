@@ -88,10 +88,39 @@ func (b *BankService) ExecuteBankTransactions(transactions []*port.Transaction) 
 	}
 	return b.Models.BankTransaction.BulkInsert(*account, dbTransactions)
 }
-func (b *BankService) ExecuteBankTransfers(*pb.TransferRequest) <-chan *pb.TransferResponse {
+func (b *BankService) ExecuteBankTransfers(req *pb.TransferRequest) <-chan *pb.TransferResponse {
 	ch := make(chan *pb.TransferResponse)
+
 	go func() {
-		ch <- &pb.TransferResponse{}
+		from, err := b.Models.BankAccount.Get(req.FromAccountNumber)
+		if err != nil {
+			fmt.Printf("From account not found : %s", err)
+			ch <- &pb.TransferResponse{}
+			close(ch)
+			return
+		}
+		to, err := b.Models.BankAccount.Get(req.ToAccountNumber)
+		if err != nil {
+			fmt.Printf("From account not found : %s", err)
+			ch <- &pb.TransferResponse{}
+			close(ch)
+			return
+		}
+		tr := &data.BankTransfer{
+			FromAccountID:     from.ID,
+			ToAccountID:       to.ID,
+			Currency:          req.Currency,
+			Amount:            req.Ammount,
+			TransferTimestamp: time.Now(),
+		}
+
+		ch <- &pb.TransferResponse{
+			FromAccountNumber: tr.FromAccountID.String(),
+			ToAccountNumber: tr.ToAccountID.String(),
+			Currency: tr.Currency,
+			Ammount: tr.Amount,
+			TransferStatus: port.TRANSFER_STATUS_TYPE_SUCCESS,
+		} // Must make a call to b.Models.BankTransfer.ExecuteBankTransfer
 		close(ch)
 	}()
 	return ch
