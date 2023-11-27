@@ -57,5 +57,5 @@ type BankServicePort interface {
 	GetExchangeRateAtTimestamp(fromCurrency, toCurrency string, timestamp time.Time) (*data.BankExchangeRate, error)
 	StopExchangeRatesAtInterval()
 	ExecuteBankTransactions(transactions []*Transaction) (float64, error)
-	ExecuteBankTransfer(*pb.TransferRequest) (*pb.TransferResponse, error)
+	ExecuteBankTransfers(*pb.TransferRequest) <-chan *pb.TransferResponse
 }
