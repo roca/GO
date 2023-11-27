@@ -119,7 +119,7 @@ func (b *BankService) ExecuteBankTransfers(req *pb.TransferRequest) <-chan *pb.T
 			ToAccountNumber: tr.ToAccountID.String(),
 			Currency: tr.Currency,
 			Ammount: tr.Amount,
-			TransferStatus: port.TRANSFER_STATUS_TYPE_SUCCESS,
+			TransferStatus: 1,
 		} // Must make a call to b.Models.BankTransfer.ExecuteBankTransfer
 		close(ch)
 	}()
