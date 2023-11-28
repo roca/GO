@@ -125,3 +125,7 @@ func (t *BankTransfer) Builder(id int) ([]*BankTransfer, error) {
 	}
 	return result, nil
 }
+
+func (t *BankTransfer) ExecuteBankTransfer() error { 
+	return nil
+}
