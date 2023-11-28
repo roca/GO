@@ -164,8 +164,10 @@ func (t *BankTransfer) ExecuteBankTransfer(from, to BankAccount) error {
 		}
 
 		// Record transfer in Transfer table
+		t.TransferSuccess = true
 		_, err = transfers.Insert(*t)
 		if err != nil {
+			t.TransferSuccess = false
 			return err
 		}
 		return nil
