@@ -90,21 +90,26 @@ func (b *BankService) ExecuteBankTransactions(transactions []*port.Transaction) 
 }
 func (b *BankService) ExecuteBankTransfers(req *pb.TransferRequest) <-chan *pb.TransferResponse {
 	ch := make(chan *pb.TransferResponse)
-
 	go func() {
+		transferResponse := &pb.TransferResponse{
+			FromAccountNumber: req.FromAccountNumber,
+			ToAccountNumber:   req.ToAccountNumber,
+			Currency:          req.Currency,
+			Ammount:           req.Ammount,
+			TransferStatus:    2, // DEFAULT TRANSFER_STATUS_TYPE_FAILURE
+		}
+
 		from, err := b.Models.BankAccount.Get(req.FromAccountNumber)
 		if err != nil {
 			fmt.Printf("From account not found : %s", err)
-			ch <- &pb.TransferResponse{}
+			ch <- transferResponse
 			close(ch)
-			return
 		}
 		to, err := b.Models.BankAccount.Get(req.ToAccountNumber)
 		if err != nil {
 			fmt.Printf("From account not found : %s", err)
-			ch <- &pb.TransferResponse{}
+			ch <- transferResponse
 			close(ch)
-			return
 		}
 		tr := &data.BankTransfer{
 			FromAccountID:     from.ID,
@@ -114,19 +119,18 @@ func (b *BankService) ExecuteBankTransfers(req *pb.TransferRequest) <-chan *pb.T
 			TransferTimestamp: time.Now(),
 		}
 
-		err = tr.ExecuteBankTransfer()	
+		err = tr.ExecuteBankTransfer()
 		if err != nil {
 			fmt.Printf("Error executing bank transfer : %s", err)
-			ch <- &pb.TransferResponse{}
+			ch <- transferResponse
 		}
+		if !tr.TransferSuccess {
+			fmt.Printf("Error executing bank transfer : %s", err)
+			ch <- transferResponse
+		}
+		transferResponse.TransferStatus = 1 // TRANSFER_STATUS_TYPE_SUCCESS
 
-		ch <- &pb.TransferResponse{
-			FromAccountNumber: tr.FromAccountID.String(),
-			ToAccountNumber: tr.ToAccountID.String(),
-			Currency: tr.Currency,
-			Ammount: tr.Amount,
-			TransferStatus: 1,
-		} // Must make a call to b.Models.BankTransfer.ExecuteBankTransfer
+		ch <- transferResponse
 		close(ch)
 	}()
 	return ch

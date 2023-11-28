@@ -127,5 +127,14 @@ func (t *BankTransfer) Builder(id int) ([]*BankTransfer, error) {
 }
 
 func (t *BankTransfer) ExecuteBankTransfer() error { 
+	err := upper.Tx(func(tx up.Session) error {
+		return nil
+		// WITHDRAW Transaction from FromAccount
+		// DEPOSIT Transaction to ToAccount
+		// Record transfer in Transfer table
+	})
+	if err != nil {
+		return err
+	}
 	return nil
 }
