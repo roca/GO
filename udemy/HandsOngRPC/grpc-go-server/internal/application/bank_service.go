@@ -95,7 +95,7 @@ func (b *BankService) ExecuteBankTransfers(req *pb.TransferRequest) <-chan *pb.T
 			FromAccountNumber: req.FromAccountNumber,
 			ToAccountNumber:   req.ToAccountNumber,
 			Currency:          req.Currency,
-			Ammount:           req.Ammount,
+			Amount:            req.Amount,
 			TransferStatus:    2, // DEFAULT TRANSFER_STATUS_TYPE_FAILURE
 		}
 
@@ -114,13 +114,13 @@ func (b *BankService) ExecuteBankTransfers(req *pb.TransferRequest) <-chan *pb.T
 		if from.Currency != to.Currency {
 			fmt.Println("From from.Currency != to.Currency\n")
 			ch <- transferResponse
-			close(ch)	
+			close(ch)
 		}
 		tr := &data.BankTransfer{
 			FromAccountID:     from.ID,
 			ToAccountID:       to.ID,
 			Currency:          req.Currency,
-			Amount:            req.Ammount,
+			Amount:            req.Amount,
 			TransferTimestamp: time.Now(),
 		}
 

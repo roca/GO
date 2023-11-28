@@ -1,7 +1,6 @@
 package data
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -13,14 +12,14 @@ message TransferRequest {
   string from_account_number = 1 [json_name = "from_account_number"];
   string to_account_number = 2 [json_name = "to_account_number"];
   string currency = 3;
-  double ammount = 4;
+  double Amount = 4;
 }
 
 message TransferResponse {
   string from_account_number = 1 [json_name = "from_account_number"];
   string to_account_number = 2 [json_name = "to_account_number"];
   string currency = 3;
-  double ammount = 4;
+  double Amount = 4;
   TransferStatusType transfer_status = 5 [json_name = "transfer_status"];
   google.type.Date transfer_timestamp = 6 [json_name = "transfer_timestamp"];
 }
