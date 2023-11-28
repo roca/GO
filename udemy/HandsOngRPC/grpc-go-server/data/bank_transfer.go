@@ -1,6 +1,7 @@
 package data
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -93,7 +94,7 @@ func (t *BankTransfer) Delete(id int) error {
 }
 
 // Insert inserts a model into the database, using upper
-func (t *BankTransfer) Insert(m BankTransfer) (int, error) {
+func (t *BankTransfer) Insert(m BankTransfer) (up.ID, error) {
 	m.CreatedAt = time.Now()
 	m.UpdatedAt = time.Now()
 	m.ID = uuid.New()
@@ -103,9 +104,9 @@ func (t *BankTransfer) Insert(m BankTransfer) (int, error) {
 		return 0, err
 	}
 
-	id := getInsertedID(res.ID())
+	//id := getInsertedID(res.ID())
 
-	return id, nil
+	return res.ID, nil
 }
 
 // Builder is an example of using upper's sql builder

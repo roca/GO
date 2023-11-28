@@ -101,15 +101,20 @@ func (b *BankService) ExecuteBankTransfers(req *pb.TransferRequest) <-chan *pb.T
 
 		from, err := b.Models.BankAccount.Get(req.FromAccountNumber)
 		if err != nil {
-			fmt.Printf("From account not found : %s", err)
+			fmt.Printf("From account not found : %s\n", err)
 			ch <- transferResponse
 			close(ch)
 		}
 		to, err := b.Models.BankAccount.Get(req.ToAccountNumber)
 		if err != nil {
-			fmt.Printf("From account not found : %s", err)
+			fmt.Printf("From account not found : %s\n", err)
 			ch <- transferResponse
 			close(ch)
+		}
+		if from.Currency != to.Currency {
+			fmt.Println("From from.Currency != to.Currency\n")
+			ch <- transferResponse
+			close(ch)	
 		}
 		tr := &data.BankTransfer{
 			FromAccountID:     from.ID,
@@ -121,11 +126,11 @@ func (b *BankService) ExecuteBankTransfers(req *pb.TransferRequest) <-chan *pb.T
 
 		err = tr.ExecuteBankTransfer(*from, *to)
 		if err != nil {
-			fmt.Printf("Error executing bank transfer : %s", err)
+			fmt.Printf("Error executing bank transfer : %s\n", err)
 			ch <- transferResponse
 		}
 		if !tr.TransferSuccess {
-			fmt.Printf("Error executing bank transfer : %s", err)
+			fmt.Printf("Error executing bank transfer : %s\n", err)
 			ch <- transferResponse
 		}
 		transferResponse.TransferStatus = 1 // TRANSFER_STATUS_TYPE_SUCCESS
