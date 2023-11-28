@@ -126,12 +126,49 @@ func (t *BankTransfer) Builder(id int) ([]*BankTransfer, error) {
 	return result, nil
 }
 
-func (t *BankTransfer) ExecuteBankTransfer() error { 
+func (t *BankTransfer) ExecuteBankTransfer(from, to BankAccount) error {
+	transactions := BankTransaction{}
+	transfers := BankTransfer{}
 	err := upper.Tx(func(tx up.Session) error {
-		return nil
 		// WITHDRAW Transaction from FromAccount
+		fromTransactions := []BankTransaction{
+			{
+				AccountID:            from.ID,
+				TransactionTimestamp: time.Now(),
+				Amount:               t.Amount,
+				TransactionType:      "WITHDRAWAL",
+				Notes:                "",
+				CreatedAt:            time.Now(),
+				UpdatedAt:            time.Now(),
+			},
+		}
+		_, err := transactions.BulkInsert(from, fromTransactions)
+		if err != nil {
+			return err
+		}
 		// DEPOSIT Transaction to ToAccount
+		toTransactions := []BankTransaction{
+			{
+				AccountID:            to.ID,
+				TransactionTimestamp: time.Now(),
+				Amount:               t.Amount,
+				TransactionType:      "DEPOSIT",
+				Notes:                "",
+				CreatedAt:            time.Now(),
+				UpdatedAt:            time.Now(),
+			},
+		}
+		_, err = transactions.BulkInsert(to, toTransactions)
+		if err != nil {
+			return err
+		}
+
 		// Record transfer in Transfer table
+		_, err = transfers.Insert(*t)
+		if err != nil {
+			return err
+		}
+		return nil
 	})
 	if err != nil {
 		return err
