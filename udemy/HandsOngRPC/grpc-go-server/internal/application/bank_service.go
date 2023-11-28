@@ -129,7 +129,9 @@ func (b *BankService) ExecuteBankTransfers(req *pb.TransferRequest) <-chan *pb.T
 			fmt.Printf("Error executing bank transfer : %s\n", err)
 			ch <- transferResponse
 		}
-		transferResponse.TransferStatus = 1 // TRANSFER_STATUS_TYPE_SUCCESS
+		if tr.TransferSuccess {
+			transferResponse.TransferStatus = 1 // TRANSFER_STATUS_TYPE_SUCCESS
+		}
 
 		ch <- transferResponse
 		close(ch)
