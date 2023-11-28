@@ -119,7 +119,7 @@ func (b *BankService) ExecuteBankTransfers(req *pb.TransferRequest) <-chan *pb.T
 			TransferTimestamp: time.Now(),
 		}
 
-		err = tr.ExecuteBankTransfer()
+		err = tr.ExecuteBankTransfer(*from, *to)
 		if err != nil {
 			fmt.Printf("Error executing bank transfer : %s", err)
 			ch <- transferResponse
