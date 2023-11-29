@@ -22,4 +22,7 @@ service BankService {
   rpc TransferMultiple(stream TransferRequest) returns 
   (stream TransferResponse) {};
 
+  rpc GetCurrentBalanceWithStatus (CurrentBalanceRequest) returns 
+  (CurrentBalanceResponse) {};
+
 }
