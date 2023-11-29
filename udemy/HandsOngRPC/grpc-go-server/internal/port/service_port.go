@@ -32,15 +32,15 @@ var TransactionMap = map[TransactionType]string{
 type TransferStatusType int32
 
 const (
-	TRANSFER_STATUS_TYPE_UNSPECIFIED TransferStatusType = 0
-	TRANSFER_STATUS_TYPE_SUCCESS     TransferStatusType = 1
-	TRANSFER_STATUS_TYPE_FAILED      TransferStatusType = 2
+	TRANSFER_STATUS_UNSPECIFIED TransferStatusType = 0
+	TRANSFER_STATUS_SUCCESS     TransferStatusType = 1
+	TRANSFER_STATUS_FAILED      TransferStatusType = 2
 )
 
 var TransferStatusTypeMap = map[TransferStatusType]string{
-	TRANSFER_STATUS_TYPE_UNSPECIFIED: "UNSPECIFIED",
-	TRANSFER_STATUS_TYPE_SUCCESS:     "SUCCESS",
-	TRANSFER_STATUS_TYPE_FAILED:      "FAILED",
+	TRANSFER_STATUS_UNSPECIFIED: "UNSPECIFIED",
+	TRANSFER_STATUS_SUCCESS:     "SUCCESS",
+	TRANSFER_STATUS_FAILED:      "FAILED",
 }
 
 type HelloServicePort interface {
