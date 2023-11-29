@@ -52,7 +52,7 @@ type HelloServicePort interface {
 
 type BankServicePort interface {
 	Save(data data.BankAccount) (uuid.UUID, error)
-	FindCurrentBalance(uuid string) float64
+	FindCurrentBalance(uuid string) (float64, error)
 	InsertExchangeRatesAtInterval(exit chan bool, fromCurrency, toCurrency string, interval time.Duration)
 	GetExchangeRateAtTimestamp(fromCurrency, toCurrency string, timestamp time.Time) (*data.BankExchangeRate, error)
 	StopExchangeRatesAtInterval()

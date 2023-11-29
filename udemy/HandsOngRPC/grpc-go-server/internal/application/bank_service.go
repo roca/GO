@@ -24,12 +24,13 @@ func (b *BankService) Save(data data.BankAccount) (uuid.UUID, error) {
 	return uuid.UUID{}, nil
 }
 
-func (b *BankService) FindCurrentBalance(uuid string) float64 {
-	// log.Println(acct)
-
-	account, _ := b.Models.BankAccount.Get(uuid)
-
-	return account.CurrentBalance
+func (b *BankService) FindCurrentBalance(uuid string) (float64, error) {
+	account, err := b.Models.BankAccount.Get(uuid)
+	if err != nil {
+		fmt.Printf("Error getting account : %s\n", err)
+		return 0, err
+	}
+	return account.CurrentBalance, nil
 }
 
 // Create a function to inject dummy exchange rates to table bank_exchange_rates. The function should run and inject new exchange rate data every X seconds.

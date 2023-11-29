@@ -25,4 +25,7 @@ service BankService {
   rpc GetCurrentBalanceWithStatus (CurrentBalanceRequest) returns 
   (CurrentBalanceResponse) {};
 
+  rpc CreateAccount(CreateAccountRequest) returns
+  (CreateAccountResponse) {};
+
 }
