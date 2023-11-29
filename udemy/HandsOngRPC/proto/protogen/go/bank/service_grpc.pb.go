@@ -19,10 +19,11 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	BankService_GetCurrentBalance_FullMethodName     = "/bank.BankService/GetCurrentBalance"
-	BankService_FetchExchangeRates_FullMethodName    = "/bank.BankService/FetchExchangeRates"
-	BankService_SummarizeTransactions_FullMethodName = "/bank.BankService/SummarizeTransactions"
-	BankService_TransferMultiple_FullMethodName      = "/bank.BankService/TransferMultiple"
+	BankService_GetCurrentBalance_FullMethodName           = "/bank.BankService/GetCurrentBalance"
+	BankService_FetchExchangeRates_FullMethodName          = "/bank.BankService/FetchExchangeRates"
+	BankService_SummarizeTransactions_FullMethodName       = "/bank.BankService/SummarizeTransactions"
+	BankService_TransferMultiple_FullMethodName            = "/bank.BankService/TransferMultiple"
+	BankService_GetCurrentBalanceWithStatus_FullMethodName = "/bank.BankService/GetCurrentBalanceWithStatus"
 )
 
 // BankServiceClient is the client API for BankService service.
@@ -33,6 +34,7 @@ type BankServiceClient interface {
 	FetchExchangeRates(ctx context.Context, in *ExchangeRateRequest, opts ...grpc.CallOption) (BankService_FetchExchangeRatesClient, error)
 	SummarizeTransactions(ctx context.Context, opts ...grpc.CallOption) (BankService_SummarizeTransactionsClient, error)
 	TransferMultiple(ctx context.Context, opts ...grpc.CallOption) (BankService_TransferMultipleClient, error)
+	GetCurrentBalanceWithStatus(ctx context.Context, in *CurrentBalanceRequest, opts ...grpc.CallOption) (*CurrentBalanceResponse, error)
 }
 
 type bankServiceClient struct {
@@ -149,6 +151,15 @@ func (x *bankServiceTransferMultipleClient) Recv() (*TransferResponse, error) {
 	return m, nil
 }
 
+func (c *bankServiceClient) GetCurrentBalanceWithStatus(ctx context.Context, in *CurrentBalanceRequest, opts ...grpc.CallOption) (*CurrentBalanceResponse, error) {
+	out := new(CurrentBalanceResponse)
+	err := c.cc.Invoke(ctx, BankService_GetCurrentBalanceWithStatus_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // BankServiceServer is the server API for BankService service.
 // All implementations must embed UnimplementedBankServiceServer
 // for forward compatibility
@@ -157,6 +168,7 @@ type BankServiceServer interface {
 	FetchExchangeRates(*ExchangeRateRequest, BankService_FetchExchangeRatesServer) error
 	SummarizeTransactions(BankService_SummarizeTransactionsServer) error
 	TransferMultiple(BankService_TransferMultipleServer) error
+	GetCurrentBalanceWithStatus(context.Context, *CurrentBalanceRequest) (*CurrentBalanceResponse, error)
 	mustEmbedUnimplementedBankServiceServer()
 }
 
@@ -175,6 +187,9 @@ func (UnimplementedBankServiceServer) SummarizeTransactions(BankService_Summariz
 }
 func (UnimplementedBankServiceServer) TransferMultiple(BankService_TransferMultipleServer) error {
 	return status.Errorf(codes.Unimplemented, "method TransferMultiple not implemented")
+}
+func (UnimplementedBankServiceServer) GetCurrentBalanceWithStatus(context.Context, *CurrentBalanceRequest) (*CurrentBalanceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetCurrentBalanceWithStatus not implemented")
 }
 func (UnimplementedBankServiceServer) mustEmbedUnimplementedBankServiceServer() {}
 
@@ -280,6 +295,24 @@ func (x *bankServiceTransferMultipleServer) Recv() (*TransferRequest, error) {
 	return m, nil
 }
 
+func _BankService_GetCurrentBalanceWithStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CurrentBalanceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BankServiceServer).GetCurrentBalanceWithStatus(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BankService_GetCurrentBalanceWithStatus_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BankServiceServer).GetCurrentBalanceWithStatus(ctx, req.(*CurrentBalanceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // BankService_ServiceDesc is the grpc.ServiceDesc for BankService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -290,6 +323,10 @@ var BankService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetCurrentBalance",
 			Handler:    _BankService_GetCurrentBalance_Handler,
+		},
+		{
+			MethodName: "GetCurrentBalanceWithStatus",
+			Handler:    _BankService_GetCurrentBalanceWithStatus_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
