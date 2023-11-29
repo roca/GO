@@ -31,7 +31,7 @@ func (a *GrpcAdapter) GetCurrentBalance(ctx context.Context, req *pb.CurrentBala
 func (a *GrpcAdapter) GetCurrentBalanceWithStatus(ctx context.Context, req *pb.CurrentBalanceRequest) (*pb.CurrentBalanceResponse, error) {
 	balance, err := a.BankService.FindCurrentBalance(req.AccountNumber)
 	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "Error getting current balance : %s", err)
+		return nil, status.Errorf(codes.FailedPrecondition, "Account %v not found : %s", req.AccountNumber, err)
 	}
 
 	now := time.Now()
@@ -133,4 +133,8 @@ func (a *GrpcAdapter) TransferMultiple(stream pb.BankService_TransferMultipleSer
 			}
 		}
 	}
+}
+
+func (a *GrpcAdapter) CreateAccount(ctx context.Context, req *pb.CreateAccountRequest) (*pb.CreateAccountResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "No yet implemented")
 }
