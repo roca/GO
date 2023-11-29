@@ -89,23 +89,28 @@ func (a *GrpcAdapter) SummarizeTransactions(stream pb.BankService_SummarizeTrans
 }
 
 func (a *GrpcAdapter) TransferMultiple(stream pb.BankService_TransferMultipleServer) error {
+	context := stream.Context()
 	for {
-		req, err := stream.Recv()
-		if err == io.EOF {
+		select {
+		case <-context.Done():
+			log.Println("Client has cancelled stream")
 			return nil
-		}
-		if err != nil {
-			return err
-		}
-
-		for resp := range a.BankService.ExecuteBankTransfers(req) {
-			err := stream.Send(resp)
+		default:
+			req, err := stream.Recv()
+			if err == io.EOF {
+				return nil
+			}
 			if err != nil {
 				return err
 			}
-			time.Sleep(500 * time.Millisecond)
+
+			for resp := range a.BankService.ExecuteBankTransfers(req) {
+				err := stream.Send(resp)
+				if err != nil {
+					return err
+				}
+				time.Sleep(500 * time.Millisecond)
+			}
 		}
-
 	}
-
 }
