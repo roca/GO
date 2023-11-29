@@ -96,7 +96,7 @@ func (b *BankService) ExecuteBankTransfers(req *pb.TransferRequest) <-chan *pb.T
 			ToAccountNumber:   req.ToAccountNumber,
 			Currency:          req.Currency,
 			Amount:            req.Amount,
-			TransferStatus:    2, // DEFAULT TRANSFER_STATUS_TYPE_FAILURE
+			TransferStatus:    2, // DEFAULT TRANSFER_STATUS_FAILURE
 		}
 
 		from, err := b.Models.BankAccount.Get(req.FromAccountNumber)
@@ -128,9 +128,10 @@ func (b *BankService) ExecuteBankTransfers(req *pb.TransferRequest) <-chan *pb.T
 		if err != nil {
 			fmt.Printf("Error executing bank transfer : %s\n", err)
 			ch <- transferResponse
+			close(ch)
 		}
 		if tr.TransferSuccess {
-			transferResponse.TransferStatus = 1 // TRANSFER_STATUS_TYPE_SUCCESS
+			transferResponse.TransferStatus = 1 // TRANSFER_STATUS_SUCCESS
 		}
 
 		ch <- transferResponse

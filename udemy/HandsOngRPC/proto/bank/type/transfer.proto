@@ -7,9 +7,9 @@ import "google/type/date.proto";
 option go_package = "protogen/go/bank";
 
 enum TransferStatusType {
-  TRANSFER_STATUS_TYPE_UNSPECIFIED = 0;
-  TRANSFER_STATUS_TYPE_SUCCESS = 1;
-  TRANSFER_STATUS_TYPE_FAILURE = 2;
+  TRANSFER_STATUS_UNSPECIFIED = 0;
+  TRANSFER_STATUS_SUCCESS = 1;
+  TRANSFER_STATUS_FAILURE = 2;
 }
 
 message TransferRequest {
