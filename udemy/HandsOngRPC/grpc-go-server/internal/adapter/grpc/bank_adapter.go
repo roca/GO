@@ -105,10 +105,10 @@ func (a *GrpcAdapter) TransferMultiple(stream pb.BankService_TransferMultipleSer
 			}
 
 			for resp := range a.BankService.ExecuteBankTransfers(req) {
-				err := stream.Send(resp)
-				if err != nil {
-					return err
-				}
+				_ = stream.Send(resp)
+				// if err != nil {
+				// 	return err
+				// }
 				time.Sleep(500 * time.Millisecond)
 			}
 		}

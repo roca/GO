@@ -1,1 +1,1 @@
-DELETE FROM bank_accounts; 
+drop table if exists bank_accounts cascade;
