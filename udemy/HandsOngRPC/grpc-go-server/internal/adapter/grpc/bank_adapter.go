@@ -9,10 +9,30 @@ import (
 	"time"
 
 	"google.golang.org/genproto/googleapis/type/date"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func (a *GrpcAdapter) GetCurrentBalance(ctx context.Context, req *pb.CurrentBalanceRequest) (*pb.CurrentBalanceResponse, error) {
-	balance := a.BankService.FindCurrentBalance(req.AccountNumber)
+	balance, _ := a.BankService.FindCurrentBalance(req.AccountNumber)
+
+	now := time.Now()
+
+	return &pb.CurrentBalanceResponse{
+		CurrentBalance: balance,
+		CurrentDate: &date.Date{
+			Year:  int32(now.Year()),
+			Month: int32(now.Month()),
+			Day:   int32(now.Day()),
+		},
+	}, nil
+}
+
+func (a *GrpcAdapter) GetCurrentBalanceWithStatus(ctx context.Context, req *pb.CurrentBalanceRequest) (*pb.CurrentBalanceResponse, error) {
+	balance, err := a.BankService.FindCurrentBalance(req.AccountNumber)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "Error getting current balance : %s", err)
+	}
 
 	now := time.Now()
 
