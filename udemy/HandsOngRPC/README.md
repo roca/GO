@@ -13,3 +13,5 @@
 - [Hexagonal Architecture](https://medium.com/ssense-tech/hexagonal-architecture-there-are-always-two-sides-to-every-story-bc0780ed7d9c)
 
 - [GORM docs](https://gorm.io/docs/)
+
+- [gRPc Status codes](https://grpc.github.io/grpc/core/md_doc_statuscodes.html)
