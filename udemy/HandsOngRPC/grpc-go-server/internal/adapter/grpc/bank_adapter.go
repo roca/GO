@@ -2,12 +2,14 @@ package grpc
 
 import (
 	"context"
+	"fmt"
 	"grpc-go-server/internal/port"
 	"io"
 	"log"
 	pb "proto/protogen/go/bank"
 	"time"
 
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/genproto/googleapis/type/date"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -31,7 +33,10 @@ func (a *GrpcAdapter) GetCurrentBalance(ctx context.Context, req *pb.CurrentBala
 func (a *GrpcAdapter) GetCurrentBalanceWithStatus(ctx context.Context, req *pb.CurrentBalanceRequest) (*pb.CurrentBalanceResponse, error) {
 	balance, err := a.BankService.FindCurrentBalance(req.AccountNumber)
 	if err != nil {
-		return nil, status.Errorf(codes.FailedPrecondition, "Account %v not found : %s", req.AccountNumber, err)
+		s := status.New(codes.FailedPrecondition, fmt.Sprintf("DB table BankAccounts error: %s", err))
+		s, _ = s.WithDetails(&errdetails.ErrorInfo{Reason: fmt.Sprintf("Account %v not found", req.AccountNumber), Domain: "DB table BankAccounts"})
+		s, _ = s.WithDetails(&errdetails.DebugInfo{})
+		return nil, s.Err()
 	}
 
 	now := time.Now()
@@ -52,12 +57,16 @@ func (a *GrpcAdapter) FetchExchangeRates(req *pb.ExchangeRateRequest, stream pb.
 		select {
 		case <-context.Done():
 			log.Println("Client has cancelled stream")
-			//a.BankService.StopExchangeRatesAtInterval()
+			return nil
+			// a.BankService.StopExchangeRatesAtInterval()
 		default:
 			now := time.Now().Truncate(time.Second)
 			rate, err := a.BankService.GetExchangeRateAtTimestamp(req.FromCurrency, req.ToCurrency, now)
 			if err != nil {
-				return err
+				s := status.New(codes.InvalidArgument, fmt.Sprintf("DB table BankExchangeRates error: %s", err))
+				s, _ = s.WithDetails(&errdetails.ErrorInfo{Reason: fmt.Sprintf("INVALID_CURRENCY: from: %s, to: %s", req.FromCurrency, req.ToCurrency), Domain: "DB table BankExchangeRates"})
+				s, _ = s.WithDetails(&errdetails.DebugInfo{})
+				return s.Err()
 			}
 			stream.Send(
 				&pb.ExchangeRateResponse{
@@ -69,6 +78,7 @@ func (a *GrpcAdapter) FetchExchangeRates(req *pb.ExchangeRateRequest, stream pb.
 			)
 			log.Printf("Exchange rate sent to client, %v to %v : %v\n", req.FromCurrency, req.ToCurrency, rate.Rate)
 			time.Sleep(3 * time.Second)
+			return nil
 		}
 	}
 }
@@ -77,12 +87,29 @@ func (a *GrpcAdapter) SummarizeTransactions(stream pb.BankService_SummarizeTrans
 	var portTransactions []*port.Transaction = nil
 	var pbTransactions []*pb.Transaction = nil
 	var accountNumber string = ""
+	var amount float64 = 0
 	for {
 		req, err := stream.Recv()
 		if err == io.EOF {
 			balance, err := a.BankService.ExecuteBankTransactions(portTransactions)
 			if err != nil {
-				return err
+				switch err.Error() {
+				case "account not found":
+					s := status.New(codes.InvalidArgument, fmt.Sprintf("DB table BankAccounts error: %s", err))
+					s, _ = s.WithDetails(&errdetails.ErrorInfo{Reason: fmt.Sprintf("BadRequest, Account %v not found", accountNumber), Domain: "DB table BankAccounts"})
+					s, _ = s.WithDetails(&errdetails.DebugInfo{})
+					return s.Err()
+				case "Insufficient balance":
+					s := status.New(codes.InvalidArgument, fmt.Sprintf("DB table BankAccounts error: %s", err))	
+					s, _ = s.WithDetails(&errdetails.ErrorInfo{Reason: fmt.Sprintf("INSUFFICIENT_BALANCE: Account %v has insufficient balance to withdraw %v", accountNumber, amount), Domain: "DB table BankAccounts"})
+					s, _ = s.WithDetails(&errdetails.DebugInfo{})
+					return s.Err()
+				default:
+					s := status.New(codes.Internal, fmt.Sprintf("DB table BankTransactions error: %s", err))
+					s, _ = s.WithDetails(&errdetails.ErrorInfo{Reason: fmt.Sprintf("INTERNAL_ERROR: %s", err), Domain: "DB table BankTransactions"})
+					s, _ = s.WithDetails(&errdetails.DebugInfo{})
+					return s.Err()
+				}
 			}
 			return stream.SendAndClose(&pb.TransactionSummary{
 				AccountNumber: accountNumber,
@@ -95,6 +122,7 @@ func (a *GrpcAdapter) SummarizeTransactions(stream pb.BankService_SummarizeTrans
 			return err
 		}
 		accountNumber = req.AccountNumber
+		amount = req.Amount
 		portTransactions = append(portTransactions, &port.Transaction{
 			AccountNumber:   req.AccountNumber,
 			TransactionType: port.TransactionType(req.TransactionType),
