@@ -64,7 +64,14 @@ func (a *GrpcAdapter) FetchExchangeRates(req *pb.ExchangeRateRequest, stream pb.
 			rate, err := a.BankService.GetExchangeRateAtTimestamp(req.FromCurrency, req.ToCurrency, now)
 			if err != nil {
 				s := status.New(codes.InvalidArgument, fmt.Sprintf("DB table BankExchangeRates error: %s", err))
-				s, _ = s.WithDetails(&errdetails.ErrorInfo{Reason: fmt.Sprintf("INVALID_CURRENCY: from: %s, to: %s", req.FromCurrency, req.ToCurrency), Domain: "DB table BankExchangeRates"})
+				s, _ = s.WithDetails(&errdetails.ErrorInfo{
+					Reason: "INVALID_CURRENCY",
+					Domain: "DB table BankExchangeRates",
+					Metadata: map[string]string{
+						"from_currency": req.FromCurrency,
+						"to_currency":   req.ToCurrency,
+					},
+				})
 				s, _ = s.WithDetails(&errdetails.DebugInfo{})
 				return s.Err()
 			}
@@ -96,12 +103,25 @@ func (a *GrpcAdapter) SummarizeTransactions(stream pb.BankService_SummarizeTrans
 				switch err.Error() {
 				case "account not found":
 					s := status.New(codes.InvalidArgument, fmt.Sprintf("DB table BankAccounts error: %s", err))
-					s, _ = s.WithDetails(&errdetails.ErrorInfo{Reason: fmt.Sprintf("BadRequest, Account %v not found", accountNumber), Domain: "DB table BankAccounts"})
+					s, _ = s.WithDetails(&errdetails.ErrorInfo{
+						Reason: "BadRequest, Account not found",
+						Domain: "DB table BankAccounts",
+						Metadata: map[string]string{
+							"account_number": accountNumber,
+						},
+					})
 					s, _ = s.WithDetails(&errdetails.DebugInfo{})
 					return s.Err()
 				case "Insufficient balance":
-					s := status.New(codes.InvalidArgument, fmt.Sprintf("DB table BankAccounts error: %s", err))	
-					s, _ = s.WithDetails(&errdetails.ErrorInfo{Reason: fmt.Sprintf("INSUFFICIENT_BALANCE: Account %v has insufficient balance to withdraw %v", accountNumber, amount), Domain: "DB table BankAccounts"})
+					s := status.New(codes.InvalidArgument, fmt.Sprintf("DB table BankAccounts error: %s", err))
+					s, _ = s.WithDetails(&errdetails.ErrorInfo{
+						Reason: "INSUFFICIENT_BALANCE",
+						Domain: "DB table BankAccounts",
+						Metadata: map[string]string{
+							"account_number": accountNumber,
+							"amount":         fmt.Sprintf("%v", amount),
+						},
+					})
 					s, _ = s.WithDetails(&errdetails.DebugInfo{})
 					return s.Err()
 				default:
