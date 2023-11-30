@@ -119,7 +119,7 @@ func (a *GrpcAdapter) SummarizeTransactions(stream pb.BankService_SummarizeTrans
 						Domain: "DB table BankAccounts",
 						Metadata: map[string]string{
 							"account_number": accountNumber,
-							"amount":         fmt.Sprintf("%v", amount),
+							"amount":         fmt.Sprintf("Withdrawal amount: %v", amount),
 						},
 					})
 					s, _ = s.WithDetails(&errdetails.DebugInfo{})
