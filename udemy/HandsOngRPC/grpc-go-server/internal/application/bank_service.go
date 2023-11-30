@@ -65,6 +65,9 @@ func (b *BankService) GetExchangeRateAtTimestamp(fromCurrency, toCurrency string
 	if err != nil {
 		return nil, err
 	}
+	if len(rates) == 0 {
+		return nil, errors.New("no exchange rates found")
+	}
 	return rates[0], nil
 }
 
