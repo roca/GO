@@ -92,8 +92,8 @@ func (b *BankService) ExecuteBankTransactions(transactions []*port.Transaction) 
 	}
 	return b.Models.BankTransaction.BulkInsert(*account, dbTransactions)
 }
-func (b *BankService) ExecuteBankTransfers(req *pb.TransferRequest) <-chan *pb.TransferResponse {
-	ch := make(chan *pb.TransferResponse)
+func (b *BankService) ExecuteBankTransfers(req *pb.TransferRequest) <-chan *port.TransferResponse {
+	ch := make(chan *port.TransferResponse)
 	go func() {
 		transferResponse := &pb.TransferResponse{
 			FromAccountNumber: req.FromAccountNumber,
@@ -106,16 +106,25 @@ func (b *BankService) ExecuteBankTransfers(req *pb.TransferRequest) <-chan *pb.T
 		from, err := b.Models.BankAccount.Get(req.FromAccountNumber)
 		if err != nil {
 			fmt.Printf("From account not found : %s\n", err)
-			ch <- transferResponse
+			ch <- &port.TransferResponse{
+				Response: transferResponse,
+				Error:    err,
+			}
 		}
 		to, err := b.Models.BankAccount.Get(req.ToAccountNumber)
 		if err != nil {
 			fmt.Printf("From account not found : %s\n", err)
-			ch <- transferResponse
+			ch <- &port.TransferResponse{
+				Response: transferResponse,
+				Error:    err,
+			}
 		}
 		if from.Currency != to.Currency {
 			fmt.Println("From from.Currency != to.Currency\n")
-			ch <- transferResponse
+			ch <- &port.TransferResponse{
+				Response: transferResponse,
+				Error:    errors.New("From from.Currency != to.Currency"),
+			}
 		}
 		tr := &data.BankTransfer{
 			FromAccountID:     from.ID,
@@ -128,11 +137,17 @@ func (b *BankService) ExecuteBankTransfers(req *pb.TransferRequest) <-chan *pb.T
 		err = tr.ExecuteBankTransfer(*from, *to)
 		if err != nil {
 			fmt.Printf("Error executing bank transfer : %s\n", err)
-			ch <- transferResponse
+			ch <- &port.TransferResponse{
+				Response: transferResponse,
+				Error:    err,
+			}
 		}
 		if tr.TransferSuccess {
 			transferResponse.TransferStatus = 1 // TRANSFER_STATUS_SUCCESS
-			ch <- transferResponse
+			ch <- &port.TransferResponse{
+				Response: transferResponse,
+				Error:    nil,
+			}
 		}
 
 		close(ch)

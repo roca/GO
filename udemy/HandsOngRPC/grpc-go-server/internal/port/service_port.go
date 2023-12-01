@@ -43,6 +43,11 @@ var TransferStatusTypeMap = map[TransferStatusType]string{
 	TRANSFER_STATUS_FAILED:      "FAILED",
 }
 
+type TransferResponse struct {
+	Response *pb.TransferResponse
+	Error    error
+}
+
 type HelloServicePort interface {
 	GenerateHello(name string) string
 	GenerateManyHellos(name string, count int) []string
@@ -57,5 +62,5 @@ type BankServicePort interface {
 	GetExchangeRateAtTimestamp(fromCurrency, toCurrency string, timestamp time.Time) (*data.BankExchangeRate, error)
 	StopExchangeRatesAtInterval()
 	ExecuteBankTransactions(transactions []*Transaction) (float64, error)
-	ExecuteBankTransfers(*pb.TransferRequest) <-chan *pb.TransferResponse
+	ExecuteBankTransfers(*pb.TransferRequest) <-chan *TransferResponse 
 }
