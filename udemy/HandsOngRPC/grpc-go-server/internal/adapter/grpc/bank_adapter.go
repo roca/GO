@@ -15,6 +15,10 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+// var StatusErrors = map[error]*status.Status{
+// 	data.ErrInsufficientBalance: &status.WithDetails{},
+// }
+
 func (a *GrpcAdapter) GetCurrentBalance(ctx context.Context, req *pb.CurrentBalanceRequest) (*pb.CurrentBalanceResponse, error) {
 	balance, _ := a.BankService.FindCurrentBalance(req.AccountNumber)
 

@@ -2,6 +2,7 @@ package data
 
 import (
 	"database/sql"
+	"errors"
 	"os"
 
 	db2 "github.com/upper/db/v4"
@@ -12,6 +13,9 @@ import (
 var db *sql.DB
 var upper db2.Session
 var dbCreated bool
+
+var ErrExchangeRatesFound = errors.New("no exchange rates found")
+var ErrInsufficientBalance = errors.New("Insufficient balance")
 
 type Model interface {
 	Table() string
