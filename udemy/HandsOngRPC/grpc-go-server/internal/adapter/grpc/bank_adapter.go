@@ -16,24 +16,6 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-var StatusErrors = map[error]func(...interface{}) *status.Status{
-	data.ErrInsufficientBalance: InsufficientBalanceStatus,
-}
-
-func InsufficientBalanceStatus(accountNumber string, amount float64, err error) *status.Status {
-	s := status.New(codes.InvalidArgument, fmt.Sprintf("DB table BankAccounts error: %s", err))
-	s, _ = s.WithDetails(&errdetails.ErrorInfo{
-		Reason: "INSUFFICIENT_BALANCE",
-		Domain: "DB table BankAccounts",
-		Metadata: map[string]string{
-			"account_number": accountNumber,
-			"amount":         fmt.Sprintf("Withdrawal amount: %v", amount),
-		},
-	})
-	s, _ = s.WithDetails(&errdetails.DebugInfo{})
-	return s
-}
-
 func (a *GrpcAdapter) GetCurrentBalance(ctx context.Context, req *pb.CurrentBalanceRequest) (*pb.CurrentBalanceResponse, error) {
 	balance, _ := a.BankService.FindCurrentBalance(req.AccountNumber)
 
@@ -119,34 +101,15 @@ func (a *GrpcAdapter) SummarizeTransactions(stream pb.BankService_SummarizeTrans
 		if err == io.EOF {
 			balance, err := a.BankService.ExecuteBankTransactions(portTransactions)
 			if err != nil {
-				switch err.Error() {
-				case "account not found":
-					s := status.New(codes.InvalidArgument, fmt.Sprintf("DB table BankAccounts error: %s", err))
-					s, _ = s.WithDetails(&errdetails.ErrorInfo{
-						Reason: "BadRequest, Account not found",
-						Domain: "DB table BankAccounts",
-						Metadata: map[string]string{
-							"account_number": accountNumber,
-						},
-					})
-					s, _ = s.WithDetails(&errdetails.DebugInfo{})
+				switch err {
+				case data.ErrAccountNotFound:
+					s := NewAccountNotFoundError(accountNumber)
 					return s.Err()
-				case "Insufficient balance":
-					s := status.New(codes.InvalidArgument, fmt.Sprintf("DB table BankAccounts error: %s", err))
-					s, _ = s.WithDetails(&errdetails.ErrorInfo{
-						Reason: "INSUFFICIENT_BALANCE",
-						Domain: "DB table BankAccounts",
-						Metadata: map[string]string{
-							"account_number": accountNumber,
-							"amount":         fmt.Sprintf("Withdrawal amount: %v", amount),
-						},
-					})
-					s, _ = s.WithDetails(&errdetails.DebugInfo{})
+				case data.ErrInsufficientBalance:
+					s := NewInsufficientBalanceError(accountNumber, amount)
 					return s.Err()
 				default:
-					s := status.New(codes.Internal, fmt.Sprintf("DB table BankTransactions error: %s", err))
-					s, _ = s.WithDetails(&errdetails.ErrorInfo{Reason: fmt.Sprintf("INTERNAL_ERROR: %s", err), Domain: "DB table BankTransactions"})
-					s, _ = s.WithDetails(&errdetails.DebugInfo{})
+					s := NewInternalTableError("BankTransactions", data.ErrInternalTable)
 					return s.Err()
 				}
 			}

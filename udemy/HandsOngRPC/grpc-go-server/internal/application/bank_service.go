@@ -74,7 +74,7 @@ func (b *BankService) GetExchangeRateAtTimestamp(fromCurrency, toCurrency string
 func (b *BankService) ExecuteBankTransactions(transactions []*port.Transaction) (float64, error) {
 	account, err := b.Models.BankAccount.Get(transactions[0].AccountNumber)
 	if err != nil {
-		return 0, errors.New("account not found")
+		return 0, data.ErrAccountNotFound
 	}
 
 	var dbTransactions []data.BankTransaction
