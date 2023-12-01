@@ -34,9 +34,7 @@ func (a *GrpcAdapter) GetCurrentBalance(ctx context.Context, req *pb.CurrentBala
 func (a *GrpcAdapter) GetCurrentBalanceWithStatus(ctx context.Context, req *pb.CurrentBalanceRequest) (*pb.CurrentBalanceResponse, error) {
 	balance, err := a.BankService.FindCurrentBalance(req.AccountNumber)
 	if err != nil {
-		s := status.New(codes.FailedPrecondition, fmt.Sprintf("DB table BankAccounts error: %s", err))
-		s, _ = s.WithDetails(&errdetails.ErrorInfo{Reason: fmt.Sprintf("Account %v not found", req.AccountNumber), Domain: "DB table BankAccounts"})
-		s, _ = s.WithDetails(&errdetails.DebugInfo{})
+		s := NewInternalTableError("BankAccounts", err)
 		return nil, s.Err()
 	}
 
