@@ -3,6 +3,7 @@ package grpc
 import (
 	"context"
 	"fmt"
+	"grpc-go-server/data"
 	"grpc-go-server/internal/port"
 	"io"
 	"log"
@@ -15,9 +16,23 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// var StatusErrors = map[error]*status.Status{
-// 	data.ErrInsufficientBalance: &status.WithDetails{},
-// }
+var StatusErrors = map[error]func(...interface{}) *status.Status{
+	data.ErrInsufficientBalance: InsufficientBalanceStatus,
+}
+
+func InsufficientBalanceStatus(accountNumber string, amount float64, err error) *status.Status {
+	s := status.New(codes.InvalidArgument, fmt.Sprintf("DB table BankAccounts error: %s", err))
+	s, _ = s.WithDetails(&errdetails.ErrorInfo{
+		Reason: "INSUFFICIENT_BALANCE",
+		Domain: "DB table BankAccounts",
+		Metadata: map[string]string{
+			"account_number": accountNumber,
+			"amount":         fmt.Sprintf("Withdrawal amount: %v", amount),
+		},
+	})
+	s, _ = s.WithDetails(&errdetails.DebugInfo{})
+	return s
+}
 
 func (a *GrpcAdapter) GetCurrentBalance(ctx context.Context, req *pb.CurrentBalanceRequest) (*pb.CurrentBalanceResponse, error) {
 	balance, _ := a.BankService.FindCurrentBalance(req.AccountNumber)
