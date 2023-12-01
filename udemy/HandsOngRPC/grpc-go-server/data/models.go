@@ -16,6 +16,8 @@ var dbCreated bool
 
 var ErrExchangeRatesFound = errors.New("no exchange rates found")
 var ErrInsufficientBalance = errors.New("Insufficient balance")
+var ErrAccountNotFound = errors.New("account not found")
+var ErrInternalTable = errors.New("error executing SQL")
 
 type Model interface {
 	Table() string

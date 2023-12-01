@@ -1,7 +1,6 @@
 package data
 
 import (
-	"errors"
 	"time"
 
 	"github.com/google/uuid"
@@ -103,7 +102,7 @@ func (t *BankTransaction) BulkInsert(account BankAccount, m []BankTransaction) (
 				balance -= v.Amount
 			}
 			if balance < 0 {
-				return errors.New("Insufficient balance")
+				return ErrInsufficientBalance
 			}
 			_, err := t.Insert(v)
 			if err != nil {
