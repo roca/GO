@@ -152,8 +152,8 @@ func (a *GrpcAdapter) TransferMultiple(stream pb.BankService_TransferMultipleSer
 				return err
 			}
 
-			for resp := range a.BankService.ExecuteBankTransfers(req) {
-				_ = stream.Send(resp)
+			for ttransferResponse := range a.BankService.ExecuteBankTransfers(req) {
+				_ = stream.Send(ttransferResponse.Response)
 				// if err != nil {
 				// 	return err
 				// }
