@@ -110,6 +110,8 @@ func (b *BankService) ExecuteBankTransfers(req *pb.TransferRequest) <-chan *port
 				Response: transferResponse,
 				Error:    err,
 			}
+			close(ch)
+			return
 		}
 		to, err := b.Models.BankAccount.Get(req.ToAccountNumber)
 		if err != nil {
@@ -118,6 +120,8 @@ func (b *BankService) ExecuteBankTransfers(req *pb.TransferRequest) <-chan *port
 				Response: transferResponse,
 				Error:    err,
 			}
+			close(ch)
+			return
 		}
 		if from.Currency != to.Currency {
 			fmt.Println("From from.Currency != to.Currency\n")
@@ -125,6 +129,8 @@ func (b *BankService) ExecuteBankTransfers(req *pb.TransferRequest) <-chan *port
 				Response: transferResponse,
 				Error:    errors.New("From from.Currency != to.Currency"),
 			}
+			close(ch)
+			return
 		}
 		tr := &data.BankTransfer{
 			FromAccountID:     from.ID,
@@ -141,6 +147,8 @@ func (b *BankService) ExecuteBankTransfers(req *pb.TransferRequest) <-chan *port
 				Response: transferResponse,
 				Error:    err,
 			}
+			close(ch)
+			return
 		}
 		if tr.TransferSuccess {
 			transferResponse.TransferStatus = 1 // TRANSFER_STATUS_SUCCESS
@@ -148,8 +156,9 @@ func (b *BankService) ExecuteBankTransfers(req *pb.TransferRequest) <-chan *port
 				Response: transferResponse,
 				Error:    nil,
 			}
+			close(ch)
+			return
 		}
-
 		close(ch)
 	}()
 	return ch

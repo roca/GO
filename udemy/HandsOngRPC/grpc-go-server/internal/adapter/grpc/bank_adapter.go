@@ -34,7 +34,8 @@ func (a *GrpcAdapter) GetCurrentBalance(ctx context.Context, req *pb.CurrentBala
 func (a *GrpcAdapter) GetCurrentBalanceWithStatus(ctx context.Context, req *pb.CurrentBalanceRequest) (*pb.CurrentBalanceResponse, error) {
 	balance, err := a.BankService.FindCurrentBalance(req.AccountNumber)
 	if err != nil {
-		s := NewInternalTableError("BankAccounts", err)
+		s :=  NewAccountNotFoundError(req.AccountNumber)
+		fmt.Errorf("Error getting current balance: %s\n", s.Err())
 		return nil, s.Err()
 	}
 
@@ -154,7 +155,14 @@ func (a *GrpcAdapter) TransferMultiple(stream pb.BankService_TransferMultipleSer
 
 			for transferResponse := range a.BankService.ExecuteBankTransfers(req) {
 				if transferResponse.Error != nil {
-					return transferResponse.Error
+					switch transferResponse.Error {
+					case data.ErrAccountNotFound:
+						s := NewAccountNotFoundError(transferResponse.Response.FromAccountNumber)
+						return s.Err()
+					default:
+						s := NewInternalTableError("BankTransfers", data.ErrInternalTable)
+						return s.Err()
+					}
 				}	
 				_ = stream.Send(transferResponse.Response)
 				// if err != nil {
