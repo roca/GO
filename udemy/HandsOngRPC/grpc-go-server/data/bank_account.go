@@ -45,7 +45,7 @@ func (t *BankAccount) Get(id string) (*BankAccount, error) {
 	res := collection.Find(up.Cond{"account_uuid": id})
 	err := res.One(&one)
 	if err != nil {
-		return nil, err
+		return nil, ErrAccountNotFound
 	}
 	return &one, nil
 }

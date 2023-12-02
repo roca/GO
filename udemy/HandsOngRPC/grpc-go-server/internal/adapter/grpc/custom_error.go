@@ -56,9 +56,9 @@ func NewAccountNotFoundError(accountNumber string) StatusError {
 }
 
 func (i *AccountNotFoundError) Err() error {
-	s := status.New(codes.InvalidArgument, fmt.Sprintf("DB table BankAccounts error: %s", i.Error))
+	s := status.New(codes.FailedPrecondition, fmt.Sprintf("DB table BankAccounts error: %s", i.Error))
 	s, _ = s.WithDetails(&errdetails.ErrorInfo{
-		Reason: "BadRequest, Account not found",
+		Reason: "INVALID_ACCOUNT, Account not found",
 		Domain: "DB table BankAccounts",
 		Metadata: map[string]string{
 			"account_number": i.Account,
