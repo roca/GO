@@ -7,6 +7,8 @@ import (
 	"testing"
 )
 
+var models Models
+
 func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }

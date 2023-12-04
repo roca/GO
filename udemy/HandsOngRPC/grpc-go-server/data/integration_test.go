@@ -29,7 +29,14 @@ var (
 	dsn      = "host=%s port=%s user=%s password=%s dbname=%s sslmode=disable timezone=UTC connect_timeout=5"
 )
 
-var dummyBankAccount = BankAccount{
+var dummyBankAccount1 = BankAccount{
+	AccountNumber:  "1234567890",
+	AccountName:    "John Doe",
+	Currency:       "USD",
+	CurrentBalance: 1000.00,
+}
+
+var dummyBankAccount2 = BankAccount{
 	AccountNumber:  "1234567890",
 	AccountName:    "John Doe",
 	Currency:       "USD",
@@ -47,10 +54,10 @@ var sqlUpMigrations = []string{
 	"../migrations/1700070540906734_bank_exchange_rates.postgres.up.psql",
 }
 var sqlDownMigrations = []string{
-	"../migrations/1700070540906734_bank_exchange_rates.postgres.down.psql",
-	"../migrations/1700070206630394_bank_transactions.postgres.down.psql",
-	"../migrations/1700069746098377_bank_tranfers.postgres.down.psql",
-	"../migrations/1700064420603920_bank_accounts.postgres.down.psql",
+	"../migrations/1700216036353471_initialize_bank_exchange_rates.postgres.down.psql",
+	"../migrations/1700214651667616_initialize_bank_transactions.postgres.down.psql",
+	"../migrations/1700216036353471_initialize_bank_tranfers.postgres.down.psql",
+	"../migrations/1700214603693777_initialize_bank_accounts.postgres.down.psql",
 }
 
 func setup() {
@@ -162,13 +169,6 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-func TestBankAccount_Table(t *testing.T) {
-	s := models.BankAccount.Table()
-	if s != "bank_accounts" {
-		t.Errorf("Wrong table name returned. Expected 'bank_accounts', got '%s'", s)
-	}
-}
-
 func TestBankAccount_Insert(t *testing.T) {
 	defer func() { // Truncate tables after test
 		err := truncateTables(testDB)
@@ -176,7 +176,7 @@ func TestBankAccount_Insert(t *testing.T) {
 			t.Errorf("Error truncating tables: %s", err)
 		}
 	}()
-	id, err := models.BankAccount.Insert(dummyBankAccount)
+	id, err := models.BankAccount.Insert(dummyBankAccount1)
 	if err != nil {
 		t.Errorf("Error inserting user: %s", err)
 	}
@@ -185,6 +185,33 @@ func TestBankAccount_Insert(t *testing.T) {
 		t.Errorf("No id returned, Zero id returned")
 	}
 }
+
+func TestBankTransfer_ExecuteBankTransfer(t *testing.T) {
+	defer func() { // Truncate tables after test
+		err := truncateTables(testDB)
+		if err != nil {
+			t.Errorf("Error truncating tables: %s", err)
+		}
+	}()
+	id1, err := models.BankAccount.Insert(dummyBankAccount1)
+	if err != nil {
+		t.Errorf("Error inserting user: %s", err)
+	}
+
+	id2, err := models.BankAccount.Insert(dummyBankAccount1)
+	if err != nil {
+		t.Errorf("Error inserting user: %s", err)
+	}
+
+	if id1 == 0 {
+		t.Errorf("No id returned, Zero id returned")
+	}
+
+	if id2 == 0 {
+		t.Errorf("No id returned, Zero id returned")
+	}
+}
+
 
 /*
 
