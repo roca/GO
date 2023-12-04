@@ -129,6 +129,8 @@ func (t *BankTransfer) Builder(id int) ([]*BankTransfer, error) {
 func (t *BankTransfer) ExecuteBankTransfer(from, to BankAccount) error {
 	transactions := BankTransaction{}
 	transfers := BankTransfer{}
+	// fmt.Println("FROM ACCOUNT: ", from.ID)
+	// fmt.Println("TO ACCOUNT: ", to.ID)
 	err := upper.Tx(func(tx up.Session) error {
 		// WITHDRAW Transaction from FromAccount
 		fromTransactions := []BankTransaction{

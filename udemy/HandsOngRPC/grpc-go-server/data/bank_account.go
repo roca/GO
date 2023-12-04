@@ -74,19 +74,19 @@ func (t *BankAccount) Delete(id int) error {
 }
 
 // Insert inserts a model into the database, using upper
-func (t *BankAccount) Insert(m BankAccount) (up.ID, error) {
+func (t *BankAccount) Insert(m BankAccount) (uuid.UUID, error) {
 	// m.CreatedAt = time.Now()
 	// m.UpdatedAt = time.Now()
 	m.ID = uuid.New()
 	collection := upper.Collection(t.Table())
-	res, err := collection.Insert(m)
+	_, err := collection.Insert(m)
 	if err != nil {
-		return 0, err
+		return uuid.Nil, err
 	}
 
 	//id := getInsertedID(res.ID())
 
-	return res.ID, nil
+	return m.ID, nil
 }
 
 // Builder is an example of using upper's sql builder
