@@ -11,9 +11,12 @@ import (
 	"log"
 	"os"
 	"testing"
+	"time"
 
+	"github.com/google/uuid"
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
+	up "github.com/upper/db/v4"
 
 	_ "github.com/jackc/pgconn"
 	_ "github.com/jackc/pgx/v4"
@@ -181,7 +184,7 @@ func TestBankAccount_Insert(t *testing.T) {
 		t.Errorf("Error inserting user: %s", err)
 	}
 
-	if id == 0 {
+	if id == uuid.Nil {
 		t.Errorf("No id returned, Zero id returned")
 	}
 }
@@ -193,25 +196,79 @@ func TestBankTransfer_ExecuteBankTransfer(t *testing.T) {
 			t.Errorf("Error truncating tables: %s", err)
 		}
 	}()
-	id1, err := models.BankAccount.Insert(dummyBankAccount1)
+	from_account_id, err := models.BankAccount.Insert(dummyBankAccount1)
 	if err != nil {
 		t.Errorf("Error inserting user: %s", err)
 	}
 
-	id2, err := models.BankAccount.Insert(dummyBankAccount1)
+	to_account_id, err := models.BankAccount.Insert(dummyBankAccount1)
 	if err != nil {
 		t.Errorf("Error inserting user: %s", err)
 	}
 
-	if id1 == 0 {
+	if from_account_id == uuid.Nil {
 		t.Errorf("No id returned, Zero id returned")
 	}
 
-	if id2 == 0 {
+	if to_account_id == uuid.Nil {
 		t.Errorf("No id returned, Zero id returned")
+	}
+
+	tr := BankTransfer{
+		FromAccountID:     from_account_id,
+		ToAccountID:       to_account_id,
+		Currency:          "USD",
+		Amount:            100.00,
+		TransferTimestamp: time.Now(),
+	}
+	from, err := models.BankAccount.Get(from_account_id.String())
+	if err != nil {
+		t.Errorf("Error getting from user: %s", err)
+	}
+	to, err := models.BankAccount.Get(to_account_id.String())
+	if err != nil {
+		t.Errorf("Error getting to user: %s", err)
+	}
+
+	err = tr.ExecuteBankTransfer(*from, *to)
+	if err != nil {
+		t.Errorf("Error ExecuteBankTransfer: %s", err)
+	}
+
+	from_after, err := models.BankAccount.Get(from_account_id.String())
+	if err != nil {
+		t.Errorf("Error getting from user: %s", err)
+	}
+
+	if from_after.CurrentBalance != from.CurrentBalance-tr.Amount {
+		t.Errorf("Wrong balance returned. Expected %f, got %f", dummyBankAccount1.CurrentBalance-tr.Amount, from_after.CurrentBalance)
+	}
+
+	to_after, err := models.BankAccount.Get(to_account_id.String())
+	if err != nil {
+		t.Errorf("Error getting to user: %s", err)
+	}
+
+	if to_after.CurrentBalance != to.CurrentBalance+tr.Amount {
+		t.Errorf("Wrong balance returned. Expected %f, got %f", dummyBankAccount1.CurrentBalance+tr.Amount, to_after.CurrentBalance)
+	}
+
+	transfers, err := models.BankTransfer.GetAll(up.Cond{})
+	if err != nil {
+		t.Errorf("Error getting transfers: %s", err)
+	}
+	if len(transfers) != 1 {
+		t.Errorf("Wrong number of transfers returned. Expected 2, got %d", len(transfers))
+	}
+
+	transactions, err := models.BankTransaction.GetAll(up.Cond{})
+	if err != nil {
+		t.Errorf("Error getting transactions: %s", err)
+	}
+	if len(transactions) != 2 {
+		t.Errorf("Wrong number of transactions returned. Expected 2, got %d", len(transactions))
 	}
 }
-
 
 /*
 
