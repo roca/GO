@@ -40,6 +40,18 @@ var models Models
 var testDB *sql.DB
 var resourse *dockertest.Resource
 var pool *dockertest.Pool
+var sqlUpMigrations = []string{
+	"../migrations/1700064420603920_bank_accounts.postgres.up.psql",
+	"../migrations/1700069746098377_bank_tranfers.postgres.up.psql",
+	"../migrations/1700070206630394_bank_transactions.postgres.up.psql",
+	"../migrations/1700070540906734_bank_exchange_rates.postgres.up.psql",
+}
+var sqlDownMigrations = []string{
+	"../migrations/1700070540906734_bank_exchange_rates.postgres.down.psql",
+	"../migrations/1700070206630394_bank_transactions.postgres.down.psql",
+	"../migrations/1700069746098377_bank_tranfers.postgres.down.psql",
+	"../migrations/1700064420603920_bank_accounts.postgres.down.psql",
+}
 
 func setup() {
 	os.Setenv("DATABASE_TYPE", "postgres")
@@ -101,32 +113,35 @@ func setup() {
 }
 
 func createTables(db *sql.DB) error {
-	// Read SQl text from file
-	bytes, err := ioutil.ReadFile("../migrations/1700064420603920_bank_accounts.postgres.up.psql")
-	if err != nil {
-		return fmt.Errorf("Could  not read bank_accounts.sql file: %s", err)
-	}
+	for _, sqlUpMigration := range sqlUpMigrations {
+		// Read SQl text from file
+		bytes, err := ioutil.ReadFile(sqlUpMigration)
+		if err != nil {
+			return fmt.Errorf("Could  not read sql migration file: %s", err)
+		}
 
-	// Execute SQL text string
-	_, err = db.Exec(string(bytes))
-	if err != nil {
-		return fmt.Errorf("Could not create tables: %s", err)
+		// Execute SQL text string
+		_, err = db.Exec(string(bytes))
+		if err != nil {
+			return fmt.Errorf("Could not tables: %s", err)
+		}
 	}
-
 	return nil
 }
 
 func truncateTables(db *sql.DB) error {
-	// Read SQl text from file
-	bytes, err := ioutil.ReadFile("../migrations/1700064420603920_bank_accounts.postgres.down.psql")
-	if err != nil {
-		return fmt.Errorf("Could  not read truncate.sql file: %s", err)
-	}
+	for _, sqlDownMigration := range sqlDownMigrations {
+		// Read SQl text from file
+		bytes, err := ioutil.ReadFile(sqlDownMigration)
+		if err != nil {
+			return fmt.Errorf("Could  not read sql migration file: %s", err)
+		}
 
-	// Execute SQL text string
-	_, err = db.Exec(string(bytes))
-	if err != nil {
-		return fmt.Errorf("Could not truncate tables: %s", err)
+		// Execute SQL text string
+		_, err = db.Exec(string(bytes))
+		if err != nil {
+			return fmt.Errorf("Could not tables: %s", err)
+		}
 	}
 
 	return nil
@@ -153,7 +168,6 @@ func TestBankAccount_Table(t *testing.T) {
 		t.Errorf("Wrong table name returned. Expected 'bank_accounts', got '%s'", s)
 	}
 }
-
 
 func TestBankAccount_Insert(t *testing.T) {
 	defer func() { // Truncate tables after test
