@@ -38,8 +38,12 @@ func main() {
 	// runSayManyHellos(helloAdapter, "Bruce Wayne")
 	// runSayHelloToEveryone(helloAdapter, []string{"Bruce Wayne", "Clark Kent", "Diana Prince"})
 	// runSayHelloContinuous(helloAdapter, []string{"Anna", "Bella", "Carol", "Diana", "Emma"})
+
 	//runGetCurrentBalance(bankAdapter, "1e9230bd-4264-4526-a9cd-2a86d3ca9590")
-	runFetchExchangeRates(bankAdapter, "USD", "IDR")
+	// runFetchExchangeRates(bankAdapter, "USD", "IDR")
+	runSummarizeTransactions(bankAdapter, []bank.BankTransaction{
+		{AccountNumber: "", Amount: 5, TransactionType: 1},
+	})
 }
 func runSayHello(adapter *hello.HelloAdapter, name string) {
 	greet, err := adapter.SayHello(context.Background(), name)
@@ -82,9 +86,19 @@ func runGetCurrentBalance(adapter *bank.BankAdapter, accountNumber string) {
 }
 
 func runFetchExchangeRates(adapter *bank.BankAdapter, fromCurrency, toCurrency string) {
-	err := adapter.FetchExchangeRates(context.Background(),fromCurrency,toCurrency)
+	err := adapter.FetchExchangeRates(context.Background(), fromCurrency, toCurrency)
 	if err != nil {
 		s := status.Convert(err)
 		log.Fatalln("Can not invoke FetchExchangeRates on the BankAdapter:", "\nCode:", s.Code(), "\nMessage:", s.Message(), "\nDetails:", s.Details())
 	}
+}
+
+func runSummarizeTransactions(adapter *bank.BankAdapter, transactions []bank.BankTransaction) {
+	resp, err := adapter.SummarizeTransactions(context.Background(), transactions)
+	if err != nil {
+		s := status.Convert(err)
+		log.Fatalln("Can not invoke SummarizeTransactions on the BankAdapter:", "\nCode:", s.Code(), "\nMessage:", s.Message(), "\nDetails:", s.Details())
+	}
+
+	log.Println("CurrentBalance:", resp.Balance)
 }
