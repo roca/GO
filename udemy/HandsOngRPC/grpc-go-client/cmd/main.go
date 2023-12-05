@@ -42,7 +42,8 @@ func main() {
 	//runGetCurrentBalance(bankAdapter, "1e9230bd-4264-4526-a9cd-2a86d3ca9590")
 	// runFetchExchangeRates(bankAdapter, "USD", "IDR")
 	runSummarizeTransactions(bankAdapter, []bank.BankTransaction{
-		{AccountNumber: "", Amount: 5, TransactionType: 1},
+		{AccountNumber: "1e9230bd-4264-4526-a9cd-2a86d3ca9594", Amount: 5, TransactionType: 1},
+		{AccountNumber: "1e9230bd-4264-4526-a9cd-2a86d3ca9594", Amount: 5, TransactionType: 2},
 	})
 }
 func runSayHello(adapter *hello.HelloAdapter, name string) {
