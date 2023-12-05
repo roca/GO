@@ -3,7 +3,6 @@ package bank
 import (
 	"context"
 	"grpc-go-client/internal/port"
-	"log"
 
 	"google.golang.org/grpc"
 
@@ -22,14 +21,13 @@ func NewBankAdapter(conn *grpc.ClientConn) (*BankAdapter, error) {
 	}, nil
 }
 
-func (a *BankAdapter) GetCurrentBalance(ctx context.Context, accountNumber string) (*pb.CurrentBalanceResponse, error) {
+func (a *BankAdapter) GetCurrentBalanceWithStatus(ctx context.Context, accountNumber string) (*pb.CurrentBalanceResponse, error) {
 	currentBalanceRequest := &pb.CurrentBalanceRequest{
 		AccountNumber: accountNumber,
 	}
 
-	resp, err := a.helloClient.GetCurrentBalance(ctx, currentBalanceRequest)
+	resp, err := a.helloClient.GetCurrentBalanceWithStatus(ctx, currentBalanceRequest)
 	if err != nil {
-		log.Println("Error on GetCurrentBalanc:", err)
 		return nil, err
 	}
 

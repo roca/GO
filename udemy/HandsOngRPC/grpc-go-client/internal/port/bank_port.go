@@ -9,5 +9,5 @@ import (
 )
 
 type BankClientPort interface {
-	GetCurrentBalance(ctx context.Context, in *pb.CurrentBalanceRequest, opts ...grpc.CallOption) (*pb.CurrentBalanceResponse, error)
+	GetCurrentBalanceWithStatus(ctx context.Context, in *pb.CurrentBalanceRequest, opts ...grpc.CallOption) (*pb.CurrentBalanceResponse, error)
 }
