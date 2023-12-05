@@ -38,7 +38,8 @@ func main() {
 	// runSayManyHellos(helloAdapter, "Bruce Wayne")
 	// runSayHelloToEveryone(helloAdapter, []string{"Bruce Wayne", "Clark Kent", "Diana Prince"})
 	// runSayHelloContinuous(helloAdapter, []string{"Anna", "Bella", "Carol", "Diana", "Emma"})
-	runGetCurrentBalance(bankAdapter, "1e9230bd-4264-4526-a9cd-2a86d3ca9590")
+	//runGetCurrentBalance(bankAdapter, "1e9230bd-4264-4526-a9cd-2a86d3ca9590")
+	runFetchExchangeRates(bankAdapter, "USD", "IDR")
 }
 func runSayHello(adapter *hello.HelloAdapter, name string) {
 	greet, err := adapter.SayHello(context.Background(), name)
@@ -78,4 +79,12 @@ func runGetCurrentBalance(adapter *bank.BankAdapter, accountNumber string) {
 	}
 
 	log.Println("CurrentBalance:", resp.CurrentBalance)
+}
+
+func runFetchExchangeRates(adapter *bank.BankAdapter, fromCurrency, toCurrency string) {
+	err := adapter.FetchExchangeRates(context.Background(),fromCurrency,toCurrency)
+	if err != nil {
+		s := status.Convert(err)
+		log.Fatalln("Can not invoke FetchExchangeRates on the BankAdapter:", "\nCode:", s.Code(), "\nMessage:", s.Message(), "\nDetails:", s.Details())
+	}
 }
