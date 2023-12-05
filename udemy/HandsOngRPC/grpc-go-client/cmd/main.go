@@ -41,9 +41,13 @@ func main() {
 
 	//runGetCurrentBalance(bankAdapter, "1e9230bd-4264-4526-a9cd-2a86d3ca9590")
 	// runFetchExchangeRates(bankAdapter, "USD", "IDR")
-	runSummarizeTransactions(bankAdapter, []bank.BankTransaction{
-		{AccountNumber: "1e9230bd-4264-4526-a9cd-2a86d3ca9594", Amount: 5, TransactionType: 1},
-		{AccountNumber: "1e9230bd-4264-4526-a9cd-2a86d3ca9594", Amount: 5, TransactionType: 2},
+	// runSummarizeTransactions(bankAdapter, []bank.BankTransaction{
+	// 	{AccountNumber: "1e9230bd-4264-4526-a9cd-2a86d3ca9594", Amount: 5, TransactionType: 1},
+	// 	{AccountNumber: "1e9230bd-4264-4526-a9cd-2a86d3ca9594", Amount: 5, TransactionType: 2},
+	// })
+
+	runTransferMultiple(bankAdapter, []bank.BankTransfer{
+		// TODO
 	})
 }
 func runSayHello(adapter *hello.HelloAdapter, name string) {
@@ -102,4 +106,12 @@ func runSummarizeTransactions(adapter *bank.BankAdapter, transactions []bank.Ban
 	}
 
 	log.Println("CurrentBalance:", resp.Balance)
+}
+
+func runTransferMultiple(adapter *bank.BankAdapter, transfers []bank.BankTransfer) {
+	err := adapter.TransferMultiple(context.Background(), transfers)
+	if err != nil {
+		s := status.Convert(err)
+		log.Fatalln("Can not invoke SummarizeTransactions on the BankAdapter:", "\nCode:", s.Code(), "\nMessage:", s.Message(), "\nDetails:", s.Details())
+	}
 }
