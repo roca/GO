@@ -8,6 +8,7 @@ import (
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/status"
 )
 
 func main() {
@@ -37,7 +38,7 @@ func main() {
 	// runSayManyHellos(helloAdapter, "Bruce Wayne")
 	// runSayHelloToEveryone(helloAdapter, []string{"Bruce Wayne", "Clark Kent", "Diana Prince"})
 	// runSayHelloContinuous(helloAdapter, []string{"Anna", "Bella", "Carol", "Diana", "Emma"})
-	runGetCurrentBalance(bankAdapter, "1e9230bd-4264-4526-a9cd-2a86d3ca9594")
+	runGetCurrentBalance(bankAdapter, "1e9230bd-4264-4526-a9cd-2a86d3ca9590")
 }
 func runSayHello(adapter *hello.HelloAdapter, name string) {
 	greet, err := adapter.SayHello(context.Background(), name)
@@ -70,9 +71,10 @@ func runSayHelloContinuous(adapter *hello.HelloAdapter, names []string) {
 }
 
 func runGetCurrentBalance(adapter *bank.BankAdapter, accountNumber string) {
-	resp, err := adapter.GetCurrentBalance(context.Background(), accountNumber)
+	resp, err := adapter.GetCurrentBalanceWithStatus(context.Background(), accountNumber)
 	if err != nil {
-		log.Fatalln("Can not invoke GetCurrentBalance on the BankAdapter:", err)
+		s := status.Convert(err)
+		log.Fatalln("Can not invoke GetCurrentBalance on the BankAdapter:", "\nCode:", s.Code(), "\nMessage:", s.Message(), "\nDetails:", s.Details())
 	}
 
 	log.Println("CurrentBalance:", resp.CurrentBalance)
