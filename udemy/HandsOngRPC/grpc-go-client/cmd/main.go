@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"grpc-go-client/internal/adapter/bank"
 	"grpc-go-client/internal/adapter/hello"
 	"log"
 
@@ -22,7 +23,12 @@ func main() {
 	}
 	defer conn.Close()
 
-	helloAdapter, err := hello.NewHelloAdapter(conn)
+	// helloAdapter, err := hello.NewHelloAdapter(conn)
+	// if err != nil {
+	// 	log.Fatalln("Can not create HelloAdapter:", err)
+	// }
+
+	bankAdapter, err := bank.NewBankAdapter(conn)
 	if err != nil {
 		log.Fatalln("Can not create HelloAdapter:", err)
 	}
@@ -30,7 +36,8 @@ func main() {
 	// runSayHello(helloAdapter, "Bruce Wayne")
 	// runSayManyHellos(helloAdapter, "Bruce Wayne")
 	// runSayHelloToEveryone(helloAdapter, []string{"Bruce Wayne", "Clark Kent", "Diana Prince"})
-	runSayHelloContinuous(helloAdapter, []string{"Anna", "Bella", "Carol", "Diana", "Emma" })
+	// runSayHelloContinuous(helloAdapter, []string{"Anna", "Bella", "Carol", "Diana", "Emma"})
+	runGetCurrentBalance(bankAdapter, "1e9230bd-4264-4526-a9cd-2a86d3ca9594")
 }
 func runSayHello(adapter *hello.HelloAdapter, name string) {
 	greet, err := adapter.SayHello(context.Background(), name)
@@ -60,4 +67,13 @@ func runSayHelloContinuous(adapter *hello.HelloAdapter, names []string) {
 	if err != nil {
 		log.Fatalln("Can not invoke SayHelloContinuouse on the HelloAdapter:", err)
 	}
+}
+
+func runGetCurrentBalance(adapter *bank.BankAdapter, accountNumber string) {
+	resp, err := adapter.GetCurrentBalance(context.Background(), accountNumber)
+	if err != nil {
+		log.Fatalln("Can not invoke GetCurrentBalance on the BankAdapter:", err)
+	}
+
+	log.Println("CurrentBalance:", resp.CurrentBalance)
 }
