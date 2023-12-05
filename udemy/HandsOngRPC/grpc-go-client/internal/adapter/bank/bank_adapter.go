@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/status"
 
 	pb "proto/protogen/go/bank"
 )
@@ -20,6 +21,13 @@ type BankTransaction struct {
 	AccountNumber   string
 	Amount          float64
 	TransactionType int32
+}
+
+type BankTransfer struct {
+	Amount            float64
+	Currency          string
+	FromAccountNumber string
+	ToAccountNumber   string
 }
 
 func NewBankAdapter(conn *grpc.ClientConn) (*BankAdapter, error) {
@@ -98,6 +106,47 @@ func (a *BankAdapter) SummarizeTransactions(ctx context.Context, transactions []
 
 	return summary, nil
 }
-func (a *BankAdapter) TransferMultiple(ctx context.Context, opts ...grpc.CallOption) (pb.BankService_TransferMultipleClient, error) {
-	return nil, nil
+func (a *BankAdapter) TransferMultiple(ctx context.Context, transfers []BankTransfer) error {
+	stream, err := a.bankClient.TransferMultiple(ctx)
+	if err != nil {
+		log.Println("Error getting stream on TransferMultiple:", err)
+		return err
+	}
+
+	bankChan := make(chan struct{})
+
+	go func() {
+
+		for _, transfer := range transfers {
+			err := stream.Send(&pb.TransferRequest{
+				Amount:            transfer.Amount,
+				Currency:          transfer.Currency,
+				FromAccountNumber: transfer.FromAccountNumber,
+				ToAccountNumber:   transfer.ToAccountNumber,
+			})
+			if err != nil {
+				log.Println("Error sending name on stream TransferMultiple:", err)
+			}
+		}
+		stream.CloseSend()
+	}()
+
+	go func() {
+		for {
+			res, err := stream.Recv()
+			if err == io.EOF {
+				break
+			}
+			if err != nil {
+				s := status.Convert(err)
+				log.Fatalln("Can not invoke SummarizeTransactions on the BankAdapter:", "\nCode:", s.Code(), "\nMessage:", s.Message(), "\nDetails:", s.Details())
+			}
+			log.Println(res.TransferStatus)
+		}
+		close(bankChan)
+	}()
+
+	<-bankChan
+
+	return nil
 }
