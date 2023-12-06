@@ -7,23 +7,27 @@ import (
 	"net"
 	"proto/protogen/go/bank"
 	"proto/protogen/go/hello"
+	"proto/protogen/go/resiliency"
 
 	"google.golang.org/grpc"
 )
 
 type GrpcAdapter struct {
-	helloService port.HelloServicePort
-	BankService  port.BankServicePort
-	grpcPort     int
-	server       *grpc.Server
+	helloService      port.HelloServicePort
+	BankService       port.BankServicePort
+	ResiliencyService port.ResiliencyServicePort
+	grpcPort          int
+	server            *grpc.Server
 	hello.HelloServiceServer
 	bank.BankServiceServer
+	resiliency.ResiliencyServiceServer
 }
 
-func NewGrpcAdapter(helloService port.HelloServicePort, bankService port.BankServicePort, grpcPort int) *GrpcAdapter {
+func NewGrpcAdapter(helloService port.HelloServicePort, bankService port.BankServicePort, resiliencyService port.ResiliencyServicePort,grpcPort int) *GrpcAdapter {
 	return &GrpcAdapter{
 		helloService: helloService,
 		BankService:  bankService,
+		ResiliencyService: resiliencyService,
 		grpcPort:     grpcPort,
 	}
 }

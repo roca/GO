@@ -64,3 +64,10 @@ type BankServicePort interface {
 	ExecuteBankTransactions(transactions []*Transaction) (float64, error)
 	ExecuteBankTransfers(*pb.TransferRequest) <-chan *TransferResponse 
 }
+
+type ResiliencyServicePort interface {
+	GetResiliency() (interface{}, error)
+	GetResiliencyStream() error
+	SendResiliencyStream() error
+	BidirectionalResiliencyStream() error
+}
