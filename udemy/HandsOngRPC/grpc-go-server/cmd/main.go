@@ -42,8 +42,9 @@ func main() {
 		Models:   data.New(cel.DB.Pool),
 		ExitChan: exit,
 	}
+	rs := &app.ResiliencyService{}
 
-	grpcadapter := mygrpc.NewGrpcAdapter(hs, bs, 9090)
+	grpcadapter := mygrpc.NewGrpcAdapter(hs, bs, rs, 9090)
 
 	go bs.InsertExchangeRatesAtInterval(exit, "USD", "IDR", 5*time.Second)
 
