@@ -47,7 +47,18 @@ func main() {
 	// })
 
 	runTransferMultiple(bankAdapter, []bank.BankTransfer{
-		// TODO
+		{
+			Amount:            1,
+			Currency:          "USD",
+			FromAccountNumber: "1e9230bd-4264-4526-a9cd-2a86d3ca9594",
+			ToAccountNumber:   "2a7d5f68-baa1-4264-bf41-facba0414c59",
+		},
+		{
+			Amount:            1,
+			Currency:          "USD",
+			FromAccountNumber: "1e9230bd-4264-4526-a9cd-2a86d3ca9594",
+			ToAccountNumber:   "2a7d5f68-baa1-4264-bf41-facba0414c59",
+		},
 	})
 }
 func runSayHello(adapter *hello.HelloAdapter, name string) {
