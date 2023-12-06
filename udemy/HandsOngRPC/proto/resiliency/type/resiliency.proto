@@ -12,5 +12,5 @@ message ResiliencyRequest {
 
 message ResiliencyResponse  {
   string response = 1;
-  unit32 status_code = 2;
+  uint32 status_code = 2;
 }
