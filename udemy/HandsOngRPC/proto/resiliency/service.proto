@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package resiliency;
+
+import "resiliency/type/resiliency.proto";
+
+option go_package = "protogen/go/resiliency";
+
+service ResiliencyService {
+  rpc GetResiliency(ResiliencyRequest) returns (ResiliencyResponse);
+
+  rpc GetResiliencyStream(ResiliencyRequest) 
+  returns (stream ResiliencyResponse);
+
+  rpc SendResiliencyStream(stream ResiliencyRequest)
+  returns (ResiliencyResponse);
+
+  rpc BidirectionalResiliencyStream(stream ResiliencyRequest)
+  returns (stream ResiliencyResponse);
+
+}
