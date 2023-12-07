@@ -2,15 +2,15 @@ package grpc
 
 import (
 	"context"
+	"io"
 	"log"
 	pb "proto/protogen/go/resiliency"
 )
 
 func (a *GrpcAdapter) GetResiliency(ctx context.Context, req *pb.ResiliencyRequest) (*pb.ResiliencyResponse, error) {
-	_, err := a.ResiliencyService.GetResiliency()
+	resp, err := a.ResiliencyService.GetResiliency(req.MaxDelaySecond, req.MinDelaySecond)
 
-	resp := &pb.ResiliencyResponse{}
-	return resp, err
+	return &pb.ResiliencyResponse{Response: resp}, err
 }
 func (a *GrpcAdapter) GetResiliencyStream(req *pb.ResiliencyRequest, stream pb.ResiliencyService_GetResiliencyStreamServer) error {
 	context := stream.Context()
@@ -20,17 +20,28 @@ func (a *GrpcAdapter) GetResiliencyStream(req *pb.ResiliencyRequest, stream pb.R
 			log.Println("Client has cancelled stream")
 			return nil
 		default:
-			_, err := a.ResiliencyService.GetResiliencyStream()
+			resp, err := a.ResiliencyService.GetResiliencyStream(req.MaxDelaySecond, req.MinDelaySecond)
 			if err != nil {
-				//log.Println("Error getting current balance: %s\n", s.Err())
 				return err
 			}
-			stream.Send(&pb.ResiliencyResponse{})
+			stream.Send(&pb.ResiliencyResponse{Response: resp})
 		}
 	}
 }
 func (a *GrpcAdapter) SendResiliencyStream(stream pb.ResiliencyService_SendResiliencyStreamServer) error {
-	return a.ResiliencyService.SendResiliencyStream()
+	for {
+		req, err := stream.Recv()
+		if err == io.EOF {
+			resp, err := a.ResiliencyService.SendResiliencyStream(req.MaxDelaySecond, req.MinDelaySecond)
+			if err != nil {
+				return err
+			}
+			return stream.SendAndClose(&pb.ResiliencyResponse{Response: resp})
+		}
+		if err != nil {
+			return err
+		}
+	}
 }
 func (a *GrpcAdapter) BidirectionalResiliencyStream(stream pb.ResiliencyService_BidirectionalResiliencyStreamServer) error {
 	return a.ResiliencyService.BidirectionalResiliencyStream()
