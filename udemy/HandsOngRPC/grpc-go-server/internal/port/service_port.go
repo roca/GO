@@ -65,9 +65,19 @@ type BankServicePort interface {
 	ExecuteBankTransfers(*pb.TransferRequest) <-chan *TransferResponse
 }
 
+type ResiliencyRequest struct {
+	MaxDelaySecond int32
+	MinDelaySecond int32
+}
+
+type ResiliencyResponse struct {
+	Response string
+	Error    error
+}
+
 type ResiliencyServicePort interface {
 	GetResiliency(int32, int32) (string, error)
 	GetResiliencyStream(int32, int32) (string, error)
-	SendResiliencyStream(int32,int32) (string, error)
-	BidirectionalResiliencyStream() error
+	SendResiliencyStream([]*ResiliencyRequest) (string, error)
+	BidirectionalResiliencyStream(int32, int32) <-chan *ResiliencyResponse
 }
