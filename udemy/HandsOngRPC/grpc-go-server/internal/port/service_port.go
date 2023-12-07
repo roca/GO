@@ -62,12 +62,12 @@ type BankServicePort interface {
 	GetExchangeRateAtTimestamp(fromCurrency, toCurrency string, timestamp time.Time) (*data.BankExchangeRate, error)
 	StopExchangeRatesAtInterval()
 	ExecuteBankTransactions(transactions []*Transaction) (float64, error)
-	ExecuteBankTransfers(*pb.TransferRequest) <-chan *TransferResponse 
+	ExecuteBankTransfers(*pb.TransferRequest) <-chan *TransferResponse
 }
 
 type ResiliencyServicePort interface {
 	GetResiliency() (interface{}, error)
-	GetResiliencyStream() error
+	GetResiliencyStream() (interface{}, error)
 	SendResiliencyStream() error
 	BidirectionalResiliencyStream() error
 }
