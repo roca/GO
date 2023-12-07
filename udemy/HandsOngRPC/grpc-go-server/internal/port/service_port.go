@@ -66,8 +66,8 @@ type BankServicePort interface {
 }
 
 type ResiliencyServicePort interface {
-	GetResiliency() (interface{}, error)
-	GetResiliencyStream() (interface{}, error)
-	SendResiliencyStream() error
+	GetResiliency(int32, int32) (string, error)
+	GetResiliencyStream(int32, int32) (string, error)
+	SendResiliencyStream(int32,int32) (string, error)
 	BidirectionalResiliencyStream() error
 }
