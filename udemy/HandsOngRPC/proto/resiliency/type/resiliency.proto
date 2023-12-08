@@ -5,12 +5,12 @@ package resiliency;
 option go_package = "protogen/go/resiliency";
 
 message ResiliencyRequest {
-  int32 min_delay_second = 1;
-  int32 max_delay_second = 2;
-  repeated uint32 status_codes = 3;
+  int32 min_delay_second = 1 [json_name = "min_delay_second"];
+  int32 max_delay_second = 2 [json_name = "max_delay_second"];
+  repeated uint32 status_codes = 3 [json_name = "status_codes"];
 }
 
 message ResiliencyResponse  {
   string response = 1;
-  uint32 status_code = 2;
+  uint32 status_code = 2 [json_name = "status_code"];
 }
