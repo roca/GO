@@ -9,6 +9,7 @@ import (
 )
 
 func (a *GrpcAdapter) GetResiliency(ctx context.Context, req *pb.ResiliencyRequest) (*pb.ResiliencyResponse, error) {
+	log.Println("GetResiliency")
 
 	resiliencyRequest := &port.ResiliencyRequest{
 		MaxDelaySecond: req.MaxDelaySecond,
