@@ -73,6 +73,7 @@ type ResiliencyRequest struct {
 
 type ResiliencyResponse struct {
 	Response string
+	StatusCode uint32
 	Error    error
 }
 

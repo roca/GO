@@ -16,9 +16,12 @@ func (a *GrpcAdapter) GetResiliency(ctx context.Context, req *pb.ResiliencyReque
 		StatusCodes:    req.StatusCodes,
 	}
 
-	_, err := a.ResiliencyService.GetResiliency(resiliencyRequest)
+	resp, err := a.ResiliencyService.GetResiliency(resiliencyRequest)
 
-	return &pb.ResiliencyResponse{}, err
+	return &pb.ResiliencyResponse{
+		Response:   resp.Response,
+		StatusCode: resp.StatusCode,
+	}, err
 }
 func (a *GrpcAdapter) GetResiliencyStream(req *pb.ResiliencyRequest, stream pb.ResiliencyService_GetResiliencyStreamServer) error {
 	context := stream.Context()

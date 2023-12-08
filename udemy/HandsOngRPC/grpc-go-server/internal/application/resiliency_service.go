@@ -11,7 +11,15 @@ type ResiliencyService struct{}
 func (r *ResiliencyService) GetResiliency(req *port.ResiliencyRequest) (*port.ResiliencyResponse, error) {
 
 	delay(req.MaxDelaySecond, req.MinDelaySecond)
-	return nil, nil
+
+	randomIndex := rand.Intn(len(req.StatusCodes))
+	pick := req.StatusCodes[randomIndex]
+
+	return &port.ResiliencyResponse{
+		StatusCode: pick,
+		Response:   "OK",
+		Error:      nil,
+	}, nil
 }
 func (r *ResiliencyService) GetResiliencyStream(req *port.ResiliencyRequest) (*port.ResiliencyResponse, error) {
 	delay(req.MaxDelaySecond, req.MinDelaySecond)
