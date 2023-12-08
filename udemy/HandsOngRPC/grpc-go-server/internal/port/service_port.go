@@ -68,6 +68,7 @@ type BankServicePort interface {
 type ResiliencyRequest struct {
 	MaxDelaySecond int32
 	MinDelaySecond int32
+	StatusCodes     []uint32
 }
 
 type ResiliencyResponse struct {
@@ -76,8 +77,8 @@ type ResiliencyResponse struct {
 }
 
 type ResiliencyServicePort interface {
-	GetResiliency(int32, int32) (string, error)
-	GetResiliencyStream(int32, int32) (string, error)
-	SendResiliencyStream([]*ResiliencyRequest) (string, error)
-	BidirectionalResiliencyStream(int32, int32) <-chan *ResiliencyResponse
+	GetResiliency(*ResiliencyRequest) (*ResiliencyResponse, error)
+	GetResiliencyStream(*ResiliencyRequest) (*ResiliencyResponse, error)
+	SendResiliencyStream([]*ResiliencyRequest) (*ResiliencyResponse, error)
+	BidirectionalResiliencyStream(*ResiliencyRequest) <-chan *ResiliencyResponse
 }
