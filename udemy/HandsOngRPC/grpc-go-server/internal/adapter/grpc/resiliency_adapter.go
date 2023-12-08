@@ -6,27 +6,38 @@ import (
 	"io"
 	"log"
 	pb "proto/protogen/go/resiliency"
-	"time"
 )
 
 func (a *GrpcAdapter) GetResiliency(ctx context.Context, req *pb.ResiliencyRequest) (*pb.ResiliencyResponse, error) {
-	resp, err := a.ResiliencyService.GetResiliency(req.MaxDelaySecond, req.MinDelaySecond)
 
-	return &pb.ResiliencyResponse{Response: resp}, err
+	resiliencyRequest := &port.ResiliencyRequest{
+		MaxDelaySecond: req.MaxDelaySecond,
+		MinDelaySecond: req.MinDelaySecond,
+		StatusCodes:    req.StatusCodes,
+	}
+
+	_, err := a.ResiliencyService.GetResiliency(resiliencyRequest)
+
+	return &pb.ResiliencyResponse{}, err
 }
 func (a *GrpcAdapter) GetResiliencyStream(req *pb.ResiliencyRequest, stream pb.ResiliencyService_GetResiliencyStreamServer) error {
 	context := stream.Context()
+	resiliencyRequest := &port.ResiliencyRequest{
+		MaxDelaySecond: req.MaxDelaySecond,
+		MinDelaySecond: req.MinDelaySecond,
+		StatusCodes:    req.StatusCodes,
+	}
 	for {
 		select {
 		case <-context.Done():
 			log.Println("Client has cancelled stream")
 			return nil
 		default:
-			resp, err := a.ResiliencyService.GetResiliencyStream(req.MaxDelaySecond, req.MinDelaySecond)
+			_, err := a.ResiliencyService.GetResiliencyStream(resiliencyRequest)
 			if err != nil {
 				return err
 			}
-			stream.Send(&pb.ResiliencyResponse{Response: resp})
+			stream.Send(&pb.ResiliencyResponse{})
 		}
 	}
 }
@@ -35,11 +46,11 @@ func (a *GrpcAdapter) SendResiliencyStream(stream pb.ResiliencyService_SendResil
 	for {
 		req, err := stream.Recv()
 		if err == io.EOF {
-			resp, err := a.ResiliencyService.SendResiliencyStream(resiliencyRequests)
+			_, err := a.ResiliencyService.SendResiliencyStream(resiliencyRequests)
 			if err != nil {
 				return err
 			}
-			return stream.SendAndClose(&pb.ResiliencyResponse{Response: resp})
+			return stream.SendAndClose(&pb.ResiliencyResponse{})
 		}
 		if err != nil {
 			return err
@@ -47,6 +58,7 @@ func (a *GrpcAdapter) SendResiliencyStream(stream pb.ResiliencyService_SendResil
 		resiliencyRequests = append(resiliencyRequests, &port.ResiliencyRequest{
 			MaxDelaySecond: req.MaxDelaySecond,
 			MinDelaySecond: req.MinDelaySecond,
+			StatusCodes:    req.StatusCodes,
 		},
 		)
 	}
@@ -66,8 +78,13 @@ func (a *GrpcAdapter) BidirectionalResiliencyStream(stream pb.ResiliencyService_
 			if err != nil {
 				return err
 			}
+			resiliencyRequest := &port.ResiliencyRequest{
+				MaxDelaySecond: req.MaxDelaySecond,
+				MinDelaySecond: req.MinDelaySecond,
+				StatusCodes:    req.StatusCodes,
+			}
 
-			for resp := range a.ResiliencyService.BidirectionalResiliencyStream(req.MaxDelaySecond, req.MinDelaySecond) {
+			for resp := range a.ResiliencyService.BidirectionalResiliencyStream(resiliencyRequest) {
 				if resp.Error != nil {
 					return resp.Error
 				}
@@ -75,7 +92,7 @@ func (a *GrpcAdapter) BidirectionalResiliencyStream(stream pb.ResiliencyService_
 				// if err != nil {
 				// 	return err
 				// }
-				time.Sleep(500 * time.Millisecond)
+
 			}
 		}
 	}
