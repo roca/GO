@@ -10,10 +10,10 @@ type ResiliencyService struct{}
 
 func (r *ResiliencyService) GetResiliency(req *port.ResiliencyRequest) (*port.ResiliencyResponse, error) {
 
-	delay(req.MaxDelaySecond, req.MinDelaySecond)
+	//delay(req.MaxDelaySecond, req.MinDelaySecond)
 
-	randomIndex := rand.Intn(len(req.StatusCodes))
-	pick := req.StatusCodes[randomIndex]
+	//randomIndex := rand.Intn(len(req.StatusCodes))
+	pick := req.StatusCodes[0]
 
 	return &port.ResiliencyResponse{
 		StatusCode: pick,
