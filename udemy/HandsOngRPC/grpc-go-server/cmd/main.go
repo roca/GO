@@ -32,6 +32,7 @@ func init() {
 
 func main() {
 	exit := make(chan bool)
+	exit2:= make(chan bool)
 	defer func() {
 		exit <- true
 		fmt.Println("Finished InsertExchangeRatesAtInterval")
@@ -42,7 +43,9 @@ func main() {
 		Models:   data.New(cel.DB.Pool),
 		ExitChan: exit,
 	}
-	rs := &app.ResiliencyService{}
+	rs := &app.ResiliencyService{
+		ExitChan: exit2,
+	}
 
 	grpcadapter := mygrpc.NewGrpcAdapter(hs, bs, rs, 9090)
 

@@ -6,14 +6,16 @@ import (
 	"time"
 )
 
-type ResiliencyService struct{}
+type ResiliencyService struct {
+	ExitChan chan bool
+}
 
 func (r *ResiliencyService) GetResiliency(req *port.ResiliencyRequest) (*port.ResiliencyResponse, error) {
 
-	//delay(req.MaxDelaySecond, req.MinDelaySecond)
+	delay(req.MaxDelaySecond, req.MinDelaySecond)
 
-	//randomIndex := rand.Intn(len(req.StatusCodes))
-	pick := req.StatusCodes[0]
+	randomIndex := rand.Intn(len(req.StatusCodes))
+	pick := req.StatusCodes[randomIndex]
 
 	return &port.ResiliencyResponse{
 		StatusCode: pick,
@@ -22,8 +24,7 @@ func (r *ResiliencyService) GetResiliency(req *port.ResiliencyRequest) (*port.Re
 	}, nil
 }
 func (r *ResiliencyService) GetResiliencyStream(req *port.ResiliencyRequest) (*port.ResiliencyResponse, error) {
-	delay(req.MaxDelaySecond, req.MinDelaySecond)
-	return nil, nil
+	return r.GetResiliency(req)
 }
 func (r *ResiliencyService) SendResiliencyStream(reqs []*port.ResiliencyRequest) (*port.ResiliencyResponse, error) {
 	for _, req := range reqs {
@@ -37,7 +38,7 @@ func (r *ResiliencyService) BidirectionalResiliencyStream(req *port.ResiliencyRe
 }
 
 func delay(maxDelaySecond, minDelaySecond int32) {
-	n := rand.Intn(int(maxDelaySecond-minDelaySecond)) + int(minDelaySecond)
+	n := rand.Intn(int(maxDelaySecond-minDelaySecond)+1) + int(minDelaySecond)
 	duration := time.Duration(n) * time.Millisecond
 	time.Sleep(duration)
 }
