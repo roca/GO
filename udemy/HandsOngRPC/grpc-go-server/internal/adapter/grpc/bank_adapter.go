@@ -85,7 +85,6 @@ func (a *GrpcAdapter) FetchExchangeRates(req *pb.ExchangeRateRequest, stream pb.
 			)
 			log.Printf("Exchange rate sent to client, %v to %v : %v\n", req.FromCurrency, req.ToCurrency, rate.Rate)
 			time.Sleep(3 * time.Second)
-			return nil
 		}
 	}
 }

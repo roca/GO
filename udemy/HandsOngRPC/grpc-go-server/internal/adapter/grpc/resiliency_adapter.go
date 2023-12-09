@@ -37,11 +37,15 @@ func (a *GrpcAdapter) GetResiliencyStream(req *pb.ResiliencyRequest, stream pb.R
 			log.Println("Client has cancelled stream")
 			return nil
 		default:
-			_, err := a.ResiliencyService.GetResiliencyStream(resiliencyRequest)
+			resp, err := a.ResiliencyService.GetResiliencyStream(resiliencyRequest)
 			if err != nil {
 				return err
 			}
-			stream.Send(&pb.ResiliencyResponse{})
+			stream.Send(&pb.ResiliencyResponse{
+				Response:   resp.Response,
+				StatusCode: resp.StatusCode,
+			})
+			log.Printf("Response sent to client %d : %s\n", resp.StatusCode, resp.Response)
 		}
 	}
 }
