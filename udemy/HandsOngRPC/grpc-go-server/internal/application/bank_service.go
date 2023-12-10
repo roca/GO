@@ -68,7 +68,7 @@ func (b *BankService) GetExchangeRateAtTimestamp(fromCurrency, toCurrency string
 	if len(rates) == 0 {
 		return nil, errors.New("no exchange rates found")
 	}
-	return rates[0], nil
+	return rates[len(rates)-1], nil
 }
 
 func (b *BankService) ExecuteBankTransactions(transactions []*port.Transaction) (float64, error) {
