@@ -1,6 +1,7 @@
 package application
 
 import (
+	"fmt"
 	"grpc-go-server/internal/port"
 	"math/rand"
 	"time"
@@ -12,14 +13,15 @@ type ResiliencyService struct {
 
 func (r *ResiliencyService) GetResiliency(req *port.ResiliencyRequest) (*port.ResiliencyResponse, error) {
 
-	delay(req.MaxDelaySecond, req.MinDelaySecond)
+	delay := delay(req.MaxDelaySecond, req.MinDelaySecond)
 
 	randomIndex := rand.Intn(len(req.StatusCodes))
 	pick := req.StatusCodes[randomIndex]
+	str := fmt.Sprintf("The time now is %v, execution delayed for %v seconds", time.Now().Format("15:04:05.000000"), delay)
 
 	return &port.ResiliencyResponse{
 		StatusCode: pick,
-		Response:   "OK",
+		Response:   str,
 		Error:      nil,
 	}, nil
 }
@@ -56,8 +58,9 @@ func (r *ResiliencyService) BidirectionalResiliencyStream(req *port.ResiliencyRe
 	return ch
 }
 
-func delay(maxDelaySecond, minDelaySecond int32) {
+func delay(maxDelaySecond, minDelaySecond int32) int {
 	n := rand.Intn(int(maxDelaySecond-minDelaySecond)+1) + int(minDelaySecond)
 	duration := time.Duration(n) * time.Millisecond
 	time.Sleep(duration)
+	return n
 }
