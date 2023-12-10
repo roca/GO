@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"context"
+	"fmt"
 	"grpc-go-server/internal/port"
 	"io"
 	"log"
@@ -18,11 +19,14 @@ func (a *GrpcAdapter) GetResiliency(ctx context.Context, req *pb.ResiliencyReque
 	}
 
 	resp, err := a.ResiliencyService.GetResiliency(resiliencyRequest)
+	if err != nil {
+		return nil, err
+	}
 
 	return &pb.ResiliencyResponse{
 		Response:   resp.Response,
 		StatusCode: resp.StatusCode,
-	}, err
+	}, nil
 }
 func (a *GrpcAdapter) GetResiliencyStream(req *pb.ResiliencyRequest, stream pb.ResiliencyService_GetResiliencyStreamServer) error {
 	context := stream.Context()
@@ -59,7 +63,7 @@ func (a *GrpcAdapter) SendResiliencyStream(stream pb.ResiliencyService_SendResil
 				return err
 			}
 			return stream.SendAndClose(&pb.ResiliencyResponse{
-				Response:   resp.Response,
+				Response:   fmt.Sprintf("Received %d requests from client", len(resiliencyRequests)),
 				StatusCode: resp.StatusCode,
 			})
 		}
