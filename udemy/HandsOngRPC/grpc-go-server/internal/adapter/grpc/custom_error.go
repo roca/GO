@@ -21,6 +21,8 @@ type InsufficientBalanceError struct {
 	Error  error
 }
 
+
+
 func NewInsufficientBalanceError(accountNumber string, amount float64) StatusError {
 	return &InsufficientBalanceError{
 		Acount: accountNumber,
