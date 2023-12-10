@@ -54,11 +54,14 @@ func (a *GrpcAdapter) SendResiliencyStream(stream pb.ResiliencyService_SendResil
 	for {
 		req, err := stream.Recv()
 		if err == io.EOF {
-			_, err := a.ResiliencyService.SendResiliencyStream(resiliencyRequests)
+			resp, err := a.ResiliencyService.SendResiliencyStream(resiliencyRequests)
 			if err != nil {
 				return err
 			}
-			return stream.SendAndClose(&pb.ResiliencyResponse{})
+			return stream.SendAndClose(&pb.ResiliencyResponse{
+				Response:   resp.Response,
+				StatusCode: resp.StatusCode,
+			})
 		}
 		if err != nil {
 			return err
