@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	pb "proto/protogen/go/resiliency"
+	"time"
 
 	"google.golang.org/grpc"
 )
@@ -71,8 +72,40 @@ func (a *ResiliencyAdapter) GetResiliencyStream(ctx context.Context, resiliencyR
 			log.Println("Error on FetchExchangeRates:", err)
 			return err
 		}
-		log.Println(res.Response,res.StatusCode)
+		log.Println(res.Response, res.StatusCode)
 	}
 
 	return nil
+}
+
+func (a *ResiliencyAdapter) SendResiliencyStream(ctx context.Context, reqs []*ResiliencyRequest) (*ResiliencyResponse, error) {
+	stream, err := a.resiliencyClient.SendResiliencyStream(ctx)
+	if err != nil {
+		log.Println("Error getting stream on SummarizeTransactions:", err)
+		return nil, err
+	}
+
+	for _, req := range reqs {
+		err := stream.Send(&pb.ResiliencyRequest{
+			MaxDelaySecond: req.MaxDelaySecond,
+			MinDelaySecond: req.MinDelaySecond,
+			StatusCodes:    req.StatusCodes,
+		})
+		if err != nil {
+			log.Println("Error sending name on stream SummarizeTransactions:", err)
+			return nil, err
+		}
+		time.Sleep(500 * time.Millisecond)
+	}
+
+	resp, err := stream.CloseAndRecv()
+	if err != nil {
+		log.Println("Error closing and receiving response on stream SayHelloToEveryone:", err)
+		return nil, err
+	}
+
+	return &ResiliencyResponse{
+		Response:   resp.Response,
+		StatusCode: resp.StatusCode,
+	}, nil
 }

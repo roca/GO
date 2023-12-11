@@ -156,3 +156,12 @@ func runGetResiliencyStream(adapter *resiliency.ResiliencyAdapter, resiliencyReq
 		log.Fatalln("Can not invoke GetResiliency on the ResiliencyAdapter:", "\nCode:", s.Code(), "\nMessage:", s.Message(), "\nDetails:", s.Details())
 	}
 }
+
+func runSendResiliencyStream(adapter *resiliency.ResiliencyAdapter, resiliencyRequests []*resiliency.ResiliencyRequest) {
+	resp, err := adapter.SendResiliencyStream(context.Background(), resiliencyRequests)
+	if err != nil {
+		s := status.Convert(err)
+		log.Fatalln("Can not invoke GetResiliency on the ResiliencyAdapter:", "\nCode:", s.Code(), "\nMessage:", s.Message(), "\nDetails:", s.Details())
+	}
+	log.Println(resp)
+}
