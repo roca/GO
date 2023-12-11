@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/status"
 )
 
 type ResiliencyAdapter struct {
@@ -108,4 +109,48 @@ func (a *ResiliencyAdapter) SendResiliencyStream(ctx context.Context, reqs []*Re
 		Response:   resp.Response,
 		StatusCode: resp.StatusCode,
 	}, nil
+}
+
+func (a *ResiliencyAdapter) BidirectionalResiliencyStream(ctx context.Context, reqs []*ResiliencyRequest) error {
+	stream, err := a.resiliencyClient.BidirectionalResiliencyStream(ctx)
+	if err != nil {
+		log.Println("Error getting stream on BidirectionalResiliencyStream:", err)
+		return err
+	}
+
+	resiliencyChan := make(chan struct{})
+
+	go func() {
+
+		for _, req := range reqs {
+			err := stream.Send(&pb.ResiliencyRequest{
+				MaxDelaySecond: req.MaxDelaySecond,
+				MinDelaySecond: req.MinDelaySecond,
+				StatusCodes:    req.StatusCodes,
+			})
+			if err != nil {
+				log.Println("Error sending name on stream BidirectionalResiliencyStream:", err)
+			}
+		}
+		stream.CloseSend()
+	}()
+
+	go func() {
+		for {
+			res, err := stream.Recv()
+			if err == io.EOF {
+				break
+			}
+			if err != nil {
+				s := status.Convert(err)
+				log.Fatalln("Can not invoke SummarizeTransactions on the BankAdapter:", "\nCode:", s.Code(), "\nMessage:", s.Message(), "\nDetails:", s.Details())
+			}
+			log.Println(res)
+		}
+		close(resiliencyChan)
+	}()
+
+	<-resiliencyChan
+
+	return nil
 }

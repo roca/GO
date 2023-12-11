@@ -165,3 +165,11 @@ func runSendResiliencyStream(adapter *resiliency.ResiliencyAdapter, resiliencyRe
 	}
 	log.Println(resp)
 }
+
+func runBidirectionalResiliencyStream(adapter *resiliency.ResiliencyAdapter, resiliencyRequests []*resiliency.ResiliencyRequest) {
+	err := adapter.BidirectionalResiliencyStream(context.Background(), resiliencyRequests)
+	if err != nil {
+		s := status.Convert(err)
+		log.Fatalln("Can not invoke SummarizeTransactions on the BankAdapter:", "\nCode:", s.Code(), "\nMessage:", s.Message(), "\nDetails:", s.Details())
+	}
+}
