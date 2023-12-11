@@ -4,6 +4,7 @@ import (
 	"context"
 	"grpc-go-client/internal/adapter/bank"
 	"grpc-go-client/internal/adapter/hello"
+	"grpc-go-client/internal/adapter/resiliency"
 	"log"
 
 	"google.golang.org/grpc"
@@ -29,15 +30,15 @@ func main() {
 	// 	log.Fatalln("Can not create HelloAdapter:", err)
 	// }
 
-	bankAdapter, err := bank.NewBankAdapter(conn)
-	if err != nil {
-		log.Fatalln("Can not create HelloAdapter:", err)
-	}
-
-	// resiliencyAdapter, err := resiliency.NewResiliencyAdapter(conn)
+	// bankAdapter, err := bank.NewBankAdapter(conn)
 	// if err != nil {
-	// 	log.Fatalln("Can not create ResiliencyAdapter:", err)
+	// 	log.Fatalln("Can not create HelloAdapter:", err)
 	// }
+
+	resiliencyAdapter, err := resiliency.NewResiliencyAdapter(conn)
+	if err != nil {
+		log.Fatalln("Can not create ResiliencyAdapter:", err)
+	}
 
 	// runSayHello(helloAdapter, "Bruce Wayne")
 	// runSayManyHellos(helloAdapter, "Bruce Wayne")
@@ -51,21 +52,24 @@ func main() {
 	// 	{AccountNumber: "1e9230bd-4264-4526-a9cd-2a86d3ca9594", Amount: 5, TransactionType: 2},
 	// })
 
-	runTransferMultiple(bankAdapter, []bank.BankTransfer{
-		{
-			Amount:            1,
-			Currency:          "USD",
-			FromAccountNumber: "1e9230bd-4264-4526-a9cd-2a86d3ca9594",
-			ToAccountNumber:   "2a7d5f68-baa1-4264-bf41-facba0414c59",
-		},
-		{
-			Amount:            1,
-			Currency:          "USD",
-			FromAccountNumber: "1e9230bd-4264-4526-a9cd-2a86d3ca9594",
-			ToAccountNumber:   "2a7d5f68-baa1-4264-bf41-facba0414c59",
-		},
-	})
+	// runTransferMultiple(bankAdapter, []bank.BankTransfer{
+	// 	{
+	// 		Amount:            1,
+	// 		Currency:          "USD",
+	// 		FromAccountNumber: "1e9230bd-4264-4526-a9cd-2a86d3ca9594",
+	// 		ToAccountNumber:   "2a7d5f68-baa1-4264-bf41-facba0414c59",
+	// 	},
+	// 	{
+	// 		Amount:            1,
+	// 		Currency:          "USD",
+	// 		FromAccountNumber: "1e9230bd-4264-4526-a9cd-2a86d3ca9594",
+	// 		ToAccountNumber:   "2a7d5f68-baa1-4264-bf41-facba0414c59",
+	// 	},
+	// })
+
+	runGetResiliency(resiliencyAdapter, &resiliency.ResiliencyRequest{})
 }
+
 func runSayHello(adapter *hello.HelloAdapter, name string) {
 	greet, err := adapter.SayHello(context.Background(), name)
 	if err != nil {
@@ -130,4 +134,13 @@ func runTransferMultiple(adapter *bank.BankAdapter, transfers []bank.BankTransfe
 		s := status.Convert(err)
 		log.Fatalln("Can not invoke SummarizeTransactions on the BankAdapter:", "\nCode:", s.Code(), "\nMessage:", s.Message(), "\nDetails:", s.Details())
 	}
+}
+
+func runGetResiliency(adapter *resiliency.ResiliencyAdapter, resiliencyRequest *resiliency.ResiliencyRequest) {
+	resp, err := adapter.GetResiliency(context.Background(), resiliencyRequest)
+	if err != nil {
+		s := status.Convert(err)
+		log.Fatalln("Can not invoke SummarizeTransactions on the BankAdapter:", "\nCode:", s.Code(), "\nMessage:", s.Message(), "\nDetails:", s.Details())
+	}
+	log.Println(resp)
 }
