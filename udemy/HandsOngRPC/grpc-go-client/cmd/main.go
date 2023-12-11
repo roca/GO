@@ -34,6 +34,11 @@ func main() {
 		log.Fatalln("Can not create HelloAdapter:", err)
 	}
 
+	// resiliencyAdapter, err := resiliency.NewResiliencyAdapter(conn)
+	// if err != nil {
+	// 	log.Fatalln("Can not create ResiliencyAdapter:", err)
+	// }
+
 	// runSayHello(helloAdapter, "Bruce Wayne")
 	// runSayManyHellos(helloAdapter, "Bruce Wayne")
 	// runSayHelloToEveryone(helloAdapter, []string{"Bruce Wayne", "Clark Kent", "Diana Prince"})
