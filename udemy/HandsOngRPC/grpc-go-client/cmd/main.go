@@ -67,7 +67,11 @@ func main() {
 	// 	},
 	// })
 
-	runGetResiliency(resiliencyAdapter, &resiliency.ResiliencyRequest{})
+	runGetResiliency(resiliencyAdapter, &resiliency.ResiliencyRequest{
+		MaxDelaySecond: 5000,
+		MinDelaySecond: 4000,
+		StatusCodes: []uint32{0,6},
+	})
 }
 
 func runSayHello(adapter *hello.HelloAdapter, name string) {
@@ -140,7 +144,7 @@ func runGetResiliency(adapter *resiliency.ResiliencyAdapter, resiliencyRequest *
 	resp, err := adapter.GetResiliency(context.Background(), resiliencyRequest)
 	if err != nil {
 		s := status.Convert(err)
-		log.Fatalln("Can not invoke SummarizeTransactions on the BankAdapter:", "\nCode:", s.Code(), "\nMessage:", s.Message(), "\nDetails:", s.Details())
+		log.Fatalln("Can not invoke GetResiliency on the ResiliencyAdapter:", "\nCode:", s.Code(), "\nMessage:", s.Message(), "\nDetails:", s.Details())
 	}
 	log.Println(resp)
 }
