@@ -3,6 +3,8 @@ package resiliency
 import (
 	"context"
 	"grpc-go-client/internal/port"
+	"io"
+	"log"
 	pb "proto/protogen/go/resiliency"
 
 	"google.golang.org/grpc"
@@ -45,4 +47,32 @@ func (a *ResiliencyAdapter) GetResiliency(ctx context.Context, resiliencyRequest
 		Response:   resp.Response,
 		StatusCode: resp.StatusCode,
 	}, nil
+}
+
+func (a *ResiliencyAdapter) GetResiliencyStream(ctx context.Context, resiliencyRequest *ResiliencyRequest) error {
+	req := &pb.ResiliencyRequest{
+		MaxDelaySecond: resiliencyRequest.MaxDelaySecond,
+		MinDelaySecond: resiliencyRequest.MinDelaySecond,
+		StatusCodes:    resiliencyRequest.StatusCodes,
+	}
+
+	stream, err := a.resiliencyClient.GetResiliencyStream(ctx, req)
+	if err != nil {
+		log.Println("Error on GetResiliencyStream:", err)
+		return err
+	}
+
+	for {
+		res, err := stream.Recv()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Println("Error on FetchExchangeRates:", err)
+			return err
+		}
+		log.Println(res.Response,res.StatusCode)
+	}
+
+	return nil
 }
