@@ -70,7 +70,7 @@ func main() {
 	runGetResiliency(resiliencyAdapter, &resiliency.ResiliencyRequest{
 		MaxDelaySecond: 5000,
 		MinDelaySecond: 4000,
-		StatusCodes: []uint32{0,6},
+		StatusCodes:    []uint32{0, 6},
 	})
 }
 
@@ -147,4 +147,12 @@ func runGetResiliency(adapter *resiliency.ResiliencyAdapter, resiliencyRequest *
 		log.Fatalln("Can not invoke GetResiliency on the ResiliencyAdapter:", "\nCode:", s.Code(), "\nMessage:", s.Message(), "\nDetails:", s.Details())
 	}
 	log.Println(resp)
+}
+
+func runGetResiliencyStream(adapter *resiliency.ResiliencyAdapter, resiliencyRequest *resiliency.ResiliencyRequest) {
+	err := adapter.GetResiliencyStream(context.Background(), resiliencyRequest)
+	if err != nil {
+		s := status.Convert(err)
+		log.Fatalln("Can not invoke GetResiliency on the ResiliencyAdapter:", "\nCode:", s.Code(), "\nMessage:", s.Message(), "\nDetails:", s.Details())
+	}
 }
