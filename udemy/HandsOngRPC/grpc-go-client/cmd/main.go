@@ -6,6 +6,7 @@ import (
 	"grpc-go-client/internal/adapter/hello"
 	"grpc-go-client/internal/adapter/resiliency"
 	"log"
+	"time"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -67,11 +68,14 @@ func main() {
 	// 	},
 	// })
 
-	// runGetResiliency(resiliencyAdapter, &resiliency.ResiliencyRequest{
-	// 	MaxDelaySecond: 5000,
-	// 	MinDelaySecond: 4000,
-	// 	StatusCodes:    []uint32{0, 6},
-	// })
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	runGetResiliency(ctx, resiliencyAdapter, &resiliency.ResiliencyRequest{
+		MaxDelaySecond: 5000,
+		MinDelaySecond: 4000,
+		StatusCodes:    []uint32{0},
+	})
 
 	// runGetResiliencyStream(resiliencyAdapter, &resiliency.ResiliencyRequest{
 	// 	MaxDelaySecond: 5000,
@@ -146,8 +150,8 @@ func runTransferMultiple(adapter *bank.BankAdapter, transfers []bank.BankTransfe
 	}
 }
 
-func runGetResiliency(adapter *resiliency.ResiliencyAdapter, resiliencyRequest *resiliency.ResiliencyRequest) {
-	resp, err := adapter.GetResiliency(context.Background(), resiliencyRequest)
+func runGetResiliency(ctx context.Context, adapter *resiliency.ResiliencyAdapter, resiliencyRequest *resiliency.ResiliencyRequest) {
+	resp, err := adapter.GetResiliency(ctx, resiliencyRequest)
 	if err != nil {
 		s := status.Convert(err)
 		log.Fatalln("Can not invoke GetResiliency on the ResiliencyAdapter:", "\nCode:", s.Code(), "\nMessage:", s.Message(), "\nDetails:", s.Details())
@@ -155,16 +159,16 @@ func runGetResiliency(adapter *resiliency.ResiliencyAdapter, resiliencyRequest *
 	log.Println(resp)
 }
 
-func runGetResiliencyStream(adapter *resiliency.ResiliencyAdapter, resiliencyRequest *resiliency.ResiliencyRequest) {
-	err := adapter.GetResiliencyStream(context.Background(), resiliencyRequest)
+func runGetResiliencyStream(ctx context.Context, adapter *resiliency.ResiliencyAdapter, resiliencyRequest *resiliency.ResiliencyRequest) {
+	err := adapter.GetResiliencyStream(ctx, resiliencyRequest)
 	if err != nil {
 		s := status.Convert(err)
 		log.Fatalln("Can not invoke GetResiliency on the ResiliencyAdapter:", "\nCode:", s.Code(), "\nMessage:", s.Message(), "\nDetails:", s.Details())
 	}
 }
 
-func runSendResiliencyStream(adapter *resiliency.ResiliencyAdapter, resiliencyRequests []*resiliency.ResiliencyRequest) {
-	resp, err := adapter.SendResiliencyStream(context.Background(), resiliencyRequests)
+func runSendResiliencyStream(ctx context.Context, adapter *resiliency.ResiliencyAdapter, resiliencyRequests []*resiliency.ResiliencyRequest) {
+	resp, err := adapter.SendResiliencyStream(ctx, resiliencyRequests)
 	if err != nil {
 		s := status.Convert(err)
 		log.Fatalln("Can not invoke GetResiliency on the ResiliencyAdapter:", "\nCode:", s.Code(), "\nMessage:", s.Message(), "\nDetails:", s.Details())
@@ -172,8 +176,8 @@ func runSendResiliencyStream(adapter *resiliency.ResiliencyAdapter, resiliencyRe
 	log.Println(resp)
 }
 
-func runBidirectionalResiliencyStream(adapter *resiliency.ResiliencyAdapter, resiliencyRequests []*resiliency.ResiliencyRequest) {
-	err := adapter.BidirectionalResiliencyStream(context.Background(), resiliencyRequests)
+func runBidirectionalResiliencyStream(ctx context.Context, adapter *resiliency.ResiliencyAdapter, resiliencyRequests []*resiliency.ResiliencyRequest) {
+	err := adapter.BidirectionalResiliencyStream(ctx, resiliencyRequests)
 	if err != nil {
 		s := status.Convert(err)
 		log.Fatalln("Can not invoke SummarizeTransactions on the BankAdapter:", "\nCode:", s.Code(), "\nMessage:", s.Message(), "\nDetails:", s.Details())
