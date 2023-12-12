@@ -6,7 +6,6 @@ import (
 	"io"
 	"log"
 	pb "proto/protogen/go/resiliency"
-	"time"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/status"
@@ -96,7 +95,7 @@ func (a *ResiliencyAdapter) SendResiliencyStream(ctx context.Context, reqs []*Re
 			log.Println("Error sending name on stream SummarizeTransactions:", err)
 			return nil, err
 		}
-		time.Sleep(500 * time.Millisecond)
+		// time.Sleep(500 * time.Millisecond)
 	}
 
 	resp, err := stream.CloseAndRecv()
