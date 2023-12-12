@@ -67,11 +67,17 @@ func main() {
 	// 	},
 	// })
 
-	runGetResiliency(resiliencyAdapter, &resiliency.ResiliencyRequest{
-		MaxDelaySecond: 5000,
-		MinDelaySecond: 4000,
-		StatusCodes:    []uint32{0, 6},
-	})
+	// runGetResiliency(resiliencyAdapter, &resiliency.ResiliencyRequest{
+	// 	MaxDelaySecond: 5000,
+	// 	MinDelaySecond: 4000,
+	// 	StatusCodes:    []uint32{0, 6},
+	// })
+
+	// runGetResiliencyStream(resiliencyAdapter, &resiliency.ResiliencyRequest{
+	// 	MaxDelaySecond: 5000,
+	// 	MinDelaySecond: 4000,
+	// 	StatusCodes:    []uint32{0},
+	// })
 }
 
 func runSayHello(adapter *hello.HelloAdapter, name string) {
