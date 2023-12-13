@@ -8,7 +8,9 @@ import (
 	"log"
 	"time"
 
+	grpc_retry "github.com/grpc-ecosystem/go-grpc-middleware/retry"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
 )
@@ -18,6 +20,26 @@ func main() {
 	log.SetOutput(logWriter{})
 
 	var opts []grpc.DialOption
+	opts = append(opts, grpc.WithUnaryInterceptor(
+		grpc_retry.UnaryClientInterceptor(
+			grpc_retry.WithCodes(codes.Unknown, codes.Internal),
+			grpc_retry.WithMax(4),
+			grpc_retry.WithBackoff(
+				grpc_retry.BackoffExponential(2*time.Second),
+			),
+		),
+	))
+
+	opts = append(opts, grpc.WithStreamInterceptor(
+		grpc_retry.StreamClientInterceptor(
+			grpc_retry.WithCodes(codes.Unknown, codes.Internal),
+			grpc_retry.WithMax(4),
+			grpc_retry.WithBackoff(
+				grpc_retry.BackoffLinear(4*time.Second),
+			),
+		),
+	))
+
 	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
 
 	conn, err := grpc.Dial("localhost:9090", opts...)
@@ -72,8 +94,8 @@ func main() {
 	defer cancel()
 
 	runGetResiliency(ctx, resiliencyAdapter, &resiliency.ResiliencyRequest{
-		MaxDelaySecond: 5000,
-		MinDelaySecond: 4000,
+		MaxDelaySecond: 5,
+		MinDelaySecond: 4,
 		StatusCodes:    []uint32{0},
 	})
 

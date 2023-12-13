@@ -46,7 +46,7 @@ func (r *ResiliencyService) GetResiliency(req *port.ResiliencyRequest) (*port.Re
 
 	randomIndex := rand.Intn(len(req.StatusCodes))
 	pick := req.StatusCodes[randomIndex]
-	str := fmt.Sprintf("The time now is %v, execution delayed for %v milliseconds", time.Now().Format("15:04:05.000000"), delay)
+	str := fmt.Sprintf("The time now is %v, execution delayed for %v Seconds", time.Now().Format("15:04:05.000000"), delay)
 
 	return &port.ResiliencyResponse{
 		StatusCode: pick,
@@ -90,7 +90,7 @@ func (r *ResiliencyService) BidirectionalResiliencyStream(req *port.ResiliencyRe
 
 func delay(maxDelaySecond, minDelaySecond int32) int {
 	n := rand.Intn(int(maxDelaySecond-minDelaySecond)+1) + int(minDelaySecond)
-	duration := time.Duration(n) * time.Millisecond
+	duration := time.Duration(n) * time.Second
 	time.Sleep(duration)
 	return n
 }
