@@ -8,6 +8,8 @@ import (
 	"log"
 	"time"
 
+	dresl "grpc-go-client/internal/application/domain/resiliency"
+
 	grpc_retry "github.com/grpc-ecosystem/go-grpc-middleware/retry"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -35,7 +37,7 @@ func main() {
 			grpc_retry.WithCodes(codes.Unknown, codes.Internal),
 			grpc_retry.WithMax(4),
 			grpc_retry.WithBackoff(
-				grpc_retry.BackoffLinear(4*time.Second),
+				grpc_retry.BackoffLinear(3*time.Second),
 			),
 		),
 	))
@@ -90,20 +92,21 @@ func main() {
 	// 	},
 	// })
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
+	// ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	// defer cancel()
+	ctx := context.Background()
 
-	runGetResiliency(ctx, resiliencyAdapter, &resiliency.ResiliencyRequest{
-		MaxDelaySecond: 5,
-		MinDelaySecond: 4,
-		StatusCodes:    []uint32{0},
-	})
-
-	// runGetResiliencyStream(resiliencyAdapter, &resiliency.ResiliencyRequest{
-	// 	MaxDelaySecond: 5000,
-	// 	MinDelaySecond: 4000,
-	// 	StatusCodes:    []uint32{0},
+	// runGetResiliency(ctx, resiliencyAdapter, &resiliency.ResiliencyRequest{
+	// 	MaxDelaySecond: 5,
+	// 	MinDelaySecond: 4,
+	// 	StatusCodes:    []uint32{dresl.StatusCode_Unknown, dresl.StatusCode_OK},
 	// })
+
+	runGetResiliencyStream(ctx, resiliencyAdapter, &resiliency.ResiliencyRequest{
+		MaxDelaySecond: 3,
+		MinDelaySecond: 0,
+		StatusCodes:    []uint32{dresl.StatusCode_OK},
+	})
 }
 
 func runSayHello(adapter *hello.HelloAdapter, name string) {

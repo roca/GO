@@ -7,7 +7,6 @@ import (
 	app "grpc-go-server/internal/application"
 	"log"
 	"os"
-	"time"
 
 	"github.com/roca/celeritas"
 )
@@ -32,7 +31,7 @@ func init() {
 
 func main() {
 	exit := make(chan bool)
-	exit2:= make(chan bool)
+	exit2 := make(chan bool)
 	defer func() {
 		exit <- true
 		fmt.Println("Finished InsertExchangeRatesAtInterval")
@@ -49,7 +48,7 @@ func main() {
 
 	grpcadapter := mygrpc.NewGrpcAdapter(hs, bs, rs, 9090)
 
-	go bs.InsertExchangeRatesAtInterval(exit, "USD", "IDR", 5*time.Second)
+	//go bs.InsertExchangeRatesAtInterval(exit, "USD", "IDR", 5*time.Second)
 
 	grpcadapter.Run()
 }
