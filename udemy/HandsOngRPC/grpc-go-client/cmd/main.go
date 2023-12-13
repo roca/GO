@@ -6,14 +6,10 @@ import (
 	"grpc-go-client/internal/adapter/hello"
 	"grpc-go-client/internal/adapter/resiliency"
 	"log"
-	"time"
 
 	dresl "grpc-go-client/internal/application/domain/resiliency"
 
-	grpc_retry "github.com/grpc-ecosystem/go-grpc-middleware/retry"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
 )
 
@@ -22,27 +18,27 @@ func main() {
 	log.SetOutput(logWriter{})
 
 	var opts []grpc.DialOption
-	opts = append(opts, grpc.WithUnaryInterceptor(
-		grpc_retry.UnaryClientInterceptor(
-			grpc_retry.WithCodes(codes.Unknown, codes.Internal),
-			grpc_retry.WithMax(4),
-			grpc_retry.WithBackoff(
-				grpc_retry.BackoffExponential(2*time.Second),
-			),
-		),
-	))
+	// opts = append(opts, grpc.WithUnaryInterceptor(
+	// 	grpc_retry.UnaryClientInterceptor(
+	// 		grpc_retry.WithCodes(codes.Unknown, codes.Internal),
+	// 		grpc_retry.WithMax(4),
+	// 		grpc_retry.WithBackoff(
+	// 			grpc_retry.BackoffExponential(2*time.Second),
+	// 		),
+	// 	),
+	// ))
 
-	opts = append(opts, grpc.WithStreamInterceptor(
-		grpc_retry.StreamClientInterceptor(
-			grpc_retry.WithCodes(codes.Unknown, codes.Internal),
-			grpc_retry.WithMax(4),
-			grpc_retry.WithBackoff(
-				grpc_retry.BackoffLinear(3*time.Second),
-			),
-		),
-	))
+	// opts = append(opts, grpc.WithStreamInterceptor(
+	// 	grpc_retry.StreamClientInterceptor(
+	// 		grpc_retry.WithCodes(codes.Unknown, codes.Internal),
+	// 		grpc_retry.WithMax(4),
+	// 		grpc_retry.WithBackoff(
+	// 			grpc_retry.BackoffLinear(3*time.Second),
+	// 		),
+	// 	),
+	// ))
 
-	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	// opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
 
 	conn, err := grpc.Dial("localhost:9090", opts...)
 	if err != nil {
