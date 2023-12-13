@@ -3,14 +3,21 @@ package grpc
 import (
 	"context"
 	"fmt"
+	"grpc-go-server/internal/application"
 	"grpc-go-server/internal/port"
 	"io"
 	"log"
 	pb "proto/protogen/go/resiliency"
+	"strings"
 )
 
 func (a *GrpcAdapter) GetResiliency(ctx context.Context, req *pb.ResiliencyRequest) (*pb.ResiliencyResponse, error) {
-	log.Println("GetResiliency")
+	status_codes_strings := []string{}
+	for _, v := range req.StatusCodes {
+		status_codes_strings = append(status_codes_strings, application.StatusCodeMap[v].String())
+	}
+	status_codes_string := strings.Join(status_codes_strings, ", ")
+	log.Println("Unary GetResiliency with status codes:[", status_codes_string, "] and delay:", req.MinDelaySecond, "-", req.MaxDelaySecond, "seconds")
 
 	resiliencyRequest := &port.ResiliencyRequest{
 		MaxDelaySecond: req.MaxDelaySecond,
@@ -35,6 +42,12 @@ func (a *GrpcAdapter) GetResiliencyStream(req *pb.ResiliencyRequest, stream pb.R
 		MinDelaySecond: req.MinDelaySecond,
 		StatusCodes:    req.StatusCodes,
 	}
+	status_codes_strings := []string{}
+	for _, v := range req.StatusCodes {
+		status_codes_strings = append(status_codes_strings, application.StatusCodeMap[v].String())
+	}
+	status_codes_string := strings.Join(status_codes_strings, ", ")
+	log.Println("Server stream GetResiliencyStream with status codes:[", status_codes_string, "] and delay:", req.MinDelaySecond, "-", req.MaxDelaySecond, "seconds")
 	for {
 		select {
 		case <-context.Done():
