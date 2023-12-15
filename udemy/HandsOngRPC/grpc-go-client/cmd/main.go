@@ -132,11 +132,14 @@ func main() {
 	// 	StatusCodes:    []uint32{dresl.StatusCode_OK},
 	// })
 
-	runGetResiliencyWithCiruitBreaker(ctx, resiliencyAdapter, &resiliency.ResiliencyRequest{
-		MaxDelaySecond: 10,
-		MinDelaySecond: 8,
-		StatusCodes:    []uint32{dresl.StatusCode_OK},
-	})
+	for i := 0; i < 300; i++ {
+		runGetResiliencyWithCiruitBreaker(ctx, resiliencyAdapter, &resiliency.ResiliencyRequest{
+			MaxDelaySecond: 0,
+			MinDelaySecond: 0,
+			StatusCodes:    []uint32{dresl.StatusCode_Unknown, dresl.StatusCode_OK},
+		})
+		time.Sleep(time.Second)
+	}
 }
 
 func runSayHello(adapter *hello.HelloAdapter, name string) {
@@ -218,13 +221,13 @@ func runGetResiliencyWithCiruitBreaker(ctx context.Context, adapter *resiliency.
 	cbreakerRes, cbreakerErr := cb.Execute(func() (interface{}, error) {
 		return adapter.GetResiliency(ctx, resiliencyRequest)
 	})
-	//resp, err := adapter.GetResiliency(ctx, resiliencyRequest)
 	if cbreakerErr != nil {
 		s := status.Convert(cbreakerErr)
-		log.Fatalln("Can not invoke GetResiliency on the ResiliencyAdapter:", "\nCode:", s.Code(), "\nMessage:", s.Message(), "\nDetails:", s.Details())
+		log.Println("Can not invoke GetResiliency on the ResiliencyAdapter:", "\nCode:", s.Code(), "\nMessage:", s.Message(), "\nDetails:", s.Details())
+		return
 	}
 	if s, ok := cbreakerRes.(*resiliency.ResiliencyResponse); ok {
-		log.Println(s)
+		log.Println(s.Response)
 	} else {
 		log.Println(string(cbreakerRes.([]byte)))
 	}
