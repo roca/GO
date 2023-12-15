@@ -6,12 +6,40 @@ import (
 	"grpc-go-client/internal/adapter/hello"
 	"grpc-go-client/internal/adapter/resiliency"
 	"log"
+	"time"
 
 	dresl "grpc-go-client/internal/application/domain/resiliency"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
+
+	"github.com/sony/gobreaker"
+	breaker "github.com/sony/gobreaker"
 )
+
+var cb *breaker.CircuitBreaker
+
+func init() {
+	var st breaker.Settings
+	st.Name = "Unary GetResiliency"
+	st.ReadyToTrip = func(counts gobreaker.Counts) bool {
+		counts.TotalFailures = 6
+		counts.Requests = 10
+		failureRatio := float64(counts.TotalFailures) / float64(counts.Requests)
+		log.Printf("Circuit breaker failure is %v, requests is %v, means failure ratio : %v\n",
+			counts.TotalFailures, counts.Requests, failureRatio)
+		return counts.Requests >= 3 && failureRatio >= 0.6
+	}
+
+	st.Timeout = 4 * time.Second
+	st.MaxRequests = 3
+	st.OnStateChange = func(name string, from gobreaker.State, to gobreaker.State) {
+		log.Printf("Circuit breaker state changed from %v to %v\n", from, to)
+	}
+
+	cb = breaker.NewCircuitBreaker(st)
+}
 
 func main() {
 	log.SetFlags(0)
@@ -38,7 +66,7 @@ func main() {
 	// 	),
 	// ))
 
-	// opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
 
 	conn, err := grpc.Dial("localhost:9090", opts...)
 	if err != nil {
@@ -93,14 +121,20 @@ func main() {
 	ctx := context.Background()
 
 	// runGetResiliency(ctx, resiliencyAdapter, &resiliency.ResiliencyRequest{
-	// 	MaxDelaySecond: 5,
-	// 	MinDelaySecond: 4,
-	// 	StatusCodes:    []uint32{dresl.StatusCode_Unknown, dresl.StatusCode_OK},
+	// 	MaxDelaySecond: 10,
+	// 	MinDelaySecond: 8,
+	// 	StatusCodes:    []uint32{dresl.StatusCode_OK},
 	// })
 
-	runGetResiliencyStream(ctx, resiliencyAdapter, &resiliency.ResiliencyRequest{
-		MaxDelaySecond: 3,
-		MinDelaySecond: 0,
+	// runGetResiliencyStream(ctx, resiliencyAdapter, &resiliency.ResiliencyRequest{
+	// 	MaxDelaySecond: 3,
+	// 	MinDelaySecond: 0,
+	// 	StatusCodes:    []uint32{dresl.StatusCode_OK},
+	// })
+
+	runGetResiliencyWithCiruitBreaker(ctx, resiliencyAdapter, &resiliency.ResiliencyRequest{
+		MaxDelaySecond: 10,
+		MinDelaySecond: 8,
 		StatusCodes:    []uint32{dresl.StatusCode_OK},
 	})
 }
@@ -178,6 +212,22 @@ func runGetResiliency(ctx context.Context, adapter *resiliency.ResiliencyAdapter
 		log.Fatalln("Can not invoke GetResiliency on the ResiliencyAdapter:", "\nCode:", s.Code(), "\nMessage:", s.Message(), "\nDetails:", s.Details())
 	}
 	log.Println(resp)
+}
+
+func runGetResiliencyWithCiruitBreaker(ctx context.Context, adapter *resiliency.ResiliencyAdapter, resiliencyRequest *resiliency.ResiliencyRequest) {
+	cbreakerRes, cbreakerErr := cb.Execute(func() (interface{}, error) {
+		return adapter.GetResiliency(ctx, resiliencyRequest)
+	})
+	//resp, err := adapter.GetResiliency(ctx, resiliencyRequest)
+	if cbreakerErr != nil {
+		s := status.Convert(cbreakerErr)
+		log.Fatalln("Can not invoke GetResiliency on the ResiliencyAdapter:", "\nCode:", s.Code(), "\nMessage:", s.Message(), "\nDetails:", s.Details())
+	}
+	if s, ok := cbreakerRes.(*resiliency.ResiliencyResponse); ok {
+		log.Println(s)
+	} else {
+		log.Println(string(cbreakerRes.([]byte)))
+	}
 }
 
 func runGetResiliencyStream(ctx context.Context, adapter *resiliency.ResiliencyAdapter, resiliencyRequest *resiliency.ResiliencyRequest) {
