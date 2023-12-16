@@ -28,17 +28,24 @@ func ExtractMetadata(ctx context.Context) metadata.MD {
 	}
 	log.Println("Unary GetResiliency received no metadata")
 
-	// Add some additional default metadata
-	extractedMetadata["grpc-server-time"] = []string{fmt.Sprint(time.Now().Format("15:04:05.000000"))}
-	extractedMetadata["grpc-server-url"] = []string{"localhost:9090"}
-	extractedMetadata["grpc-response-uuid"] = []string{uuid.New().String()}
-
 	return extractedMetadata
+}
+func SendMetadata(ctx context.Context) error {
+	metadata := ExtractMetadata(ctx)
+	// Add some additional default metadata
+	metadata["grpc-server-time"] = []string{fmt.Sprint(time.Now().Format("15:04:05.000000"))}
+	metadata["grpc-server-url"] = []string{"localhost:9090"}
+	metadata["grpc-response-uuid"] = []string{uuid.New().String()}
+
+	if err := grpc.SendHeader(ctx, metadata); err != nil {
+		log.Println("Error while sending response metadata : ", err)
+		return err
+	}
+	return nil
 }
 
 func (a *GrpcAdapter) GetResiliency(ctx context.Context, req *pb.ResiliencyRequest) (*pb.ResiliencyResponse, error) {
 	status_codes_strings := []string{}
-	responseMetadata := ExtractMetadata(ctx)
 
 	for _, v := range req.StatusCodes {
 		status_codes_strings = append(status_codes_strings, application.StatusCodeMap[v].String())
@@ -57,11 +64,9 @@ func (a *GrpcAdapter) GetResiliency(ctx context.Context, req *pb.ResiliencyReque
 		return nil, err
 	}
 
-	if responseMetadata != nil {
-		if err := grpc.SendHeader(ctx, responseMetadata); err != nil {
-			log.Println("Error while sending response metadata : ", err)
-			return nil, err
-		}
+	err = SendMetadata(ctx)
+	if err != nil {
+		return nil, err
 	}
 
 	return &pb.ResiliencyResponse{
@@ -71,7 +76,6 @@ func (a *GrpcAdapter) GetResiliency(ctx context.Context, req *pb.ResiliencyReque
 }
 func (a *GrpcAdapter) GetResiliencyStream(req *pb.ResiliencyRequest, stream pb.ResiliencyService_GetResiliencyStreamServer) error {
 	context := stream.Context()
-	responseMetadata := ExtractMetadata(context)
 	resiliencyRequest := &port.ResiliencyRequest{
 		MaxDelaySecond: req.MaxDelaySecond,
 		MinDelaySecond: req.MinDelaySecond,
@@ -83,12 +87,12 @@ func (a *GrpcAdapter) GetResiliencyStream(req *pb.ResiliencyRequest, stream pb.R
 	}
 	status_codes_string := strings.Join(status_codes_strings, ", ")
 	log.Println("Server stream GetResiliencyStream with status codes:[", status_codes_string, "] and delay:", req.MinDelaySecond, "-", req.MaxDelaySecond, "seconds")
-	if responseMetadata != nil {
-		if err := grpc.SendHeader(context, responseMetadata); err != nil {
-			log.Println("Error while sending response metadata : ", err)
-			return err
-		}
+
+	err := SendMetadata(context)
+	if err != nil {
+		return err
 	}
+
 	for {
 		select {
 		case <-context.Done():
@@ -109,18 +113,12 @@ func (a *GrpcAdapter) GetResiliencyStream(req *pb.ResiliencyRequest, stream pb.R
 }
 func (a *GrpcAdapter) SendResiliencyStream(stream pb.ResiliencyService_SendResiliencyStreamServer) error {
 	var resiliencyRequests []*port.ResiliencyRequest = nil
-	var responseMetadata metadata.MD = nil
 	for {
-		context := stream.Context()
 		req, err := stream.Recv()
 		if err == io.EOF {
-			if responseMetadata != nil {
-				if responseMetadata != nil {
-					if err := grpc.SendHeader(context, responseMetadata); err != nil {
-						log.Println("Error while sending response metadata : ", err)
-						return err
-					}
-				}
+			err := SendMetadata(stream.Context())
+			if err != nil {
+				return err
 			}
 			resp, err := a.ResiliencyService.SendResiliencyStream(resiliencyRequests)
 			if err != nil {
@@ -134,7 +132,6 @@ func (a *GrpcAdapter) SendResiliencyStream(stream pb.ResiliencyService_SendResil
 		if err != nil {
 			return err
 		}
-		responseMetadata = ExtractMetadata(context)
 		resiliencyRequests = append(resiliencyRequests, &port.ResiliencyRequest{
 			MaxDelaySecond: req.MaxDelaySecond,
 			MinDelaySecond: req.MinDelaySecond,
@@ -144,16 +141,10 @@ func (a *GrpcAdapter) SendResiliencyStream(stream pb.ResiliencyService_SendResil
 	}
 }
 func (a *GrpcAdapter) BidirectionalResiliencyStream(stream pb.ResiliencyService_BidirectionalResiliencyStreamServer) error {
-	var responseMetadata metadata.MD = nil
 	context := stream.Context()
-	responseMetadata = ExtractMetadata(context)
-	if responseMetadata != nil {
-		if responseMetadata != nil {
-			if err := grpc.SendHeader(context, responseMetadata); err != nil {
-				log.Println("Error while sending response metadata : ", err)
-				return err
-			}
-		}
+	err := SendMetadata(context)
+	if err != nil {
+		return err
 	}
 	for {
 		select {
