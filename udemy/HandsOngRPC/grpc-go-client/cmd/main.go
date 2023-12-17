@@ -120,17 +120,29 @@ func main() {
 	// defer cancel()
 	ctx := context.Background()
 
-	runGetResiliency(ctx, resiliencyAdapter, &resiliency.ResiliencyRequest{
-		MaxDelaySecond: 10,
-		MinDelaySecond: 8,
-		StatusCodes:    []uint32{dresl.StatusCode_OK},
-	})
-
-	// runGetResiliencyStream(ctx, resiliencyAdapter, &resiliency.ResiliencyRequest{
-	// 	MaxDelaySecond: 3,
+	// runGetResiliency(ctx, resiliencyAdapter, &resiliency.ResiliencyRequest{
+	// 	MaxDelaySecond: 2,
 	// 	MinDelaySecond: 0,
 	// 	StatusCodes:    []uint32{dresl.StatusCode_OK},
 	// })
+
+	// runGetResiliencyStream(ctx, resiliencyAdapter, &resiliency.ResiliencyRequest{
+	// 	MaxDelaySecond: 2,
+	// 	MinDelaySecond: 0,
+	// 	StatusCodes:    []uint32{dresl.StatusCode_OK},
+	// })
+
+	resquest := &resiliency.ResiliencyRequest{
+		MaxDelaySecond: 2,
+		MinDelaySecond: 0,
+		StatusCodes:    []uint32{dresl.StatusCode_OK},
+	}
+	resquests := []*resiliency.ResiliencyRequest{}
+	for i := 0; i < 5; i++ {
+		resquests = append(resquests, resquest)
+	}
+
+	runSendResiliencyStream(ctx, resiliencyAdapter, resquests)
 
 	// for i := 0; i < 300; i++ {
 	// 	runGetResiliencyWithCiruitBreaker(ctx, resiliencyAdapter, &resiliency.ResiliencyRequest{
