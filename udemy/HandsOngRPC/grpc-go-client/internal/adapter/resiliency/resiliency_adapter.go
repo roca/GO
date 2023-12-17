@@ -8,6 +8,7 @@ import (
 	pb "proto/protogen/go/resiliency"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
@@ -26,6 +27,10 @@ type ResiliencyResponse struct {
 	StatusCode uint32
 }
 
+var dummyMetadata = map[string]string{
+	"client_metadata": "some client metadata",
+}
+
 func NewResiliencyAdapter(conn *grpc.ClientConn) (*ResiliencyAdapter, error) {
 	client := pb.NewResiliencyServiceClient(conn)
 
@@ -35,14 +40,27 @@ func NewResiliencyAdapter(conn *grpc.ClientConn) (*ResiliencyAdapter, error) {
 }
 
 func (a *ResiliencyAdapter) GetResiliency(ctx context.Context, resiliencyRequest *ResiliencyRequest) (*ResiliencyResponse, error) {
+
+	requestMetadata := metadata.New(dummyMetadata)
+	ctx = metadata.NewOutgoingContext(ctx, requestMetadata)
+
+	var responseMetadata metadata.MD
 	req := &pb.ResiliencyRequest{
 		MaxDelaySecond: resiliencyRequest.MaxDelaySecond,
 		MinDelaySecond: resiliencyRequest.MinDelaySecond,
 		StatusCodes:    resiliencyRequest.StatusCodes,
 	}
-	resp, err := a.resiliencyClient.GetResiliency(ctx, req)
+	resp, err := a.resiliencyClient.GetResiliency(ctx, req, grpc.Header(&responseMetadata))
 	if err != nil {
 		return nil, err
+	}
+
+	if responseMetadata.Len() == 0 {
+		log.Println("Unary GetResiliency received no metadata")
+	} else {
+		for k, v := range responseMetadata {
+			log.Println("Unary GetResiliency received metadata:", k, ":", v)
+		}
 	}
 	return &ResiliencyResponse{
 		Response:   resp.Response,
@@ -56,8 +74,20 @@ func (a *ResiliencyAdapter) GetResiliencyStream(ctx context.Context, resiliencyR
 		MinDelaySecond: resiliencyRequest.MinDelaySecond,
 		StatusCodes:    resiliencyRequest.StatusCodes,
 	}
+	requestMetadata := metadata.New(dummyMetadata)
+	ctx = metadata.NewOutgoingContext(ctx, requestMetadata)
+
 
 	stream, err := a.resiliencyClient.GetResiliencyStream(ctx, req)
+	if responseMetadata, err := stream.Header(); err == nil {
+		if responseMetadata.Len() == 0 {
+			log.Println("Unary GetResiliency received no metadata")
+		} else {
+			for k, v := range responseMetadata {
+				log.Println("Unary GetResiliency received metadata:", k, ":", v)
+			}
+		}
+	}
 	if err != nil {
 		log.Println("Error on GetResiliencyStream:", err)
 		return err
@@ -79,6 +109,8 @@ func (a *ResiliencyAdapter) GetResiliencyStream(ctx context.Context, resiliencyR
 }
 
 func (a *ResiliencyAdapter) SendResiliencyStream(ctx context.Context, reqs []*ResiliencyRequest) (*ResiliencyResponse, error) {
+	requestMetadata := metadata.New(dummyMetadata)
+	ctx = metadata.NewOutgoingContext(ctx, requestMetadata)
 	stream, err := a.resiliencyClient.SendResiliencyStream(ctx)
 	if err != nil {
 		log.Println("Error getting stream on SummarizeTransactions:", err)
@@ -99,6 +131,15 @@ func (a *ResiliencyAdapter) SendResiliencyStream(ctx context.Context, reqs []*Re
 	}
 
 	resp, err := stream.CloseAndRecv()
+	if responseMetadata, err := stream.Header(); err == nil {
+		if responseMetadata.Len() == 0 {
+			log.Println("Unary GetResiliency received no metadata")
+		} else {
+			for k, v := range responseMetadata {
+				log.Println("Unary GetResiliency received metadata:", k, ":", v)
+			}
+		}
+	}
 	if err != nil {
 		log.Println("Error closing and receiving response on stream SayHelloToEveryone:", err)
 		return nil, err
