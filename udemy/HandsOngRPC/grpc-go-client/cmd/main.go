@@ -142,7 +142,8 @@ func main() {
 		resquests = append(resquests, resquest)
 	}
 
-	runSendResiliencyStream(ctx, resiliencyAdapter, resquests)
+	//runSendResiliencyStream(ctx, resiliencyAdapter, resquests)
+	runBidirectionalResiliencyStream(ctx, resiliencyAdapter, resquests)
 
 	// for i := 0; i < 300; i++ {
 	// 	runGetResiliencyWithCiruitBreaker(ctx, resiliencyAdapter, &resiliency.ResiliencyRequest{
