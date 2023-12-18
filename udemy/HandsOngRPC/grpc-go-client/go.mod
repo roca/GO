@@ -3,6 +3,7 @@ module grpc-go-client
 go 1.21.0
 
 require (
+	github.com/google/uuid v1.3.1
 	github.com/sony/gobreaker v0.5.0
 	google.golang.org/grpc v1.60.0
 	google.golang.org/protobuf v1.31.0
