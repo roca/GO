@@ -120,6 +120,18 @@ func main() {
 	// defer cancel()
 	ctx := context.Background()
 
+	// for i := 0; i < 300; i++ {
+	// 	runGetResiliencyWithCiruitBreaker(ctx, resiliencyAdapter, &resiliency.ResiliencyRequest{
+	// 		MaxDelaySecond: 0,
+	// 		MinDelaySecond: 0,
+	// 		StatusCodes:    []uint32{dresl.StatusCode_Unknown, dresl.StatusCode_OK},
+	// 	})
+	// 	time.Sleep(time.Second)
+	// }
+
+
+	// Metadata Examples
+
 	// runGetResiliency(ctx, resiliencyAdapter, &resiliency.ResiliencyRequest{
 	// 	MaxDelaySecond: 2,
 	// 	MinDelaySecond: 0,
@@ -142,17 +154,10 @@ func main() {
 		resquests = append(resquests, resquest)
 	}
 
-	//runSendResiliencyStream(ctx, resiliencyAdapter, resquests)
+	// runSendResiliencyStream(ctx, resiliencyAdapter, resquests)
 	runBidirectionalResiliencyStream(ctx, resiliencyAdapter, resquests)
 
-	// for i := 0; i < 300; i++ {
-	// 	runGetResiliencyWithCiruitBreaker(ctx, resiliencyAdapter, &resiliency.ResiliencyRequest{
-	// 		MaxDelaySecond: 0,
-	// 		MinDelaySecond: 0,
-	// 		StatusCodes:    []uint32{dresl.StatusCode_Unknown, dresl.StatusCode_OK},
-	// 	})
-	// 	time.Sleep(time.Second)
-	// }
+	
 }
 
 func runSayHello(adapter *hello.HelloAdapter, name string) {
