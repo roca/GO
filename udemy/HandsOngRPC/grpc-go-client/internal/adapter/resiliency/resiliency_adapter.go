@@ -46,6 +46,9 @@ func LogMetatada(md metadata.MD) {
 		}
 	}
 }
+func RequestMetadata() metadata.MD {
+	return metadata.New(dummyMetadata)
+}
 
 func NewResiliencyAdapter(conn *grpc.ClientConn) (*ResiliencyAdapter, error) {
 	client := pb.NewResiliencyServiceClient(conn)
@@ -57,21 +60,22 @@ func NewResiliencyAdapter(conn *grpc.ClientConn) (*ResiliencyAdapter, error) {
 
 func (a *ResiliencyAdapter) GetResiliency(ctx context.Context, resiliencyRequest *ResiliencyRequest) (*ResiliencyResponse, error) {
 
-	requestMetadata := metadata.New(dummyMetadata)
-	ctx = metadata.NewOutgoingContext(ctx, requestMetadata)
+	ctx = metadata.NewOutgoingContext(ctx, RequestMetadata())
 
-	var responseMetadata metadata.MD
 	req := &pb.ResiliencyRequest{
 		MaxDelaySecond: resiliencyRequest.MaxDelaySecond,
 		MinDelaySecond: resiliencyRequest.MinDelaySecond,
 		StatusCodes:    resiliencyRequest.StatusCodes,
 	}
+
+	var responseMetadata metadata.MD
 	resp, err := a.resiliencyClient.GetResiliency(ctx, req, grpc.Header(&responseMetadata))
 	if err != nil {
 		return nil, err
 	}
 
 	LogMetatada(responseMetadata)
+
 	return &ResiliencyResponse{
 		Response:   resp.Response,
 		StatusCode: resp.StatusCode,
@@ -79,19 +83,21 @@ func (a *ResiliencyAdapter) GetResiliency(ctx context.Context, resiliencyRequest
 }
 
 func (a *ResiliencyAdapter) GetResiliencyStream(ctx context.Context, resiliencyRequest *ResiliencyRequest) error {
+
+	ctx = metadata.NewOutgoingContext(ctx, RequestMetadata())
+
 	req := &pb.ResiliencyRequest{
 		MaxDelaySecond: resiliencyRequest.MaxDelaySecond,
 		MinDelaySecond: resiliencyRequest.MinDelaySecond,
 		StatusCodes:    resiliencyRequest.StatusCodes,
 	}
-	requestMetadata := metadata.New(dummyMetadata)
-	ctx = metadata.NewOutgoingContext(ctx, requestMetadata)
 
 	stream, err := a.resiliencyClient.GetResiliencyStream(ctx, req)
 	if err != nil {
 		log.Println("Error on GetResiliencyStream:", err)
 		return err
 	}
+
 	if responseMetadata, err := stream.Header(); err == nil {
 		LogMetatada(responseMetadata)
 	}
@@ -112,7 +118,7 @@ func (a *ResiliencyAdapter) GetResiliencyStream(ctx context.Context, resiliencyR
 }
 
 func (a *ResiliencyAdapter) SendResiliencyStream(ctx context.Context, reqs []*ResiliencyRequest) (*ResiliencyResponse, error) {
-	requestMetadata := metadata.New(dummyMetadata)
+	ctx = metadata.NewOutgoingContext(ctx, RequestMetadata())
 	stream, err := a.resiliencyClient.SendResiliencyStream(ctx)
 	if err != nil {
 		log.Println("Error getting stream on SummarizeTransactions:", err)
@@ -120,7 +126,6 @@ func (a *ResiliencyAdapter) SendResiliencyStream(ctx context.Context, reqs []*Re
 	}
 
 	for _, req := range reqs {
-		ctx = metadata.NewOutgoingContext(ctx, requestMetadata)
 		err := stream.Send(&pb.ResiliencyRequest{
 			MaxDelaySecond: req.MaxDelaySecond,
 			MinDelaySecond: req.MinDelaySecond,
@@ -138,6 +143,7 @@ func (a *ResiliencyAdapter) SendResiliencyStream(ctx context.Context, reqs []*Re
 		log.Println("Error closing and receiving response on stream SayHelloToEveryone:", err)
 		return nil, err
 	}
+
 	if responseMetadata, err := stream.Header(); err == nil {
 		LogMetatada(responseMetadata)
 	}
@@ -149,7 +155,7 @@ func (a *ResiliencyAdapter) SendResiliencyStream(ctx context.Context, reqs []*Re
 }
 
 func (a *ResiliencyAdapter) BidirectionalResiliencyStream(ctx context.Context, reqs []*ResiliencyRequest) error {
-	requestMetadata := metadata.New(dummyMetadata)
+	ctx = metadata.NewOutgoingContext(ctx, RequestMetadata())
 	stream, err := a.resiliencyClient.BidirectionalResiliencyStream(ctx)
 	if err != nil {
 		log.Println("Error getting stream on BidirectionalResiliencyStream:", err)
@@ -161,7 +167,6 @@ func (a *ResiliencyAdapter) BidirectionalResiliencyStream(ctx context.Context, r
 	go func() {
 
 		for _, req := range reqs {
-			ctx = metadata.NewOutgoingContext(ctx, requestMetadata)
 			err := stream.Send(&pb.ResiliencyRequest{
 				MaxDelaySecond: req.MaxDelaySecond,
 				MinDelaySecond: req.MinDelaySecond,
@@ -188,7 +193,7 @@ func (a *ResiliencyAdapter) BidirectionalResiliencyStream(ctx context.Context, r
 		}
 		close(resiliencyChan)
 	}()
-	
+
 	if responseMetadata, err := stream.Header(); err == nil {
 		LogMetatada(responseMetadata)
 	}

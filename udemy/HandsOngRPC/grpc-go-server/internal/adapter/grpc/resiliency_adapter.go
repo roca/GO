@@ -35,7 +35,7 @@ func SendMetadata(ctx context.Context) error {
 	// Add some additional default metadata
 	metadata["grpc-server-time"] = []string{fmt.Sprint(time.Now().Format("15:04:05.000000"))}
 	metadata["grpc-server-url"] = []string{"localhost:9090"}
-	metadata["grpc-response-uuid"] = []string{uuid.New().String()}
+	metadata["grpc-server-uuid"] = []string{uuid.New().String()}
 
 	if err := grpc.SendHeader(ctx, metadata); err != nil {
 		log.Println("Error while sending response metadata : ", err)
