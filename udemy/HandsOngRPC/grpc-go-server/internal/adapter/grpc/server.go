@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"fmt"
+	"grpc-go-server/internal/interceptor"
 	"grpc-go-server/internal/port"
 	"log"
 	"net"
@@ -42,23 +43,23 @@ func (a *GrpcAdapter) Run() {
 
 	log.Printf("Server listening on port %d\n", a.grpcPort)
 
-	grpsServer := grpc.NewServer(
-	// grpc.ChainUnaryInterceptor(
-	// 	interceptor.LogUnaryServerInterceptor(),
-	// 	interceptor.BasicUnaryServerInterceptor(),
-	// ),
-	// grpc.ChainStreamInterceptor(
-	// 	interceptor.LogStreamServerInterceptor(),
-	// 	interceptor.BasicStreamServerInterceptor(),
-	// ),
+	grpcServer := grpc.NewServer(
+		grpc.ChainUnaryInterceptor(
+			interceptor.LogUnaryServerInterceptor(),
+			interceptor.BasicUnaryServerInterceptor(),
+		),
+		grpc.ChainStreamInterceptor(
+			interceptor.LogStreamServerInterceptor(),
+			interceptor.BasicStreamServerInterceptor(),
+		),
 	)
-	a.server = grpsServer
+	a.server = grpcServer
 
-	hello.RegisterHelloServiceServer(grpsServer, a)
-	bank.RegisterBankServiceServer(grpsServer, a)
-	resiliency.RegisterResiliencyServiceServer(grpsServer, a)
+	hello.RegisterHelloServiceServer(grpcServer, a)
+	bank.RegisterBankServiceServer(grpcServer, a)
+	resiliency.RegisterResiliencyServiceServer(grpcServer, a)
 
-	if err := grpsServer.Serve(listen); err != nil {
+	if err := grpcServer.Serve(listen); err != nil {
 		log.Fatalf("Failed to serve gRPC server over port %d : %v\n", a.grpcPort, err)
 	}
 }
