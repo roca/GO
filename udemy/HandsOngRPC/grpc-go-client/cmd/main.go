@@ -8,8 +8,6 @@ import (
 	"log"
 	"time"
 
-	dresl "grpc-go-client/internal/application/domain/resiliency"
-
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
@@ -66,6 +64,9 @@ func main() {
 	// 	),
 	// ))
 
+	// TODO:
+	// Custom Unary/Stream interceptors go here
+
 	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
 
 	conn, err := grpc.Dial("localhost:9090", opts...)
@@ -74,22 +75,22 @@ func main() {
 	}
 	defer conn.Close()
 
-	// helloAdapter, err := hello.NewHelloAdapter(conn)
-	// if err != nil {
-	// 	log.Fatalln("Can not create HelloAdapter:", err)
-	// }
+	helloAdapter, err := hello.NewHelloAdapter(conn)
+	if err != nil {
+		log.Fatalln("Can not create HelloAdapter:", err)
+	}
 
 	// bankAdapter, err := bank.NewBankAdapter(conn)
 	// if err != nil {
 	// 	log.Fatalln("Can not create HelloAdapter:", err)
 	// }
 
-	resiliencyAdapter, err := resiliency.NewResiliencyAdapter(conn)
-	if err != nil {
-		log.Fatalln("Can not create ResiliencyAdapter:", err)
-	}
+	// resiliencyAdapter, err := resiliency.NewResiliencyAdapter(conn)
+	// if err != nil {
+	// 	log.Fatalln("Can not create ResiliencyAdapter:", err)
+	// }
 
-	// runSayHello(helloAdapter, "Bruce Wayne")
+	runSayHello(helloAdapter, "Bruce Wayne")
 	// runSayManyHellos(helloAdapter, "Bruce Wayne")
 	// runSayHelloToEveryone(helloAdapter, []string{"Bruce Wayne", "Clark Kent", "Diana Prince"})
 	// runSayHelloContinuous(helloAdapter, []string{"Anna", "Bella", "Carol", "Diana", "Emma"})
@@ -118,7 +119,7 @@ func main() {
 
 	// ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	// defer cancel()
-	ctx := context.Background()
+	// ctx := context.Background()
 
 	// for i := 0; i < 300; i++ {
 	// 	runGetResiliencyWithCiruitBreaker(ctx, resiliencyAdapter, &resiliency.ResiliencyRequest{
@@ -128,7 +129,6 @@ func main() {
 	// 	})
 	// 	time.Sleep(time.Second)
 	// }
-
 
 	// Metadata Examples
 
@@ -144,20 +144,19 @@ func main() {
 	// 	StatusCodes:    []uint32{dresl.StatusCode_OK},
 	// })
 
-	resquest := &resiliency.ResiliencyRequest{
-		MaxDelaySecond: 2,
-		MinDelaySecond: 0,
-		StatusCodes:    []uint32{dresl.StatusCode_OK},
-	}
-	resquests := []*resiliency.ResiliencyRequest{}
-	for i := 0; i < 5; i++ {
-		resquests = append(resquests, resquest)
-	}
+	// resquest := &resiliency.ResiliencyRequest{
+	// 	MaxDelaySecond: 2,
+	// 	MinDelaySecond: 0,
+	// 	StatusCodes:    []uint32{dresl.StatusCode_OK},
+	// }
+	// resquests := []*resiliency.ResiliencyRequest{}
+	// for i := 0; i < 5; i++ {
+	// 	resquests = append(resquests, resquest)
+	// }
 
 	// runSendResiliencyStream(ctx, resiliencyAdapter, resquests)
-	runBidirectionalResiliencyStream(ctx, resiliencyAdapter, resquests)
+	// runBidirectionalResiliencyStream(ctx, resiliencyAdapter, resquests)
 
-	
 }
 
 func runSayHello(adapter *hello.HelloAdapter, name string) {

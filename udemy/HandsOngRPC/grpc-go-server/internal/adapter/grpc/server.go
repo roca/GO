@@ -42,7 +42,16 @@ func (a *GrpcAdapter) Run() {
 
 	log.Printf("Server listening on port %d\n", a.grpcPort)
 
-	grpsServer := grpc.NewServer()
+	grpsServer := grpc.NewServer(
+	// grpc.ChainUnaryInterceptor(
+	// 	interceptor.LogUnaryServerInterceptor(),
+	// 	interceptor.BasicUnaryServerInterceptor(),
+	// ),
+	// grpc.ChainStreamInterceptor(
+	// 	interceptor.LogStreamServerInterceptor(),
+	// 	interceptor.BasicStreamServerInterceptor(),
+	// ),
+	)
 	a.server = grpsServer
 
 	hello.RegisterHelloServiceServer(grpsServer, a)
