@@ -2,7 +2,6 @@ package grpc
 
 import (
 	"fmt"
-	"grpc-go-server/internal/interceptor"
 	"grpc-go-server/internal/port"
 	"log"
 	"net"
@@ -44,14 +43,14 @@ func (a *GrpcAdapter) Run() {
 	log.Printf("Server listening on port %d\n", a.grpcPort)
 
 	grpcServer := grpc.NewServer(
-		grpc.ChainUnaryInterceptor(
-			interceptor.LogUnaryServerInterceptor(),
-			interceptor.BasicUnaryServerInterceptor(),
-		),
-		grpc.ChainStreamInterceptor(
-			interceptor.LogStreamServerInterceptor(),
-			interceptor.BasicStreamServerInterceptor(),
-		),
+	// grpc.ChainUnaryInterceptor(
+	// 	interceptor.LogUnaryServerInterceptor(),
+	// 	interceptor.BasicUnaryServerInterceptor(),
+	// ),
+	// grpc.ChainStreamInterceptor(
+	// 	interceptor.LogStreamServerInterceptor(),
+	// 	interceptor.BasicStreamServerInterceptor(),
+	// ),
 	)
 	a.server = grpcServer
 
