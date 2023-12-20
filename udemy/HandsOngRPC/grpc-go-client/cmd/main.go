@@ -5,12 +5,15 @@ import (
 	"grpc-go-client/internal/adapter/bank"
 	"grpc-go-client/internal/adapter/hello"
 	"grpc-go-client/internal/adapter/resiliency"
+	"grpc-go-client/internal/interceptor"
 	"log"
 	"time"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
+
+	dresl "grpc-go-client/internal/application/domain/resiliency"
 
 	"github.com/sony/gobreaker"
 	breaker "github.com/sony/gobreaker"
@@ -66,6 +69,21 @@ func main() {
 
 	// TODO:
 	// Custom Unary/Stream interceptors go here
+	//
+	opts = append(opts,
+		grpc.WithChainUnaryInterceptor(
+			interceptor.LogUnaryClientInterceptor(),
+			interceptor.BasicUnaryClientInterceptor(),
+			interceptor.TimeoutUnaryClientInterceptor(5*time.Second),
+		),
+	)
+	opts = append(opts,
+		grpc.WithChainStreamInterceptor(
+			interceptor.LogStreamClientInterceptor(),
+			interceptor.BasicClientStreamInterceptor(),
+			interceptor.TimeoutStreamClientInterceptor(15*time.Second),
+		),
+	)
 
 	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
 
@@ -75,22 +93,22 @@ func main() {
 	}
 	defer conn.Close()
 
-	helloAdapter, err := hello.NewHelloAdapter(conn)
-	if err != nil {
-		log.Fatalln("Can not create HelloAdapter:", err)
-	}
+	// helloAdapter, err := hello.NewHelloAdapter(conn)
+	// if err != nil {
+	// 	log.Fatalln("Can not create HelloAdapter:", err)
+	// }
 
 	// bankAdapter, err := bank.NewBankAdapter(conn)
 	// if err != nil {
 	// 	log.Fatalln("Can not create HelloAdapter:", err)
 	// }
 
-	// resiliencyAdapter, err := resiliency.NewResiliencyAdapter(conn)
-	// if err != nil {
-	// 	log.Fatalln("Can not create ResiliencyAdapter:", err)
-	// }
+	resiliencyAdapter, err := resiliency.NewResiliencyAdapter(conn)
+	if err != nil {
+		log.Fatalln("Can not create ResiliencyAdapter:", err)
+	}
 
-	runSayHello(helloAdapter, "Bruce Wayne")
+	// runSayHello(helloAdapter, "Bruce Wayne")
 	// runSayManyHellos(helloAdapter, "Bruce Wayne")
 	// runSayHelloToEveryone(helloAdapter, []string{"Bruce Wayne", "Clark Kent", "Diana Prince"})
 	// runSayHelloContinuous(helloAdapter, []string{"Anna", "Bella", "Carol", "Diana", "Emma"})
@@ -119,7 +137,7 @@ func main() {
 
 	// ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	// defer cancel()
-	// ctx := context.Background()
+	ctx := context.Background()
 
 	// for i := 0; i < 300; i++ {
 	// 	runGetResiliencyWithCiruitBreaker(ctx, resiliencyAdapter, &resiliency.ResiliencyRequest{
@@ -133,16 +151,16 @@ func main() {
 	// Metadata Examples
 
 	// runGetResiliency(ctx, resiliencyAdapter, &resiliency.ResiliencyRequest{
-	// 	MaxDelaySecond: 2,
-	// 	MinDelaySecond: 0,
+	// 	MaxDelaySecond: 10,
+	// 	MinDelaySecond: 6,
 	// 	StatusCodes:    []uint32{dresl.StatusCode_OK},
 	// })
 
-	// runGetResiliencyStream(ctx, resiliencyAdapter, &resiliency.ResiliencyRequest{
-	// 	MaxDelaySecond: 2,
-	// 	MinDelaySecond: 0,
-	// 	StatusCodes:    []uint32{dresl.StatusCode_OK},
-	// })
+	runGetResiliencyStream(ctx, resiliencyAdapter, &resiliency.ResiliencyRequest{
+		MaxDelaySecond: 3,
+		MinDelaySecond: 1,
+		StatusCodes:    []uint32{dresl.StatusCode_OK},
+	})
 
 	// resquest := &resiliency.ResiliencyRequest{
 	// 	MaxDelaySecond: 2,
