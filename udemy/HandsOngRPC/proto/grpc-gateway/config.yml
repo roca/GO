@@ -1,0 +1,18 @@
+type: google.api.Service
+config_version: 3
+
+http:
+  rules:
+    - selector: bank.BankService.GetCurrentBalance
+      get: /bank/v1/account/current_balance
+    - selector: bank.BankService.FetchExchangeRates
+      get: /bank/v1/exchange_rates
+    - selector: bank.BankService.SummarizeTransactions
+      post: /bank/v1/transaction/summarize
+      body: "*"
+    - selector: bank.BankService.TransferMultiple
+      post: /bank/v1/transaction/transfer_multiple
+      body: "*"
+    - selector: bank.BankService.CreateAccount
+      post: /bank/v1/account
+      body: "*"
