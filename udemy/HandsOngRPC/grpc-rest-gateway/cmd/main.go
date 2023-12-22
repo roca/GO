@@ -1,7 +1,16 @@
 package main
 
-import "fmt"
+import (
+	"flag"
+
+	"github.com/golang/glog"
+)
 
 func main() {
-	fmt.Println("grpc-rest-gateway")
+	flag.Parse()
+	defer glog.Flush()
+
+	if err := run(); err != nil {
+		glog.Fatal(err)
+	}
 }
