@@ -2,20 +2,41 @@ syntax = "proto3";
 
 package resiliency;
 
+import "proto/protoc-gen-openapiv2/options/annotations.proto";
 import "resiliency/type/resiliency.proto";
 
 option go_package = "protogen/go/resiliency";
 
 service ResiliencyService {
-  rpc GetResiliency(ResiliencyRequest) returns (ResiliencyResponse);
+  rpc GetResiliency(ResiliencyRequest) returns (ResiliencyResponse) {
+    option (google.api.http) = {
+      post: "/api/resiliency/v1/metadata/unary"
+      body: "*"
+    };
+  };
 
   rpc GetResiliencyStream(ResiliencyRequest) 
-  returns (stream ResiliencyResponse);
+  returns (stream ResiliencyResponse) {
+    option (google.api.http) = {
+      post: "/api/resiliency/v1/metadata/server_streaming"
+      body: "*"
+    };
+  };
 
   rpc SendResiliencyStream(stream ResiliencyRequest)
-  returns (ResiliencyResponse);
+  returns (ResiliencyResponse) {
+    option (google.api.http) = {
+      post: "/api/resiliency/v1/metadata/client_streaming"
+      body: "*"
+    };
+  };
 
   rpc BidirectionalResiliencyStream(stream ResiliencyRequest)
-  returns (stream ResiliencyResponse);
+  returns (stream ResiliencyResponse){
+    option (google.api.http) = {
+      post: "/api/resiliency/v1/metadata/bidirectional_streaming"
+      body: "*"
+    };
+  };
 
 }
