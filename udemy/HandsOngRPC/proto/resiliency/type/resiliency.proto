@@ -2,15 +2,59 @@ syntax = "proto3";
 
 package resiliency;
 
+import "proto/protoc-gen-openapiv2/options/annotations.proto";
+
 option go_package = "protogen/go/resiliency";
 
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    title: "Resiliency Service";
+    version: "1.0.0";
+  }
+  host: "localhost:8081";
+  schemes: HTTP;
+  produces: "application/json";
+};
+
 message ResiliencyRequest {
-  int32 min_delay_second = 1 [json_name = "min_delay_second"];
-  int32 max_delay_second = 2 [json_name = "max_delay_second"];
-  repeated uint32 status_codes = 3 [json_name = "status_codes"];
+  int32 min_delay_second = 1 
+  [
+    json_name = "min_delay_second",
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      description: "Minimum delay in seconds",
+      example: 1
+    }
+  ];
+  int32 max_delay_second = 2 [
+    json_name = "max_delay_second",
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      description: "Maximum delay in seconds",
+      example: 1
+    }
+  ];
+  repeated uint32 status_codes = 3 [
+    json_name = "status_codes",
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      description: "Status codes to return",
+      example: 200
+    }
+  ];
 }
 
 message ResiliencyResponse  {
-  string response = 1;
-  uint32 status_code = 2 [json_name = "status_code"];
+  string response = 1
+  [
+    json_name = "response",
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      description: "Response",
+      example: "Hello World"
+    }
+  ];
+  uint32 status_code = 2 [
+    json_name = "status_code",
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      description: "Status code",
+      example: 200
+    }
+  ];
 }
