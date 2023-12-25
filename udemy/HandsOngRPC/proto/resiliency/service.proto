@@ -2,10 +2,22 @@ syntax = "proto3";
 
 package resiliency;
 
-import "proto/protoc-gen-openapiv2/options/annotations.proto";
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
 import "resiliency/type/resiliency.proto";
 
 option go_package = "protogen/go/resiliency";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    title: "Course - Protobuf & gRPC";
+    version: "1.0.0";
+  };
+  host: "localhost:8081";
+  schemes: HTTP;
+  produces: "application/json";
+};
 
 service ResiliencyService {
   rpc GetResiliency(ResiliencyRequest) returns (ResiliencyResponse) {
