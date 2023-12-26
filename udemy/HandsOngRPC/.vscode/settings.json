@@ -4,7 +4,9 @@
 			"--proto_path=${workspaceFolder}/project01",
 			"--proto_path=${workspaceFolder}/proto",
 			"--proto_path=${workspaceFolder}/grpc-go-server",
-			"--proto_path=${workspaceFolder}/grpc-go-client"
+			"--proto_path=${workspaceFolder}/grpc-go-client",
+			"--proto_path=${workspaceFolder}/proto/bank",
+			"--proto_path=${workspaceFolder}/proto/bank/type"
 		]
 	}
 }
