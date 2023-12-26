@@ -6,4 +6,5 @@ use (
 	./grpc-rest-gateway
 	./project01
 	./proto
+	./proto/protogen
 )

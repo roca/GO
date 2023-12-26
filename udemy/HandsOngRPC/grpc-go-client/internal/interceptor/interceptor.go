@@ -3,8 +3,8 @@ package interceptor
 import (
 	"context"
 	"log"
-	"proto/protogen/go/hello"
-	"proto/protogen/go/resiliency"
+	"protogen/go/hello"
+	"protogen/go/resiliency"
 	"time"
 
 	"google.golang.org/grpc"

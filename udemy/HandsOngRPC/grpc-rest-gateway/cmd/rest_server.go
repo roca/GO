@@ -4,9 +4,9 @@ import (
 	"context"
 	"flag"
 	"net/http"
-	"proto/protogen/gateway/go/bank"
-	"proto/protogen/gateway/go/hello"
-	"proto/protogen/gateway/go/resiliency"
+	"protogen/gateway/go/bank"
+	"protogen/gateway/go/hello"
+	"protogen/gateway/go/resiliency"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"

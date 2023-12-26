@@ -4,7 +4,7 @@ import (
 	"grpc-go-server/data"
 	"time"
 
-	pb "proto/protogen/go/bank"
+	pb "protogen/go/bank"
 
 	"github.com/google/uuid"
 )
@@ -68,13 +68,13 @@ type BankServicePort interface {
 type ResiliencyRequest struct {
 	MaxDelaySecond int32
 	MinDelaySecond int32
-	StatusCodes     []uint32
+	StatusCodes    []uint32
 }
 
 type ResiliencyResponse struct {
-	Response string
+	Response   string
 	StatusCode uint32
-	Error    error
+	Error      error
 }
 
 type ResiliencyServicePort interface {

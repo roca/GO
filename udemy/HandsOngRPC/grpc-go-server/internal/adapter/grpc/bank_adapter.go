@@ -7,7 +7,7 @@ import (
 	"grpc-go-server/internal/port"
 	"io"
 	"log"
-	pb "proto/protogen/go/bank"
+	pb "protogen/go/bank"
 	"time"
 
 	"google.golang.org/genproto/googleapis/rpc/errdetails"

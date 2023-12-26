@@ -9,7 +9,7 @@ import (
 	"math/rand"
 	"time"
 
-	pb "proto/protogen/go/bank"
+	pb "protogen/go/bank"
 
 	"github.com/google/uuid"
 	up "github.com/upper/db/v4"

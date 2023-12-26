@@ -12,7 +12,7 @@ import (
 	"context"
 	"io"
 	"net/http"
-	extHello "proto/protogen/go/hello"
+	extHello "protogen/go/hello"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/utilities"
