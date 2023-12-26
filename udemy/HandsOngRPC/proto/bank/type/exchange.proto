@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package bank;
 
-option go_package = "proto/protogen/go/bank";
+option go_package = "protogen/go/bank";
 
 message ExchangeRateRequest {
   string from_currency = 1 [json_name = "from_currency" ];
