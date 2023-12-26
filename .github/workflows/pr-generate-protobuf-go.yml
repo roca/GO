@@ -43,7 +43,7 @@ jobs:
           cd udemy/HandsOngRPC/proto
           rm -fR  protogen
           mkdir protogen
-          cd udemy/HandsOngRPC/proto/protogen
+          cd protogen
           go mod init protogen
           ls -lah
       - name: Generate Protobuf Go
