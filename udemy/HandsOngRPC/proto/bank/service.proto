@@ -7,7 +7,7 @@ import "bank/type/exchange.proto";
 import "bank/type/transaction.proto";
 import "bank/type/transfer.proto";
 
-option go_package = "protogen/go/bank";
+option go_package = "proto/protogen/go/bank";
 
 service BankService {
   rpc GetCurrentBalance (CurrentBalanceRequest) returns 
