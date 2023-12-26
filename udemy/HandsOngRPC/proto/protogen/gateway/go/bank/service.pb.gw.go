@@ -12,7 +12,7 @@ import (
 	"context"
 	"io"
 	"net/http"
-	extBank "protogen/go/bank"
+	extBank "proto/protogen/go/bank"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/utilities"
