@@ -41,7 +41,7 @@ jobs:
       - name: Clean out old generated protogen folder
         run: |
           cd udemy/HandsOngRPC/proto
-          rm -rf protogen
+          rm -fR  protogen
           mkdir protogen
           cd udemy/HandsOngRPC/proto/protogen
           go mod init protogen
