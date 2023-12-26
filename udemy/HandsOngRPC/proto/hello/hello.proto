@@ -3,7 +3,6 @@ syntax = "proto3";
 package hello;
 option go_package = "protogen/go/hello";
 
-
 message HelloRequest {
   string name = 1;
   uint32 age = 10;
