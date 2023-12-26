@@ -45,6 +45,7 @@ jobs:
           mkdir protogen
           cd protogen
           go mod init protogen
+          go mod edit -go=1.21.4
           ls -lah
       - name: Generate Protobuf Go
         run: |
