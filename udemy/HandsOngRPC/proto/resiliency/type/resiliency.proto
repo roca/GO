@@ -6,7 +6,7 @@ package resiliency;
 import "protoc-gen-openapiv2/options/annotations.proto";
 
 
-option go_package = "protogen/go/resiliency";
+option go_package = "proto/protogen/go/resiliency";
 
 message ResiliencyRequest {
   int32 min_delay_second = 1 

@@ -4,7 +4,7 @@ package bank;
 
 import "google/type/date.proto";
 
-option go_package = "protogen/go/bank";
+option go_package = "proto/protogen/go/bank";
 
 enum TransferStatusType {
   TRANSFER_STATUS_UNSPECIFIED = 0;
