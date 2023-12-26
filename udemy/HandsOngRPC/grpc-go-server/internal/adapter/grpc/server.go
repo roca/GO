@@ -5,9 +5,9 @@ import (
 	"grpc-go-server/internal/port"
 	"log"
 	"net"
-	"proto/protogen/go/bank"
-	"proto/protogen/go/hello"
-	"proto/protogen/go/resiliency"
+	"protogen/go/bank"
+	"protogen/go/hello"
+	"protogen/go/resiliency"
 
 	"google.golang.org/grpc"
 )

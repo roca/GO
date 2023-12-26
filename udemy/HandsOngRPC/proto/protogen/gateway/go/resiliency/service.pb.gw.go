@@ -12,7 +12,7 @@ import (
 	"context"
 	"io"
 	"net/http"
-	extResiliency "proto/protogen/go/resiliency"
+	extResiliency "protogen/go/resiliency"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/utilities"

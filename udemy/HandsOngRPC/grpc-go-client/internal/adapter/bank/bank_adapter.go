@@ -10,7 +10,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/status"
 
-	pb "proto/protogen/go/bank"
+	pb "protogen/go/bank"
 )
 
 type BankAdapter struct {

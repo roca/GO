@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
-	pb "proto/protogen/go/hello"
+	pb "protogen/go/hello"
 	"time"
 
 	"google.golang.org/grpc/credentials/insecure"

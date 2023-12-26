@@ -6,7 +6,7 @@ import (
 	"grpc-go-client/internal/port"
 	"io"
 	"log"
-	pb "proto/protogen/go/resiliency"
+	pb "protogen/go/resiliency"
 	"runtime"
 	"time"
 

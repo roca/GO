@@ -5,7 +5,7 @@ import (
 
 	"google.golang.org/grpc"
 
-	pb "proto/protogen/go/hello"
+	pb "protogen/go/hello"
 )
 
 type HelloClientPort interface {

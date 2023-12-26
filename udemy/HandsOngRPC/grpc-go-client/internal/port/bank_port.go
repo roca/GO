@@ -5,7 +5,7 @@ import (
 
 	"google.golang.org/grpc"
 
-	pb "proto/protogen/go/bank"
+	pb "protogen/go/bank"
 )
 
 type BankClientPort interface {

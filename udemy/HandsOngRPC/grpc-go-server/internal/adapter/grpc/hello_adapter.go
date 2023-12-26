@@ -3,7 +3,7 @@ package grpc
 import (
 	"context"
 	"io"
-	pb "proto/protogen/go/hello"
+	pb "protogen/go/hello"
 	"time"
 )
 
