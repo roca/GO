@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"flag"
+	"log"
 	"net/http"
 	"protogen/gateway/go/bank"
 	"protogen/gateway/go/hello"
@@ -10,7 +11,7 @@ import (
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/credentials"
 )
 
 var (
@@ -27,17 +28,16 @@ func run() error {
 	// Register gRPC server endpoint
 	// Note: Make sure the gRPC server is running properly and accessible
 	mux := runtime.NewServeMux()
-	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
+	//opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
 
-	// var opts []grpc.DialOption
+	var opts []grpc.DialOption
 
-	// creds, err := credentials.NewClientTLSFromFile("ssl/ca.crt", "")
+	creds, err := credentials.NewClientTLSFromFile("ssl/ca.crt", "")
+	if err != nil {
+		log.Fatalln("Can't create client credentials :", err)
+	}
 
-	// if err != nil {
-	// 	log.Fatalln("Can't create client credentials :", err)
-	// }
-
-	// opts = append(opts, grpc.WithTransportCredentials(creds))
+	opts = append(opts, grpc.WithTransportCredentials(creds))
 
 	if err := hello.RegisterHelloServiceHandlerFromEndpoint(ctx, mux, *grpcServerEndpoint, opts); err != nil {
 		return err
