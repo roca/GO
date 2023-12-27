@@ -83,12 +83,13 @@ func main() {
 		),
 	)
 
-	creds, err := credentials.NewClientTLSFromFile("ssl/ca.crt", "localhost")
+	creds, err := credentials.NewClientTLSFromFile("ssl/ca.crt", "")
 	if err != nil {
 		log.Fatalf("Failed to generate credentials %v", err)
 	}
 
 	opts = append(opts, grpc.WithTransportCredentials(creds))
+	// opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
 
 	conn, err := grpc.Dial("localhost:9090", opts...)
 	if err != nil {
