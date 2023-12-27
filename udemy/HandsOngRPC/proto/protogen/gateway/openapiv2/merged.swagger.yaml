@@ -32,7 +32,7 @@ paths:
                 $ref: '#/definitions/rpcStatus'
             title: Stream result of resiliencyResiliencyResponse
         "400":
-          description: Samplen response, s4200 when ...
+          description: Samplen response, 400 when ...
           schema: {}
         default:
           description: An unexpected error response.
@@ -58,7 +58,7 @@ paths:
           schema:
             $ref: '#/definitions/resiliencyResiliencyResponse'
         "400":
-          description: Samplen response, s4200 when ...
+          description: Samplen response, 400 when ...
           schema: {}
         default:
           description: An unexpected error response.
@@ -90,7 +90,7 @@ paths:
                 $ref: '#/definitions/rpcStatus'
             title: Stream result of resiliencyResiliencyResponse
         "400":
-          description: Samplen response, s4200 when ...
+          description: Samplen response, 400 when ...
           schema: {}
         default:
           description: An unexpected error response.
