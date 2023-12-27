@@ -14,21 +14,22 @@ message ResiliencyRequest {
     json_name = "min_delay_second",
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
       description: "Minimum delay in seconds",
-      example: "1"
+      format: "integer",
+      example: "2"
     }
   ];
   int32 max_delay_second = 2 [
     json_name = "max_delay_second",
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
       description: "Maximum delay in seconds",
-      example: "1"
+      format: "integer",
+      example: "7"
     }
   ];
   repeated uint32 status_codes = 3 [
     json_name = "status_codes",
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      description: "Status codes to return",
-      example: "200"
+      description: "Status codes to return"
     }
   ];
 }
@@ -38,15 +39,13 @@ message ResiliencyResponse  {
   [
     json_name = "response",
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      description: "Response",
-      example: "200"
+      description: "Response"
     }
   ];
   uint32 status_code = 2 [
     json_name = "status_code",
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      description: "Status code",
-      example: "200"
+      description: "Status code"
     }
   ];
 }
