@@ -10,6 +10,7 @@ import (
 	"protogen/go/resiliency"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 )
 
 type GrpcAdapter struct {
@@ -42,7 +43,13 @@ func (a *GrpcAdapter) Run() {
 
 	log.Printf("Server listening on port %d\n", a.grpcPort)
 
+	creds, err := credentials.NewServerTLSFromFile("ssl/server.crt", "ssl/server.pem")
+	if err != nil {
+		log.Fatalf("Failed to generate credentials %v", err)
+	}
+
 	grpcServer := grpc.NewServer(
+		grpc.Creds(creds),
 	// grpc.ChainUnaryInterceptor(
 	// 	interceptor.LogUnaryServerInterceptor(),
 	// 	interceptor.BasicUnaryServerInterceptor(),

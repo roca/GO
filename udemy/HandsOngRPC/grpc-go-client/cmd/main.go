@@ -10,10 +10,8 @@ import (
 	"time"
 
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/status"
-
-	dresl "grpc-go-client/internal/application/domain/resiliency"
 
 	"github.com/sony/gobreaker"
 	breaker "github.com/sony/gobreaker"
@@ -85,7 +83,12 @@ func main() {
 		),
 	)
 
-	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	creds, err := credentials.NewClientTLSFromFile("ssl/ca.crt", "localhost")
+	if err != nil {
+		log.Fatalf("Failed to generate credentials %v", err)
+	}
+
+	opts = append(opts, grpc.WithTransportCredentials(creds))
 
 	conn, err := grpc.Dial("localhost:9090", opts...)
 	if err != nil {
@@ -93,22 +96,22 @@ func main() {
 	}
 	defer conn.Close()
 
-	// helloAdapter, err := hello.NewHelloAdapter(conn)
-	// if err != nil {
-	// 	log.Fatalln("Can not create HelloAdapter:", err)
-	// }
+	helloAdapter, err := hello.NewHelloAdapter(conn)
+	if err != nil {
+		log.Fatalln("Can not create HelloAdapter:", err)
+	}
 
 	// bankAdapter, err := bank.NewBankAdapter(conn)
 	// if err != nil {
 	// 	log.Fatalln("Can not create HelloAdapter:", err)
 	// }
 
-	resiliencyAdapter, err := resiliency.NewResiliencyAdapter(conn)
-	if err != nil {
-		log.Fatalln("Can not create ResiliencyAdapter:", err)
-	}
+	// resiliencyAdapter, err := resiliency.NewResiliencyAdapter(conn)
+	// if err != nil {
+	// 	log.Fatalln("Can not create ResiliencyAdapter:", err)
+	// }
 
-	// runSayHello(helloAdapter, "Bruce Wayne")
+	runSayHello(helloAdapter, "Bruce Wayne")
 	// runSayManyHellos(helloAdapter, "Bruce Wayne")
 	// runSayHelloToEveryone(helloAdapter, []string{"Bruce Wayne", "Clark Kent", "Diana Prince"})
 	// runSayHelloContinuous(helloAdapter, []string{"Anna", "Bella", "Carol", "Diana", "Emma"})
@@ -137,7 +140,7 @@ func main() {
 
 	// ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	// defer cancel()
-	ctx := context.Background()
+	// ctx := context.Background()
 
 	// for i := 0; i < 300; i++ {
 	// 	runGetResiliencyWithCiruitBreaker(ctx, resiliencyAdapter, &resiliency.ResiliencyRequest{
@@ -156,11 +159,11 @@ func main() {
 	// 	StatusCodes:    []uint32{dresl.StatusCode_OK},
 	// })
 
-	runGetResiliencyStream(ctx, resiliencyAdapter, &resiliency.ResiliencyRequest{
-		MaxDelaySecond: 3,
-		MinDelaySecond: 1,
-		StatusCodes:    []uint32{dresl.StatusCode_OK},
-	})
+	// runGetResiliencyStream(ctx, resiliencyAdapter, &resiliency.ResiliencyRequest{
+	// 	MaxDelaySecond: 3,
+	// 	MinDelaySecond: 1,
+	// 	StatusCodes:    []uint32{dresl.StatusCode_OK},
+	// })
 
 	// resquest := &resiliency.ResiliencyRequest{
 	// 	MaxDelaySecond: 2,
