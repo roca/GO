@@ -47,7 +47,7 @@ service ResiliencyService {
       responses: {
         key: "400",
         value: {
-          description: "Samplen response, s4200 when ..."
+          description: "Samplen response, 400 when ..."
         }
       } 
     };
@@ -71,7 +71,7 @@ service ResiliencyService {
       responses: {
         key: "400",
         value: {
-          description: "Samplen response, s4200 when ..."
+          description: "Samplen response, 400 when ..."
         }
       } 
     };
@@ -95,7 +95,7 @@ service ResiliencyService {
       responses: {
         key: "400",
         value: {
-          description: "Samplen response, s4200 when ..."
+          description: "Samplen response, 400 when ..."
         }
       } 
     };
