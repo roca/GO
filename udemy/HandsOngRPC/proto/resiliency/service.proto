@@ -20,9 +20,11 @@ option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
 };
 
 service ResiliencyService {
+  // This comment will be generated as OpenAPI summary
+  // for the GetResiliency method.
   rpc GetResiliency(ResiliencyRequest) returns (ResiliencyResponse) {
     option (google.api.http) = {
-      post: "/api/resiliency/v1/metadata/unary"
+      post: "/api/resiliency/v1/metadata/unary",
       body: "*"
     };
   };
@@ -30,24 +32,72 @@ service ResiliencyService {
   rpc GetResiliencyStream(ResiliencyRequest) 
   returns (stream ResiliencyResponse) {
     option (google.api.http) = {
-      post: "/api/resiliency/v1/metadata/server_streaming"
+      post: "/api/resiliency/v1/metadata/server_streaming",
       body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Summary for GetResiliencyStream",
+      description: "Description for GetResiliencyStream",
+      responses: {
+        key: "200",
+        value: {
+          description: "Samplen response, 200 when ..."
+        }
+      },
+      responses: {
+        key: "400",
+        value: {
+          description: "Samplen response, s4200 when ..."
+        }
+      } 
     };
   };
 
   rpc SendResiliencyStream(stream ResiliencyRequest)
   returns (ResiliencyResponse) {
     option (google.api.http) = {
-      post: "/api/resiliency/v1/metadata/client_streaming"
+      post: "/api/resiliency/v1/metadata/client_streaming",
       body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Summary for SendResiliencyStream",
+      description: "Description for SendResiliencyStream",
+      responses: {
+        key: "200",
+        value: {
+          description: "Samplen response, 200 when ..."
+        }
+      },
+      responses: {
+        key: "400",
+        value: {
+          description: "Samplen response, s4200 when ..."
+        }
+      } 
     };
   };
 
   rpc BidirectionalResiliencyStream(stream ResiliencyRequest)
   returns (stream ResiliencyResponse){
     option (google.api.http) = {
-      post: "/api/resiliency/v1/metadata/bidirectional_streaming"
+      post: "/api/resiliency/v1/metadata/bidirectional_streaming",
       body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Summary for BidirectionalResiliencyStrea",
+      description: "Description for BidirectionalResiliencyStrea",
+      responses: {
+        key: "200",
+        value: {
+          description: "Samplen response, 200 when ..."
+        }
+      },
+      responses: {
+        key: "400",
+        value: {
+          description: "Samplen response, s4200 when ..."
+        }
+      } 
     };
   };
 
