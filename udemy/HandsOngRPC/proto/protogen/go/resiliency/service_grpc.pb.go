@@ -29,6 +29,8 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ResiliencyServiceClient interface {
+	// This comment will be generated as OpenAPI summary
+	// for the GetResiliency method.
 	GetResiliency(ctx context.Context, in *ResiliencyRequest, opts ...grpc.CallOption) (*ResiliencyResponse, error)
 	GetResiliencyStream(ctx context.Context, in *ResiliencyRequest, opts ...grpc.CallOption) (ResiliencyService_GetResiliencyStreamClient, error)
 	SendResiliencyStream(ctx context.Context, opts ...grpc.CallOption) (ResiliencyService_SendResiliencyStreamClient, error)
@@ -153,6 +155,8 @@ func (x *resiliencyServiceBidirectionalResiliencyStreamClient) Recv() (*Resilien
 // All implementations must embed UnimplementedResiliencyServiceServer
 // for forward compatibility
 type ResiliencyServiceServer interface {
+	// This comment will be generated as OpenAPI summary
+	// for the GetResiliency method.
 	GetResiliency(context.Context, *ResiliencyRequest) (*ResiliencyResponse, error)
 	GetResiliencyStream(*ResiliencyRequest, ResiliencyService_GetResiliencyStreamServer) error
 	SendResiliencyStream(ResiliencyService_SendResiliencyStreamServer) error

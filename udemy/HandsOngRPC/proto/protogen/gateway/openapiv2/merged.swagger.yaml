@@ -17,10 +17,12 @@ produces:
 paths:
   /api/resiliency/v1/metadata/bidirectional_streaming:
     post:
+      summary: Summary for BidirectionalResiliencyStrea
+      description: Description for BidirectionalResiliencyStrea
       operationId: ResiliencyService_BidirectionalResiliencyStream
       responses:
         "200":
-          description: A successful response.(streaming responses)
+          description: Samplen response, 200 when ...
           schema:
             type: object
             properties:
@@ -29,6 +31,9 @@ paths:
               error:
                 $ref: '#/definitions/rpcStatus'
             title: Stream result of resiliencyResiliencyResponse
+        "400":
+          description: Samplen response, s4200 when ...
+          schema: {}
         default:
           description: An unexpected error response.
           schema:
@@ -44,12 +49,17 @@ paths:
         - ResiliencyService
   /api/resiliency/v1/metadata/client_streaming:
     post:
+      summary: Summary for SendResiliencyStream
+      description: Description for SendResiliencyStream
       operationId: ResiliencyService_SendResiliencyStream
       responses:
         "200":
-          description: A successful response.
+          description: Samplen response, 200 when ...
           schema:
             $ref: '#/definitions/resiliencyResiliencyResponse'
+        "400":
+          description: Samplen response, s4200 when ...
+          schema: {}
         default:
           description: An unexpected error response.
           schema:
@@ -65,10 +75,12 @@ paths:
         - ResiliencyService
   /api/resiliency/v1/metadata/server_streaming:
     post:
+      summary: Summary for GetResiliencyStream
+      description: Description for GetResiliencyStream
       operationId: ResiliencyService_GetResiliencyStream
       responses:
         "200":
-          description: A successful response.(streaming responses)
+          description: Samplen response, 200 when ...
           schema:
             type: object
             properties:
@@ -77,6 +89,9 @@ paths:
               error:
                 $ref: '#/definitions/rpcStatus'
             title: Stream result of resiliencyResiliencyResponse
+        "400":
+          description: Samplen response, s4200 when ...
+          schema: {}
         default:
           description: An unexpected error response.
           schema:
@@ -91,6 +106,9 @@ paths:
         - ResiliencyService
   /api/resiliency/v1/metadata/unary:
     post:
+      summary: |-
+        This comment will be generated as OpenAPI summary
+        for the GetResiliency method.
       operationId: ResiliencyService_GetResiliency
       responses:
         "200":
@@ -497,17 +515,16 @@ definitions:
     properties:
       min_delay_second:
         type: integer
-        format: int32
-        example: 1
+        format: integer
+        example: 2
         description: Minimum delay in seconds
       max_delay_second:
         type: integer
-        format: int32
-        example: 1
+        format: integer
+        example: 7
         description: Maximum delay in seconds
       status_codes:
         type: array
-        example: 200
         items:
           type: integer
           format: int64
@@ -517,12 +534,10 @@ definitions:
     properties:
       response:
         type: string
-        example: 200
         description: Response
       status_code:
         type: integer
         format: int64
-        example: 200
         description: Status code
   rpcStatus:
     type: object
