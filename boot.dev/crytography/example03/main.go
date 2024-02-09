@@ -7,7 +7,7 @@ import (
 )
 
 func keyToCipher(key string) (cipher.Block, error) {
-	return aes.NewCipher(key)
+	return aes.NewCipher([]byte(key))
 }
 
 // don't touch below this line
