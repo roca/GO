@@ -3,4 +3,5 @@ go 1.21.7
 use (
 	./example01
 	./example02
+	./example03
 )
