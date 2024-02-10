@@ -7,7 +7,10 @@ import (
 )
 
 func generateRandomKey(length int) (string, error) {
-	// ?
+	 bytes := make([]byte, length)
+
+	 _ = bytes
+	 return "", nil
 }
 
 // don't touch below this line
