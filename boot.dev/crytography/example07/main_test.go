@@ -13,6 +13,7 @@ func Test_getHexBytes(t *testing.T) {
 	}{
 		{"HexnHello", "48:65:6c:6c:6f", []byte("Hello")},
 		{"HexWorld", "57:6f:72:6c:64", []byte("World")},
+		{"HexPassword", "50:61:73:73:77:6f:72:64", []byte("Password")},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

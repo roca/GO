@@ -7,8 +7,7 @@ import (
 )
 
 func getHexBytes(s string) ([]byte, error) {
-	words := strings.Split(s, ":")
-	text := strings.Join(words, "")
+	text := strings.ReplaceAll(s, ":", "")
 
 	decoded, err := hex.DecodeString(text)
 	if err != nil {
