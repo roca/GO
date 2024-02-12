@@ -8,4 +8,5 @@ use (
 	./example05
 	./example06
 	./example07
+	./example08
 )
