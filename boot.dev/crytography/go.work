@@ -6,4 +6,6 @@ use (
 	./example03
 	./example04
 	./example05
+	./example06
+	./example07
 )
