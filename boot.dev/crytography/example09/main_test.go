@@ -2,7 +2,7 @@ package main
 
 import "testing"
 
-func Test_findKet(t *testing.T) {
+func Test_findKey(t *testing.T) {
 	tests := []struct {
 		name      string
 		encrypted []byte
