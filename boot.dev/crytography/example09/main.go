@@ -3,11 +3,20 @@ package main
 import (
 	"bytes"
 	"encoding/binary"
+	"errors"
 	"fmt"
+	"math"
 )
 
 func findKey(encrypted []byte, decrypted string) ([]byte, error) {
-	// ?
+	for i := 0; i < int(math.Pow(2.0, 24.0)); i++ {
+		key := intToBytes(i)
+		if string(crypt(encrypted, key)) == decrypted {
+			return key, nil
+		}
+	}
+
+	return nil, errors.New("key not found")
 }
 
 // don't touch below this line
