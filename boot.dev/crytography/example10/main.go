@@ -7,24 +7,38 @@ import (
 
 func encrypt(plaintext string, key int) string {
 	// ?
-	return ""
+	return crypt(plaintext, key)
 }
 
 func decrypt(ciphertext string, key int) string {
 	// ?
-	return ""
+	return crypt(ciphertext, -key)
 }
 
 func crypt(text string, key int) string {
-	// ?
-	return ""
+	var shifted string
+	for _, c := range text {
+		shifted += getOffsetChar(c, key)
+	}    
+	return shifted
 }
 
 func getOffsetChar(c rune, offset int) string {
 	const alphabet = "abcdefghijklmnopqrstuvwxyz"
-	// ?
+
 	i := strings.IndexRune(alphabet, c)
-	return string(alphabet[(i+offset)])
+	if i == -1 {
+		return ""
+	}
+	indx := i + offset
+	switch {
+	case indx < 0:
+		indx = len(alphabet) + indx
+	case indx >= len(alphabet):
+		indx = indx - len(alphabet)
+	}
+
+	return string(alphabet[indx])
 }
 
 // don't touch below this line
