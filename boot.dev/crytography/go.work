@@ -12,4 +12,5 @@ use (
 	./example09
 	./example10
 	./example11
+	./example12
 )
