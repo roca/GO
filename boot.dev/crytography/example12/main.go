@@ -5,11 +5,17 @@ import "fmt"
 func crypt(plaintext, key []byte) []byte {
 	var xor []byte
 	for i := range plaintext {
-		fmt.Println(plaintext[i], key[i], plaintext[i]^key[i])
 		xor = append(xor, plaintext[i]^key[i])
 	}
-	fmt.Println(xor)
 	return xor
+}
+
+func toString(bytes []byte) string {
+	s := ""
+	for _, v := range bytes {
+		s += fmt.Sprintf("%d", v)
+	}
+	return s
 }
 
 // don't touch below this line
@@ -26,6 +32,7 @@ func test(plaintext, key []byte) {
 	ciphertext := encrypt(plaintext, key)
 	fmt.Printf("Encrypting '%s' using key '%s'\n", string(plaintext), string(key))
 	fmt.Printf("Encrypted ciphertext bytes: %v\n", ciphertext)
+	fmt.Printf("Encrypted ciphertext string: %s\n", toString(ciphertext))
 	decrypted := decrypt(ciphertext, key)
 	fmt.Printf("Decrypted message: %v\n", string(decrypted))
 	fmt.Println("========")
