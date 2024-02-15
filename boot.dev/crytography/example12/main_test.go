@@ -1,11 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"testing"
 )
 
-func Test_crypto(t *testing.T) {
+func Test_crypt(t *testing.T) {
 	input := []byte("0110100001100101011011000110110001101111")
 	key := []byte("0111001101101010011001100111010101100100")
 	want := []byte("0001101100001111000010100001100100001011")
