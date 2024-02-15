@@ -15,6 +15,6 @@ func Test_crypto(t *testing.T) {
 		return
 	}
 	if string(got) != string(want) {
-		t.Errorf("\ndata:\t%v\nkey:\t%v\noutput:\t%v\nwant:\t%v\n", input, string(key), string(got), string(want))
+		t.Errorf("\ndata:\t%v\nkey:\t%v\noutput:\t%v\nwant:\t%v\n", string(input), string(key), string(got), string(want))
 	}
 }

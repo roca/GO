@@ -5,8 +5,10 @@ import "fmt"
 func crypt(plaintext, key []byte) []byte {
 	var xor []byte
 	for i := range plaintext {
+		fmt.Println(plaintext[i], key[i], plaintext[i]^key[i])
 		xor = append(xor, plaintext[i]^key[i])
 	}
+	fmt.Println(xor)
 	return xor
 }
 
