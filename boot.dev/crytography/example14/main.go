@@ -7,6 +7,7 @@ import (
 
 func crypt(textCh, keyCh <-chan byte, result chan<- byte) {
 	defer close(result)
+	i := 0
 	for {
 		textChar, textOk := <-textCh
 		if !textOk {
@@ -17,6 +18,8 @@ func crypt(textCh, keyCh <-chan byte, result chan<- byte) {
 			return
 		}
 		result <- textChar ^ keyChar
+		i++
+		fmt.Println("Crypted byte:", i)
 	}
 }
 

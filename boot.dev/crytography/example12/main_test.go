@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -22,4 +23,10 @@ func Test_crypt(t *testing.T) {
 	}
 }
 
-
+func toString(bytes []byte) string {
+	s := ""
+	for _, v := range bytes {
+		s += fmt.Sprintf("%d", v)
+	}
+	return s
+}
