@@ -7,17 +7,16 @@ import (
 
 func crypt(textCh, keyCh <-chan byte, result chan<- byte) {
 	defer close(result)
-
 	for {
-		text, t := <-textCh
-		if !t {
-			break
+		textChar, textOk := <-textCh
+		if !textOk {
+			return
 		}
-		key, k := <-keyCh
-		if !k {
-			break
+		keyChar, keyOk := <-keyCh
+		if !keyOk {
+			return
 		}
-		result <- text ^ key
+		result <- textChar ^ keyChar
 	}
 }
 
@@ -50,7 +49,6 @@ func encrypt(plaintext, key []byte) ([]byte, error) {
 
 	res := []byte{}
 	for v := range result {
-		fmt.Printf("Got encrypted byte: %08b\n", v)
 		res = append(res, v)
 	}
 	return res, nil
@@ -83,7 +81,6 @@ func decrypt(ciphertext, key []byte) ([]byte, error) {
 
 	res := []byte{}
 	for v := range result {
-		fmt.Printf("Got decrypted byte: %08b\n", v)
 		res = append(res, v)
 	}
 	return res, nil

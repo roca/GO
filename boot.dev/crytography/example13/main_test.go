@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"testing"
 )
 
@@ -13,7 +12,7 @@ func Test_crypt(t *testing.T) {
 
 	input := []byte("0110100001100101011011000110110001101111")
 	key := []byte("0111001101101010011001100111010101100100")
-	//want := []byte("0001101100001111000010100001100100001011")
+	want := []byte("0001101100001111000010100001100100001011")
 
 	go func() {
 		defer close(textCh)
@@ -33,16 +32,12 @@ func Test_crypt(t *testing.T) {
 
 	res := []byte{}
 	for v := range result {
-		//fmt.Printf("Got encrypted byte: %08b\n", v)
 		res = append(res, v)
-		if len(res) == len(input) {
-			break
-		}
 	}
-	//close(result)
-	
 
-	log.Println(toString(res))
+	if toString(res) != string(want) {
+		t.Errorf("crypt() = %s; want %s", toString(res), string(want))
+	}
 }
 
 func toString(bytes []byte) string {
