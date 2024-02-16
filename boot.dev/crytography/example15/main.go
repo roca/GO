@@ -24,7 +24,7 @@ func getBlockSize(keyLen, cipherType int) (int, error) {
 	case typeDES:
 		cipherBlock, err = des.NewCipher(bytes)
 	default:
-		return 0, errors.New("unknown cipher type")
+		return 0, errors.New("invalid cipher type")
 	}
 	if err != nil {
 		return 0, err
