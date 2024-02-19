@@ -9,8 +9,11 @@ func Test_sBox(t *testing.T) {
 		want    byte
 		wantErr bool
 	}{
-		{"0", 0, 0b00, false},
-		{"1", 1, 0b10, false},
+		{"0", 0b0000, 0b00, false},
+		{"1", 0b0001, 0b10, false},
+		{"15", 0b1111, 0b00, false},
+		{"6",0b0110, 0b11, false},
+		{"16", 0b10000, 0, true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
