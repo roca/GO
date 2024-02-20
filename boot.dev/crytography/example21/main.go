@@ -30,11 +30,14 @@ func sBox(b byte) (byte, error) {
 func main() {
 	for i := 0; i <= 16; i++ {
 		b := byte(i)
+		row := (b & 0b1100) >> 2 // (first 2 bits)
+		col := b & 0b0011        // (last 2 bits)
 		subbed, err := sBox(b)
 		if err != nil {
 			fmt.Printf("Error with input %04b: %v\n", i, err)
 			continue
 		}
+		fmt.Printf("%04b => col: %02b (first 2 bits), row: %02b (last 2 bits)\n", b, row, col)
 		fmt.Printf("%04b -> %02b\n", i, subbed)
 	}
 }
