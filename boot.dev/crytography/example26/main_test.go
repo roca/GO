@@ -18,10 +18,15 @@ func Test_getN(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			p := big.NewInt(tt.int1)
 			q := big.NewInt(tt.int2)
+
+			r := *p
+			s := *q
+
 			got := getN(p, q)
-			want := p.Mul(p, q)
-			if got != want {
-				t.Errorf("got: %v, want: %v", firstNDigits(*got, 10), firstNDigits(*want, 10))
+			want := r.Mul(&r, &s)
+
+			if  got != want {
+				t.Errorf("got: %040b, want: %040b", got, want)
 			}
 		})
 	}
