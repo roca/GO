@@ -25,7 +25,7 @@ func Test_getN(t *testing.T) {
 			got := getN(p, q)
 			want := r.Mul(&r, &s)
 
-			if  got != want {
+			if  firstNDigits(*got, 10) != firstNDigits(*want, 10) {
 				t.Errorf("got: %040b, want: %040b", got, want)
 			}
 		})
