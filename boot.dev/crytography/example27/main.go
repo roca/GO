@@ -5,34 +5,29 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"math/big"
 	mrand "math/rand"
 )
 
 // Calculate ϕ(n) = (p-1)(q-1)
 func getTot(p, q *big.Int) *big.Int {
-	pCopy := new(big.Int).Set(p)
-	qCopy := new(big.Int).Set(q)
-
-	return pCopy.Sub(pCopy, big.NewInt(1)).Mul(pCopy, qCopy.Sub(qCopy, big.NewInt(1)))
+	tot := new(big.Int)
+	tot.Mul(new(big.Int).Sub(p, big.NewInt(1)), new(big.Int).Sub(q, big.NewInt(1)))
+	return tot
 }
 
 // Choose a public exponent
 func getE(tot *big.Int) *big.Int {
-	one := big.NewInt(1)
-	for {
+	totMinusTwo := new(big.Int)
+	totMinusTwo.Sub(tot, big.NewInt(2))
 
-		e, _ := rand.Int(randReader, tot)
-		if e.Cmp(one) == 1 &&
-			e.Cmp(tot) == -1 &&
-			gcd(e, tot).Cmp(one) == 0 {
-			log.Println("E:", e.String())
-			log.Println("TOT:", tot.String())
-			log.Println("GCD:", gcd(e, tot).String())
-			return e
-		}
+	e, _ := rand.Int(randReader, totMinusTwo)
+	e.Add(e, big.NewInt(2))
+	for gcd(e, tot).Cmp(big.NewInt(1)) != 0 {
+		e, _ = rand.Int(randReader, totMinusTwo)
+		e.Add(e, big.NewInt(2))
 	}
+	return e
 }
 
 // don't touch below this line
