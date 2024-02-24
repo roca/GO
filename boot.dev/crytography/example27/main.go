@@ -1,9 +1,11 @@
 package main
 
 import (
+	"crypto/rand"
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"math/big"
 	mrand "math/rand"
 )
@@ -18,16 +20,19 @@ func getTot(p, q *big.Int) *big.Int {
 
 // Choose a public exponent
 func getE(tot *big.Int) *big.Int {
-	e := big.NewInt(0)
+	one := big.NewInt(1)
 	for {
-		e.Rand(randReader, tot)
-		if e.Cmp(big.NewInt(1)) == 1 &&
+
+		e, _ := rand.Int(randReader, tot)
+		if e.Cmp(one) == 1 &&
 			e.Cmp(tot) == -1 &&
-			gcd(e, tot).Cmp(big.NewInt(1)) == 0 {
-			break
+			gcd(e, tot).Cmp(one) == 0 {
+			log.Println("E:", e.String())
+			log.Println("TOT:", tot.String())
+			log.Println("GCD:", gcd(e, tot).String())
+			return e
 		}
 	}
-	return e
 }
 
 // don't touch below this line
