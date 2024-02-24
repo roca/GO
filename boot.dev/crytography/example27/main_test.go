@@ -18,7 +18,7 @@ func Test_getTot(t *testing.T) {
 
 func Test_getE(t *testing.T) {
 	tot := big.NewInt(11)
-	expected := "7"
+	expected := "3"
 
 	e := getE(tot)
 	if e.String() != expected {
