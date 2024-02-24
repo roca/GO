@@ -18,9 +18,10 @@ func generatePrivateNums(keysize int) (*big.Int, *big.Int) {
 
 // Calculate n = p * q
 func getN(p, q *big.Int) *big.Int {
-	r := *p
-	s := *q
-	return r.Mul(&r, &s)
+	r := new(big.Int).Set(p)
+	s := new(big.Int).Set(q)
+
+	return r.Mul(r, s)
 }
 
 // don't touch below this line
