@@ -1,4 +1,4 @@
-go 1.21.7
+go 1.22.0
 
 use (
 	./example01
@@ -28,4 +28,5 @@ use (
 	./example25
 	./example26
 	./example27
+	./example28
 )
