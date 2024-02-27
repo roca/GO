@@ -1,0 +1,1 @@
+# example33: TOY HASH FUNCTION
