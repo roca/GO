@@ -17,7 +17,9 @@ func hmac(message, key string) string {
 
 	h := sha256.New()
 	h.Write([]byte(keySecondHalf + message))
-	h.Write([]byte(keyFirstHalf + fmt.Sprintf("%x", h.Sum(nil))))
+	bytes := []byte(keyFirstHalf)
+	bytes = append(bytes, h.Sum(nil)...)
+	h.Write(bytes)
 
 	return fmt.Sprintf("%x", h.Sum(nil))
 }
