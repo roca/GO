@@ -14,33 +14,21 @@ func Test_splitInHalf(t *testing.T) {
 	}{
 		{
 			name:       "Test 1",
-			args:       args{s: "hello"},
-			wantFirst:  "he",
-			wantSecond: "llo",
+			args:       args{s: "123456"},
+			wantFirst:  "123",
+			wantSecond: "456",
 		},
 		{
 			name:       "Test 2",
-			args:       args{s: "hello world"},
-			wantFirst:  "hello",
-			wantSecond: " world",
+			args:       args{s: "1234567"},
+			wantFirst:  "123",
+			wantSecond: "4567",
 		},
 		{
 			name:       "Test 3",
-			args:       args{s: "hello world!"},
-			wantFirst:  "hello ",
-			wantSecond: "world!",
-		},
-		{
-			name:       "Test 4",
-			args:       args{s: "hello world! 123"},
-			wantFirst:  "hello wo",
-			wantSecond: "rld! 123",
-		},
-		{
-			name:       "Test 5",
-			args:       args{s: "hello world! 1234"},
-			wantFirst:  "hello wo",
-			wantSecond: "rld! 1234",
+			args:       args{s: "123 4567"},
+			wantFirst:  "123 ",
+			wantSecond: "4567",
 		},
 	}
 	for _, tt := range tests {
