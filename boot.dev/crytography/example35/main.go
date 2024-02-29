@@ -5,23 +5,17 @@ import (
 	"fmt"
 )
 
-func splitInHalf(s string) (string, string) {
-	firstHalf := s[:len(s)/2]
-	secondHalf := s[len(firstHalf):]
-
-	return firstHalf, secondHalf
-}
-
 func hmac(message, key string) string {
-	keyFirstHalf, keySecondHalf := splitInHalf(key)
+	keyFirstHalf := key[:len(key)/2]
+	keySecondHalf := key[len(keyFirstHalf):]
 
-	h := sha256.New()
-	h.Write([]byte(keySecondHalf + message))
-	bytes := []byte(keyFirstHalf)
-	bytes = append(bytes, h.Sum(nil)...)
-	h.Write(bytes)
+	innerDat := sha256.Sum256([]byte(keySecondHalf + message))
+	allDat := []byte(keyFirstHalf)
+	allDat = append(allDat, innerDat[:]...)
 
-	return fmt.Sprintf("%x", h.Sum(nil))
+	sum := sha256.Sum256(allDat)
+	result := fmt.Sprintf("%x", sum)
+	return result
 }
 
 // don't touch below this line
