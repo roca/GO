@@ -1,6 +1,9 @@
 # [Course Link: Practical intro to Observability](https://www.udemy.com/course/practical-introduction-to-observability)
 
 ## SStart Jaeger
+
+[link](https://www.jaegertracing.io/docs/1.54/getting-started/)
+
 ```sh
 docker run --rm --name jaeger \
   -e COLLECTOR_ZIPKIN_HOST_PORT=:9411 \
@@ -16,3 +19,5 @@ docker run --rm --name jaeger \
   -p 9411:9411 \
   jaegertracing/all-in-one:1.54
   ```
+
+  visit: [localhost:16686](http://localhost:16686)
