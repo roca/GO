@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"tracing/setup"
 
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/trace"
 )
 
@@ -23,25 +25,55 @@ func main() {
 			"serve_a",
 			trace.WithSpanKind(trace.SpanKindServer),
 		)
+		defer serverSpan.End()
 
-		ctx, clientSpan := tracer.Start(
-			ctx,
-			"request_b",
-			trace.WithSpanKind(trace.SpanKindClient),
-		)
-
-		res, err := http.Get("http://localhost:8083")
+		res, err := otelhttp.Get(ctx, "http://localhost:8083")
 		if err != nil {
-				// TODO: handle error
+			serverSpan.SetStatus(codes.Error, err.Error())
+			w.WriteHeader(http.StatusServiceUnavailable)
+			return
 		} else {
 			w.WriteHeader(res.StatusCode)
 			io.Copy(w, res.Body)
 		}
 
-		w.Write([]byte("Hello, #PITO!"))
+		w.Write([]byte("Hello, #PITO! server_a"))
 
-		clientSpan.End()
-		serverSpan.End()
+		// req, err := http.NewRequest("GET", "http://localhost:8083", nil)
+		// if err != nil {
+		// 	serverSpan.SetStatus(codes.Error, err.Error())
+		// 	w.WriteHeader(http.StatusInternalServerError)
+		// 	return
+		// }
+
+		// ctx, clientSpan := tracer.Start(
+		// 	ctx,
+		// 	"request_b",
+		// 	trace.WithSpanKind(trace.SpanKindClient),
+		// )
+
+		// propagator := propagation.NewCompositeTextMapPropagator(
+		// 	propagation.TraceContext{},
+		// 	propagation.Baggage{},
+		// )
+		// propagator.Inject(ctx, propagation.HeaderCarrier(req.Header))
+
+		// res, err := http.DefaultClient.Do(req)
+		// if err != nil {
+		// 	clientSpan.SetStatus(codes.Error, err.Error())
+		// } else {
+		// 	if res.StatusCode > 499 {
+		// 		clientSpan.SetStatus(codes.Error, "status code above 499")
+		// 	}
+		// 	w.WriteHeader(res.StatusCode)
+		// 	io.Copy(w, res.Body)
+		// }
+
+		// w.Write([]byte("Hello, #PITO! server_a"))
+
+		// clientSpan.End()
+
+		
 	})
 
 	log.Fatal(http.ListenAndServe("localhost:8084", nil))
