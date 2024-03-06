@@ -1,14 +1,12 @@
 package main
 
 import (
-	"context"
 	"log"
 	"math/rand"
 	"net/http"
 	"tracing/setup"
 
-	"go.opentelemetry.io/otel/codes"
-	"go.opentelemetry.io/otel/trace"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
 func main() {
@@ -16,27 +14,20 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	tracer := tp.Tracer("context_b.go")
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		_, span := tracer.Start(
-			context.Background(),
-			"serve_b",
-			trace.WithSpanKind(trace.SpanKindServer),
-		)
+	hf := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		log.Println(r.Header)
 
 		if i := rand.Intn(2); i == 1 {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("Internal Server Error"))
-			span.SetStatus(codes.Error, "Internal Server Error: random number generated a failure")
-			span.End()
 			return
 		}
 
-		w.Write([]byte("Hello, #PITO!"))
-
-		span.End()
+		w.Write([]byte("Hello, #PITO! server_b"))
 	})
+
+	http.Handle("/", otelhttp.NewHandler(hf, "serve_b", otelhttp.WithTracerProvider(tp)))
 
 	log.Fatal(http.ListenAndServe("localhost:8083", nil))
 
