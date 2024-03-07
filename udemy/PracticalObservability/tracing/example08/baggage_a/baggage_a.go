@@ -8,6 +8,7 @@ import (
 	"tracing/setup"
 
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+	"go.opentelemetry.io/otel/baggage"
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/trace"
 )
@@ -26,6 +27,26 @@ func main() {
 			trace.WithSpanKind(trace.SpanKindServer),
 		)
 		defer serverSpan.End()
+
+		b := baggage.Baggage{}
+
+		tfSrc := "Unknown"
+		if n := r.Header.Get("X-Traffic-Source"); n != "" {
+			tfSrc = n
+		}
+
+		m,err := baggage.NewMember("http.traffic.source", tfSrc)
+		if err != nil {
+			serverSpan.AddEvent("failed to create baggage member: " + err.Error())
+		}
+
+		b,err = b.SetMember(m)
+		if err != nil {
+			serverSpan.AddEvent("failed to set baggage member: " + err.Error())
+		}
+
+		
+		ctx = baggage.ContextWithBaggage(ctx, b)
 
 		res, err := otelhttp.Get(ctx, "http://localhost:8083")
 		if err != nil {
