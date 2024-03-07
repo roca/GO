@@ -8,6 +8,7 @@ import (
 	"tracing/setup"
 
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/baggage"
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/trace"
@@ -47,6 +48,8 @@ func main() {
 
 		
 		ctx = baggage.ContextWithBaggage(ctx, b)
+
+		serverSpan.SetAttributes(attribute.String("http.traffic.source", tfSrc))
 
 		res, err := otelhttp.Get(ctx, "http://localhost:8083")
 		if err != nil {
