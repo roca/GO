@@ -3,5 +3,5 @@ go 1.22.0
 use (
 	./tracing
 	./delivery-service
-	./section3
+	./logging
 )

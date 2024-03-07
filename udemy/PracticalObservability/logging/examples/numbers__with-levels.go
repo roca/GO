@@ -1,4 +1,4 @@
-package logs 
+package examples
 
 import (
 	"fmt"
