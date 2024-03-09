@@ -18,6 +18,21 @@ docker run --rm --name jaeger \
   -p 14269:14269 \
   -p 9411:9411 \
   jaegertracing/all-in-one:1.54
-  ```
+```
 
   visit: [localhost:16686](http://localhost:16686)
+
+
+## Download promettheus and Node exporter
+
+- [prometheus-2.50.1.darwin-amd64.tar.gz](https://prometheus.io/download/)
+- [node_exporter-1.7.0.darwin-amd64.tar.gz]((https://prometheus.io/download/))A
+
+## Download and install Grafana
+
+```sh
+brew update
+brew install grafana
+
+brew services start grafana
+```
