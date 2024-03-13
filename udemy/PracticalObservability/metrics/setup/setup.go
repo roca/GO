@@ -36,8 +36,8 @@ func NewMetricProvider(applicationName string) (metric.MeterProvider, sdk.Reader
 	exp, err := otlpmetrichttp.New(
 		ctx,
 		otlpmetrichttp.WithInsecure(),
-		otlpmetrichttp.WithEndpoint("localhost:9090"),
-		otlpmetrichttp.WithURLPath("/api/v1/otlp/v1/metrics"),
+		otlpmetrichttp.WithEndpoint("localhost:9091"),
+		otlpmetrichttp.WithURLPath("/api/v1/write"),
 	)
 	if err != nil {
 		return nil, nil, fmt.Errorf("%w: %s", ErrFailMeterSetup, err)
