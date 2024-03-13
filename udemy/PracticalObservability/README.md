@@ -36,3 +36,8 @@ brew install grafana
 
 brew services start grafana
 ```
+
+## Activating the remote write receiver via '-enable-feature=otlp-writer-receiver' feature flag is deprecated
+
+Use --web.enable-remote-write-receiver instead. 
+This feature flag will be ignored in future versions of Prometheus. 
