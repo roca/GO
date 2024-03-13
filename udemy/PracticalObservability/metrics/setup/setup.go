@@ -33,11 +33,18 @@ func NewMetricProvider(applicationName string) (metric.MeterProvider, sdk.Reader
 	ctx, cxl := context.WithTimeout(ctx, time.Second)
 	defer cxl()
 
+	//var c otlpmetrichttp.Compression = otlpmetrichttp.
+
 	exp, err := otlpmetrichttp.New(
 		ctx,
 		otlpmetrichttp.WithInsecure(),
-		otlpmetrichttp.WithEndpoint("localhost:9091"),
+		otlpmetrichttp.WithEndpoint("localhost:9090"),
 		otlpmetrichttp.WithURLPath("/api/v1/write"),
+		otlpmetrichttp.WithHeaders(map[string]string{
+			"Content-Type": "application/x-protobuf",
+			"Content-Encoding": "none",
+		}),
+		otlpmetrichttp.WithCompression(otlpmetrichttp.NoCompression),
 	)
 	if err != nil {
 		return nil, nil, fmt.Errorf("%w: %s", ErrFailMeterSetup, err)
