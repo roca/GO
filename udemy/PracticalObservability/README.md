@@ -26,7 +26,7 @@ docker run --rm --name jaeger \
 ## Download promettheus(2.48.0) and Node exporter
 
 - [prometheus-2.48.0.darwin-amd64.tar.gz](https://github.com/prometheus/prometheus/releases/tag/v2.48.0)
-- [node_exporter-1.7.0.darwin-amd64.tar.gz]((https://prometheus.io/download/))A
+- [node_exporter-1.7.0.darwin-amd64.tar.gz]((https://prometheus.io/download/))
 
 ## Download and install Grafana
 

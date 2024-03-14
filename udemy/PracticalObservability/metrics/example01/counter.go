@@ -24,8 +24,8 @@ func main() {
 	}
 
 	counter.Add(ctx, 1)
-	counter.Add(ctx, 1)
-	counter.Add(ctx, 1)
+	// counter.Add(ctx, 1)
+	// counter.Add(ctx, 1)
 
 	if err := r.Shutdown(ctx); err != nil {
 		log.Fatal(err)
