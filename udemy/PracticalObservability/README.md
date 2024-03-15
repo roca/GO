@@ -41,3 +41,5 @@ brew services start grafana
 
 Use --web.enable-remote-write-receiver instead. 
 This feature flag will be ignored in future versions of Prometheus. 
+
+[Code example](https://last9.io/blog/how-to-instrument-golang-app-using-opentelemetry-tutorial-best-practices/)
