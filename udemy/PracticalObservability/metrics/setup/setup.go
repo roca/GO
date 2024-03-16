@@ -39,8 +39,11 @@ func NewMetricProvider(applicationName string) (metric.MeterProvider, sdk.Reader
 		ctx,
 		otlpmetrichttp.WithInsecure(),
 		otlpmetrichttp.WithEndpoint("localhost:9090"),
-		otlpmetrichttp.WithURLPath("/api/v1/write"),
+		otlpmetrichttp.WithURLPath("/api/v1/otlp/v1/metrics"),
 		otlpmetrichttp.WithCompression(otlpmetrichttp.GzipCompression),
+		otlpmetrichttp.WithHeaders(map[string]string{
+			"Content-Encoding": "gzip",
+		}),
 	)
 	if err != nil {
 		return nil, nil, fmt.Errorf("%w: %s", ErrFailMeterSetup, err)
