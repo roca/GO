@@ -37,6 +37,8 @@ brew install grafana
 brew services start grafana
 ```
 
+Go to [Local Browser](localhost:3000) login with admin/admin
+
 ## Activating the remote write receiver via '-enable-feature=otlp-writer-receiver' feature flag is deprecated
 
 Use --web.enable-remote-write-receiver instead. 
