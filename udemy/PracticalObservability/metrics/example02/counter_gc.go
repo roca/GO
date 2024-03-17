@@ -2,17 +2,28 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"log"
 	"metrics/setup"
 	"runtime"
+	"strconv"
+	"time"
 
 	"go.opentelemetry.io/otel/metric"
 )
 
-const Example = "counter_simple"
+const Example = "counter_gc"
+
+var flimit = flag.String("limit", "1m", "How long to run the program for")
 
 func main() {
+	flag.Parse()
+	dur , err := time.ParseDuration(*flimit)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	var ms runtime.MemStats
 
 	mp, r, err := setup.NewMetricProvider(Example)
@@ -42,6 +53,22 @@ func main() {
 	}, counter)
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	ti := time.NewTicker(1 * time.Second)
+	i := 0
+
+	for {
+		next := <-ti.C
+
+		if i >= int(dur.Seconds()) {
+			break
+		}
+		i++
+
+		runtime.GC()
+
+		fmt.Println(strconv.Itoa(i) + ": Time is : " + next.String())
 	}
 
 	if err := r.Shutdown(ctx); err != nil {
