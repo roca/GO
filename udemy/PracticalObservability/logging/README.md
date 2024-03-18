@@ -1,1 +1,0 @@
-# Section3 logs
