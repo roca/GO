@@ -38,7 +38,7 @@ func NewMetricProvider(applicationName string) (metric.MeterProvider, sdk.Reader
 	exp, err := otlpmetrichttp.New(
 		ctx,
 		otlpmetrichttp.WithInsecure(),
-		otlpmetrichttp.WithEndpoint("localhost:9090"),
+		otlpmetrichttp.WithEndpoint("prometheus:9090"),
 		otlpmetrichttp.WithURLPath("/api/v1/otlp/v1/metrics"),
 		otlpmetrichttp.WithCompression(otlpmetrichttp.GzipCompression),
 		otlpmetrichttp.WithHeaders(map[string]string{

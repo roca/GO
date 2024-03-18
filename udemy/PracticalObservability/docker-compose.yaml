@@ -19,3 +19,45 @@ services:
       - "14269:14269"
       - "9411:9411"
 
+  node_exporter:
+    image: bitnami/node-exporter:latest
+    container_name: node_exporter
+    ports:
+      - "9100:9100"
+
+  prometheus:
+    image: bitnami/prometheus:2.48.0
+    container_name: prometheus
+    volumes:
+      - ./prometheus_config/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--enable-feature=otlp-write-receiver'
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    ports:
+      - "9090:9090"
+    depends_on:
+      - node_exporter
+
+  grafana:
+    image: grafana/grafana:8.2.1
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus
+
+  golang:
+    image: golang:1.22.0
+    container_name: golang
+    working_dir: /go/src/app
+    volumes:
+      - ./code_examples:/go/src/app
+    command: "tail -f /dev/null"
+    depends_on:
+      - jaeger
+      - prometheus
+
+
+
