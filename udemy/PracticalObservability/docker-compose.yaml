@@ -48,9 +48,11 @@ services:
     depends_on:
       - prometheus
 
-  golang:
-    image: golang:1.22.0
-    container_name: golang
+  linux:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: linux
     working_dir: /go/src/app
     volumes:
       - ./code_examples:/go/src/app
