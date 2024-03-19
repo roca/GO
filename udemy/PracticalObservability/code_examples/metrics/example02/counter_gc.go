@@ -13,6 +13,8 @@ import (
 	"go.opentelemetry.io/otel/metric"
 )
 
+// while true; do ./example02 -limit 30m ; done
+
 const Example = "counter_gc"
 
 var flimit = flag.String("limit", "1m", "How long to run the program for")
