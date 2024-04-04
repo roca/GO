@@ -3,7 +3,9 @@ package main
 import (
 	"fmt"
 
-	"03_02b/business"
+	"04_02b/business"
+
+	"golang.org/x/exp/slices"
 )
 
 // main is our simple "playground" for the course.
@@ -25,8 +27,14 @@ func main() {
 	ss := []business.Solar{solar2k, solar3k}
 	business.PrintSlice[business.Solar](ss)
 	business.PrintSlice[business.Wind]([]business.Wind{windwest, windwest})
+
+	// Print functions for 03_02
 	ss2 := business.SolarSlice{solar2k, solar3k}
 	business.PrintSlice(ss2)
 	business.PrintSlice2(ss2)
+
+	fmt.Printf("index: %d\n",slices.Index(ss, solar2k))
+	business.SortByCost(ss)
+	fmt.Printf("index: %d\n",slices.Index(ss, solar2k))
 
 }
