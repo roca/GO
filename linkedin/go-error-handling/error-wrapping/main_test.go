@@ -19,7 +19,10 @@ func TestIsOdd(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := isOdd(tt.n); got != tt.want {
+			got := isOdd(tt.n);
+			gotMessage := fmt.Sprintf("%v", got)
+			wantMessage := fmt.Sprintf("%v", tt.want)
+			if gotMessage != wantMessage {
 				t.Errorf("isOdd() = %v, want %v", got, tt.want)
 			}
 		})
