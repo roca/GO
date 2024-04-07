@@ -2,16 +2,27 @@
 
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 // Change these boolean values to control whether you see
 // the expected answer and/or hints.
 const showExpectedResult = false
 const showHints = false
 
+type EvenNumberError struct {
+	Number int
+}
+
+func (e *EvenNumberError) Error() string {
+	return fmt.Sprintf("%d is not an odd number", e.Number)
+}
+
 func isOdd(n int) error {
+	// Your code goes here.
 	if n%2 == 0 {
-		return fmt.Errorf("Number %d is even", n)
+		return &EvenNumberError{Number: n}
 	}
 	return nil
 }
@@ -23,8 +34,8 @@ func main() {
 		if err != nil {
 			result += fmt.Sprintf("Error: %v\n", err)
 		} else {
-			result += fmt.Sprintf("Number is odd\n")
+			result += fmt.Sprint("Number is odd\n")
 		}
-		fmt.Println(result)
 	}
+	fmt.Println(result)
 }
