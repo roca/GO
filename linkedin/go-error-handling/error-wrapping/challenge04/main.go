@@ -25,11 +25,17 @@ func isEven(n int) error {
 // whether a value is odd
 func isOdd(n int) <-chan string {
 	// Your code goes here.
-	if err := isEven(n); err != nil {
-		return  
-	}
-	
-	return 
+      c := make(chan string)
+      go func(n int) {
+	err := isEven(n)
+	if err != nil {
+		c <- err.Error()
+	} else {
+		c <- fmt.Sprintf("%d is an odd number", n)
+	}	
+      }(n)
+
+      return c
 }
 
 func main() {
