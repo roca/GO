@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"sync"
 	"time"
 )
 
@@ -41,15 +42,23 @@ func main() {
 		"https://www.ardanlabs.com/",
 	}
 
+	var wg sync.WaitGroup
+	wg.Add(len(urls))
+
 	start := time.Now()
 	for _, url := range urls {
-		duration, err := URLTime(url)
-		status := fmt.Sprintf("%v", duration)
-		if err != nil {
-			status = fmt.Sprintf("error (%s)", err)
-		}
-		fmt.Printf("%q: %s\n", url, status)
+		url := url
+		go func() {
+			defer wg.Done()
+			duration, err := URLTime(url)
+			status := fmt.Sprintf("%v", duration)
+			if err != nil {
+				status = fmt.Sprintf("error (%s)", err)
+			}
+			fmt.Printf("%q: %s\n", url, status)
+		}()
 	}
+	wg.Wait()
 	duration := time.Since(start)
 	fmt.Printf("%d URLs in %v\n", len(urls), duration)
 }
