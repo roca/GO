@@ -4,8 +4,12 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	_ "net/http/pprof"
 	"time"
 )
+
+// hey -n 10000 curl0 'http://localhost:8080/utc\?tz\=US/Pacific\&when\=2022-07-19T14:32:55'
+// go tool pprof -http=:8081 http://localhost:8080/debug/pprof/profile?seconds=10
 
 func utcHandler(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
