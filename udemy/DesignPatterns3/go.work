@@ -1,3 +1,6 @@
 go 1.22.2
 
-use ./go-breaders
+use (
+	./factory
+	./go-breaders
+)
