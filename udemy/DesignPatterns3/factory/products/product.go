@@ -9,7 +9,7 @@ type Product struct {
 }
 
 // Factory function
-func NewProduct(productName string) *Product {
+func New(productName string) *Product {
 	return &Product{
 		ProductName: productName,
 		CreatedAt:   time.Now(),
