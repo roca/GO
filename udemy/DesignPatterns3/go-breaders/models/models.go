@@ -1,5 +1,7 @@
 package models
 
+import "time"
+
 type Breeder struct{}
 
 type Pet struct{}
@@ -13,4 +15,14 @@ type BreadProps struct {
 	Details          string `json:"details"`
 	AlternateNames   string `json:"alternate_names"`
 	GeographicOrigin string `json:"geographic_origin"`
+}
+type PetProps struct {
+	Name             string    `json:"name"`
+	BreedID          int       `json:"breed_id"`
+	BreederID        int       `json:"breeder_id"`
+	Color            string    `json:"color"`
+	DataOfBirth      time.Time `json:"data_of_birth"`
+	SpayedOrNeutered int       `json:"spayed_or_neutered"`
+	Description      string    `json:"description"`
+	Breeder          Breeder   `json:"breeder"`
 }
