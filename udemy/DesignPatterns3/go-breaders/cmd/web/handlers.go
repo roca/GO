@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"go-breaders/pets"
+
 	"github.com/go-chi/chi/v5"
 )
 
@@ -12,6 +14,12 @@ func (app *application) ShowHome(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) ShowPage(w http.ResponseWriter, r *http.Request) {
+	page := chi.URLParam(r, "page")
+	app.render(w, fmt.Sprintf("%s.page.gohtml", page), nil)
+}
+
+func (app *application) CreateDogFromFactory(w http.ResponseWriter, r *http.Request) {
+	dog := pets.New("dog")
 	page := chi.URLParam(r, "page")
 	app.render(w, fmt.Sprintf("%s.page.gohtml", page), nil)
 }
