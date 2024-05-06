@@ -1,2 +1,4 @@
 github.com/go-chi/chi/v5 v5.0.12 h1:9euLV5sTrTNTRUU9POmDUvfxyj6LAABLUcEWO+JJb4s=
 github.com/go-chi/chi/v5 v5.0.12/go.mod h1:DslCQbL2OYiznFReuXYUmQ2hGd1aDpCnlMNITLSKoi8=
+github.com/roca/go-toolkit/v2 v2.0.0 h1:yp34w15NtYjjkrV8i41EuBPQyW/eNTO2Xotc8zW8Q44=
+github.com/roca/go-toolkit/v2 v2.0.0/go.mod h1:Hbx4NZ+i1xhzj7TEa2COUsHOtjgamlNExqrTScI/D70=
