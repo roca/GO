@@ -27,3 +27,7 @@ func (app *application) CreateCatFromFactory(w http.ResponseWriter, r *http.Requ
 	var t toolkit.Tools
 	_ = t.WriteJSON(w, http.StatusOK, pets.New("cat"))
 }
+
+func (app *application) TestPatterns(w http.ResponseWriter, r *http.Request) {
+	app.render(w, "test.page.gohtml", nil)
+}

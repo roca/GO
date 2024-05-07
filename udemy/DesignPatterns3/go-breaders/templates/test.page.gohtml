@@ -8,11 +8,11 @@
 	    <hr>
 	    <h3>Factory</h3>
 	    <div>
-		<a href="javascript:viod(0):" id="dog-factory-btn" class="btn btn-outline-secondary">Get a dog from factory</a>
-		<a href="javascript:viod(0):" id="cat-factory-btn" class="btn btn-outline-secondary">Get a cat from factory</a>
+		<a href="javascript:void(0);" id="dog-factory-btn" class="btn btn-outline-secondary">Get a dog from factory</a>
+		<a href="javascript:void(0);" id="cat-factory-btn" class="btn btn-outline-secondary">Get a cat from factory</a>
 	    </div>
 	    <div class="mt-2" style="outline: 1px solid silver: padding: 2em;">
-	    	<pre id="dog-factory-output"><span class="text-muted">Noting received yet...</span></pre>
+	    	<pre id="dog-factory-output"><span class="text-muted">Nothing received yet...</span></pre>
 	    </div>
 	</div>
     </div>
@@ -25,30 +25,30 @@ let dogFactoryBtn = document.getElementById("dog-factory-btn");
 let catFactoryBtn = document.getElementById("cat-factory-btn");
 let dogFactoryOutput = document.getElementById("dog-factory-output");
 
-document.addEventListener("DomContentLoaded", func() {
-	dogFactoryBtn.addEventListener("click", func() {
-		fetch("/api/dog-from-factory", {method: 'get'});
+document.addEventListener("DomContentLoaded", function() {
+	dogFactoryBtn.addEventListener("click", function() {
+		fetch("/api/dog-from-factory", {method: 'get'})
 		.then((response) => response.json())
-		.thon((data) => {
+		.then((data) => {
 			if (data.error) {
 				dogFactoryOutput.innerHTML = data.error;
 			} else {
 				dogFactoryOutput.innerHTML = JSON.stringify(data, undefine, 4);
 			}
 		})
-	})
+	});
 
-	catFactoryBtn.addEventListener("click", func() {
-		fetch("/api/cat-from-factory", {method: 'get'});
+	catFactoryBtn.addEventListener("click", function() {
+		fetch("/api/cat-from-factory", {method: 'get'})
 		.then((response) => response.json())
-		.thon((data) => {
+		.then((data) => {
 			if (data.error) {
 				dogFactoryOutput.innerHTML = data.error;
 			} else {
 				dogFactoryOutput.innerHTML = JSON.stringify(data, undefine, 4);
 			}
 		})
-	})
+	});
 })
 </script>
 {{end}}
