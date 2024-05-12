@@ -10,3 +10,7 @@ type Dog struct {
 	PetProps
 	Breed DogBreed `json:"breed"`
 }
+
+func (d *DogBreed) All() ([]*DogBreed, error) {
+	return d.AllDogBreeds()
+}
