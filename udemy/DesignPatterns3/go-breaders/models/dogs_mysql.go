@@ -11,8 +11,8 @@ func (d *DogBreed) AllDogBreeds() ([]*DogBreed, error) {
 
 	query := `select id, breed, weight_low_lbs, weight_high_lbs,
 	            cast(((weight_low_lbs + weight_high_lbs) / 2) as unsigned) as average_weight,
-		    lifespan, coallesce(details, ''),
-		    coallesce(alternate_names, ''), coallesce(geographic_origin, '')
+		    lifespan, coalesce(details, ''),
+		    coalesce(alternate_names, ''), coalesce(geographic_origin, '')
 		    from dog_breeds order by breed`
 
 	var breeds []*DogBreed
