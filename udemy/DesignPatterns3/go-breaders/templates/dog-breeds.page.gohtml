@@ -1,17 +1,25 @@
 {{template "base" .}}
 
-{{define "content"}}
+{{define "css"}}
+<link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" rel="stylesheet" type="text/css">
+{{end}}
 
+{{define "content"}}
 <div class="container">
     <div class="row">
 	<div class="col">
 	    <h3 class="mt-4">Dog Breeds</h3>
+	    <hr>
+
+	    <table class="dog-breedstable table-striped table-compact">
+	    </table>
 	</div>
     </div>
 </div>
 {{end}}
 
 {{define "js"}}
+<script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" type="text/javascript"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function() {
  fetch("/api/dog-breeds")
