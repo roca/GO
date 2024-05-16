@@ -17,7 +17,6 @@ func TestMain(m *testing.M) {
 	}
 
 	testApp = application{
-		DB:     db,
 		Models: *models.New(db),
 	}
 
