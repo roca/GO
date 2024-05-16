@@ -12,5 +12,5 @@ type Dog struct {
 }
 
 func (d *DogBreed) All() ([]*DogBreed, error) {
-	return d.AllDogBreeds()
+	return repo.AllDogBreeds()
 }
