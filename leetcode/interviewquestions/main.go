@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"slices"
+)
 
 func main() {
 
@@ -17,7 +20,7 @@ func removeDuplicates(nums []int) int {
 	fmt.Println(occurrences)
 	for i, v := range nums {
 		if occurrences[v] > 2 {
-			nums = append(nums[:i], nums[i+1:]...)
+			nums = slices.Delete(nums, i, 1)
 			occurrences[v]--
 		}
 	}
