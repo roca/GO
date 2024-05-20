@@ -6,7 +6,7 @@ import (
 )
 
 func TestRemoveDuplicates(t *testing.T) {
-	nums := []int{1, 1, 1, 2, 2, 3}
+	nums := []int{1, 1, 1, 1, 2, 2, 3}
 	expected := 5
 
 	if got := removeDuplicates(nums); got != expected {
