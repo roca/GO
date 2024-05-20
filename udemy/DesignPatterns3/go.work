@@ -3,5 +3,6 @@ go 1.22.2
 use (
 	./abstract
 	./factory
+	./fluent
 	./go-breaders
 )

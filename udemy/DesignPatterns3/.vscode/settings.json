@@ -1,3 +1,11 @@
 {
-	"accessibility.signals.sounds.volume": 15
+	"accessibility.signals.sounds.volume": 15,
+	"accessibility.signals.lineHasError": {
+		"sound": "off",
+		"announcement": "off"
+	},
+	"accessibility.signals.lineHasWarning": {
+		"sound": "off",
+		"announcement": "off"
+	}
 }
