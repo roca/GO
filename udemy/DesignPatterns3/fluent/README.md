@@ -1,3 +1,3 @@
 # fluent: 
 
-## Builder pattern
+## Fluent interface pattern
