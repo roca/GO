@@ -3,44 +3,30 @@ package main
 import "fmt"
 
 func main() {
-	convert("PAYPALISHIRING", 4)
+	fmt.Println(convert("PAYPALISHIRING", 3))
 }
 
 func convert(s string, numRows int) string {
-	m := matrix(s, numRows)
+	sbs := make([]string, numRows)
 
-	k := 0
-	for j := 0; j < len(s); j++ {
-		if j%2 == 0 {
-			for i := 0; i < numRows; i++ {
-				if k < len(s) {
-					m[i][j] = rune(s[k])
-					k++
-				}
-			}
-		} else {
-			for i := numRows - 1; i >= 0; i-- {
-				if k < len(s) {
-					m[i][j] = rune(s[k])
-					k++
-				}
-			}
+	j := 0
+	for j < len(s) {
+
+		for i := 0; i < numRows && j < len(s); i++ {
+			sbs[i] += string(s[j])
+			j++
 		}
+
+		for i := numRows - 2; i > 0 && j < len(s); i-- {
+			sbs[i] += string(s[j])
+			j++
+		}
+
 	}
 
+	result := ""
 	for i := 0; i < numRows; i++ {
-		for j := 0; j < len(s); j++ {
-			fmt.Print(string(m[i][j]))
-		}
-		fmt.Println()
+		result += sbs[i]
 	}
-	return ""
-}
-
-func matrix(s string, numRows int) [][]rune {
-	m := make([][]rune, numRows)
-	for i := range m {
-		m[i] = make([]rune, len(s))
-	}
-	return m
+	return result
 }
