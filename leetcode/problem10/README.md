@@ -1,7 +1,7 @@
 # problem10
 
 ## 10. Regular Expression Matching
-10. Regular Expression Matching
+
 ```text
 Hard
 Topics
