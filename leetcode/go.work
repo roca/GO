@@ -1,6 +1,7 @@
 go 1.22.3
 
 use (
+	./problem04
 	./problem06
 	./problem10
 	./problem80
