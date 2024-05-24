@@ -4,5 +4,6 @@ use (
 	./problem04
 	./problem06
 	./problem10
+	./problem2463
 	./problem80
 )
