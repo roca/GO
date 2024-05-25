@@ -69,16 +69,42 @@ func (app *application) CreateDogWithBuilder(w http.ResponseWriter, r *http.Requ
 	var t toolkit.Tools
 
 	// create a dog with the builder pattern
-	p,err := pets.NewPetBuilder().
+	dog, err := pets.NewPetBuilder().
 		SetSpecies("dog").
 		SetBreed("mixed breed").
 		SetWeight(15).
+		SetDescription("A mixed breed of unknown origin. Probably has some German Shepherd heritage.").
+		SetColor("Black and White").
+		SetAge(3).
+		SetAgeEstimated(true).
 		Build()
 
 	if err != nil {
 		_ = t.ErrorJSON(w, err, http.StatusBadRequest)
 		return
 	}
-	
-	_ = t.WriteJSON(w, http.StatusOK, p)
+
+	_ = t.WriteJSON(w, http.StatusOK, dog)
+}
+
+func (app *application) CreateCatWithBuilder(w http.ResponseWriter, r *http.Request) {
+	var t toolkit.Tools
+
+	// create a cat with the builder pattern
+	cat, err := pets.NewPetBuilder().
+		SetSpecies("cat").
+		SetBreed("mixed breed").
+		SetWeight(10).
+		SetDescription("A mixed breed of unknown origin. Probably has some Siamese heritage.").
+		SetColor("White").
+		SetAge(2).
+		SetAgeEstimated(true).
+		Build()
+
+	if err != nil {
+		_ = t.ErrorJSON(w, err, http.StatusBadRequest)
+		return
+	}
+
+	_ = t.WriteJSON(w, http.StatusOK, cat)
 }
