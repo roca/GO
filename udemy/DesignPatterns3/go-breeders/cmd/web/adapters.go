@@ -22,7 +22,7 @@ func (rs *RemoteService) CallAllBreeds() ([]*models.CatBreed, error) {
 type JSONBackend struct{}
 
 func (jb *JSONBackend) GetAllCatBreeds() ([]*models.CatBreed, error) {
-	resp, err := http.Get("https://localhost:8081/api/cat-breeds/json")
+	resp, err := http.Get("http://localhost:8081/api/cat-breeds/all/json")
 	if err != nil {
 		return nil, err
 	}
