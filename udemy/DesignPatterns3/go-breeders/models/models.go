@@ -48,14 +48,14 @@ type Pet struct {
 }
 
 type BreadProps struct {
-	Breed            string `json:"breed"`
-	WeightLowLbs     int    `json:"weight_low_lbs"`
-	WeightHighLbs    int    `json:"weight_high_lbs"`
-	AverageWeightLbs int    `json:"average_weight_lbs"`
-	LifeSpan         int    `json:"life_span"`
-	Details          string `json:"details"`
-	AlternateNames   string `json:"alternate_names"`
-	GeographicOrigin string `json:"geographic_origin"`
+	Breed            string `json:"breed" xml:"breed"`
+	WeightLowLbs     int    `json:"weight_low_lbs" xml:"weight_low_lbs"`
+	WeightHighLbs    int    `json:"weight_high_lbs" xml:"weight_high_lbs"`
+	AverageWeightLbs int    `json:"average_weight_lbs" xml:"average_weight_lbs"`
+	LifeSpan         int    `json:"life_span" xml:"life_span"`
+	Details          string `json:"details" xml:"details"`
+	AlternateNames   string `json:"alternate_names" xml:"alternate_names"`
+	GeographicOrigin string `json:"geographic_origin" xml:"geographic_origin"`
 }
 type PetProps struct {
 	Name             string    `json:"name"`
