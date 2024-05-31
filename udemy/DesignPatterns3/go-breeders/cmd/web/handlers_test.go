@@ -24,3 +24,22 @@ func TestApplication_GetAllDogBreedsJSON(t *testing.T) {
 		t.Errorf("handler returned wrong status code: got %v want %v", rr.Code, http.StatusOK)
 	}
 }
+
+func TestApplication_GetAllCatBreeds(t *testing.T) {
+	// create a request
+	req, _ := http.NewRequest("GET", "/api/cat-breeds", nil)
+
+	// create a response recorder
+	rr := httptest.NewRecorder()
+
+	// create the handler
+	handler := http.HandlerFunc(testApp.GetAllCatBreeds)
+
+	// serve the handler
+	handler.ServeHTTP(rr, req)
+
+	// check the response
+	if rr.Code != http.StatusOK {
+		t.Errorf("handler returned wrong status code: got %v want %v", rr.Code, http.StatusOK)
+	}
+}
