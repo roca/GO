@@ -3,6 +3,7 @@ package pets
 import (
 	"errors"
 	"fmt"
+	"go-breaders/configuration"
 	"go-breaders/models"
 )
 
@@ -40,11 +41,11 @@ func (df *DogAbstractFactory) newPet() AnimalInterface {
 }
 
 func (df *DogAbstractFactory) newPetWithBreed(b string) AnimalInterface {
-	// app := configuration.GetInstance()
-	// breed , _ := app.Models.DogBreed.GetBreedByName(b)
+	app := configuration.GetInstance()
+	breed, _ := app.Models.DogBreed.GetBreedByName(b)
 	return &DogFromFactory{
 		Pet: &models.Dog{
-			//Breed: breed,
+			Breed: *breed,
 		},
 	}
 
@@ -59,7 +60,7 @@ func (cf *CatAbstractFactory) newPet() AnimalInterface {
 }
 
 func (cf *CatAbstractFactory) newPetWithBreed(b string) AnimalInterface {
-	// Get Breed ofr cat from service adapter
+	// Get Breed for cat from service adapter
 
 	return &CatFromFactory{
 		Pet: &models.Cat{

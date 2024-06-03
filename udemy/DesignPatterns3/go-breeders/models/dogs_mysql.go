@@ -44,3 +44,33 @@ func (m *mysqlRepository) AllDogBreeds() ([]*DogBreed, error) {
 
 	return breeds, nil
 }
+
+func (m *mysqlRepository) GetBreedByName(b string) (*DogBreed, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	query := `select id, breed, weight_low_lbs, weight_high_lbs,
+	            cast(((weight_low_lbs + weight_high_lbs) / 2) as unsigned) as average_weight,
+		    lifespan, coalesce(details, ''),
+		    coalesce(alternate_names, ''), coalesce(geographic_origin, '')
+		    from dog_breeds where breed = ?`
+
+	var breed DogBreed
+
+	err := m.DB.QueryRowContext(ctx, query, b).Scan(
+		&breed.ID,
+		&breed.Breed,
+		&breed.WeightLowLbs,
+		&breed.WeightHighLbs,
+		&breed.AverageWeightLbs,
+		&breed.LifeSpan,
+		&breed.Details,
+		&breed.AlternateNames,
+		&breed.GeographicOrigin,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return &breed, nil
+}
