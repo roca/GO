@@ -1,8 +1,8 @@
 package main
 
 import (
+	"go-breaders/adapters"
 	"go-breaders/configuration"
-	"go-breaders/models"
 	"os"
 	"testing"
 )
@@ -11,27 +11,12 @@ var testApp application
 
 func TestMain(m *testing.M) {
 
-	testBackend := &TestBackend{}
-	testAdapter := &RemoteService{Remote: testBackend}
+	testBackend := &adapters.TestBackend{}
+	testAdapter := &adapters.RemoteService{Remote: testBackend}
 
 	testApp = application{
-		App:        configuration.New(nil),
-		catService: testAdapter,
+		App: configuration.New(nil, testAdapter),
 	}
 
 	os.Exit(m.Run())
-}
-
-type TestBackend struct{}
-
-func (tb *TestBackend) GetAllCatBreeds() ([]*models.CatBreed, error) {
-	return []*models.CatBreed{
-		&models.CatBreed{
-			ID: 1,
-			BreadProps: models.BreadProps{
-				Breed:   "Tomcat",
-				Details: "Tomcat is a breed of cat",
-			},
-		},
-	}, nil
 }
