@@ -39,13 +39,13 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// jsonBackend := &adapters.JSONBackend{}
-	// jsonAdapter := &adapters.RemoteService{Remote: jsonBackend}
+	jsonBackend := &adapters.JSONBackend{}
+	jsonAdapter := &adapters.RemoteService{Remote: jsonBackend}
 
-	xmlBackend := &adapters.XMLBackend{}
-	xmlAdapter := &adapters.RemoteService{Remote: xmlBackend}
+	// xmlBackend := &adapters.XMLBackend{}
+	// xmlAdapter := &adapters.RemoteService{Remote: xmlBackend}
 
-	app.App = configuration.New(db, xmlAdapter)
+	app.App = configuration.New(db, jsonAdapter)
 	// app.catService = jsonAdapter
 
 	srv := &http.Server{

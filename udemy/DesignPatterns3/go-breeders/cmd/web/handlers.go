@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"go-breaders/pets"
 	"net/http"
+	"net/url"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/roca/go-toolkit/v2"
@@ -121,13 +122,22 @@ func (app *application) GetAllCatBreeds(w http.ResponseWriter, r *http.Request) 
 }
 
 func (app *application) AnimalFromAbstractFactory(w http.ResponseWriter, r *http.Request) {
-	// Setup toolbox
+	var t toolkit.Tools
 
 	// Get species from URL itself
+	species := chi.URLParam(r, "species")
 
 	// Get breed from the URL.
+	b := chi.URLParam(r, "breed")
+	breed, _ := url.QueryUnescape(b)
 
 	// Create a pet from the abstract factory
+	pet, err := pets.NewPetWithBreedFromAbstractFactory(species, breed)
+	if err != nil {
+		_ = t.ErrorJSON(w, err, http.StatusBadRequest)
+		return
+	}
 
 	// Write the result as JSON.
+	_ = t.WriteJSON(w, http.StatusOK, pet)
 }
