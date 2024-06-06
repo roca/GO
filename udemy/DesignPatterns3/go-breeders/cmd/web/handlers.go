@@ -19,6 +19,16 @@ func (app *application) ShowPage(w http.ResponseWriter, r *http.Request) {
 	app.render(w, fmt.Sprintf("%s.page.gohtml", page), nil)
 }
 
+func (app *application) DogOfMonth(w http.ResponseWriter, r *http.Request) {
+	// Get the breed
+
+	// get the dog of the month from the database
+
+	// Create dog and decorate it
+
+	// Serve the web page
+}
+
 func (app *application) CreateDogFromFactory(w http.ResponseWriter, r *http.Request) {
 	var t toolkit.Tools
 	_ = t.WriteJSON(w, http.StatusOK, pets.New("dog"))
