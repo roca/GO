@@ -9,6 +9,7 @@ var repo Repository
 
 type Models struct {
 	DogBreed DogBreed
+	Dog      Dog
 }
 
 func New(conn *sql.DB) *Models {

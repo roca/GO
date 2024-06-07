@@ -2,6 +2,7 @@ package models
 
 import (
 	"context"
+	"log"
 	"time"
 )
 
@@ -73,4 +74,25 @@ func (m *mysqlRepository) GetBreedByName(b string) (*DogBreed, error) {
 	}
 
 	return &breed, nil
+}
+
+func (m *mysqlRepository) GetDogOfMonthByID(id int) (*DogOfMonth, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	query := `select id, video, image from dogs_of_month where id = ?`
+
+	var dom DogOfMonth
+
+	err := m.DB.QueryRowContext(ctx, query, id).Scan(
+		&dom.ID,
+		&dom.Video,
+		&dom.Image,
+	)
+	if err != nil {
+		log.Println("Error getting dog of the month by id:", err)
+		return nil, err
+	}
+
+	return &dom, nil
 }
