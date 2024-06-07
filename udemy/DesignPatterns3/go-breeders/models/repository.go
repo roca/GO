@@ -7,6 +7,7 @@ import (
 type Repository interface {
 	AllDogBreeds() ([]*DogBreed, error)
 	GetBreedByName(b string) (*DogBreed, error)
+	GetDogOfMonthByID(id int) (*DogOfMonth, error)
 }
 
 type mysqlRepository struct {

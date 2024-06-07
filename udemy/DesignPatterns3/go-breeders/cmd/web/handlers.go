@@ -2,9 +2,11 @@ package main
 
 import (
 	"fmt"
+	"go-breaders/models"
 	"go-breaders/pets"
 	"net/http"
 	"net/url"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/roca/go-toolkit/v2"
@@ -21,12 +23,39 @@ func (app *application) ShowPage(w http.ResponseWriter, r *http.Request) {
 
 func (app *application) DogOfMonth(w http.ResponseWriter, r *http.Request) {
 	// Get the breed
+	breed, _ := app.App.Models.DogBreed.GetBreedByName("German Shepherd Dog")
 
 	// get the dog of the month from the database
+	dom, _ := app.App.Models.Dog.GetDogOfMonthByID(1)
+
+	timeLayout := "2006-01-02"
+	dob, _ := time.Parse(timeLayout, "2023-11-01")
 
 	// Create dog and decorate it
+	dog := &models.DogOfMonth{
+		Dog: &models.Dog{
+			ID: 1,
+			PetProps: models.PetProps{
+				Name:             "Sam",
+				BreedID:          breed.ID,
+				Color:            "Black & Tan",
+				DataOfBirth:      dob,
+				SpayedOrNeutered: 0,
+				Description:      "A very friendly dog who loves to play fetch.",
+				Weight:           75,
+			},
+			Breed: *breed,
+		},
+		Video: dom.Video,
+		Image: dom.Image,
+	}
 
 	// Serve the web page
+	data := map[string]interface{}{
+		"dog": dog,
+	}
+
+	app.render(w, "dog-of-month.page.gohtml", &templateData{ Data: data})
 }
 
 func (app *application) CreateDogFromFactory(w http.ResponseWriter, r *http.Request) {
