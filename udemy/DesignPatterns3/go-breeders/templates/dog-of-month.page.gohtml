@@ -1,0 +1,22 @@
+{{template "base" .}}
+
+{{define "content"}}
+{{ $dom := index .Data "dog"}}
+<div class="container">
+    <div class="row">
+	<div class="col">
+	    <h3 class="mt-4">Dog of the Month</h3>
+	    <hr>
+	    <div class="row">
+	    	<div class="col">
+			<h2>{{$dom.Dog.Name}}</h2>
+		</div>
+	    	<div class="col">
+
+		</div>
+	    </div>
+	</div>
+    </div>
+</div>
+
+{{end}}
