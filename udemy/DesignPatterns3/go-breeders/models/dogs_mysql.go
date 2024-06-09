@@ -80,7 +80,7 @@ func (m *mysqlRepository) GetDogOfMonthByID(id int) (*DogOfMonth, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	query := `select id, video, image from dogs_of_month where id = ?`
+	query := `select id, video, image from dog_of_month where id = ?`
 
 	var dom DogOfMonth
 
