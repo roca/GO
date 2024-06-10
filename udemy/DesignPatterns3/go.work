@@ -7,4 +7,5 @@ use (
 	./fluent
 	./go-breeders
 	./go-breeders-remote
+	./worker-pool
 )
