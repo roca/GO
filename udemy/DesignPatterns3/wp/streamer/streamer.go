@@ -8,3 +8,12 @@ type ProcessingMessage struct {
 }
 
 type VideoProcessingJob struct{}
+
+type Processor struct {}
+
+
+func New(jobQueue chan VideoProcessingJob, maxWorkers int) *VideoDispatcher {
+	return &VideoDispatcher{
+
+	}
+}

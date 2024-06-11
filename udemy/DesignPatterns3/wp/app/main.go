@@ -17,6 +17,7 @@ func main() {
 	defer close(videoQueue)
 
 	// Get a worker pool.
+	wp := streamer.New(videoQueue,numWorkers)
 
 	// Start the worker pool.
 
