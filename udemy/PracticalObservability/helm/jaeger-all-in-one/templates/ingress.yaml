@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    meta.helm.sh/release-name: jaeger-service
+    meta.helm.sh/release-namespace: app-dev-romel-campbell
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    regeneron.com/manage-tls: "yes"
+  name: jaeger-service
+  namespace: app-dev-romel-campbell
+spec:
+  rules:
+  - host: jaeger-service-app-dev-romel-campbell.eksdev.aws.regeneron.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: jaeger-all-in-one
+            port:
+              number: 16686
+        path: /
+        pathType: ImplementationSpecific

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
 	"time"
 
 	"go.opentelemetry.io/otel"
@@ -27,13 +28,13 @@ var (
 // See
 // 1. https://medium.com/jaegertracing/introducing-native-support-for-opentelemetry-in-jaeger-eb661be8183c
 // 2. https://github.com/open-telemetry/opentelemetry-go/blob/main/example/otel-collector/main.go
-func NewTracerProvider() (trace.TracerProvider, error) {
+func NewTracerProvider(serviceName string) (trace.TracerProvider, error) {
 	ctx := context.Background()
 
 	// Setup the "application resource". This is the way in which the application is identified in OpenTelemetry,
 	// as well as any "core attributes" it has.
 	res, err := resource.New(ctx, resource.WithAttributes(
-		semconv.ServiceName("examples"),
+		semconv.ServiceName(serviceName),
 	))
 
 	if err != nil {
@@ -48,7 +49,7 @@ func NewTracerProvider() (trace.TracerProvider, error) {
 	// Establish a gRPC connection to the place we're sending traces — in this case, jaeger. We expect jaeger to be
 	// running on the same comptuer we're running this application, so we'll just point to it directly at
 	// localhost:4317
-	conn, err := grpc.DialContext(ctx, "localhost:4317",
+	conn, err := grpc.DialContext(ctx, os.Getenv("JAEGER_SVC")+":4317",
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithBlock(),
 	)
