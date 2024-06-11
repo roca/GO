@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	tp, err := setup.NewTracerProvider()
+	tp, err := setup.NewTracerProvider("example02")
 
 	if err != nil {
 		log.Fatal(err)

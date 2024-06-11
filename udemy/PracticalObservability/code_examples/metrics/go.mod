@@ -1,6 +1,6 @@
 module metrics
 
-go 1.22.0
+go 1.22.4
 
 require (
 	github.com/cenkalti/backoff/v4 v4.2.1 // indirect

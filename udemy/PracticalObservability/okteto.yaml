@@ -1,0 +1,25 @@
+dev:
+  go:
+    context: .
+    namespace: app-dev-romel-campbell
+    image: okteto/dev:latest
+    autocreate: true
+    workdir: /var/app
+    sync:
+      - ./code_examples:/var/app
+    command: >
+        /bin/sh -c "
+          go version
+          bash"
+    volumes:
+      - /root/.vscode-server    # persist vscode extensions
+    securityContext:
+      capabilities:
+        add:
+        - SYS_PTRACE            # required by the go debugger
+    forward:
+      - 8080:8080
+    persistentVolume:
+      enabled: true
+    environment:
+      JAEGER_SVC: jaeger-all-in-one.app-dev-romel-campbell.svc.cluster.local
