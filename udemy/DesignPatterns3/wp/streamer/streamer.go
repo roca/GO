@@ -11,7 +11,9 @@ type VideoProcessingJob struct{
 	Video Video
 }
 
-type Processor struct{}
+type Processor struct{
+	Engine Encoder
+}
 
 type Video struct {
 	ID           int
@@ -27,7 +29,9 @@ func New(jobQueue chan VideoProcessingJob, maxWorkers int) *VideoDispatcher {
 	workPool := make(chan chan VideoProcessingJob, maxWorkers)
 
 	// TODO: implement processor logic
-	p := Processor{}
+	p := Processor{
+		Engine: &VideoEncoder{},
+	}
 
 	return &VideoDispatcher{
 		jobQueue:   jobQueue,
