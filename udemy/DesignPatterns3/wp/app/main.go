@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"wp/streamer"
 )
 
@@ -17,7 +18,8 @@ func main() {
 	defer close(videoQueue)
 
 	// Get a worker pool.
-	wp := streamer.New(videoQueue,numWorkers)
+	wp := streamer.New(videoQueue, numWorkers)
+	fmt.Println("wp:", wp)
 
 	// Start the worker pool.
 
