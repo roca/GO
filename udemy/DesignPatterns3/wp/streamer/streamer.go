@@ -13,7 +13,15 @@ type Processor struct {}
 
 
 func New(jobQueue chan VideoProcessingJob, maxWorkers int) *VideoDispatcher {
-	return &VideoDispatcher{
+	workPool := make(chan chan VideoProcessingJob, maxWorkers)
 
+	// TODO: implement processor logic
+	p := Processor{}
+	
+	return &VideoDispatcher{
+		jobQueue:   jobQueue,
+		maxWorkers: maxWorkers,
+		WorkerPool: workPool,
+		Processor:  p,
 	}
 }
