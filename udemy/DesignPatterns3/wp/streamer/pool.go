@@ -8,7 +8,7 @@ type VideoDispatcher struct {
 }
 
 // type videoWorker
-// See http://tleyden.github.io/blog/2013/11/23/understanding-channel-in-go/
+// See https://tleyden.github.io/blog/2013/11/23/understanding-chan-chans-in-go/
 type videoWorker struct {
 	id        int
 	jobQueue  chan VideoProcessingJob
