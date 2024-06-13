@@ -25,6 +25,9 @@ type Video struct {
 	Encoder Processor
 }
 
+func (v *Video) encode() {
+}
+
 func New(jobQueue chan VideoProcessingJob, maxWorkers int) *VideoDispatcher {
 	workPool := make(chan chan VideoProcessingJob, maxWorkers)
 
