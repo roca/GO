@@ -7,11 +7,11 @@ type ProcessingMessage struct {
 	OutputFile string
 }
 
-type VideoProcessingJob struct{
+type VideoProcessingJob struct {
 	Video Video
 }
 
-type Processor struct{
+type Processor struct {
 	Engine Encoder
 }
 
@@ -21,19 +21,44 @@ type Video struct {
 	OutputDir    string
 	EncodingType string
 	NotifyChan   chan ProcessingMessage
-	// Options *VideoOptions
+	Options *VideoOptions
 	Encoder Processor
+}
+
+type VideoOptions struct {
+	RenameOutput bool
+	SegmentDuration int
+	MaxRate1080p string
+	MaxRate720p string
+	MaxRate480p string
+}
+
+func(vd *VideoDispatcher) NewVideo(id int, input string, output string, encType string, notifyChan chan ProcessingMessage,ops *VideoOptions) Video {
+	if ops == nil {
+		ops = &VideoOptions{}
+	}
+	
+	return Video{
+		ID:           id,
+		InputFile:    input,
+		OutputDir:    output,
+		EncodingType: encType,
+		NotifyChan:   notifyChan,
+		Encoder:      vd.Processor,
+		Options: ops,
+	}
 }
 
 func (v *Video) encode() {
 }
-
+ 
 func New(jobQueue chan VideoProcessingJob, maxWorkers int) *VideoDispatcher {
 	workPool := make(chan chan VideoProcessingJob, maxWorkers)
 
 	// TODO: implement processor logic
+	var e VideoEncoder
 	p := Processor{
-		Engine: &VideoEncoder{},
+		Engine: &e,
 	}
 
 	return &VideoDispatcher{

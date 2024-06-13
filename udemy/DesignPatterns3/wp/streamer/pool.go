@@ -41,6 +41,13 @@ func (w videoWorker) start() {
 }
 
 // Run()
+func (vd *VideoDispatcher) Run() {
+	for i := 0; i < vd.maxWorkers; i++ {
+		worker := newVideoWorker(i+1, vd.WorkerPool)
+		worker.start()
+	}
+	go vd.dispatch()
+}
 
 // dispatch()
 func (vd *VideoDispatcher) dispatch() {
