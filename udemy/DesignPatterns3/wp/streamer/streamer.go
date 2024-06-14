@@ -45,6 +45,8 @@ func (vd *VideoDispatcher) NewVideo(id int, input string, output string, encType
 		ops = &VideoOptions{}
 	}
 
+	fmt.Println("NewVideo(): new video created:", id, input)
+
 	return Video{
 		ID:           id,
 		InputFile:    input,
@@ -61,6 +63,7 @@ func (v *Video) encode() {
 	switch v.EncodingType {
 	case "mp4":
 		// encode the video
+		fmt.Println("v.encode(): About to encode to mp4", v.ID)
 		name, err := v.encodeToMP4()
 		if err != nil {
 			v.sendToNotifyChan(false, "", fmt.Sprintf("encode failed for %d: %s", v.ID, err.Error()))
@@ -68,15 +71,18 @@ func (v *Video) encode() {
 		}
 		fileName = fmt.Sprintf("%s.mp4", name)
 	default:
+		fmt.Println("v.encode(): error trying to encode unknown type", v.ID, v.EncodingType)
 		v.sendToNotifyChan(false, "", fmt.Sprintf("unknown encoding type %s", v.EncodingType))
+		return
 	}
 
-	v.sendToNotifyChan(true, fileName, fmt.Sprintf("video id %d processed and save as %s", v.ID, fileName))
+	fmt.Println("v.encode(): sending sucee message for video is", v.ID,"to notifyChan")
+	v.sendToNotifyChan(true, fileName, fmt.Sprintf("video id %d processed and saved as %s", v.ID, fileName))
 }
 
 func (v *Video) encodeToMP4() (string, error) {
 	baseFileName := ""
-
+	fmt.Println("v.encodeToMP4(): about to try to encode video id", v.ID)
 	if !v.Options.RenameOutput {
 		// Get the base file name
 		b := path.Base(v.InputFile)
@@ -89,11 +95,13 @@ func (v *Video) encodeToMP4() (string, error) {
 	if err != nil {
 		return "", err
 	}
+	fmt.Println("v.encodeToMP4(): successfully encoded video id", v.ID)
 
 	return baseFileName, nil
 }
 
 func (v *Video) sendToNotifyChan(success bool, fileName, message string) {
+	fmt.Println("v.sendToNotifyChan(): sending message to notifyChan for video id", v.ID)
 	v.NotifyChan <- ProcessingMessage{
 		ID:         v.ID,
 		Success:    success,
@@ -103,6 +111,7 @@ func (v *Video) sendToNotifyChan(success bool, fileName, message string) {
 }
 
 func New(jobQueue chan VideoProcessingJob, maxWorkers int) *VideoDispatcher {
+	fmt.Println("New(): creating new worker pool with maxWorkers", maxWorkers)
 	workPool := make(chan chan VideoProcessingJob, maxWorkers)
 
 	// TODO: implement processor logic
