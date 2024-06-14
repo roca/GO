@@ -2,6 +2,7 @@ package streamer
 
 import (
 	"fmt"
+	"os/exec"
 
 	"github.com/xfrr/goffmpeg/transcoder"
 )
@@ -41,6 +42,25 @@ func (ve *VideoEncoder) EncodeToMP4(v *Video, baseFileName string) error {
 }
 
 func (ve *VideoEncoder) EncodeToHLS(v *Video, baseFileName string) error {
+	// Create a channel to get results
+	result := make(chan error)
 
+	// Spawn a goroutine to do the encode
+	go func(result chan error) {
+		ffmpegCmd := exec.Command(
+			"ffmpeg",
+			"-i", v.InputFile,
+			"-map", "0:v:0",
+			"-map", "0:a:0",
+		)
+	}(result)
+
+	// Listen to the result channel
+	err := <-result
+	if err != nil {
+		return err
+	}
+	
+	// Return the result
 	return nil
 }
