@@ -75,21 +75,19 @@ func (ve *VideoEncoder) EncodeToHLS(v *Video, baseFileName string) error {
 			"-b:a:1", "128k",
 
 			"-filter:v:2", "scale=-2:480",
-			"-maxrate:v:2", v.Options.MaxRate480p,
+			"-maxrate:v:2", v.Options.MaxRate480p, // Changed to MaxRate480p.
 			"-b:a:2", "64k",
-
-			"-var_stream_map", "v:0,a:0,name:1080p v:1,a:1,name:720p v:2,a:2,name:480p",
-
+			"-var_stream_map", "v:0,a:0,name:1080p v:1,a:1,name:720p v:2,a:2,name:480p", // changed = to dash in 720
 			"-preset", "slow",
 			"-hls_list_size", "0",
 			"-threads", "0",
 			"-f", "hls",
 			"-hls_playlist_type", "event",
 			"-hls_time", strconv.Itoa(v.Options.SegmentDuration),
-			"hls_flags", "indepent_segments",
+			"-hls_flags", "independent_segments", // fixed missing dash and spelling of independent.
 			"-hls_segment_type", "mpegts",
 			"-hls_playlist_type", "vod",
-			"master_pl_name", fmt.Sprintf("%s.m3u8", baseFileName),
+			"-master_pl_name", fmt.Sprintf("%s.m3u8", baseFileName),
 			"-profile:v", "baseline",
 			"-level", "3.0",
 			"-progress", "-",
