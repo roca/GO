@@ -27,6 +27,7 @@ func main() {
 
 	// Create a video to send to the worker pool.
 	ops := &streamer.VideoOptions{
+		RenameOutput: true,
 		SegmentDuration: 10,
 		MaxRate1080p:   "12000k",
 		MaxRate720p: "600k",
