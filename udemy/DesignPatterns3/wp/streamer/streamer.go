@@ -5,6 +5,8 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
+
+	"github.com/roca/go-toolkit/v2"
 )
 
 type ProcessingMessage struct {
@@ -78,14 +80,14 @@ func (v *Video) encode() {
 			v.sendToNotifyChan(false, "", fmt.Sprintf("encode failed for %d: %s", v.ID, err.Error()))
 			return
 		}
-		fileName = fmt.Sprintf("%s.m3u8", name)	
+		fileName = fmt.Sprintf("%s.m3u8", name)
 	default:
 		fmt.Println("v.encode(): error trying to encode unknown type", v.ID, v.EncodingType)
 		v.sendToNotifyChan(false, "", fmt.Sprintf("unknown encoding type %s", v.EncodingType))
 		return
 	}
 
-	fmt.Println("v.encode(): sending sucee message for video is", v.ID,"to notifyChan")
+	fmt.Println("v.encode(): sending sucee message for video is", v.ID, "to notifyChan")
 	v.sendToNotifyChan(true, fileName, fmt.Sprintf("video id %d processed and saved as %s", v.ID, fileName))
 }
 
@@ -97,7 +99,8 @@ func (v *Video) encodeToMP4() (string, error) {
 		b := path.Base(v.InputFile)
 		baseFileName = strings.TrimSuffix(b, filepath.Ext(b))
 	} else {
-		//TODo: Generate random file name
+		var t toolkit.Tools
+		baseFileName = t.RandomString(10)
 	}
 
 	err := v.Encoder.Engine.EncodeToMP4(v, baseFileName)
@@ -117,7 +120,8 @@ func (v *Video) encodeToHLS() (string, error) {
 		b := path.Base(v.InputFile)
 		baseFileName = strings.TrimSuffix(b, filepath.Ext(b))
 	} else {
-		//TODo: Generate random file name
+		var t toolkit.Tools
+		baseFileName = t.RandomString(10)
 	}
 
 	err := v.Encoder.Engine.EncodeToHLS(v, baseFileName)
