@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"go-breaders/adapters"
 	"go-breaders/configuration"
+	"go-breaders/streamer"
 	"html/template"
 	"log"
 	"net/http"
@@ -17,6 +18,7 @@ type application struct {
 	templateMap map[string]*template.Template
 	config      appConfig
 	App         *configuration.Application
+	videoQueue  chan streamer.VideoProcessingJob
 }
 
 type appConfig struct {
