@@ -1,0 +1,15 @@
+{
+  "editor.fontSize": 22,
+  "editor.formatOnPaste": true,
+  "editor.formatOnSave": true,
+  "editor.lineNumbers": "on",
+  "editor.minimap.enabled": false,
+  "editor.smoothScrolling": true,
+  "emmet.triggerExpansionOnTab": true,
+  "explorer.openEditors.visible": 0,
+  "files.autoSave": "afterDelay",
+  "terminal.integrated.fontSize": 18,
+  "workbench.colorTheme": "Visual Studio Dark",
+  "workbench.fontAliasing": "antialiased",
+  "workbench.statusBar.visible": true
+}
