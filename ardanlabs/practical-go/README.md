@@ -4,4 +4,3 @@
 - [link2: Practical Go for Developers](https://www.353solutions.com/c/znga/)
 
 ## Day 01 - Part01
- - video at 20:37
