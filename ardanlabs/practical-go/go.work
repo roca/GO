@@ -1,0 +1,7 @@
+go 1.22.4
+
+use (
+	./course-material/code
+	./course-material/code/nlp
+	./course-work/code
+)
