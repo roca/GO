@@ -5,3 +5,5 @@
 - [link3: Go source](https://github.com/golang/go)
 
 ## Day 01 - Part01
+
+## Day 01 - Part02: video 06:00
