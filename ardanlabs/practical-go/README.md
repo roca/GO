@@ -7,3 +7,5 @@
 ## Day 01 - Part01
 
 ## Day 01 - Part02: video  42:00
+
+## Day 01 - Part03: video  00:00
