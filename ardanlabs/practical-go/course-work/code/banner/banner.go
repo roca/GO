@@ -13,11 +13,11 @@ func main() {
 	fmt.Println("len:", len(s))
 	// code point = rune ~= unicode character
 	for i, r := range s {
-		fmt.Println(i, r)
-		if i == 0 {
-			fmt.Printf("%c:%d of type %T\n", r, r, r)
-			// rune (int32)
-		}
+		//fmt.Println(i, r)
+		//if i == 0 {
+		fmt.Printf("%d) %c:%d of type %T\n", i, r, r, r)
+		// rune (int32)
+		//}
 	}
 
 	b := s[0]
