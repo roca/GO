@@ -1,27 +1,52 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
-	"os"
+	"net/url"
 )
 
+// type Reply struct {
+// 	Name            string `json:"name"`
+// 	PublicRepoCount int    `json:"public_repos"`
+// }
+
 func main() {
-	resp, err := http.Get("https://api.github.com/users/roca")
+	name, count, err := githubInfo("roca")
 	if err != nil {
-		log.Fatalf("error: %s", err)
+		log.Fatalln(err)
+	}
+	fmt.Println("Name:", name)
+	fmt.Println("PublicRepoCount:", count)
+
+	fmt.Println(githubInfo("tebeka"))
+}
+
+// githubInfo returns the name and public repo count of a GitHub user.
+func githubInfo(login string) (string, int, error) {
+	url := "https://api.github.com/users/" + url.PathEscape(login)
+	resp, err := http.Get(fmt.Sprintf(url))
+	if err != nil {
+		return "", 0, err
 	}
 	defer resp.Body.Close()
+
 	if resp.StatusCode != http.StatusOK {
-		log.Fatalf("error: %s", resp.Status)
+		return "", 0, fmt.Errorf("%#v - %s", url, resp.Status)
 	}
 
-	fmt.Printf("Content-Type: %s\n", resp.Header.Get("Content-Type"))
-	if _, err := io.Copy(os.Stdout, resp.Body); err != nil {
-		log.Fatalf("error: %s", err)
+	var r struct { // anonymous struct
+		Name            string `json:"name"`
+		PublicRepoCount int    `json:"public_repos"`
 	}
+	dec := json.NewDecoder(resp.Body)
+	if err := dec.Decode(&r); err != nil {
+		return "", 0, err
+	}
+
+	return r.Name, r.PublicRepoCount, nil
 }
 
 /* JSON <-> Go
@@ -38,4 +63,3 @@ JSON -> []byte -> Go: json.Unmarshal
 Go -> io.Writer -> JSON: json.Encoder
 Go -> []byte -> JSON: json.Marshal
 */
-
