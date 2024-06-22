@@ -10,4 +10,4 @@
 
 ## Day 01 - Part03: done
 
-## Day 01 - Part04: video  00:00
+## Day 01 - Part04: video  03:00
