@@ -44,7 +44,7 @@ func main() {
 	v2 := []float64{1, 6, 3, 4, 5, 2}
 	fmt.Println(median(v1)) // 3
 
-	m ,_ := median(v2)
+	m, _ := median(v2)
 	fmt.Println(m) // 3.5
 
 	fmt.Println(v1)
@@ -67,7 +67,7 @@ func median(values []float64) (float64, error) {
 	sort.Float64s(nums)
 	i := len(nums) / 2
 	if len(nums)%2 == 0 {
-		const n = 2                      // type undefined until when used
+		const n = 2                           // type undefined until when used
 		return (nums[i-1] + nums[i]) / n, nil // n is used here and is now a float64
 	}
 	return nums[i], nil
