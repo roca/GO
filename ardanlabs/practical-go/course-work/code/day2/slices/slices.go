@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"sort"
+)
 
 func main() {
 	var s []int                // s is a slice of int
@@ -32,19 +35,51 @@ func main() {
 	}
 	fmt.Printf("s4: len=%d, cap=%d\n", len(s4), cap(s4))
 	// s4[1001] = 7 // panic if out of range
-	s4 = append(s4,7)
+	s4 = append(s4, 7)
 	fmt.Printf("s4: len=%d, cap=%d\n", len(s4), cap(s4))
 
 	fmt.Println((concat([]string{"A", "B"}, []string{"C", "D", "E"}))) // ["A", "B", "C", "D", "E"]
+
+	v1 := []float64{5, 3, 4, 1, 2}
+	v2 := []float64{1, 6, 3, 4, 5, 2}
+	fmt.Println(median(v1)) // 3
+
+	m ,_ := median(v2)
+	fmt.Println(m) // 3.5
+
+	fmt.Println(v1)
+	fmt.Println(v2)
+
+	_, err := median(nil)
+	if err != nil {
+		fmt.Println(err)
+	}
 }
 
-func concat(s1,s2 []string) []string {
+func median(values []float64) (float64, error) {
+	if values == nil || len(values) == 0 {
+		return 0, fmt.Errorf("nil or empty slice given")
+	}
+	// Copy in order not to modify the original slice
+	nums := make([]float64, len(values))
+	copy(nums, values)
+
+	sort.Float64s(nums)
+	i := len(nums) / 2
+	if len(nums)%2 == 0 {
+		const n = 2                      // type undefined until when used
+		return (nums[i-1] + nums[i]) / n, nil // n is used here and is now a float64
+	}
+	return nums[i], nil
+}
+
+func concat(s1, s2 []string) []string {
 	// Restriction: No "for" loop, no "range
 	s := make([]string, len(s1)+len(s2))
 	copy(s, s1)
 	copy(s[len(s1):], s2)
 	return s
-	
+
 	// return append(s1, s2...)
 }
 
