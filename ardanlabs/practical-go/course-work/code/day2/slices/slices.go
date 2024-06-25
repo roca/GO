@@ -19,4 +19,10 @@ func main() {
 	s3 = append(s3, 100)
 	fmt.Printf("s3 (appended) = %#v\n", s3)
 	fmt.Printf("s2 (appended) = %#v\n", s2) // s2 is modified as well!
+	fmt.Printf("s2: len=%d, cap=%d\n", len(s2), cap(s2))
+	fmt.Printf("s3: len=%d, cap=%d\n", len(s3), cap(s3))
+}
+
+func appendInt(s []int, v int) []int {
+	return nil
 }
