@@ -59,6 +59,30 @@ type mover interface {
 	Move(x, y int)
 }
 
+type Key byte
+
+//Go's version of enums
+const (
+	Jade Key = iota + 1
+	Copper
+	Crystal
+)
+
+
+// Implement the fmt.Stringer interface
+func (k Key) String() string {
+	switch k {
+	case Jade:
+		return "Jade"
+	case Copper:
+		return "Copper"
+	case Crystal:
+		return "Crystal"
+	default:
+		return fmt.Sprintf("Unknown key: %d", k)
+	}
+}
+
 func main() {
 	var i1 Item
 	fmt.Println(i1)
@@ -99,4 +123,10 @@ func main() {
 		fmt.Printf("%#v\n", m)
 	}
 
+	   k := Copper
+	   fmt.Printf("k: %d\n", k)
+	   fmt.Printf("k: %s\n", k)
+	   fmt.Printf("k: %#v\n", k)
+
+	   fmt.Println("key:", Key(17))
 }
