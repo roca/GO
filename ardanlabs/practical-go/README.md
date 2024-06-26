@@ -14,4 +14,10 @@
 
 ## Day 02 - Part01: done
 
-## Day 02 - Part02: video  25:00
+## Day 02 - Part02: video  38:00
+
+- shows escape analysis
+
+```sh
+go build -gcflags=-m
+```
