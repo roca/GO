@@ -25,6 +25,7 @@ func NewItem(x, y int) (*Item, error) {
 
 	// The Go compiler does "escape analysis" to determine if the item variable can be allocated on the stack or heap
 	// returning a pointer to the item variable will force the compiler to allocate the item variable on the heap
+	// go build -gcflags=-m shows escape analysis
 	return &item, nil
 }
 
@@ -38,6 +39,24 @@ type Player struct {
 	Name string
 	// X int
 	Item // Embed Item in Player
+}
+
+// func (p *Player) Move(x, y int) {
+// 	p.Item.Move(x, y)
+
+// }
+
+//Rule of thumb: Accept interfaces, return concrete types
+
+func moveAll(ms []mover, x, y int) {
+	for _, m := range ms {
+		m.Move(x, y)
+	}
+
+}
+
+type mover interface {
+	Move(x, y int)
 }
 
 func main() {
@@ -62,10 +81,22 @@ func main() {
 
 	p1 := Player{
 		Name: "Parzival",
-		Item: Item{X:500, Y:300},
+		Item: Item{X: 500, Y: 300},
 	}
 	fmt.Printf("p1: %#v\n", p1)
 	fmt.Printf("p1.X: %#v\n", p1.X)
 	fmt.Printf("p1.Item.X: %#v\n", p1.Item.X)
+	p1.Move(400, 600)
+	fmt.Printf("p1 (Move): %#v\n", p1)
+
+	ms := []mover{
+		&i1,
+		&p1,
+		&i2,
+	}
+	moveAll(ms, 0, 0)
+	for _, m := range ms {
+		fmt.Printf("%#v\n", m)
+	}
 
 }
