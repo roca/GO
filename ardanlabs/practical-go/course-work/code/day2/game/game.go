@@ -1,6 +1,8 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 // Item is an item in the game
 type Item struct {
@@ -39,6 +41,7 @@ type Player struct {
 	Name string
 	// X int
 	Item // Embed Item in Player
+	Keys []Key
 }
 
 // func (p *Player) Move(x, y int) {
@@ -61,13 +64,13 @@ type mover interface {
 
 type Key byte
 
-//Go's version of enums
+// Go's version of enums
 const (
 	Jade Key = iota + 1
 	Copper
 	Crystal
+	invalidKey // internal (not exported)
 )
-
 
 // Implement the fmt.Stringer interface
 func (k Key) String() string {
@@ -81,6 +84,30 @@ func (k Key) String() string {
 	default:
 		return fmt.Sprintf("Unknown key: %d", k)
 	}
+}
+
+// FoundKey adds a key to the player's keyring
+// If the key is not a known key, it returns an error
+// If the key is already in the keyring, it does nothing
+func (p *Player) FoundKey(k Key) error {
+	if k < Jade || k >= invalidKey {
+		return fmt.Errorf("%s", k)
+	}
+
+	if !containsKey(p.Keys, k) {
+		p.Keys = append(p.Keys, k)
+	}
+
+	return nil
+}
+
+func containsKey(keys []Key, k Key) bool {
+	for _, key := range keys {
+		if key == k {
+			return true
+		}
+	}
+	return false
 }
 
 func main() {
@@ -123,10 +150,13 @@ func main() {
 		fmt.Printf("%#v\n", m)
 	}
 
-	   k := Copper
-	   fmt.Printf("k: %d\n", k)
-	   fmt.Printf("k: %s\n", k)
-	   fmt.Printf("k: %#v\n", k)
+	k := Copper
+	fmt.Printf("k: %d\n", k)
+	fmt.Printf("k: %s\n", k)
+	fmt.Printf("k: %#v\n", k)
 
-	   fmt.Println("key:", Key(17))
+	fmt.Println("key:", Key(17))
+
+	p1.FoundKey(Jade)
+	fmt.Printf("p1: %v\n", p1)
 }
