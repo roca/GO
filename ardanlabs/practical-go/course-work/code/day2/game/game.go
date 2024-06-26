@@ -13,7 +13,6 @@ const (
 	maxY = 600
 )
 
-
 func NewItem(x, y int) (*Item, error) {
 	if x < 0 || x >= maxX || y < 0 || y >= maxY {
 		return nil, fmt.Errorf("%d/%d out of bounds %d/%d", x, y, maxX, maxY)
@@ -29,14 +28,17 @@ func NewItem(x, y int) (*Item, error) {
 	return &item, nil
 }
 
-
 // if you want to mutate, use a pointer receiver
-func (i *Item) Move(x,y int) {
+func (i *Item) Move(x, y int) {
 	i.X = x
 	i.Y = y
 }
 
-
+type Player struct {
+	Name string
+	// X int
+	Item // Embed Item in Player
+}
 
 func main() {
 	var i1 Item
@@ -52,11 +54,18 @@ func main() {
 	}
 	fmt.Printf("i3: %#v\n", i3)
 
-	fmt.Println(NewItem(10,20))
-	fmt.Println(NewItem(10,-20))
+	fmt.Println(NewItem(10, 20))
+	fmt.Println(NewItem(10, -20))
 
-	i3.Move(100,200)
+	i3.Move(100, 200)
 	fmt.Printf("i3 (Move): %#v\n", i3)
 
-}
+	p1 := Player{
+		Name: "Parzival",
+		Item: Item{X:500, Y:300},
+	}
+	fmt.Printf("p1: %#v\n", p1)
+	fmt.Printf("p1.X: %#v\n", p1.X)
+	fmt.Printf("p1.Item.X: %#v\n", p1.Item.X)
 
+}
