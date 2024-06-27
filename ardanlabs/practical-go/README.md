@@ -22,4 +22,4 @@
 go build -gcflags=-m
 ```
 
-## Day 02 - Part03: video 30:00
+## Day 02 - Part03: video 35:00
