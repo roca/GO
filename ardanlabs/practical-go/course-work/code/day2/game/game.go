@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"slices"
 )
 
 // Item is an item in the game
@@ -94,7 +95,11 @@ func (p *Player) FoundKey(k Key) error {
 		return fmt.Errorf("%s", k)
 	}
 
-	if !containsKey(p.Keys, k) {
+	// if !containsKey(p.Keys, k) {
+	// 	p.Keys = append(p.Keys, k)
+	// }
+
+	if !slices.Contains(p.Keys, k) {
 		p.Keys = append(p.Keys, k)
 	}
 
