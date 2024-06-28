@@ -8,7 +8,10 @@ import (
 	"io"
 	"log"
 	"os"
+	"regexp"
 )
+
+var wordRe = regexp.MustCompile(`[a-zA-Z]+`)
 
 func main() {
 	// read the file
