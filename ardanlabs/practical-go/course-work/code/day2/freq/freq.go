@@ -11,7 +11,16 @@ import (
 	"regexp"
 )
 
-var wordRe = regexp.MustCompile(`[a-zA-Z]+`)
+// Who's on first -> [Who s on first]
+var wordRe *regexp.Regexp = regexp.MustCompile(`\w+`)
+
+//var wordRe *regexp.Regexp = regexp.MustCompile(`[a-zA-Z]+`)
+
+/* Will run before main
+func init() {
+
+}
+*/
 
 func main() {
 	// read the file
@@ -21,7 +30,13 @@ func main() {
 	}
 	defer file.Close()
 
-	wordFrequency(file)
+	wordCount, err := wordFrequency(file)
+	if err != nil {
+		log.Fatalf("error: %s", err)
+	}
+	for word, count := range wordCount {
+		fmt.Printf("%s: %d\n", word, count)
+	}
 	// count the frequency of each word
 	// print the most common word
 }
@@ -29,10 +44,18 @@ func main() {
 func wordFrequency(r io.Reader) (map[string]int, error) {
 	// read from r one line at a time
 	s := bufio.NewScanner(r)
+	wordCount := make(map[string]int)
 	lnum := 0
 	for s.Scan() {
-		lnum++
-		s.Text() // current line
+		words := wordRe.FindAllString(s.Text(), -1) // current line
+		if len(words) != 0 {
+			lnum++
+			fmt.Println(words)
+			for _, word := range words {
+				wordCount[word]++
+			}
+			break
+		}
 	}
 	if err := s.Err(); err != nil {
 		return nil, err
@@ -42,5 +65,5 @@ func wordFrequency(r io.Reader) (map[string]int, error) {
 	// count the frequency of each word
 	// return the frequency map
 
-	return nil, nil
+	return wordCount, nil
 }
