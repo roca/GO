@@ -24,7 +24,7 @@ go build -gcflags=-m
 
 ## Day 02 - Part03: done
 
-## Day 02 - Part04: video 35:00
+## Day 02 - Part04: Exercises
 
 - https://regex101.com/
 - https://emailregex.com
