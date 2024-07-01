@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"sync"
+	"time"
 )
 
 func main() {
@@ -41,13 +42,13 @@ func main() {
 	}
 
 	/* for/range loop with ok
-	for {
-		msg, ok := <-ch
-		if !ok {
-			break
-		}
-}		fmt.Println(msg)
-        }
+		for {
+			msg, ok := <-ch
+			if !ok {
+				break
+			}
+	}		fmt.Println(msg)
+	        }
 	*/
 
 	msg = <-ch // ch is closed, so this will return zero value of string
@@ -60,4 +61,37 @@ func main() {
 	// close(ch) // panic: close of closed channel
 
 	// send/receive to a nil channel will block forever
+
+	fmt.Println("sleepSort:", sleepSort([]int{3, 1, 4, 1, 5, 9, 2, 6, 5, 3}))
+}
+
+/*
+
+For every value "n" in values, spin a goroutine that will
+- sleep "n" milliseconds
+- Send "n" over a channel
+
+In the function body, collect values from the channel to a slice and return it.
+*/
+
+func sleepSort(values []int) []int {
+	// wg := sync.WaitGroup{}
+	ch := make(chan int)
+	var sorted []int
+
+	for n := range values {
+		// wg.Add(1)
+		go func(n int) {
+			time.Sleep(time.Duration(n) * time.Millisecond)
+			ch <- n
+			// wg.Done()
+		}(n)
+	}
+	// wg.Wait()
+
+	for n := range ch {
+		sorted = append(sorted, n)
+	}
+
+	return sorted
 }
