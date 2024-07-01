@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"slices"
+	"sort"
 )
 
 // Item is an item in the game
@@ -51,6 +52,18 @@ type Player struct {
 // }
 
 //Rule of thumb: Accept interfaces, return concrete types
+
+func sortByDistance(players []Player, x, y int) {
+	sort.Slice(players, func(i, j int) bool {
+		return distance(players[i].X, players[i].Y, x, y) < distance(players[j].X, players[j].Y, x, y)
+	})
+}
+
+func distance(x1, y1, x2, y2 int) int {
+	dx := x1 - x2
+	dy := y1 - y2
+	return dx*dx + dy*dy
+}
 
 func moveAll(ms []mover, x, y int) {
 	for _, m := range ms {
