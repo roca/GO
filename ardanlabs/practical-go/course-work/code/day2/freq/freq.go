@@ -5,7 +5,6 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"io"
 	"log"
 	"os"
 	"regexp"
@@ -39,15 +38,33 @@ func main() {
 	for word, count := range freqs {
 		fmt.Printf("%s: %d\n", word, count)
 	}
-
+	
 	mostFreqWord, mostFreqCount, err := maxWord(freqs)
 	if err != nil {
 		log.Fatalf("error: %s", err)
 	}
 
 	fmt.Printf("Most common word: %s (%d)\n", mostFreqWord, mostFreqCount)
-	// count the frequency of each word
-	// print the most common word
+
+	topSevenWords, err := mostCommon(file, 7)
+	if err != nil {
+		log.Fatalf("error: %s", err)
+	}
+	fmt.Println("Most common 7", topSevenWords)
+}
+
+func mostCommon(r *os.File, n int) ([]string, error) {
+	freqs, err := wordFrequency(r)
+	if err != nil {
+		return nil, err
+	}
+
+	words := sortByFrequenceCount(freqs)
+	if n > len(words) {
+		n = len(words)
+	}
+	return words[:n], nil
+
 }
 
 func sortByFrequenceCount(freqs map[string]int) []string {
@@ -75,7 +92,7 @@ func maxWord(freqs map[string]int) (string, int, error) {
 	return maxW, maxN, nil
 }
 
-func wordFrequency(r io.Reader) (map[string]int, error) {
+func wordFrequency(r *os.File) (map[string]int, error) {
 	s := bufio.NewScanner(r)
 	freqs := make(map[string]int)
 	for s.Scan() {
@@ -87,6 +104,7 @@ func wordFrequency(r io.Reader) (map[string]int, error) {
 	if err := s.Err(); err != nil {
 		return nil, err
 	}
+	r.Seek(0, 0)
 
 	return freqs, nil
 }
