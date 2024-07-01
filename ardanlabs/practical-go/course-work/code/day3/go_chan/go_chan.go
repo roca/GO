@@ -75,22 +75,21 @@ In the function body, collect values from the channel to a slice and return it.
 */
 
 func sleepSort(values []int) []int {
-	// wg := sync.WaitGroup{}
 	ch := make(chan int)
 	var sorted []int
 
 	for n := range values {
-		// wg.Add(1)
 		go func(n int) {
 			time.Sleep(time.Duration(n) * time.Millisecond)
 			ch <- n
-			// wg.Done()
 		}(n)
 	}
-	// wg.Wait()
 
 	for n := range ch {
 		sorted = append(sorted, n)
+		if len(sorted) == len(values) {
+			close(ch)
+		}
 	}
 
 	return sorted
