@@ -28,3 +28,7 @@ go build -gcflags=-m
 
 - https://regex101.com/
 - https://emailregex.com
+
+## Day 03 - Part01: Video 05:00
+
+- https://www.ardanlabs.com/blog/2018/08/scheduling-in-go-part2.html
