@@ -1,6 +1,6 @@
 # Practical Go Foundations
 
-- [link1: ArdanLabs](https://courses.ardanlabs.com/courses/take/practical-go-foundations
+- [link1: ArdanLabs](https://courses.ardanlabs.com/courses/take/practical-go-foundations/lessons/39408320-day-03-part-02)
 - [link2: Practical Go for Developers](https://www.353solutions.com/c/znga/)
 - [link3: Go source](https://github.com/golang/go)
 
@@ -33,5 +33,5 @@ go build -gcflags=-m
 
 - https://www.ardanlabs.com/blog/2018/08/scheduling-in-go-part2.html
 
-## Day 03 - Part02:  Video 00:00
+## Day 03 - Part02:  Video 15:00
 
