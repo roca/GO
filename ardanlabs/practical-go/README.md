@@ -33,4 +33,4 @@ go build -gcflags=-m
 
 - https://www.ardanlabs.com/blog/2018/08/scheduling-in-go-part2.html
 
-## Day 03 - Part02:  Video 23:00
+## Day 03 - Part02:  Video 34:00
