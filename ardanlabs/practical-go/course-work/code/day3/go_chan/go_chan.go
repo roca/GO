@@ -62,7 +62,7 @@ func main() {
 
 	// send/receive to a nil channel will block forever
 
-	fmt.Println("sleepSort:", sleepSort([]int{3, 1, 4, 1, 5, 9, 2, 6, 5, 3}))
+	fmt.Println("sleepSort:", sleepSort([]int{15, 8, 42, 16, 4, 23}))
 }
 
 /*
@@ -78,7 +78,7 @@ func sleepSort(values []int) []int {
 	ch := make(chan int)
 	var sorted []int
 
-	for n := range values {
+	for _,n := range values {
 		go func(n int) {
 			time.Sleep(time.Duration(n) * time.Millisecond)
 			ch <- n
