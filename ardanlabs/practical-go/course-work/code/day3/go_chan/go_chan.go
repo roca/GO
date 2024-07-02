@@ -85,11 +85,15 @@ func sleepSort(values []int) []int {
 		}(n)
 	}
 
-	for n := range ch {
-		sorted = append(sorted, n)
-		if len(sorted) == len(values) {
-			close(ch)
-		}
+	// for n := range ch {
+	// 	sorted = append(sorted, n)
+	// 	if len(sorted) == len(values) {
+	// 		close(ch)
+	// 	}
+	// }
+
+	for range values {
+		sorted = append(sorted, <-ch)
 	}
 
 	return sorted
