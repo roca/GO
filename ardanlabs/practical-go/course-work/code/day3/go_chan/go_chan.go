@@ -78,7 +78,7 @@ func sleepSort(values []int) []int {
 	ch := make(chan int)
 	var sorted []int
 
-	for _,n := range values {
+	for _, n := range values {
 		go func(n int) {
 			time.Sleep(time.Duration(n) * time.Millisecond)
 			ch <- n
@@ -92,7 +92,7 @@ func sleepSort(values []int) []int {
 	// 	}
 	// }
 
-	for range values {
+	for range len(values) {
 		sorted = append(sorted, <-ch)
 	}
 
