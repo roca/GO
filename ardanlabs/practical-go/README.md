@@ -1,6 +1,6 @@
 # Practical Go Foundations
 
-- [link1: ArdanLabs](https://courses.ardanlabs.com/courses/take/practical-go-foundations/lessons/39408320-day-03-part-02)
+- [link1: ArdanLabs](https://courses.ardanlabs.com/courses/take/practical-go-foundations/lessons/39408320-day-03-part-03)
 - [link2: Practical Go for Developers](https://www.353solutions.com/c/znga/)
 - [link3: Go source](https://github.com/golang/go)
 
