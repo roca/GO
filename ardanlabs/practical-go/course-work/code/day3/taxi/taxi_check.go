@@ -34,7 +34,7 @@ type fileSigResult struct {
 	expectedSig string
 	actualSig   string
 	fileName    string
-	ok          bool
+	match       bool
 	err         error
 }
 
@@ -92,24 +92,34 @@ func main() {
 	start := time.Now()
 	ch := make(chan fileSigResult)
 
-	for name, signature := range sigs {
-		go func(name, signature string) {
-			fileName := path.Join(rootDir, name) + ".bz2"
-			sig, err := fileSig(fileName)
-			if err != nil {
-				ch <- fileSigResult{signature, sig, fileName, sig == signature, err}
-				return
-			}
+	//runtime.GOMAXPROCS(runtime.NumCPU())
 
-			ch <- fileSigResult{signature, sig, fileName, sig == signature, nil}
-		}(name, signature)
+	for name, signature := range sigs {
+		fileName := path.Join(rootDir, name) + ".bz2"
+		go sigWorker(fileName, signature, ch)
 	}
 
 	for range sigs {
 		result := <-ch
-		fmt.Printf("file: %s, expected: %s, actual: %s, ok: %v, error: %v\n", result.fileName, result.expectedSig, result.actualSig, result.ok, result.err)
+		fmt.Printf("file: %s, expected: %s, actual: %s, ok: %v, error: %v\n", result.fileName, result.expectedSig, result.actualSig, result.match, result.err)
 	}
 
 	duration := time.Since(start)
 	fmt.Printf("processed %d files in %v\n", len(sigs), duration)
+}
+
+func sigWorker(fileName string, signature string, ch chan<- fileSigResult) {
+	result := fileSigResult{
+		expectedSig: signature,
+		fileName:    fileName,
+	}
+	sig, err := fileSig(fileName)
+	result.actualSig = sig
+	if err != nil {
+		result.err = err
+	} else {
+		result.match = sig == signature
+	}
+
+	ch <- result
 }
