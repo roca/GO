@@ -14,6 +14,7 @@ func siteTime(url string) {
 	resp, err := http.Get(url)
 	if err != nil {
 		log.Printf("Error: %s -> %s\n", url, err)
+		return
 	}
 
 	defer resp.Body.Close()
@@ -34,6 +35,7 @@ func main() {
 		"https://www.twitter.com",
 		"https://www.linkedin.com",
 		"https://www.youtube.com",
+		"https://no-such-site.biz",
 	}
 
 	var wg sync.WaitGroup
