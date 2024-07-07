@@ -11,7 +11,7 @@ func main() {
 	// We have 50 msec to return an answer
 	ctx, cancel := context.WithTimeout(context.Background(), 50*time.Millisecond) // TODO
 	defer cancel()
-	url := "http://go.dev"
+	url := "https://go.dev"
 	bid := bidOn(ctx, url)
 	fmt.Println(bid)
 }
@@ -19,14 +19,15 @@ func main() {
 // If algo didn't finish in time, return a default bid
 func bidOn(ctx context.Context, url string) Bid {
 	// TODO
-	bid := make(chan Bid)
-	go func() {
-		bid <- bestBid(url)
-	}()
+	ch := make(chan Bid, 1) // buffered channel to avoid goroutine leak
+	go func(ch chan <- Bid) {
+		ch <- bestBid(url)
+	}(ch)
+	defer close(ch)
 
 	select {
-	case b := <-bid:
-		return b
+	case bid := <-ch:
+		return bid
 	case <-ctx.Done():
 		return defaultBid
 	}
