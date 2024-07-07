@@ -1,11 +1,13 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"net/url"
+	"time"
 )
 
 // type Reply struct {
@@ -14,20 +16,30 @@ import (
 // }
 
 func main() {
-	name, count, err := githubInfo("roca")
+	ctx, canmcel := context.WithTimeout(context.Background(), 3*time.Millisecond)
+	defer canmcel()
+
+	name, count, err := githubInfo(ctx, "roca")
 	if err != nil {
 		log.Fatalln(err)
 	}
 	fmt.Println("Name:", name)
 	fmt.Println("PublicRepoCount:", count)
 
-	fmt.Println(githubInfo("tebeka"))
+
+	fmt.Println(githubInfo(ctx, "tebeka"))
 }
 
 // githubInfo returns the name and public repo count of a GitHub user.
-func githubInfo(login string) (string, int, error) {
+func githubInfo(ctx context.Context, login string) (string, int, error) {
 	url := "https://api.github.com/users/" + url.PathEscape(login)
-	resp, err := http.Get(fmt.Sprintf(url))
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return "", 0, err
+	}
+
+	// resp, err := http.Get(fmt.Sprintf(url))
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return "", 0, err
 	}
