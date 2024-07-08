@@ -39,4 +39,4 @@ go build -gcflags=-m
 
 ## Day 03 - Part04: Done
 
-## Day 04 - Part02: Video 07:00
+## Day 04 - Part02: Video 34:00
