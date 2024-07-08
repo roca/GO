@@ -4,4 +4,5 @@ use (
 	./course-material/code
 	./course-material/code/nlp
 	./course-work/code
+	./course-work/code/day4/nlp
 )

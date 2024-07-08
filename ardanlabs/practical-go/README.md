@@ -1,6 +1,6 @@
 # Practical Go Foundations
 
-- [link1: ArdanLabs](https://courses.ardanlabs.com/courses/take/practical-go-foundations/lessons/39408328-day-03-part-04)
+- [link1: ArdanLabs](https://courses.ardanlabs.com/courses/take/practical-go-foundations/lessons/39408547-day-04-part-02)
 - [link2: Practical Go for Developers](https://www.353solutions.com/c/znga/)
 - [link3: Go source](https://github.com/golang/go)
 
@@ -37,4 +37,6 @@ go build -gcflags=-m
 
 ## Day 03 - Part03: Doce
 
-## Day 03 - Part04: Video 50:00
+## Day 03 - Part04: Done
+
+## Day 04 - Part02: Video 00:00
