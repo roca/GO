@@ -7,7 +7,5 @@
 		"sound": "off",
 		"announcement": "off"
 	},
-	"accessibility.signalOptions": {
-		"volume": 15
-	}
+	"accessibility.signalOptions.volume": 15
 }

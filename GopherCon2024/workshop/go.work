@@ -1,0 +1,6 @@
+go 1.22.4
+
+use (
+	./class_code/gc24
+	./class_code/service
+)

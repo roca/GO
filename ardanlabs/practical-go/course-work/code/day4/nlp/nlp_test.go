@@ -12,7 +12,7 @@ import (
 // 	text   string
 // 	tokens []string
 // }{
-// 	{"What's on first?", []string{"what", "s", "on", "first"}},
+// 	{"What's on first?", []string{"what", "on", "first"}},
 // 	{"", nil},
 // }
 
@@ -50,7 +50,7 @@ func TestTokenizeTable(t *testing.T) {
 
 func TestTokenize(t *testing.T) {
 	text := "What's on second?"
-	expected := []string{"what", "s", "on", "second"}
+	expected := []string{"what", "on", "second"}
 	tokens := Tokenize(text)
 	require.Equal(t, expected, tokens)
 }
