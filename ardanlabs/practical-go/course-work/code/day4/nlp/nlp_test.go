@@ -2,6 +2,7 @@ package nlp
 
 import (
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/BurntSushi/toml"
@@ -50,7 +51,17 @@ func TestTokenizeTable(t *testing.T) {
 
 func TestTokenize(t *testing.T) {
 	text := "What's on second?"
-	expected := []string{"what", "on", "second"}
+	expected := []string{"what", "on", "second"} 
 	tokens := Tokenize(text)
 	require.Equal(t, expected, tokens)
+}
+
+func FuzzTokenize(f *testing.F) {
+	f.Fuzz(func(t *testing.T, text string) {
+		tokens := Tokenize(text)
+		lTest := strings.ToLower(text)
+		for _,tok := range tokens {
+			require.Contains(t, lTest, tok)
+		}
+	})
 }
