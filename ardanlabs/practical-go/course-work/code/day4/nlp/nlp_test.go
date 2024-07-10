@@ -59,9 +59,12 @@ func TestTokenize(t *testing.T) {
 func FuzzTokenize(f *testing.F) {
 	f.Fuzz(func(t *testing.T, text string) {
 		tokens := Tokenize(text)
-		lTest := strings.ToLower(text)
+		lText := strings.ToLower(text)
 		for _,tok := range tokens {
-			require.Contains(t, lTest, tok)
+			//require.Contains(t, lText, tok)
+			if !strings.Contains(lText, tok) {
+				t.Fatalf("Token %q not found in text %q", tok, lText)
+			}
 		}
 	})
 }
