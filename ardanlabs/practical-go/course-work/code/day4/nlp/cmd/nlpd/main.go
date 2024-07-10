@@ -30,23 +30,33 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 
 func tokenizeHandler(w http.ResponseWriter, r *http.Request) {
 
-	bytes, err := io.ReadAll(r.Body)
+	if r.Method != http.MethodPost {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// bytes, err := io.ReadAll(r.Body)
+	defer r.Body.Close()
+
+	rdr := io.LimitReader(r.Body, 1_000_000)
+	bytes, err := io.ReadAll(rdr)
 	if err != nil {
 		http.Error(w, "error reading request body", http.StatusBadRequest)
 		return
 	}
-	text := string(bytes)
-	log.Println("METHOD", r.Method)
-	log.Println("text:", text)
 
-	tokens := nlp.Tokenize(text)
-
-	var resp struct {
-		Tokens []string `json:"tokens"`
+	if len(bytes) == 0 {
+		http.Error(w, "empty request body", http.StatusBadRequest)
+		return
 	}
-	resp.Tokens = tokens
 
-	// write the response
+	resp := struct {
+		Tokens []string `json:"tokens"`
+		Ok     bool     `json:"ok"`
+	}{
+		Tokens: nlp.Tokenize(string(bytes)),
+		Ok:     true,
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
