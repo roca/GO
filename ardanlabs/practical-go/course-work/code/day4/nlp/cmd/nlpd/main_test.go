@@ -12,8 +12,10 @@ func TestHealth(t *testing.T) {
 	w := httptest.NewRecorder()
 	r := httptest.NewRequest(http.MethodGet, "/health", nil)
 
+	server := Server{}
+
 	// Note: This bypasses the routing & middleware
-	healthHandler(w, r)
+	server.healthHandler(w, r)
 
 	resp := w.Result()
 	require.Equal(t, http.StatusOK, resp.StatusCode)
