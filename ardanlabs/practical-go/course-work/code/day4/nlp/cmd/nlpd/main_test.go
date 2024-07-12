@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -12,7 +13,7 @@ func TestHealth(t *testing.T) {
 	w := httptest.NewRecorder()
 	r := httptest.NewRequest(http.MethodGet, "/health", nil)
 
-	server := Server{}
+	server := Server{logger: log.Default()}
 
 	// Note: This bypasses the routing & middleware
 	server.healthHandler(w, r)
