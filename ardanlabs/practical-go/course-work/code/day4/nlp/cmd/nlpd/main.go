@@ -2,19 +2,25 @@ package main
 
 import (
 	"encoding/json"
+	"expvar"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"nlp"
 	"nlp/stemmer"
+	"os"
 
 	"github.com/gorilla/mux"
 )
 
+var (
+	nomTok = expvar.NewInt("tokenize.calls")
+)
+
 func main() {
 	// Create server (dependency injection)
-	logger := log.New(log.Writer(), "nlp ",log.LstdFlags|log.Lshortfile)
+	logger := log.New(log.Writer(), "[nlp] ", log.LstdFlags|log.Lshortfile)
 	server := Server{logger: logger}
 	//routing
 	// /health is a exact match
@@ -27,7 +33,11 @@ func main() {
 	http.Handle("/", r)
 
 	// start a web server
-	addr := ":8080"
+	addr := os.Getenv("NLPD_ADDR")
+	if addr == "" {
+		addr = ":8080"
+	}
+
 	server.logger.Printf("server starting on  %s", addr)
 	if err := http.ListenAndServe(addr, nil); err != nil {
 		log.Fatalf("error: %s", err)
@@ -63,6 +73,7 @@ func (s *Server) tokenizeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	*/
+	nomTok.Add(1)
 
 	// bytes, err := io.ReadAll(r.Body)
 	defer r.Body.Close()
