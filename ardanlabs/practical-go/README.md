@@ -43,4 +43,6 @@ go build -gcflags=-m
 
 ## Day 04 - Part03: Done
 
-## Day 04 - Part04: Final Exercise
+## Day 04 - Part04: [Final Exercise](https://www.353solutions.com/c/znga/dld.html)
+
+- https://www.353solutions.com/c/znga/dld.html
