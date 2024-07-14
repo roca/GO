@@ -1,7 +1,11 @@
-# ultimatee Go foundations
+# Ultimate Go foundations
 
-- [Course](https://courses.ardanlabs.com/courses/take/ultimate-go/lessons/7342434-1-2-productivity-vs-performance)
+- [link1 Course](https://courses.ardanlabs.com/courses/take/ultimate-go/lessons/7555868-intro-memory-data-semantics)
 
-[github code https://github.com/ardanlabs/gotraining](https://github.com/ardanlabs/gotraining)
+- [link2 course repo](https://github.com/ardanlabs/gotraining)
 
-## 4/8 Video 00:00
+- [link3: Go source](https://github.com/golang/go)
+
+## 1 Design guide lines: Completed
+
+## 2.1 intro-memory-data-semantics Video 00:00
