@@ -8,4 +8,4 @@
 
 ## 1 Design guide lines: Completed
 
-## 2 Memory Data Semantics: WIP (GC)
+## 2 ç
