@@ -1,6 +1,6 @@
 # Ultimate Go foundations
 
-- [link1 Course](https://courses.ardanlabs.com/courses/take/ultimate-go/lessons/14598357-garbage-collection-addendum-part-1)
+- [link1 Course](https://courses.ardanlabs.com/courses/take/ultimate-go/lessons/14598512-garbage-collection-addendum-part-2)
 
 - [link2 course repo](https://github.com/ardanlabs/gotraining)
 
