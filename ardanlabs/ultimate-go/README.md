@@ -1,6 +1,6 @@
 # Ultimate Go foundations
 
-- [link1 Course](https://courses.ardanlabs.com/courses/take/ultimate-go/lessons/14598512-garbage-collection-addendum-part-2)
+- [link Course](hhttps://courses.ardanlabs.com/courses/take/ultimate-go/lessons/7628303-intro-data-structures)
 
 - [link2 course repo](https://github.com/ardanlabs/gotraining)
 
@@ -10,10 +10,13 @@
 
 ## 2 Memory Data Semantics: WIP (GC) Completed
 
-## 3 WIP GC Addendum : Video 00.00
+## 3 GC Addendum : Completed
 
 See escape analysis and inlining decisions.
 
 ```sh
 go build -gcflags -m=2
 ```
+
+## 4 Data structures: Video 00:00
+
