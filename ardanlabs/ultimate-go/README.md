@@ -18,5 +18,5 @@ See escape analysis and inlining decisions.
 go build -gcflags -m=2
 ```
 
-## 4 Data structures: Video 00:00
+## 4 WIP Data structures: Video 00:00
 
