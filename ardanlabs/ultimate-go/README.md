@@ -1,6 +1,6 @@
 # Ultimate Go foundations
 
-- [link Course](https://courses.ardanlabs.com/courses/take/ultimate-go/lessons/7628303-intro-data-structures)
+- [link Course](https://courses.ardanlabs.com/courses/take/ultimate-go/lessons/7419346-3-3-1-slices-part-1-declare-length-reference-types)
 
 - [link2 course repo](https://github.com/ardanlabs/gotraining)
 
@@ -26,4 +26,4 @@ go test -run none -bench . -benchtime 3s
 
 ### 5.0 WIP Arrays par 1
 
-### 5.1 WIP Arrays par 2: Video 00:00
+### 53-3-1-slices-part-1-declare-length-reference-types
