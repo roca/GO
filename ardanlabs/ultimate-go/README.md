@@ -1,6 +1,6 @@
 # Ultimate Go foundations
 
-- [link Course](https://courses.ardanlabs.com/courses/take/ultimate-go/lessons/7419346-3-3-1-slices-part-1-declare-length-reference-types)
+- [link Course](https://courses.ardanlabs.com/courses/take/ultimate-go-advanc-concepts/lessons/7419417-3-3-2-slices-part-2-appending-slices)
 
 - [link2 course repo](https://github.com/ardanlabs/gotraining)
 
