@@ -1,6 +1,6 @@
 # Ultimate Go foundations
 
-- [link Course](https://courses.ardanlabs.com/courses/take/ultimate-go-advanc-concepts/lessons/8632147-3-3-3-slices-part-3-taking-slices-of-slices)
+- [link Course](https://courses.ardanlabs.com/courses/take/ultimate-go-advanc-concepts/lessons/7419420-3-3-4-slices-part-4-slices-references)
 
 - [link2 course repo](https://github.com/ardanlabs/gotraining)
 
