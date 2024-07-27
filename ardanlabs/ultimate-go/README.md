@@ -1,6 +1,6 @@
 # Ultimate Go foundations
 
-- [link Course](https://courses.ardanlabs.com/courses/take/ultimate-go-advanc-concepts/lessons/7628306-intro-decoupling)
+- [link Course](https://courses.ardanlabs.com/courses/take/ultimate-go-advanc-concepts/lessons/7419441-4-1-2-methods-part-2-function-method-variables)
 
 - [link2 course repo](https://github.com/ardanlabs/gotraining)
 
