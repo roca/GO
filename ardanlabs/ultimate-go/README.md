@@ -1,6 +1,6 @@
 # Ultimate Go foundations
 
-- [link Course](https://courses.ardanlabs.com/courses/take/ultimate-go-advanc-concepts/lessons/7419475-4-2-2-interfaces-part-2-method-sets-address-of-value)
+- [link Course](https://courses.ardanlabs.com/courses/take/ultimate-go-advanc-concepts/lessons/7419500-4-3-embedding)
 
 - [link2 course repo](https://github.com/ardanlabs/gotraining)
 
