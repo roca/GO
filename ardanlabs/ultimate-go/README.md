@@ -1,6 +1,6 @@
 # Ultimate Go foundations
 
-- [link Course](https://courses.ardanlabs.com/courses/take/ultimate-go-advanc-concepts/lessons/7628311-intro-composition)
+- [link Course](https://courses.ardanlabs.com/courses/take/ultimate-go-advanc-concepts/lessons/7419523-5-2-1-decoupling-part-1)
 
 - [link2 course repo](https://github.com/ardanlabs/gotraining)
 
