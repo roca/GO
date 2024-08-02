@@ -1,6 +1,6 @@
 # Ultimate Go foundations
 
-- [link Course](https://courses.ardanlabs.com/courses/take/ultimate-go-advanc-concepts/lessons/7419533-5-4-interface-pollution)
+- [link Course](https://courses.ardanlabs.com/courses/take/ultimate-go-advanc-concepts/lessons/7434835-6-2-error-variables)
 
 - [link2 course repo](https://github.com/ardanlabs/gotraining)
 
