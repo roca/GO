@@ -1,6 +1,6 @@
 # Ultimate Go foundations
 
-- [link Course](https://courses.ardanlabs.com/courses/take/ultimate-go-advanc-concepts/lessons/7434835-6-2-error-variables)
+- [link Course](https://courses.ardanlabs.com/courses/take/ultimate-go-advanc-concepts/lessons/7434838-6-5-find-the-bug)
 
 - [link2 course repo](https://github.com/ardanlabs/gotraining)
 
