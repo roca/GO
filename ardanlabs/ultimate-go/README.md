@@ -1,6 +1,6 @@
 # Ultimate Go foundations
 
-- [link Course](https://courses.ardanlabs.com/courses/take/ultimate-go-advanc-concepts/lessons/7434838-6-5-find-the-bug)
+- [link Course](https://courses.ardanlabs.com/courses/take/ultimate-go-advanc-concepts/lessons/7655372-intro-packaging)
 
 - [link2 course repo](https://github.com/ardanlabs/gotraining)
 
