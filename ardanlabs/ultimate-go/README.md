@@ -1,6 +1,6 @@
 # Ultimate Go foundations
 
-- [link Course](hhttps://courses.ardanlabs.com/courses/take/ultimate-go-advanc-concepts/lessons/7655374-intro-goroutines)
+- [link Course](https://courses.ardanlabs.com/courses/take/ultimate-go-advanc-concepts/lessons/7434896-8-1-os-scheduler-mechanics)
 
 - [link2 course repo](https://github.com/ardanlabs/gotraining)
 
