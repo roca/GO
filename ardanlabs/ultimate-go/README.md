@@ -1,6 +1,6 @@
 # Ultimate Go foundations
 
-- [link Course](https://courses.ardanlabs.com/courses/take/ultimate-go-advanc-concepts/lessons/7655375-intro-data-races)
+- [link Course](https://courses.ardanlabs.com/courses/take/ultimate-go-advanc-concepts/lessons/7434926-10-2-basic-patterns)
 
 - [link2 course repo](https://github.com/ardanlabs/gotraining)
 
