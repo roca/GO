@@ -1,6 +1,6 @@
 # Ultimate Go foundations
 
-- [link Course](https://courses.ardanlabs.com/courses/take/ultimate-go-advanc-concepts/lessons/7434935-10-5-pooling)
+- [link Course](https://courses.ardanlabs.com/courses/take/ultimate-go-advanc-concepts/lessons/7434939-10-8-drop-pattern)
 
 - [link2 course repo](https://github.com/ardanlabs/gotraining)
 
