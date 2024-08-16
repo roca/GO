@@ -1,6 +1,6 @@
 # Ultimate Go foundations
 
-- [link Course](https://courses.ardanlabs.com/courses/take/ultimate-go-advanc-concepts/lessons/7655385-intro-testing)
+- [link Course](https://courses.ardanlabs.com/courses/take/ultimate-go-advanc-concepts/lessons/7434949-12-4-testing-internal-endpoints)
 
 - [link2 course repo](https://github.com/ardanlabs/gotraining)
 
