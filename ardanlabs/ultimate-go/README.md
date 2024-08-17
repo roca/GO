@@ -1,6 +1,6 @@
 # Ultimate Go foundations
 
-- [link Course](https://courses.ardanlabs.com/courses/take/ultimate-go-advanc-concepts/lessons/7434950-12-5-sub-tests)
+- [link Course](https://courses.ardanlabs.com/courses/take/ultimate-go-advanc-concepts/lessons/7434968-13-1-basic-benchmarking)
 
 - [link2 course repo](https://github.com/ardanlabs/gotraining)
 
