@@ -1,6 +1,6 @@
 # Ultimate Go foundations
 
-- [link Course](https://courses.ardanlabs.com/courses/take/ultimate-go-advanc-concepts/lessons/7434972-13-4-io-bound-benchmarking)
+- [link Course](https://courses.ardanlabs.com/courses/take/ultimate-go-advanc-concepts/lessons/8721796-14-2-stack-traces)
 
 - [link2 course repo](https://github.com/ardanlabs/gotraining)
 
