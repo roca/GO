@@ -1,6 +1,6 @@
 # Ultimate Go foundations
 
-- [link Course](https://courses.ardanlabs.com/courses/take/ultimate-go-advanc-concepts/lessons/8721807-14-4-macro-level-optimization)
+- [link Course](https://courses.ardanlabs.com/courses/take/ultimate-go-advanc-concepts/lessons/8721834-14-5-execution-tracing)
 
 - [link2 course repo](https://github.com/ardanlabs/gotraining)
 
