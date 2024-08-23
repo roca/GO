@@ -1,0 +1,1 @@
+https://courses.ardanlabs.com/courses/take/ultimate-go-software-design-with-kubernetes-2/lessons/57296617-1-1-design-philosophy-guidelines-what-to-expect
