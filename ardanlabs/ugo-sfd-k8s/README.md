@@ -1,4 +1,4 @@
-# [Ultimate Go Software Design With Kubernetes 2](https://courses.ardanlabs.com/courses/take/ultimate-go-software-design-with-kubernetes-2/lessons/57296638-6-1-basic-structure-of-an-http-router)
+# [Ultimate Go Software Design With Kubernetes 2](https://courses.ardanlabs.com/courses/take/ultimate-go-software-design-with-kubernetes-2/lessons/57296639-6-2-liveness-and-readiness-handlers)
 
 - [code](https://github.com/ardanlabs/service.git)
 
