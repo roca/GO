@@ -1,4 +1,4 @@
-# [Ultimate Go Software Design With Kubernetes 2](https://courses.ardanlabs.com/courses/take/ultimate-go-software-design-with-kubernetes-2/lessons/57298382-7-1-logging)
+# [Ultimate Go Software Design With Kubernetes 2](https://courses.ardanlabs.com/courses/take/ultimate-go-software-design-with-kubernetes-2/lessons/57298429-7-2-error-handling)
 
 - [code](https://github.com/ardanlabs/service.git)
 
