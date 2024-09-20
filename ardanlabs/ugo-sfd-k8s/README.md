@@ -1,4 +1,4 @@
-# [Ultimate Go Software Design With Kubernetes 2](https://courses.ardanlabs.com/courses/take/ultimate-go-software-design-with-kubernetes-2/lessons/57298429-7-2-error-handling)
+# [Ultimate Go Software Design With Kubernetes 2](https://courses.ardanlabs.com/courses/take/ultimate-go-software-design-with-kubernetes-2/lessons/57298485-7-3-panic-handling)
 
 - [code](https://github.com/ardanlabs/service.git)
 
