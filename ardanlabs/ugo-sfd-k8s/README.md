@@ -1,4 +1,4 @@
-# [Ultimate Go Software Design With Kubernetes 2](https://courses.ardanlabs.com/courses/take/ultimate-go-software-design-with-kubernetes-2/lessons/57298519-8-1-understanding-jwt)
+# [Ultimate Go Software Design With Kubernetes 2](https://courses.ardanlabs.com/courses/take/ultimate-go-software-design-with-kubernetes-2/lessons/57298539-8-3-token-generation)
 
 - [code](https://github.com/ardanlabs/service.git)
 
