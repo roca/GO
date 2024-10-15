@@ -1,4 +1,4 @@
-# [Ultimate Go Software Design With Kubernetes 2](https://courses.ardanlabs.com/courses/take/ultimate-go-software-design-with-kubernetes-2/lessons/57298753-11-2-data-flow-trust-vs-non-trust)
+# [Ultimate Go Software Design With Kubernetes 2](https://courses.ardanlabs.com/courses/take/ultimate-go-software-design-with-kubernetes-2/lessons/57298782-12-1-kubernetes-support-for-postgres)
 
 - [code](https://github.com/ardanlabs/service.git)
 
