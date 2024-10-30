@@ -1,6 +1,6 @@
 # [Ultimate Go Software Design With Kubernetes 2](https://courses.ardanlabs.com/courses/take/ultimate-go-software-design-with-kubernetes-2/lessons/57298874-14-3-user-app-domain-support)
 
-@41:53
+@11:40 commit 42
 
 - [code](https://github.com/ardanlabs/service.git)
 
