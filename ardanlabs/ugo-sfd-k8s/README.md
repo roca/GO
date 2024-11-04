@@ -1,6 +1,4 @@
-# [Ultimate Go Software Design With Kubernetes 2](https://courses.ardanlabs.com/courses/take/ultimate-go-software-design-with-kubernetes-2/lessons/57299223-15-5-write-user-api-tests)
-
-@00:00 commit 49
+# [Ultimate Go Software Design With Kubernetes 2](https://courses.ardanlabs.com/courses/take/ultimate-go-software-design-with-kubernetes-2/lessons/57299238-16-1-delegate-system)
 
 - [code](https://github.com/ardanlabs/service.git)
 
