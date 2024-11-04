@@ -18,3 +18,13 @@
 ## Layers
 
 api > app > business > storage
+
+## Push to AWS ECR
+
+```bash
+docker tag localhost/ardanlabs/auth:0.0.1 132172135366.dkr.ecr.us-east-1.amazonaws.com/ardanlabs/auth:latest 
+docker push 132172135366.dkr.ecr.us-east-1.amazonaws.com/ardanlabs/auth:latest
+
+docker tag localhost/ardanlabs/sales:0.0.1 132172135366.dkr.ecr.us-east-1.amazonaws.com/ardanlabs/sales:latest
+docker push 132172135366.dkr.ecr.us-east-1.amazonaws.com/ardanlabs/sales:latest
+```
