@@ -1,6 +1,6 @@
-# [Ultimate Go Software Design With Kubernetes 2](https://courses.ardanlabs.com/courses/take/ultimate-go-software-design-with-kubernetes-2/lessons/57299248-17-1-integrate-otel-into-the-project)
+# [Ultimate Go Software Design With Kubernetes 2](https://courses.ardanlabs.com/courses/take/ultimate-go-software-design-with-kubernetes-2/lessons/57299253-18-1-check-for-dependency-upgrades-rebuild-run)
 
-@00:00 Module 17.1
+@00:00 Module 18.1
 
 - [code](https://github.com/ardanlabs/service.git)
 
