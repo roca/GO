@@ -8,14 +8,19 @@
 
 <body>
     <header>
-        {{ template "headerFragment"}}
+        {{ template "headerFragment" . }}
     </header>
     <main>
-        {{ template "mainContentFragment"}}
+        {{ template "mainContentFragment" .}}
     </main>
 
     <footer>
-        {{ template "footerFragment"}}
+        {{ template "footerFragment" .Name}}
+        <ul>
+            {{ range $key, $value := .Socials }}
+            <li>{{$key}}: {{$value}}</li>
+            {{ end }}
+        </ul>
     </footer>
 </body>
 
