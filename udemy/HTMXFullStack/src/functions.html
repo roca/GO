@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Functions</title>
+</head>
+<body>
+	<h1>Template Functions</h1>
+
+	<h3>Items</h3>
+	<ul>
+		{{ range .Items }}
+		<li>{{.}}</li>
+		{{ end }}
+	</ul>
+
+	<div>
+		{{if gt .Number 10}}
+		    <b>Wow, that is a big number</b>
+		{{else}}
+		    <b>Well, just a small amount</b>
+		{{end}}
+	</div>
+
+	<div>
+		<p>
+			The Capitalization of Name is {{Upper .Name}}
+		</p>
+	</div>
+
+	<div>
+	 	Today's Date is {{FmtDate .CurrentDate}}
+	</div>
+</body>
+</html>
