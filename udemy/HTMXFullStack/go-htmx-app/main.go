@@ -104,7 +104,7 @@ func main() {
 
 func fetchTasks(w http.ResponseWriter, r *http.Request) {
 	tasks, _ := getTasks(db)
-	err := tmpl.ExecuteTemplate(w, "todoList.html", tasks)
+	err := tmpl.ExecuteTemplate(w, "todoList", tasks)
 	if err != nil {
 		http.Error(w, "Error executing template: "+err.Error(), http.StatusInternalServerError)
 	}
