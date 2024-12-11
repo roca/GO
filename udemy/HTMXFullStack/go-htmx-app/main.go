@@ -14,9 +14,16 @@ import (
 var db *sql.DB
 var tmpl *template.Template
 
-func init() {
+type Task struct {
+	ID   int
+	Task string
+	Done bool
+}
 
-	db, err := initDB()
+func init() {
+	var err error
+
+	db, err = initDB()
 	if err != nil {
 		log.Fatalf("Failed to initialize database: %v\n", err)
 	}
@@ -45,7 +52,7 @@ func initDB() (*sql.DB, error) {
 	if err = db.Ping(); err != nil {
 		return nil, fmt.Errorf("Database not responding to Pings: %v\n", err)
 	}
-	return db,nil
+	return db, nil
 }
 
 func initSchema(db *sql.DB) error {
@@ -60,22 +67,22 @@ func initSchema(db *sql.DB) error {
 		return fmt.Errorf("Failed to create table: %v", err)
 	}
 
-	_,err = db.Exec("TRUNCATE TABLE tasks")
+	_, err = db.Exec("TRUNCATE TABLE tasks")
 	if err != nil {
 		return fmt.Errorf("Failed to truncate task: %v\n", err)
 	}
 
-	_,err = db.Exec("INSERT INTO tasks (task) VALUES ('Research the Video')")
+	_, err = db.Exec("INSERT INTO tasks (task) VALUES ('Research the Video')")
 	if err != nil {
 		return fmt.Errorf("Failed to insert task 1: %v\n", err)
 	}
 
-	_,err = db.Exec("INSERT INTO tasks (task) VALUES ('Plan the Video')")
+	_, err = db.Exec("INSERT INTO tasks (task) VALUES ('Plan the Video')")
 	if err != nil {
 		return fmt.Errorf("Failed to insert task 2: %v\n", err)
 	}
 
-	_,err = db.Exec("INSERT INTO tasks (task) VALUES ('Record the Video')")
+	_, err = db.Exec("INSERT INTO tasks (task) VALUES ('Record the Video')")
 	if err != nil {
 		return fmt.Errorf("Failed to insert task 3: %v\n", err)
 	}
@@ -94,8 +101,44 @@ func main() {
 }
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
-	err := tmpl.ExecuteTemplate(w, "home.html", nil)
+	data ,err := getTasks(db)
+	if err != nil {
+		http.Error(w, "Failed to get tasks: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = tmpl.ExecuteTemplate(w, "home.html", data)
 	if err != nil {
 		http.Error(w, "Error executing template: "+err.Error(), http.StatusInternalServerError)
 	}
+}
+
+
+func getTasks(db *sql.DB) ([]Task, error) {
+	rows, err := db.Query("SELECT id, task, done FROM tasks")
+	if err != nil {
+		return nil, fmt.Errorf("Failed to query tasks: %v\n", err)
+	}
+	defer rows.Close()
+
+	var tasks []Task
+	for rows.Next() {
+		var t Task
+		err := rows.Scan(&t.ID, &t.Task, &t.Done)
+		if err != nil {
+			return nil, fmt.Errorf("Failed to scan task: %v\n", err)
+		}
+		tasks = append(tasks, t)
+	}
+	return tasks, nil
+}
+
+func getTaskByID(db *sql.DB, id int) (Task, error) {
+	row := db.QueryRow("SELECT id, task, done FROM tasks WHERE id = ?", id)
+	var t Task
+	err := row.Scan(&t.ID, &t.Task, &t.Done)
+	if err != nil {
+		return Task{}, fmt.Errorf("Failed to scan task: %v\n", err)
+	}
+	return t, nil
 }
