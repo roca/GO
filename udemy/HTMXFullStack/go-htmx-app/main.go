@@ -95,24 +95,27 @@ func main() {
 	gRouter := mux.NewRouter()
 	gRouter.HandleFunc("/", HomeHandler)
 
+	//Get Tasks
+	gRouter.HandleFunc("/tasks", fetchTasks).Methods("GET")
+
 	log.Println("Server started on http://localhost:3000")
 	http.ListenAndServe(":3000", gRouter)
-
 }
 
-func HomeHandler(w http.ResponseWriter, r *http.Request) {
-	data ,err := getTasks(db)
-	if err != nil {
-		http.Error(w, "Failed to get tasks: "+err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	err = tmpl.ExecuteTemplate(w, "home.html", data)
+func fetchTasks(w http.ResponseWriter, r *http.Request) {
+	tasks, _ := getTasks(db)
+	err := tmpl.ExecuteTemplate(w, "todoList.html", tasks)
 	if err != nil {
 		http.Error(w, "Error executing template: "+err.Error(), http.StatusInternalServerError)
 	}
 }
 
+func HomeHandler(w http.ResponseWriter, r *http.Request) {
+	err := tmpl.ExecuteTemplate(w, "home.html", nil)
+	if err != nil {
+		http.Error(w, "Error executing template: "+err.Error(), http.StatusInternalServerError)
+	}
+}
 
 func getTasks(db *sql.DB) ([]Task, error) {
 	rows, err := db.Query("SELECT id, task, done FROM tasks")
