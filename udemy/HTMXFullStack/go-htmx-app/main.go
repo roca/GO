@@ -98,8 +98,51 @@ func main() {
 	//Get Tasks
 	gRouter.HandleFunc("/tasks", fetchTasks).Methods("GET")
 
+	//Add task
+	gRouter.HandleFunc("/tasks", addTasks).Methods("POST")
+
+	//Fetch Add Task Form
+	gRouter.HandleFunc("/getnewtaskform", getTaskForm).Methods("GET")
+
 	log.Println("Server started on http://localhost:3000")
 	http.ListenAndServe(":3000", gRouter)
+}
+
+func addTasks(w http.ResponseWriter, r *http.Request) {
+	task := r.FormValue("task")
+	if task == "" {
+		http.Error(w, "Task cannot be empty", http.StatusBadRequest)
+		return
+	}
+
+	query := "INSERT INTO tasks (task) VALUES (?)"
+
+	stmt,err := db.Prepare(query)
+	if err != nil {
+		http.Error(w, "Failed to prepare statement: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(task)
+	if err != nil {
+		http.Error(w, "Failed to execute statement: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	//Return a fresh list
+	tasks , _ := getTasks(db)
+	err = tmpl.ExecuteTemplate(w, "todoList", tasks)
+	if err != nil {
+		http.Error(w, "Error executing template: "+err.Error(), http.StatusInternalServerError)
+	}
+}
+
+func getTaskForm(w http.ResponseWriter, r *http.Request) {
+	err := tmpl.ExecuteTemplate(w, "addTaskForm", nil)
+	if err != nil {
+		http.Error(w, "Error executing template: "+err.Error(), http.StatusInternalServerError)
+	}
 }
 
 func fetchTasks(w http.ResponseWriter, r *http.Request) {
@@ -116,6 +159,9 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error executing template: "+err.Error(), http.StatusInternalServerError)
 	}
 }
+
+
+//Utility functions
 
 func getTasks(db *sql.DB) ([]Task, error) {
 	rows, err := db.Query("SELECT id, task, done FROM tasks")
