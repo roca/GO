@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"strconv"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
@@ -104,6 +105,9 @@ func main() {
 	//Fetch Add Task Form
 	gRouter.HandleFunc("/getnewtaskform", getTaskForm).Methods("GET")
 
+	//Fetch Update Task Form
+	gRouter.HandleFunc("/gettaskupdateform/{id}", getTaskUpdateForm).Methods("GET")
+
 	log.Println("Server started on http://localhost:3000")
 	http.ListenAndServe(":3000", gRouter)
 }
@@ -117,7 +121,7 @@ func addTasks(w http.ResponseWriter, r *http.Request) {
 
 	query := "INSERT INTO tasks (task) VALUES (?)"
 
-	stmt,err := db.Prepare(query)
+	stmt, err := db.Prepare(query)
 	if err != nil {
 		http.Error(w, "Failed to prepare statement: "+err.Error(), http.StatusInternalServerError)
 		return
@@ -131,8 +135,28 @@ func addTasks(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//Return a fresh list
-	tasks , _ := getTasks(db)
+	tasks, _ := getTasks(db)
 	err = tmpl.ExecuteTemplate(w, "todoList", tasks)
+	if err != nil {
+		http.Error(w, "Error executing template: "+err.Error(), http.StatusInternalServerError)
+	}
+}
+
+func getTaskUpdateForm(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	taskID,err := strconv.Atoi(vars["id"])
+	if err != nil {
+		http.Error(w, "Invalid task ID", http.StatusBadRequest)
+		return
+	}
+
+	task, err := getTaskByID(db, taskID)
+	if err != nil {
+		http.Error(w, "Error fetching task: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = tmpl.ExecuteTemplate(w, "updateTaskForm", task)
 	if err != nil {
 		http.Error(w, "Error executing template: "+err.Error(), http.StatusInternalServerError)
 	}
@@ -160,7 +184,6 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-
 //Utility functions
 
 func getTasks(db *sql.DB) ([]Task, error) {
@@ -182,12 +205,18 @@ func getTasks(db *sql.DB) ([]Task, error) {
 	return tasks, nil
 }
 
-func getTaskByID(db *sql.DB, id int) (Task, error) {
-	row := db.QueryRow("SELECT id, task, done FROM tasks WHERE id = ?", id)
-	var t Task
-	err := row.Scan(&t.ID, &t.Task, &t.Done)
+func getTaskByID(db *sql.DB, id int) (*Task, error) {
+	query := "SELECT id, task, done FROM tasks WHERE id = ?"
+
+	var task Task
+
+	row := db.QueryRow(query, id)
+	err := row.Scan(&task.ID, &task.Task, &task.Done)
 	if err != nil {
-		return Task{}, fmt.Errorf("Failed to scan task: %v\n", err)
+		if err == sql.ErrNoRows {
+			return nil, fmt.Errorf("Task not found: %v\n", err)
+		}
+		return nil, fmt.Errorf("Failed to scan task: %v\n", err)
 	}
-	return t, nil
+	return &task, nil
 }
