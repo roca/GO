@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
@@ -108,6 +109,9 @@ func main() {
 	//Fetch Update Task Form
 	gRouter.HandleFunc("/gettaskupdateform/{id}", getTaskUpdateForm).Methods("GET")
 
+	// Update Task
+	gRouter.HandleFunc("/tasks/{id}", updateTask).Methods("PUT", "POST")
+
 	log.Println("Server started on http://localhost:3000")
 	http.ListenAndServe(":3000", gRouter)
 }
@@ -144,7 +148,7 @@ func addTasks(w http.ResponseWriter, r *http.Request) {
 
 func getTaskUpdateForm(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	taskID,err := strconv.Atoi(vars["id"])
+	taskID, err := strconv.Atoi(vars["id"])
 	if err != nil {
 		http.Error(w, "Invalid task ID", http.StatusBadRequest)
 		return
@@ -157,6 +161,51 @@ func getTaskUpdateForm(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = tmpl.ExecuteTemplate(w, "updateTaskForm", task)
+	if err != nil {
+		http.Error(w, "Error executing template: "+err.Error(), http.StatusInternalServerError)
+	}
+}
+
+func updateTask(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	taskID, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		http.Error(w, "Invalid task ID", http.StatusBadRequest)
+		return
+	}
+
+	task, err := getTaskByID(db, taskID)
+	if err != nil {
+		http.Error(w, "Error fetching task: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	task.Task = r.FormValue("task")
+	task.Done = strings.ToLower(r.FormValue("done")) == "on"
+
+	query := "UPDATE tasks SET task = ?, done = ? WHERE id = ?"
+	stmt, err := db.Prepare(query)
+	if err != nil {
+		http.Error(w, "Failed to prepare statement: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer stmt.Close()
+
+	result, err := stmt.Exec(task.Task, task.Done, task.ID)
+	if err != nil {
+		http.Error(w, "Failed to execute statement: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	rowAffected, _ := result.RowsAffected()
+
+	if rowAffected == 0 {
+		fmt.Println("No rows affected")
+	}
+
+	//Return a fresh list
+	tasks, _ := getTasks(db)
+	err = tmpl.ExecuteTemplate(w, "todoList", tasks)
 	if err != nil {
 		http.Error(w, "Error executing template: "+err.Error(), http.StatusInternalServerError)
 	}
