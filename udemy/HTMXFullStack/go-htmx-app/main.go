@@ -103,18 +103,68 @@ func main() {
 	//Add task
 	gRouter.HandleFunc("/tasks", addTasks).Methods("POST")
 
+	// Update Task
+	gRouter.HandleFunc("/tasks/{id}", updateTask).Methods("PUT", "POST")
+
+	//Delete Task
+	gRouter.HandleFunc("/tasks/{id}", deleteTask).Methods("DELETE")
+
 	//Fetch Add Task Form
 	gRouter.HandleFunc("/getnewtaskform", getTaskForm).Methods("GET")
 
 	//Fetch Update Task Form
 	gRouter.HandleFunc("/gettaskupdateform/{id}", getTaskUpdateForm).Methods("GET")
 
-	// Update Task
-	gRouter.HandleFunc("/tasks/{id}", updateTask).Methods("PUT", "POST")
-
 	log.Println("Server started on http://localhost:3000")
 	http.ListenAndServe(":3000", gRouter)
 }
+
+func HomeHandler(w http.ResponseWriter, r *http.Request) {
+	err := tmpl.ExecuteTemplate(w, "home.html", nil)
+	if err != nil {
+		http.Error(w, "Error executing template: "+err.Error(), http.StatusInternalServerError)
+	}
+}
+
+//Form operations
+
+func fetchTasks(w http.ResponseWriter, r *http.Request) {
+	tasks, _ := getTasks(db)
+	err := tmpl.ExecuteTemplate(w, "todoList", tasks)
+	if err != nil {
+		http.Error(w, "Error executing template: "+err.Error(), http.StatusInternalServerError)
+	}
+}
+
+func getTaskUpdateForm(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	taskID, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		http.Error(w, "Invalid task ID", http.StatusBadRequest)
+		return
+	}
+
+	task, err := getTaskByID(db, taskID)
+	if err != nil {
+		http.Error(w, "Error fetching task: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = tmpl.ExecuteTemplate(w, "updateTaskForm", task)
+	if err != nil {
+		http.Error(w, "Error executing template: "+err.Error(), http.StatusInternalServerError)
+	}
+}
+
+func getTaskForm(w http.ResponseWriter, r *http.Request) {
+	err := tmpl.ExecuteTemplate(w, "addTaskForm", nil)
+	if err != nil {
+		http.Error(w, "Error executing template: "+err.Error(), http.StatusInternalServerError)
+	}
+}
+
+
+//CRUD operations
 
 func addTasks(w http.ResponseWriter, r *http.Request) {
 	task := r.FormValue("task")
@@ -141,26 +191,6 @@ func addTasks(w http.ResponseWriter, r *http.Request) {
 	//Return a fresh list
 	tasks, _ := getTasks(db)
 	err = tmpl.ExecuteTemplate(w, "todoList", tasks)
-	if err != nil {
-		http.Error(w, "Error executing template: "+err.Error(), http.StatusInternalServerError)
-	}
-}
-
-func getTaskUpdateForm(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	taskID, err := strconv.Atoi(vars["id"])
-	if err != nil {
-		http.Error(w, "Invalid task ID", http.StatusBadRequest)
-		return
-	}
-
-	task, err := getTaskByID(db, taskID)
-	if err != nil {
-		http.Error(w, "Error fetching task: "+err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	err = tmpl.ExecuteTemplate(w, "updateTaskForm", task)
 	if err != nil {
 		http.Error(w, "Error executing template: "+err.Error(), http.StatusInternalServerError)
 	}
@@ -211,23 +241,31 @@ func updateTask(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func getTaskForm(w http.ResponseWriter, r *http.Request) {
-	err := tmpl.ExecuteTemplate(w, "addTaskForm", nil)
+func deleteTask(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	taskID, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		http.Error(w, "Error executing template: "+err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Invalid task ID", http.StatusBadRequest)
+		return
 	}
-}
 
-func fetchTasks(w http.ResponseWriter, r *http.Request) {
+	query := "DELETE FROM tasks WHERE id = ?"
+	stmt, err := db.Prepare(query)
+	if err != nil {
+		http.Error(w, "Failed to prepare statement: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(taskID)
+	if err != nil {
+		http.Error(w, "Failed to execute statement: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	//Return a fresh list
 	tasks, _ := getTasks(db)
-	err := tmpl.ExecuteTemplate(w, "todoList", tasks)
-	if err != nil {
-		http.Error(w, "Error executing template: "+err.Error(), http.StatusInternalServerError)
-	}
-}
-
-func HomeHandler(w http.ResponseWriter, r *http.Request) {
-	err := tmpl.ExecuteTemplate(w, "home.html", nil)
+	err = tmpl.ExecuteTemplate(w, "todoList", tasks)
 	if err != nil {
 		http.Error(w, "Error executing template: "+err.Error(), http.StatusInternalServerError)
 	}
