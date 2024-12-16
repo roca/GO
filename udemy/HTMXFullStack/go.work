@@ -2,5 +2,6 @@ go 1.23.0
 
 use (
 	./go-htmx-app
+	./user-mgt-system
 	./go-htmx-examples
 )
