@@ -1,10 +1,22 @@
 services:
-    mysql:
+    testdb:
         image: mysql:5.7
-        container_name: mysql
+        container_name: testdb
         environment:
             MYSQL_ROOT_PASSWORD: root
             MYSQL_DATABASE: testdb
+            MYSQL_USER: test
+            MYSQL_PASSWORD: test
+        ports:
+            - "3306:3306"
+        volumes:
+            - ./mysql:/var/lib/mysql
+    usermanagement:
+        image: mysql:5.7
+        container_name: usermanagement
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: usermanagement
             MYSQL_USER: test
             MYSQL_PASSWORD: test
         ports:
