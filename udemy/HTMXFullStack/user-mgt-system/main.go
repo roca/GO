@@ -5,12 +5,16 @@ import (
 	"fmt"
 	"html/template"
 	"log"
+	"net/http"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/gorilla/mux"
+	"github.com/gorilla/sessions"
 )
 
 var db *sql.DB
 var tmpl *template.Template
+var Store = sessions.NewCookieStore([]byte("usermanagementsecret"))
 
 func init() {
 	var err error
@@ -32,6 +36,13 @@ func init() {
 		log.Fatalf("Failed to parse templates: %v\n", err)
 	}
 	log.Println("Parsed HTML templates")
+
+	// Set up Sessions
+	Store.Options = &sessions.Options{
+		Path:     "/",
+		MaxAge:   3600 * 3,
+		HttpOnly: true,
+	}
 }
 
 func initDB() (*sql.DB, error) {
@@ -74,4 +85,14 @@ func initSchema(db *sql.DB) error {
 
 func main() {
 	defer db.Close()
+
+	gRouter := mux.NewRouter()
+	gRouter.HandleFunc("/", HomeHandler)
+
+	log.Println("Server started on http://localhost:4000")
+	http.ListenAndServe(":4000", gRouter)
+}
+
+func HomeHandler(w http.ResponseWriter, r *http.Request) {
+	tmpl.ExecuteTemplate(w, "home.html", nil)
 }
