@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"user-mgt-system/pkg/handlers"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
@@ -88,6 +89,8 @@ func main() {
 
 	gRouter := mux.NewRouter()
 	gRouter.HandleFunc("/", HomeHandler)
+
+	gRouter.HandleFunc("/register", handlers.RegisterPage(db,tmpl)).Methods("GET")
 
 	log.Println("Server started on http://localhost:4000")
 	http.ListenAndServe(":4000", gRouter)
