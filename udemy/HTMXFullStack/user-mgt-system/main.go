@@ -62,7 +62,7 @@ func initDB() (*sql.DB, error) {
 func initSchema(db *sql.DB) error {
 	_, err := db.Exec(`
 	CREATE TABLE IF NOT EXISTS users(
-		id 		INT 		AUTO_INCREMENT PRIMARY KEY NOT NULL, 
+		id 		CHAR(36) 	 PRIMARY KEY NOT NULL, 
 		email 		VARCHAR(255)	 NOT NULL, 
 		password 	VARCHAR(255)	 NOT NULL, 
 		name 		VARCHAR(255)	 NULL, 
@@ -92,6 +92,7 @@ func main() {
 
 	gRouter.HandleFunc("/register", handlers.RegisterPage(db,tmpl)).Methods("GET")
 	gRouter.HandleFunc("/register", handlers.RegisterHandler(db,tmpl)).Methods("POST")
+	gRouter.HandleFunc("/login", handlers.LoginPage(db,tmpl)).Methods("GET")
 
 	log.Println("Server started on http://localhost:4000")
 	http.ListenAndServe(":4000", gRouter)
