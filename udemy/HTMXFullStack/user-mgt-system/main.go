@@ -76,10 +76,10 @@ func initSchema(db *sql.DB) error {
 		return fmt.Errorf("Failed to create table: %v", err)
 	}
 
-	_, err = db.Exec("TRUNCATE TABLE users")
-	if err != nil {
-		return fmt.Errorf("Failed to truncate task: %v\n", err)
-	}
+	// _, err = db.Exec("TRUNCATE TABLE users")
+	// if err != nil {
+	// 	return fmt.Errorf("Failed to truncate task: %v\n", err)
+	// }
 
 	return nil
 }
@@ -88,16 +88,14 @@ func main() {
 	defer db.Close()
 
 	gRouter := mux.NewRouter()
-	gRouter.HandleFunc("/", HomeHandler)
+	gRouter.HandleFunc("/", handlers.Homepage(db, tmpl, Store)).Methods("GET")
 
-	gRouter.HandleFunc("/register", handlers.RegisterPage(db,tmpl)).Methods("GET")
-	gRouter.HandleFunc("/register", handlers.RegisterHandler(db,tmpl)).Methods("POST")
-	gRouter.HandleFunc("/login", handlers.LoginPage(db,tmpl)).Methods("GET")
+	gRouter.HandleFunc("/register", handlers.RegisterPage(db, tmpl)).Methods("GET")
+	gRouter.HandleFunc("/register", handlers.RegisterHandler(db, tmpl)).Methods("POST")
+
+	gRouter.HandleFunc("/login", handlers.LoginPage(db, tmpl)).Methods("GET")
+	gRouter.HandleFunc("/login", handlers.LoginHandler(db, tmpl, Store)).Methods("POST")
 
 	log.Println("Server started on http://localhost:4000")
 	http.ListenAndServe(":4000", gRouter)
-}
-
-func HomeHandler(w http.ResponseWriter, r *http.Request) {
-	tmpl.ExecuteTemplate(w, "home.html", nil)
 }
