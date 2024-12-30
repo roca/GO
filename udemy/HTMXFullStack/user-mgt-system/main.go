@@ -88,6 +88,14 @@ func main() {
 	defer db.Close()
 
 	gRouter := mux.NewRouter()
+
+	// Setup Static file handling for images
+
+	fileServer := http.FileServer(http.Dir("./uploads"))
+	gRouter.PathPrefix("/uploads/").Handler(http.StripPrefix("/uploads", fileServer))
+
+	//All dynamic routes
+	
 	gRouter.HandleFunc("/", handlers.Homepage(db, tmpl, Store)).Methods("GET")
 
 	gRouter.HandleFunc("/register", handlers.RegisterPage(db, tmpl)).Methods("GET")
@@ -95,6 +103,12 @@ func main() {
 
 	gRouter.HandleFunc("/login", handlers.LoginPage(db, tmpl)).Methods("GET")
 	gRouter.HandleFunc("/login", handlers.LoginHandler(db, tmpl, Store)).Methods("POST")
+
+	gRouter.HandleFunc("/edit", handlers.Editpage(db,tmpl,Store)).Methods("GET")
+	gRouter.HandleFunc("/edit", handlers.UpdateProfileHandler(db,tmpl,Store)).Methods("POST")
+
+	gRouter.HandleFunc("/upload-avatar", handlers.AvatarPage(db,tmpl,Store)).Methods("GET")
+	gRouter.HandleFunc("/upload-avatar", handlers.UploadAvatarHandler(db,tmpl,Store)).Methods("POST")
 
 	log.Println("Server started on http://localhost:4000")
 	http.ListenAndServe(":4000", gRouter)

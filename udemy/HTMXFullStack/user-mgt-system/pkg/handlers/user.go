@@ -193,7 +193,7 @@ func UploadAvatarHandler(db *sql.DB, tmpl *template.Template, store *sessions.Co
 		// Save the file to the server
 		dst, err := os.Create(filePath)
 		if err != nil {
-			errorMessages = append(errorMessages, "Error saving the file")
+			errorMessages = append(errorMessages, "Error saving the file", err.Error())
 			tmpl.ExecuteTemplate(w, "autherrors", errorMessages)
 
 			return
