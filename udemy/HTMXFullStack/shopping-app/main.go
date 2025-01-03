@@ -108,11 +108,11 @@ func main() {
 
 	// Setup Static file handling for images
 
-	fileServer := http.FileServer(http.Dir("./uploads"))
-	gRouter.PathPrefix("/uploads/").Handler(http.StripPrefix("/uploads", fileServer))
+	fs := http.FileServer(http.Dir("./static"))
+	gRouter.PathPrefix("/static/").Handler(http.StripPrefix("/static/", fs))
 
 	//All dynamic routes
 
-	log.Println("Server started on http://localhost:4000")
-	http.ListenAndServe(":4000", gRouter)
+	log.Println("Server started on http://localhost:5000")
+	http.ListenAndServe(":5000", gRouter)
 }
