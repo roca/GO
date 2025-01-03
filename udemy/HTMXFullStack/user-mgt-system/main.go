@@ -110,6 +110,8 @@ func main() {
 	gRouter.HandleFunc("/upload-avatar", handlers.AvatarPage(db,tmpl,Store)).Methods("GET")
 	gRouter.HandleFunc("/upload-avatar", handlers.UploadAvatarHandler(db,tmpl,Store)).Methods("POST")
 
+	gRouter.HandleFunc("/logout", handlers.LogoutHandler(Store)).Methods("GET")
+
 	log.Println("Server started on http://localhost:4000")
 	http.ListenAndServe(":4000", gRouter)
 }
