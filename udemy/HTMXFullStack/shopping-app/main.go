@@ -25,11 +25,11 @@ func init() {
 	}
 	log.Println("Connected to the database")
 
-	// err = initSchema(db)
-	// if err != nil {
-	// 	log.Fatalf("Failed to initialize schema: %v\n", err)
-	// }
-	// log.Println("Initialized the schema")
+	err = initSchema(db)
+	if err != nil {
+		log.Fatalf("Failed to initialize schema: %v\n", err)
+	}
+	log.Println("Initialized the schema")
 
 	// tmpl, err = template.ParseGlob("./templates/*.html")
 	// if err != nil {
@@ -60,25 +60,43 @@ func initDB() (*sql.DB, error) {
 
 func initSchema(db *sql.DB) error {
 	_, err := db.Exec(`
-	CREATE TABLE IF NOT EXISTS users(
-		id 		CHAR(36) 	 PRIMARY KEY NOT NULL, 
-		email 		VARCHAR(255)	 NOT NULL, 
-		password 	VARCHAR(255)	 NOT NULL, 
-		name 		VARCHAR(255)	 NULL, 
-		category 	INT		 NULL,
-		dob 		DATE		 NULL,
-		bio 		LONGTEXT	 NULL,
-		avatar 		VARCHAR(255)	 NULL 
+	CREATE TABLE IF NOT EXISTS products(
+		product_id 	VARCHAR(50) 	PRIMARY KEY NOT NULL, 
+		product_name 	VARCHAR(100),
+		price 		FLOAT,
+		description 	MEDIUMTEXT,
+		product_image 	VARCHAR(50),
+		date_created 	DATE,
+		date_modified 	DATE
+	);
+	`)
+	if err != nil {
+		return fmt.Errorf("Failed to create table products: %v", err)
+	}
+
+	_, err = db.Exec(`
+	CREATE TABLE IF NOT EXISTS orders(
+		order_id 	VARCHAR(50) 	 PRIMARY KEY NOT NULL,
+		user_id 	VARCHAR(50),
+		order_status 	VARCHAR(15),
+		order_date 	DATE
 	)
 	`)
 	if err != nil {
-		return fmt.Errorf("Failed to create table: %v", err)
+		return fmt.Errorf("Failed to create table orders: %v", err)
 	}
 
-	// _, err = db.Exec("TRUNCATE TABLE users")
-	// if err != nil {
-	// 	return fmt.Errorf("Failed to truncate task: %v\n", err)
-	// }
+	_, err = db.Exec(`
+	CREATE TABLE IF NOT EXISTS order_items(
+		order_id 	VARCHAR(50) 	NOT NULL,
+		product_id 	VARCHAR(50),
+		quantity 	INT DEFAULT 1,
+		cost 		FLOAT
+	);
+	`)
+	if err != nil {
+		return fmt.Errorf("Failed to create table order_items: %v", err)
+	}
 
 	return nil
 }
