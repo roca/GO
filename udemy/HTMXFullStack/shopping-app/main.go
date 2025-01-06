@@ -7,6 +7,9 @@ import (
 	"log"
 	"net/http"
 
+	"shopping-app/pkg/handlers"
+	"shopping-app/pkg/repository"
+
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
@@ -113,6 +116,12 @@ func main() {
 
 	//All dynamic routes
 
-	log.Println("Server started on http://localhost:5000")
-	http.ListenAndServe(":5000", gRouter)
+	repo := repository.NewRepository(db)
+	handler := handlers.NewHandler(repo)
+
+	log.Println("Server started on http://localhost:5001")
+	err := http.ListenAndServe(":5001", gRouter)
+	if err != nil {
+		log.Fatalf("Failed to start server: %v\n", err)
+	}
 }
