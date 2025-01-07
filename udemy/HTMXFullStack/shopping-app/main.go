@@ -114,12 +114,19 @@ func main() {
 	fs := http.FileServer(http.Dir("./static"))
 	gRouter.PathPrefix("/static/").Handler(http.StripPrefix("/static/", fs))
 
-	//All dynamic routes
 
 	repo := repository.NewRepository(db)
 	handler := handlers.NewHandler(repo)
 
 	gRouter.HandleFunc("/seed-products", handler.SeedProducts).Methods("POST")
+
+
+	//All dynamic routes
+
+	gRouter.HandleFunc("/manageproducts", handler.ProductsPage).Methods("GET")
+	gRouter.HandleFunc("/allproducts", handler.AllProductsView).Methods("GET")
+	gRouter.HandleFunc("/products",handler.ListProducts).Methods("GET")
+  
 
 	log.Println("Server started on http://localhost:5001")
 	err := http.ListenAndServe(":5001", gRouter)
