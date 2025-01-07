@@ -119,6 +119,8 @@ func main() {
 	repo := repository.NewRepository(db)
 	handler := handlers.NewHandler(repo)
 
+	gRouter.HandleFunc("/seed-products", handler.SeedProducts).Methods("POST")
+
 	log.Println("Server started on http://localhost:5001")
 	err := http.ListenAndServe(":5001", gRouter)
 	if err != nil {
