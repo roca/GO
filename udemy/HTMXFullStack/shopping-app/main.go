@@ -126,6 +126,7 @@ func main() {
 	gRouter.HandleFunc("/manageproducts", handler.ProductsPage).Methods("GET")
 	gRouter.HandleFunc("/allproducts", handler.AllProductsView).Methods("GET")
 	gRouter.HandleFunc("/products",handler.ListProducts).Methods("GET")
+	gRouter.HandleFunc("/products/{id}",handler.GetProduct).Methods("GET")
   
 
 	log.Println("Server started on http://localhost:5001")
