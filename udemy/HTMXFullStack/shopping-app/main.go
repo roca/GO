@@ -123,6 +123,13 @@ func main() {
 
 	//All dynamic routes
 
+	// User routes
+
+	gRouter.HandleFunc("/", handler.ShoppingHomepage).Methods("GET")
+	gRouter.HandleFunc("/shoppingitems", handler.ShoppingItemsView).Methods("GET")
+
+	// Admin routes
+
 	gRouter.HandleFunc("/manageproducts", handler.ProductsPage).Methods("GET")
 	gRouter.HandleFunc("/allproducts", handler.AllProductsView).Methods("GET")
 	gRouter.HandleFunc("/products",handler.ListProducts).Methods("GET")
