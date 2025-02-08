@@ -131,6 +131,7 @@ func main() {
 	gRouter.HandleFunc("/addtocart/{product_id}", handler.AddToCart).Methods("POST")
 	gRouter.HandleFunc("/gotocart", handler.ShoppingCartView).Methods("GET")
 	gRouter.HandleFunc("/updateorderitem", handler.UpdateOrderItemQuantity).Methods("PUT")
+	gRouter.HandleFunc("/ordercomplete", handler.PlaceOrder).Methods("GET")
 
 	// Admin routes
 
