@@ -20,16 +20,12 @@ func main() {
 	t.Add(5)
 	// Union
 	u := set.Union(s, t)
-	// Print all elements
+	// Print all elements using Push
+	fmt.Println("Push")
 	set.PrintAllElemetsPush(u)
 
-	for next, stop := range u.Pull() {
-		v, ok := next()
-		if !ok {
-			break
-		}
-		fmt.Println(v)
-	}
-	stop()
+	// Print all elements using Pull
+	fmt.Println("Pull")
+	set.PrintAllElementsPull(u)
 
 }
