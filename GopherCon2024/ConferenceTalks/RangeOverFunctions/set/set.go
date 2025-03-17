@@ -83,3 +83,11 @@ func (s *Set[E]) Pull() (func() (E, bool), func()) {
 
 	return next, stop
 }
+
+func PrintAllElementsPull[E comparable](s *Set[E]) {
+	next, stop := s.Pull()
+	defer stop()
+	for v, ok := next(); ok; v, ok = next() {
+		fmt.Println(v)
+	}
+}
