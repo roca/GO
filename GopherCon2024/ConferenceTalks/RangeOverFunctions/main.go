@@ -1,6 +1,9 @@
 package main
 
-import "example/set"
+import (
+	"example/set"
+	"fmt"
+)
 
 func main() {
 	// Create a new set
@@ -20,5 +23,13 @@ func main() {
 	// Print all elements
 	set.PrintAllElemetsPush(u)
 
-	
+	for next, stop := range u.Pull() {
+		v, ok := next()
+		if !ok {
+			break
+		}
+		fmt.Println(v)
+	}
+	stop()
+
 }
