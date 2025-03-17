@@ -61,16 +61,16 @@ func (s *Set[E]) Pull() (func() (E, bool), func()) {
 	ch := make(chan E)
 	stopCh := make(chan bool)
 
-	go func () {
-		defer close(ch)
-		for v := range s.m {
-			select {
-			case ch <- v:
-			case <-stopCh:
-				return
-			}
-		}
-	}()
+	// go func () {
+	// 	defer close(ch)
+	// 	for v := range s.m {
+	// 		select {
+	// 		case ch <- v:
+	// 		case <-stopCh:
+	// 			return
+	// 		}
+	// 	}
+	// }()
 
 	next := func() (E, bool) {
 		v, ok := <-ch
