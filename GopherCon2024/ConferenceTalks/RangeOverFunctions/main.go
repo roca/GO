@@ -19,4 +19,6 @@ func main() {
 	u := set.Union(s, t)
 	// Print all elements
 	set.PrintAllElemetsPush(u)
+
+	
 }
