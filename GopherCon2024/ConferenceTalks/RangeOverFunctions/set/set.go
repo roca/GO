@@ -52,3 +52,34 @@ func PrintAllElemetsPush[E comparable](s *Set[E]) {
 		return true
 	})
 }
+
+// Pull returns a next function that returns each
+// element of s with bool for whether the value
+// is valid. The stop function should be called
+// when finished calling the next function.
+func (s *Set[E]) Pull() (func() (E, bool), func()) {
+	ch := make(chan E)
+	stopCh := make(chan bool)
+
+	go func () {
+		defer close(ch)
+		for v := range s.m {
+			select {
+			case ch <- v:
+			case <-stopCh:
+				return
+			}
+		}
+	}()
+
+	next := func() (E, bool) {
+		v, ok := <-ch
+		return v, ok
+	}
+
+	stop := func() {
+		close(stopCh)
+	}
+
+	return next, stop
+}
