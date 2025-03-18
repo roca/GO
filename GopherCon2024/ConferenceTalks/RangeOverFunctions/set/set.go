@@ -1,6 +1,9 @@
 package set
 
-import "fmt"
+import (
+	"fmt"
+	"iter"
+)
 
 // Set holds a set of elements
 
@@ -61,16 +64,16 @@ func (s *Set[E]) Pull() (func() (E, bool), func()) {
 	ch := make(chan E)
 	stopCh := make(chan bool)
 
-	// go func () {
-	// 	defer close(ch)
-	// 	for v := range s.m {
-	// 		select {
-	// 		case ch <- v:
-	// 		case <-stopCh:
-	// 			return
-	// 		}
-	// 	}
-	// }()
+	go func() {
+		defer close(ch)
+		for v := range s.m {
+			select {
+			case ch <- v:
+			case <-stopCh:
+				return
+			}
+		}
+	}()
 
 	next := func() (E, bool) {
 		v, ok := <-ch
@@ -88,6 +91,31 @@ func PrintAllElementsPull[E comparable](s *Set[E]) {
 	next, stop := s.Pull()
 	defer stop()
 	for v, ok := next(); ok; v, ok = next() {
+		fmt.Println(v)
+	}
+}
+
+func (s *Set[E]) All() iter.Seq[E] {
+	return func(yield func(E) bool) {
+		for v := range s.m {
+			if !yield(v) {
+				return
+			}
+		}
+	}
+}
+
+func PrintAllElements[E comparable](s *Set[E]) {
+	iterFunc := s.All()
+
+	// Call the functionbby passing the function as an argument
+	// iterFunc(func(v E) bool {
+	// 	fmt.Println(v)
+	// 	return true
+	// })
+
+	// Call the function by passing the function as a closure
+	for v := range iterFunc {
 		fmt.Println(v)
 	}
 }
