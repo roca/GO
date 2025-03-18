@@ -108,14 +108,19 @@ func (s *Set[E]) All() iter.Seq[E] {
 func PrintAllElements[E comparable](s *Set[E]) {
 	iterFunc := s.All()
 
-	// Call the functionbby passing the function as an argument
-	// iterFunc(func(v E) bool {
-	// 	fmt.Println(v)
-	// 	return true
-	// })
+	f := func(v E) bool {
+		if s.Contains(v)  {
+			fmt.Println(v)
+			return true
+		}
+		return false
+	}
+
+	// Call the function by passing the function as an argument
+	// iterFunc(f)
 
 	// Call the function by passing the function as a closure
 	for v := range iterFunc {
-		fmt.Println(v)
+		f(v)
 	}
 }
