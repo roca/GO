@@ -29,7 +29,7 @@ func main() {
 	fmt.Println("Print all elements using All iterator")
 	set.PrintAllElements(u)
 
-	fmt.Println("Print non odd elements using All iterator")
+	fmt.Println("Print odd elements using All iterator")
 	set.PrintOddElements(u)
 
 }

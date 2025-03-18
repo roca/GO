@@ -166,12 +166,8 @@ func PrintOddElements(s *Set[int]) {
 	}
 
 	filterOddFunc := func(v int) bool {
-		odds := []int{1, 3, 5, 7, 9}
-		
-		for _, odd := range odds {
-			if s.Contains(odd) {
-				return true
-			}
+		if v%2 != 0 {
+			return true
 		}
 		return false
 	}
