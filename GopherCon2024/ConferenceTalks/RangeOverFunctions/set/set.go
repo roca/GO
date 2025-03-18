@@ -109,7 +109,7 @@ func PrintAllElements[E comparable](s *Set[E]) {
 	iterFunc := s.All()
 
 	f := func(v E) bool {
-		if s.Contains(v)  {
+		if s.Contains(v) {
 			fmt.Println(v)
 			return true
 		}
@@ -121,6 +121,64 @@ func PrintAllElements[E comparable](s *Set[E]) {
 
 	// Call the function by passing the function as a closure
 	for v := range iterFunc {
+		f(v)
+	}
+}
+
+func EqSeq[E comparable](s1, s2 iter.Seq[E]) bool {
+	next1, stop1 := iter.Pull(s1)
+	defer stop1()
+	next2, stop2 := iter.Pull(s2)
+	defer stop2()
+
+	for {
+		v1, ok1 := next1()
+		v2, ok2 := next2()
+		if !ok1 {
+			return !ok2
+		}
+		if ok1 != ok2 || v1 != v2 {
+			return false
+		}
+	}
+}
+
+func Filter[V any](f func(V) bool, s iter.Seq[V]) iter.Seq[V] {
+	return func(yield func(V) bool) {
+		for v := range s {
+			if f(v) && !yield(v) {
+				return
+			}
+		}
+	}
+}
+
+func PrintOddElements(s *Set[int]) {
+
+	iterAll := s.All()
+
+	f := func(v int) bool {
+		if s.Contains(v) {
+			fmt.Println(v)
+			return true
+		}
+		return false
+	}
+
+	filterOddFunc := func(v int) bool {
+		odds := []int{1, 3, 5, 7, 9}
+		
+		for _, odd := range odds {
+			if s.Contains(odd) {
+				return true
+			}
+		}
+		return false
+	}
+
+	iterOdd := Filter(filterOddFunc, iterAll)
+
+	for v := range iterOdd {
 		f(v)
 	}
 }
