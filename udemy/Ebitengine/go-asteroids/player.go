@@ -7,7 +7,12 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-const rotationPerSecond = math.Pi
+const (
+	rotationPerSecond = math.Pi
+	maxAcceleration   = 8.0
+)
+
+var curAcceleration float64
 
 type Player struct {
 	sprite   *ebiten.Image
