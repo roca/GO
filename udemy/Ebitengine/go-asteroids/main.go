@@ -2,7 +2,7 @@ package main
 
 import "github.com/hajimehoshi/ebiten/v2"
 
-type Game struct{
+type Game struct {
 	player *Player
 }
 
@@ -22,6 +22,9 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (ScreenWidth, ScreenHeigh
 func main() {
 	g := &Game{}
 	g.player = NewPlayer(g)
+
+	ebiten.SetWindowTitle("Go Asteroids")
+	ebiten.SetWindowSize(ScreenWidth, ScreenHeight)
 
 	err := ebiten.RunGame(g)
 	if err != nil {
