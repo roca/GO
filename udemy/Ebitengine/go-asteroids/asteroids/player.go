@@ -1,4 +1,4 @@
-package main
+package asteroids
 
 import (
 	"go-asteroids/assets"
@@ -9,22 +9,22 @@ import (
 
 const (
 	rotationPerSecond = math.Pi
-	maxVelocity   = 8.0
-	ScreenWidth = 1280
-	ScreenHeight = 720
+	maxVelocity       = 8.0
+	ScreenWidth       = 1280
+	ScreenHeight      = 720
 )
 
 var curVelocity float64
 
 type Player struct {
-	game           *Game
+	game           *GameScene
 	sprite         *ebiten.Image
 	rotation       float64
 	position       Vector
 	playerVelocity float64
 }
 
-func NewPlayer(game *Game) *Player {
+func NewPlayer(game *GameScene) *Player {
 	sprite := assets.PlayerSprite
 
 	// Center player on screen
@@ -33,13 +33,13 @@ func NewPlayer(game *Game) *Player {
 	halfH := float64(bounds.Dy()) / 2
 
 	pos := Vector{
-		X: float64(ScreenWidth) / 2 - halfW,
-		Y: float64(ScreenHeight) / 2 - halfH,
+		X: float64(ScreenWidth)/2 - halfW,
+		Y: float64(ScreenHeight)/2 - halfH,
 	}
 
 	p := &Player{
-		sprite: sprite,
-		game:   game,
+		sprite:   sprite,
+		game:     game,
 		position: pos,
 	}
 
@@ -101,7 +101,6 @@ func (p *Player) accelerate() {
 		p.position.Y += dy
 	}
 }
-
 
 func (p *Player) keepOnScreen() {
 	if p.position.X >= float64(ScreenWidth) {
