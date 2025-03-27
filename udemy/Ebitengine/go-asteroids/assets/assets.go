@@ -7,6 +7,8 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"golang.org/x/image/font"
+	"golang.org/x/image/font/opentype"
+)
 
 //go:embed *
 var assets embed.FS
