@@ -4,6 +4,7 @@ import (
 	"embed"
 	"image"
 	_ "image/png"
+	"io"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"golang.org/x/image/font"
@@ -23,7 +24,12 @@ func titleFont(name string) font.Face {
 	}
 	defer f.Close()
 
-	tt, err := opentype.Parse(f)
+	bytes, err := io.ReadAll(f)
+	if err != nil {
+		panic(err)
+	}
+
+	tt, err := opentype.Parse(bytes)
 	if err != nil {
 		panic(err)
 	}
