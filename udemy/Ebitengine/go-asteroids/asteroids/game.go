@@ -14,7 +14,7 @@ func (i *Input) Update() {}
 func (g *Game) Update() error {
 	if g.sceneManager == nil {
 		g.sceneManager = &SceneManager{}
-		g.sceneManager.GoToScene(NewGameScene())
+		g.sceneManager.GoToScene(&TitleScene{})
 	}
 
 	g.input.Update()
