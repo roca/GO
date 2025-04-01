@@ -88,6 +88,7 @@ func (m *Meteor) Update() {
 	m.rotation += m.rotationSpeed
 
 	// Keep meteor on screen
+	m.keepOnScreen()
 }
 
 func (m *Meteor) Draw(screen *ebiten.Image) {
@@ -104,4 +105,21 @@ func (m *Meteor) Draw(screen *ebiten.Image) {
 	op.GeoM.Translate(m.position.X, m.position.Y)
 
 	screen.DrawImage(m.sprite, op)
+}
+
+func (m *Meteor) keepOnScreen() {
+	// Wrap around the screen
+	if m.position.X >= float64(ScreenWidth) {
+		m.position.X = 0
+	}
+	if m.position.X < 0 {
+		m.position.X = ScreenWidth
+	}
+
+	if m.position.Y >= float64(ScreenHeight) {
+		m.position.Y = 0
+	}
+	if m.position.Y < 0 {
+		m.position.Y = ScreenHeight
+	}
 }
