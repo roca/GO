@@ -44,7 +44,6 @@ func (g *GameScene) Update(state *State) error {
 
 	for _,m := range g.meteors {
 		m.Update()
-	
 	}
 
 	g.speedUpMeteors()
