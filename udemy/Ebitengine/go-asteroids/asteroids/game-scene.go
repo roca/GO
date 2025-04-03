@@ -1,9 +1,11 @@
 package asteroids
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/solarlune/resolv"
 )
 
 const (
@@ -14,13 +16,14 @@ const (
 )
 
 type GameScene struct {
-	player           *Player
-	baseVelocity     float64
-	meteorCount      int
-	meteorSpawnTimer *Timer
-	meteors          map[int]*Meteor
-	meteorsForLevel  int
-	velocityTimer    *Timer
+	player           *Player         // The player
+	baseVelocity     float64         // The base velocity for items in the game
+	meteorCount      int             // The counter for meteors
+	meteorSpawnTimer *Timer          // The timer for spawning meteors
+	meteors          map[int]*Meteor // A map of meteors
+	meteorsForLevel  int             // # of meteors for a level
+	velocityTimer    *Timer          // Thw timer used for speeding up meteors
+	space            *resolv.Space   // The space for all collision objects
 }
 
 func NewGameScene() *GameScene {
@@ -31,8 +34,10 @@ func NewGameScene() *GameScene {
 		meteors:          make(map[int]*Meteor),
 		meteorCount:      0,
 		meteorsForLevel:  2,
+		space:            resolv.NewSpace(ScreenWidth, ScreenHeight, 16, 16),
 	}
 	g.player = NewPlayer(g)
+	g.space.Add(g.player.playerObj)
 
 	return g
 }
@@ -42,11 +47,13 @@ func (g *GameScene) Update(state *State) error {
 
 	g.spawnMeteors()
 
-	for _,m := range g.meteors {
+	for _, m := range g.meteors {
 		m.Update()
 	}
 
 	g.speedUpMeteors()
+
+	g.isPlayerCollidingWithMeteor()
 
 	return nil
 }
@@ -71,6 +78,7 @@ func (g *GameScene) spawnMeteors() {
 		g.meteorSpawnTimer.Reset()
 		if len(g.meteors) < g.meteorsForLevel && g.meteorCount < g.meteorsForLevel {
 			m := NewMeteor(g.baseVelocity, g, len(g.meteors)-1)
+			g.space.Add(m.meteorObj)
 			g.meteorCount++
 			g.meteors[g.meteorCount] = m
 		}
@@ -83,5 +91,14 @@ func (g *GameScene) speedUpMeteors() {
 	if g.velocityTimer.IsReady() {
 		g.velocityTimer.Reset()
 		g.baseVelocity += meteorSpeedUpAmount
+	}
+}
+
+func (g *GameScene) isPlayerCollidingWithMeteor() {
+	for _, m := range g.meteors {
+		if m.meteorObj.IsIntersecting(g.player.playerObj) {
+			data := m.meteorObj.Data().(*ObjectData)
+			fmt.Println("Player collided with meteor", data.index)
+		}
 	}
 }
