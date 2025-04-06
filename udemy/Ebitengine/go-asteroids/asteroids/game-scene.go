@@ -55,6 +55,10 @@ func (g *GameScene) Update(state *State) error {
 		m.Update()
 	}
 
+	for _, l := range g.lasers {
+		l.Update()
+	}
+
 	g.speedUpMeteors()
 
 	g.isPlayerCollidingWithMeteor()
@@ -68,6 +72,11 @@ func (g *GameScene) Draw(screen *ebiten.Image) {
 	// Draw the meteors
 	for _, m := range g.meteors {
 		m.Draw(screen)
+	}
+
+	// Draw the lasers
+	for _, l := range g.lasers {
+		l.Draw(screen)
 	}
 }
 
