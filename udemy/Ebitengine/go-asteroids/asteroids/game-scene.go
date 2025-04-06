@@ -24,6 +24,8 @@ type GameScene struct {
 	meteorsForLevel  int             // # of meteors for a level
 	velocityTimer    *Timer          // Thw timer used for speeding up meteors
 	space            *resolv.Space   // The space for all collision objects
+	lasers           map[int]*Laser  // A map of lasers
+	laserCount       int             // The counter for lasers
 }
 
 func NewGameScene() *GameScene {
@@ -35,6 +37,8 @@ func NewGameScene() *GameScene {
 		meteorCount:      0,
 		meteorsForLevel:  2,
 		space:            resolv.NewSpace(ScreenWidth, ScreenHeight, 16, 16),
+		lasers:           make(map[int]*Laser),
+		laserCount:       0,
 	}
 	g.player = NewPlayer(g)
 	g.space.Add(g.player.playerObj)

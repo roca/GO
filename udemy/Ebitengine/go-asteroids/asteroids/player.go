@@ -3,6 +3,7 @@ package asteroids
 import (
 	"go-asteroids/assets"
 	"math"
+	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/solarlune/resolv"
@@ -13,6 +14,9 @@ const (
 	maxVelocity       = 8.0
 	ScreenWidth       = 1280
 	ScreenHeight      = 720
+	shootCoolDown = time.Millisecond * 150
+	burstCoolDown = time.Millisecond * 500
+	laserSpawnOffset = 50.0
 )
 
 var curVelocity float64
@@ -24,6 +28,8 @@ type Player struct {
 	position       Vector
 	playerVelocity float64
 	playerObj      *resolv.Circle
+	shootCoolDown *Timer
+	burstCoolDown *Timer
 }
 
 func NewPlayer(game *GameScene) *Player {
@@ -47,6 +53,8 @@ func NewPlayer(game *GameScene) *Player {
 		game:      game,
 		position:  pos,
 		playerObj: playerObj,
+		shootCoolDown: NewTimer(shootCoolDown),
+		burstCoolDown: NewTimer(burstCoolDown),
 	}
 
 	p.playerObj.SetPosition(pos.X, pos.Y)
