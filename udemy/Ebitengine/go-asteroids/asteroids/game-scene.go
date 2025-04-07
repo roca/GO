@@ -2,6 +2,7 @@ package asteroids
 
 import (
 	"fmt"
+	"go-asteroids/assets"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -9,39 +10,50 @@ import (
 )
 
 const (
-	baseMeteorVelocity  = 0.25
-	meteorSpawnTime     = 100 * time.Millisecond
-	meteorSpeedUpAmount = 0.1
-	meteorSpeedUpTime   = 1000 * time.Millisecond
+	baseMeteorVelocity   = 0.25
+	meteorSpawnTime      = 100 * time.Millisecond
+	meteorSpeedUpAmount  = 0.1
+	meteorSpeedUpTime    = 1000 * time.Millisecond
+	cleanUpExplosionTime = 200 * time.Millisecond
 )
 
 type GameScene struct {
-	player           *Player         // The player
-	baseVelocity     float64         // The base velocity for items in the game
-	meteorCount      int             // The counter for meteors
-	meteorSpawnTimer *Timer          // The timer for spawning meteors
-	meteors          map[int]*Meteor // A map of meteors
-	meteorsForLevel  int             // # of meteors for a level
-	velocityTimer    *Timer          // Thw timer used for speeding up meteors
-	space            *resolv.Space   // The space for all collision objects
-	lasers           map[int]*Laser  // A map of lasers
-	laserCount       int             // The counter for lasers
+	player               *Player         // The player
+	baseVelocity         float64         // The base velocity for items in the game
+	meteorCount          int             // The counter for meteors
+	meteorSpawnTimer     *Timer          // The timer for spawning meteors
+	meteors              map[int]*Meteor // A map of meteors
+	meteorsForLevel      int             // # of meteors for a level
+	velocityTimer        *Timer          // Thw timer used for speeding up meteors
+	space                *resolv.Space   // The space for all collision objects
+	lasers               map[int]*Laser  // A map of lasers
+	laserCount           int             // The counter for lasers
+	score                int
+	explosionSmallSprite *ebiten.Image // The sprite for the small explosion
+	explosionSprite      *ebiten.Image // The sprite for the explosion
+	explosionFrames      []*ebiten.Image // The frames for the explosion
+	cleanupTimer         *Timer        // The timer for cleaning up the explosion
 }
 
 func NewGameScene() *GameScene {
 	g := &GameScene{
-		meteorSpawnTimer: NewTimer(meteorSpawnTime),
-		baseVelocity:     baseMeteorVelocity,
-		velocityTimer:    NewTimer(meteorSpeedUpTime),
-		meteors:          make(map[int]*Meteor),
-		meteorCount:      0,
-		meteorsForLevel:  2,
-		space:            resolv.NewSpace(ScreenWidth, ScreenHeight, 16, 16),
-		lasers:           make(map[int]*Laser),
-		laserCount:       0,
+		meteorSpawnTimer:     NewTimer(meteorSpawnTime),
+		baseVelocity:         baseMeteorVelocity,
+		velocityTimer:        NewTimer(meteorSpeedUpTime),
+		meteors:              make(map[int]*Meteor),
+		meteorCount:          0,
+		meteorsForLevel:      2,
+		space:                resolv.NewSpace(ScreenWidth, ScreenHeight, 16, 16),
+		lasers:               make(map[int]*Laser),
+		laserCount:           0,
+		explosionSprite:      assets.ExplosionSprite,
+		explosionSmallSprite: assets.ExplosionSmallSprite,
+		cleanupTimer:         NewTimer(cleanUpExplosionTime),
 	}
 	g.player = NewPlayer(g)
 	g.space.Add(g.player.playerObj)
+
+	g.explosionFrames = assets.Explosion
 
 	return g
 }
@@ -83,6 +95,16 @@ func (g *GameScene) Draw(screen *ebiten.Image) {
 func (g *GameScene) Layout(outsideWidth, outsideHeight int) (ScreenWidth, ScreenHeight int) {
 	return outsideWidth, outsideHeight
 }
+
+func (g *GameScene) isMetorHitByPlayer() {
+	for _, m := range g.meteors {
+		for _, l := range g.lasers {
+			if m.meteorObj.IsIntersecting(l.lasterObj) {
+			}
+		}
+	}
+}
+
 
 func (g *GameScene) spawnMeteors() {
 	g.meteorSpawnTimer.Update()
