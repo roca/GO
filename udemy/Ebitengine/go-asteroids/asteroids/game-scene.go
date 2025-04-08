@@ -3,6 +3,7 @@ package asteroids
 import (
 	"fmt"
 	"go-asteroids/assets"
+	"math/rand"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -29,10 +30,10 @@ type GameScene struct {
 	lasers               map[int]*Laser  // A map of lasers
 	laserCount           int             // The counter for lasers
 	score                int
-	explosionSmallSprite *ebiten.Image // The sprite for the small explosion
-	explosionSprite      *ebiten.Image // The sprite for the explosion
+	explosionSmallSprite *ebiten.Image   // The sprite for the small explosion
+	explosionSprite      *ebiten.Image   // The sprite for the explosion
 	explosionFrames      []*ebiten.Image // The frames for the explosion
-	cleanupTimer         *Timer        // The timer for cleaning up the explosion
+	cleanupTimer         *Timer          // The timer for cleaning up the explosion
 }
 
 func NewGameScene() *GameScene {
@@ -75,6 +76,8 @@ func (g *GameScene) Update(state *State) error {
 
 	g.isPlayerCollidingWithMeteor()
 
+	g.isMetorHitByPlayer()
+
 	return nil
 }
 
@@ -100,11 +103,32 @@ func (g *GameScene) isMetorHitByPlayer() {
 	for _, m := range g.meteors {
 		for _, l := range g.lasers {
 			if m.meteorObj.IsIntersecting(l.lasterObj) {
+				if m.meteorObj.Tags().Has(TagSmall) {
+					// Small meteor hit
+					m.sprite = g.explosionSmallSprite
+					g.score++
+				} else {
+					// Large meteor hit
+					oldPos := m.position
+					m.sprite = g.explosionSprite
+					g.score++
+					numToSpawn := rand.Intn(numberOfSmallMeteorsFromLargeMeteor)
+					for i := 0; i < numToSpawn; i++ {
+						meteor := NewMeteor(baseMeteorVelocity, g, len(m.game.meteors)-1)
+						meteor.position = Vector{
+							oldPos.X + float64(rand.Intn(100-50)) + 50,
+							oldPos.Y + float64(rand.Intn(100-50)) + 50,
+						}
+						meteor.meteorObj.SetPosition(meteor.position.X, meteor.position.Y)
+						g.space.Add(meteor.meteorObj)
+						g.meteorCount++
+						g.meteors[m.game.meteorCount] = meteor
+					}
+				}
 			}
 		}
 	}
 }
-
 
 func (g *GameScene) spawnMeteors() {
 	g.meteorSpawnTimer.Update()
