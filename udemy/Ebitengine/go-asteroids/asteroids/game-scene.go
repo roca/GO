@@ -78,6 +78,8 @@ func (g *GameScene) Update(state *State) error {
 
 	g.isMetorHitByPlayer()
 
+	g.cleanupMeteorsAndAliens()
+
 	return nil
 }
 
@@ -114,10 +116,10 @@ func (g *GameScene) isMetorHitByPlayer() {
 					g.score++
 					numToSpawn := rand.Intn(numberOfSmallMeteorsFromLargeMeteor)
 					for i := 0; i < numToSpawn; i++ {
-						meteor := NewMeteor(baseMeteorVelocity, g, len(m.game.meteors)-1)
+						meteor := NewSmallMeteor(baseMeteorVelocity, g, len(m.game.meteors)-1)
 						meteor.position = Vector{
-							oldPos.X + float64(rand.Intn(100-50)) + 50,
-							oldPos.Y + float64(rand.Intn(100-50)) + 50,
+							oldPos.X + float64(rand.Intn(100-50)+50),
+							oldPos.Y + float64(rand.Intn(100-50)+50),
 						}
 						meteor.meteorObj.SetPosition(meteor.position.X, meteor.position.Y)
 						g.space.Add(meteor.meteorObj)
@@ -159,5 +161,18 @@ func (g *GameScene) isPlayerCollidingWithMeteor() {
 			data := m.meteorObj.Data().(*ObjectData)
 			fmt.Println("Player collided with meteor", data.index)
 		}
+	}
+}
+
+func (g *GameScene) cleanupMeteorsAndAliens() {
+	g.cleanupTimer.Update()
+	if g.cleanupTimer.IsReady() {
+		for i,m := range g.meteors {
+			if m.sprite == g.explosionSprite || m.sprite == g.explosionSmallSprite {
+				delete(g.meteors, i)
+				g.space.Remove(m.meteorObj)
+			}
+		}
+		g.cleanupTimer.Reset()
 	}
 }
