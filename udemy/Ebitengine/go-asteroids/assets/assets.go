@@ -26,7 +26,7 @@ var Explosion = createExplosion()
 
 func createExplosion() []*ebiten.Image {
 	var frames []*ebiten.Image
-	for i := 0; i < 11; i++ {
+	for i := 0; i < 12; i++ {
 		frame := mustLoadImage(fmt.Sprintf("images/explosion/%d.png", i+1))
 		frames = append(frames, frame)
 	}
