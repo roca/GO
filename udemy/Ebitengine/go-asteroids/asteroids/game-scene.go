@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/audio"
 	"github.com/solarlune/resolv"
 )
 
@@ -34,6 +35,8 @@ type GameScene struct {
 	explosionFrames      []*ebiten.Image // The frames for the explosion
 	cleanupTimer         *Timer          // The timer for cleaning up the explosion
 	playerIsDead         bool            // Is the player dead?
+	audioContext         *audio.Context  // The audio context for the game
+	thrustPlayer         *audio.Player   // The audio player for the thrust sound
 }
 
 func NewGameScene() *GameScene {
@@ -55,6 +58,11 @@ func NewGameScene() *GameScene {
 	g.space.Add(g.player.playerObj)
 
 	g.explosionFrames = assets.Explosion
+
+	// Load Audio
+	g.audioContext = audio.NewContext(48000)
+	thrustPlayer, _ := g.audioContext.NewPlayer(assets.ThrustSound)
+	g.thrustPlayer = thrustPlayer
 
 	return g
 }
