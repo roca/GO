@@ -16,6 +16,7 @@ const (
 	meteorSpeedUpAmount  = 0.1
 	meteorSpeedUpTime    = 1000 * time.Millisecond
 	cleanUpExplosionTime = 200 * time.Millisecond
+	baseBeatWaitTime     = 1600
 )
 
 type GameScene struct {
@@ -38,10 +39,15 @@ type GameScene struct {
 	audioContext         *audio.Context  // The audio context for the game
 	thrustPlayer         *audio.Player   // The audio player for the thrust sound
 	exhaust              *Exhaust        // The exhaust for the player
-	laserOnePlayer      *audio.Player   // The audio player for the laser sound one
-	laserTwoPlayer      *audio.Player   // The audio player for the laser sound two
-	laserThreePlayer    *audio.Player   // The audio player for the laser sound three
-	explosionPlayer     *audio.Player   // The audio player for the explosion sound
+	laserOnePlayer       *audio.Player   // The audio player for the laser sound one
+	laserTwoPlayer       *audio.Player   // The audio player for the laser sound two
+	laserThreePlayer     *audio.Player   // The audio player for the laser sound three
+	explosionPlayer      *audio.Player   // The audio player for the explosion sound
+	beatOnePlayer        *audio.Player   // The audio player for the beat one sound
+	beatTwoPlayer        *audio.Player   // The audio player for the beat two sound
+	beatTimer            *Timer          // The timer for the beat sound
+	beatWaitTime         int             // The wait time for the beat sound
+	playBeatOne          bool            // Is the beat one sound playing?
 }
 
 func NewGameScene() *GameScene {
@@ -58,6 +64,8 @@ func NewGameScene() *GameScene {
 		explosionSprite:      assets.ExplosionSprite,
 		explosionSmallSprite: assets.ExplosionSmallSprite,
 		cleanupTimer:         NewTimer(cleanUpExplosionTime),
+		beatTimer:            NewTimer(2 * time.Second),
+		beatWaitTime:         baseBeatWaitTime,
 	}
 	g.player = NewPlayer(g)
 	g.space.Add(g.player.playerObj)
@@ -72,7 +80,7 @@ func NewGameScene() *GameScene {
 
 	laserOnePlayer, _ := g.audioContext.NewPlayer(assets.LaserOneSound)
 	g.laserOnePlayer = laserOnePlayer
-	
+
 	laserTwoPlayer, _ := g.audioContext.NewPlayer(assets.LaserTwoSound)
 	g.laserTwoPlayer = laserTwoPlayer
 
@@ -81,6 +89,12 @@ func NewGameScene() *GameScene {
 
 	explosionPlayer, _ := g.audioContext.NewPlayer(assets.ExplosionSound)
 	g.explosionPlayer = explosionPlayer
+
+	beatOnePlayer, _ := g.audioContext.NewPlayer(assets.BeatOneSound)
+	g.beatOnePlayer = beatOnePlayer
+
+	beatTwoPlayer, _ := g.audioContext.NewPlayer(assets.BeatTwoSound)
+	g.beatTwoPlayer = beatTwoPlayer
 
 	return g
 }
@@ -112,6 +126,8 @@ func (g *GameScene) Update(state *State) error {
 
 	g.cleanupMeteorsAndAliens()
 
+	g.beatSound()
+
 	return nil
 }
 
@@ -136,6 +152,28 @@ func (g *GameScene) Draw(screen *ebiten.Image) {
 
 func (g *GameScene) Layout(outsideWidth, outsideHeight int) (ScreenWidth, ScreenHeight int) {
 	return outsideWidth, outsideHeight
+}
+
+func (g *GameScene) beatSound() {
+	g.beatTimer.Update()
+	if g.beatTimer.IsReady() {
+		if g.playBeatOne {
+			_ = g.beatOnePlayer.Rewind()
+			g.beatOnePlayer.Play()
+			g.beatTimer.Reset()
+		} else {
+			_ = g.beatTwoPlayer.Rewind()
+			g.beatTwoPlayer.Play()
+			g.beatTimer.Reset()
+		}
+		g.playBeatOne = !g.playBeatOne
+
+		// Speed up the timer
+		if g.beatWaitTime > 400 {
+			g.beatWaitTime -= 25
+			g.beatTimer = NewTimer(time.Duration(g.beatWaitTime) * time.Millisecond)
+		}
+	}
 }
 
 func (g *GameScene) updateExhaust() {
@@ -167,7 +205,7 @@ func (g *GameScene) isMeteorHitByPlayerLaser() {
 						_ = m.game.explosionPlayer.Rewind()
 						m.game.explosionPlayer.Play()
 					}
-					
+
 					numToSpawn := rand.Intn(numberOfSmallMeteorsFromLargeMeteor)
 					for i := 0; i < numToSpawn; i++ {
 						meteor := NewSmallMeteor(baseMeteorVelocity, g, len(m.game.meteors)-1)
