@@ -30,6 +30,7 @@ var ThrustSound = mustLoadOggVorbis("thrust")
 var LaserOneSound = mustLoadOggVorbis("fire")
 var LaserTwoSound = mustLoadOggVorbis("fire")
 var LaserThreeSound = mustLoadOggVorbis("fire")
+var ExplosionSound = mustLoadOggVorbis("explosion")
 
 func mustLoadOggVorbis(name string) *vorbis.Stream {
 	f, err := assets.ReadFile("audio/" + name + ".ogg")
