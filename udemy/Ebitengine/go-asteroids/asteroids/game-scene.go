@@ -38,6 +38,9 @@ type GameScene struct {
 	audioContext         *audio.Context  // The audio context for the game
 	thrustPlayer         *audio.Player   // The audio player for the thrust sound
 	exhaust              *Exhaust        // The exhaust for the player
+	laserOnePlayer      *audio.Player   // The audio player for the laser sound one
+	laserTwoPlayer      *audio.Player   // The audio player for the laser sound two
+	laserThreePlayer    *audio.Player   // The audio player for the laser sound three
 }
 
 func NewGameScene() *GameScene {
@@ -62,8 +65,18 @@ func NewGameScene() *GameScene {
 
 	// Load Audio
 	g.audioContext = audio.NewContext(48000)
+
 	thrustPlayer, _ := g.audioContext.NewPlayer(assets.ThrustSound)
 	g.thrustPlayer = thrustPlayer
+
+	laserOnePlayer, _ := g.audioContext.NewPlayer(assets.LaserOneSound)
+	g.laserOnePlayer = laserOnePlayer
+	
+	laserTwoPlayer, _ := g.audioContext.NewPlayer(assets.LaserTwoSound)
+	g.laserTwoPlayer = laserTwoPlayer
+
+	laserThreePlayer, _ := g.audioContext.NewPlayer(assets.LaserThreeSound)
+	g.laserThreePlayer = laserThreePlayer
 
 	return g
 }
