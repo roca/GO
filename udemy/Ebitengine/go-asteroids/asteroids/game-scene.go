@@ -49,7 +49,7 @@ type GameScene struct {
 	beatTimer            *Timer          // The timer for the beat sound
 	beatWaitTime         int             // The wait time for the beat sound
 	playBeatOne          bool            // Is the beat one sound playing?
-	stars 	     []*Star         // The stars in the game
+	stars                []*Star         // The stars in the game
 }
 
 func NewGameScene() *GameScene {
@@ -68,7 +68,7 @@ func NewGameScene() *GameScene {
 		cleanupTimer:         NewTimer(cleanUpExplosionTime),
 		beatTimer:            NewTimer(2 * time.Second),
 		beatWaitTime:         baseBeatWaitTime,
-		stars: GenerateStars(numberOfStars),
+		stars:                GenerateStars(numberOfStars),
 	}
 	g.player = NewPlayer(g)
 	g.space.Add(g.player.playerObj)
@@ -151,8 +151,6 @@ func (g *GameScene) Draw(screen *ebiten.Image) {
 	for _, m := range g.meteors {
 		m.Draw(screen)
 	}
-
-
 
 	// Draw the lasers
 	for _, l := range g.lasers {
@@ -256,8 +254,12 @@ func (g *GameScene) isPlayerDead(state *State) {
 	if g.player.isDead {
 		g.player.livesRemaining--
 		if g.player.livesRemaining == 0 {
-			g.Reset()
-			state.SceneManager.GoToScene(g)
+			state.SceneManager.GoToScene(&GameOverScene{
+				game:        g,
+				meteors:     make(map[int]*Meteor),
+				meteorCount: 5,
+				stars:       GenerateStars(numberOfStars),
+			})
 		}
 	}
 }
