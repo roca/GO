@@ -25,6 +25,7 @@ var ExplosionSprite = mustLoadImage("images/explosion.png")
 var ExplosionSmallSprite = mustLoadImage("images/explosion-small.png")
 var Explosion = createExplosion()
 var ExhaustSprite = mustLoadImage("images/fire.png")
+var LifeIndicator = mustLoadImage("images/life-indicator.png")
 
 var ThrustSound = mustLoadOggVorbis("thrust")
 var LaserOneSound = mustLoadOggVorbis("fire")
