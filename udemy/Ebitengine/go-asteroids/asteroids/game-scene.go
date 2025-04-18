@@ -1,12 +1,16 @@
 package asteroids
 
 import (
+	"fmt"
 	"go-asteroids/assets"
 	"math/rand"
 	"time"
 
+	"image/color"
+
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/audio"
+	"github.com/hajimehoshi/ebiten/v2/text/v2"
 	"github.com/solarlune/resolv"
 )
 
@@ -50,6 +54,7 @@ type GameScene struct {
 	beatWaitTime         int             // The wait time for the beat sound
 	playBeatOne          bool            // Is the beat one sound playing?
 	stars                []*Star         // The stars in the game
+	currentLevel         int             // The current level the player is on
 }
 
 func NewGameScene() *GameScene {
@@ -69,6 +74,7 @@ func NewGameScene() *GameScene {
 		beatTimer:            NewTimer(2 * time.Second),
 		beatWaitTime:         baseBeatWaitTime,
 		stars:                GenerateStars(numberOfStars),
+		currentLevel:         1,
 	}
 	g.player = NewPlayer(g)
 	g.space.Add(g.player.playerObj)
@@ -163,6 +169,53 @@ func (g *GameScene) Draw(screen *ebiten.Image) {
 			li.Draw(screen)
 		}
 	}
+
+	// Update and draw the score
+	textToDraw := fmt.Sprintf("%06d", g.score)
+	op := &text.DrawOptions{
+		LayoutOptions: text.LayoutOptions{
+			PrimaryAlign: text.AlignCenter,
+		},
+	}
+	op.ColorScale.ScaleWithColor(color.White)
+	op.GeoM.Translate(ScreenWidth/2, 40)
+	text.Draw(screen, textToDraw, &text.GoTextFace{
+		Source: assets.ScoreFont,
+		Size:   24,
+	}, op)
+
+	// Update and draw the High score
+	if g.score > highScore {
+		highScore = g.score
+	}
+
+	textToDraw = fmt.Sprintf("HIGH SCORE %06d", highScore)
+	op = &text.DrawOptions{
+		LayoutOptions: text.LayoutOptions{
+			PrimaryAlign: text.AlignCenter,
+		},
+	}
+	op.ColorScale.ScaleWithColor(color.White)
+	op.GeoM.Translate(ScreenWidth/2, 75)
+	text.Draw(screen, textToDraw, &text.GoTextFace{
+		Source: assets.ScoreFont,
+		Size:   16,
+	}, op)
+
+	// Update and draw the Current level
+	textToDraw = fmt.Sprintf("Level %d", g.currentLevel)
+	op = &text.DrawOptions{
+		LayoutOptions: text.LayoutOptions{
+			PrimaryAlign: text.AlignCenter,
+		},
+	}
+	op.ColorScale.ScaleWithColor(color.White)
+	op.GeoM.Translate(ScreenWidth/2, ScreenHeight-40)
+	text.Draw(screen, textToDraw, &text.GoTextFace{
+		Source: assets.LevelFont,
+		Size:   16,
+	}, op)
+
 }
 
 func (g *GameScene) Layout(outsideWidth, outsideHeight int) (ScreenWidth, ScreenHeight int) {
@@ -271,10 +324,14 @@ func (g *GameScene) isPlayerDead(state *State) {
 			score := g.score
 			livesRemaining := g.player.livesRemaining
 			lifeSlice := g.player.lifeIndicators[:len(g.player.lifeIndicators)-1]
+			stars := g.stars
+
 			g.Reset()
+
 			g.player.livesRemaining = livesRemaining
 			g.score = score
 			g.player.lifeIndicators = lifeSlice
+			g.stars = stars
 		}
 	}
 }
