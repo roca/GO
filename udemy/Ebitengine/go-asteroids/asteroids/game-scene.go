@@ -3,6 +3,7 @@ package asteroids
 import (
 	"fmt"
 	"go-asteroids/assets"
+	"log"
 	"math/rand"
 	"time"
 
@@ -314,6 +315,16 @@ func (g *GameScene) isPlayerDead(state *State) {
 	if g.player.isDead {
 		g.player.livesRemaining--
 		if g.player.livesRemaining == 0 {
+
+			// New High Score ?
+			log.Println("Score:", g.score, ", High Score:", highScore)
+			if g.score > originalHighScore {
+				err := updateHighScore(g.score)
+				if err != nil {
+					log.Println("Error updating high score:", err)
+				}
+			}
+			
 			state.SceneManager.GoToScene(&GameOverScene{
 				game:        g,
 				meteors:     make(map[int]*Meteor),
