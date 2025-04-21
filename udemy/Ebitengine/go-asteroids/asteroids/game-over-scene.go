@@ -49,7 +49,7 @@ func (o *GameOverScene) Draw(screen *ebiten.Image) {
 			},
 		}
 		op.ColorScale.ScaleWithColor(color.White)
-		op.GeoM.Translate(ScreenWidth/2, ScreenHeight/2+100)
+		op.GeoM.Translate(ScreenWidth/2, ScreenHeight/2-200)
 		text.Draw(screen, textToDraw, &text.GoTextFace{
 			Source: assets.TiTleFont,
 			Size:   48,
