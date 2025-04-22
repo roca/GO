@@ -56,6 +56,8 @@ type GameScene struct {
 	playBeatOne          bool            // Is the beat one sound playing?
 	stars                []*Star         // The stars in the game
 	currentLevel         int             // The current level the player is on
+	shield               *Shield         // The shield for the player
+	shieldsUpPlayer      *audio.Player   // The audio player for the shield sound
 }
 
 func NewGameScene() *GameScene {
@@ -106,6 +108,9 @@ func NewGameScene() *GameScene {
 	beatTwoPlayer, _ := g.audioContext.NewPlayer(assets.BeatTwoSound)
 	g.beatTwoPlayer = beatTwoPlayer
 
+	shieldsUpPlayer, _ := g.audioContext.NewPlayer(assets.ShieldSound)
+	g.shieldsUpPlayer = shieldsUpPlayer
+
 	return g
 }
 
@@ -154,6 +159,11 @@ func (g *GameScene) Draw(screen *ebiten.Image) {
 	// Draw the exhaust
 	if g.exhaust != nil {
 		g.exhaust.Draw(screen)
+	}
+
+	// Draw the shield
+	if g.shield != nil {
+		g.shield.Draw(screen)
 	}
 
 	// Draw the meteors
