@@ -389,7 +389,6 @@ func (g *GameScene) isPlayerDead(state *State) {
 			stars := g.stars
 			shieldsRemaining := g.player.shieldsRemaining
 			shieldIndicatorSlice := g.player.shieldIndicators
-			
 
 			g.Reset()
 
@@ -437,11 +436,29 @@ func (g *GameScene) isPlayerCollidingWithMeteor() {
 					m.game.explosionPlayer.Play()
 				}
 				break
+			} else {
+				// Bounce the meteor off the player
+				g.bounceMeteor(m)
 			}
-		} else {
-			// Bounce the meteor off the player
 		}
 	}
+}
+
+func (g *GameScene) bounceMeteor(m *Meteor) {
+	direction := Vector{
+		X: (ScreenWidth/2 - m.position.X) * -1,
+		Y: (ScreenHeight/2 - m.position.Y) * -1,
+	}
+	normalizedDirection := direction.Normalize()
+	velocity := g.baseVelocity
+
+	movement := Vector{
+		X: normalizedDirection.X * velocity,
+
+		Y: normalizedDirection.Y * velocity,
+	}
+
+	m.movement = movement
 }
 
 func (g *GameScene) cleanupMeteorsAndAliens() {
