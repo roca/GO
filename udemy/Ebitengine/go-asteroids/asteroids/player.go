@@ -46,6 +46,7 @@ type Player struct {
 	lifeIndicators   []*LifeIndicator
 	shieldTimer      *Timer
 	shieldsRemaining int
+	shieldIndicators []*ShieldIndicator
 }
 
 func NewPlayer(game *GameScene) *Player {
@@ -72,6 +73,15 @@ func NewPlayer(game *GameScene) *Player {
 		xPosition += 50.0
 	}
 
+	var shieldIndicators []*ShieldIndicator
+	xPosition = 45.0
+	for i := 0; i < numberOfShields; i++ {
+		si := NewShieldIndicator(Vector{X: xPosition, Y: 60})
+		shieldIndicators = append(shieldIndicators, si)
+		xPosition += 50.0
+	}
+	
+
 	p := &Player{
 		sprite:           sprite,
 		game:             game,
@@ -87,6 +97,7 @@ func NewPlayer(game *GameScene) *Player {
 		livesRemaining:   numberOfLives,
 		lifeIndicators:   lifeIndicators,
 		shieldsRemaining: numberOfShields,
+		shieldIndicators: shieldIndicators,
 	}
 
 	p.playerObj.SetPosition(pos.X, pos.Y)
@@ -156,6 +167,7 @@ func (p *Player) useShield() {
 		p.shieldTimer = NewTimer(shieldDuration)
 		p.game.shield = NewShield(Vector{}, p.rotation, p.game)
 		p.shieldsRemaining--
+		p.shieldIndicators = p.shieldIndicators[:len(p.shieldIndicators)-1]
 	}
 
 	if p.shieldTimer != nil && p.isShielded {
