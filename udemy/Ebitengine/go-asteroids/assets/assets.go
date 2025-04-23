@@ -31,6 +31,7 @@ var ExhaustSprite = mustLoadImage("images/fire.png")
 var LifeIndicator = mustLoadImage("images/life-indicator.png")
 var ShieldSprite = mustLoadImage("images/shield.png")
 var ShieldIndicator = mustLoadImage("images/shield-indicator.png")
+var HyperspaceIndicator = mustLoadImage("images/hyperspace.png")
 
 var ThrustSound = mustLoadOggVorbis("thrust")
 var LaserOneSound = mustLoadOggVorbis("fire")
