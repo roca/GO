@@ -94,8 +94,8 @@ func NewAlien(baseVelocity float64, g *GameScene) *Alien {
 		target :=  g.player.position
 
 		direction := Vector{
-			X: target.X - pos.Y,
-			Y: target.Y - pos.X,
+			X: target.X - pos.X,
+			Y: target.Y - pos.Y,
 		}
 
 		normalizedDirection := direction.Normalize()
