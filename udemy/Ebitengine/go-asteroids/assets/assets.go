@@ -42,6 +42,13 @@ var BeatOneSound = mustLoadOggVorbis("beat1")
 var BeatTwoSound = mustLoadOggVorbis("beat2")
 var ShieldSound = mustLoadOggVorbis("shield")
 
+// Alien assets
+var AlienSprites = mustLoadImages("images/aliens/*.png")
+var AlienLaserSprite = mustLoadImage("images/red-laser.png")
+
+var AlienSound = mustLoadOggVorbis("alien-sound")
+var AlienLaserSound = mustLoadOggVorbis("alien-laser")
+
 func mustLoadOggVorbis(name string) *vorbis.Stream {
 	f, err := assets.ReadFile("audio/" + name + ".ogg")
 	if err != nil {
