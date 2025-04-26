@@ -23,6 +23,8 @@ const (
 	cleanUpExplosionTime = 200 * time.Millisecond
 	baseBeatWaitTime     = 1600
 	numberOfStars        = 1000
+	alienAttackTime      = 3 * time.Second
+	alienSpawnTime       = 12 * time.Second
 )
 
 type GameScene struct {

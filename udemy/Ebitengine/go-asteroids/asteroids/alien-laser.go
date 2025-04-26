@@ -2,6 +2,7 @@ package asteroids
 
 import (
 	"go-asteroids/assets"
+	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/solarlune/resolv"
@@ -39,4 +40,29 @@ func NewAlienLaser(pos Vector, rotation float64) *AlienLaser {
 	al.lasterObj.Tags().Set(TagLaser)
 
 	return al
+}
+
+func (al *AlienLaser) Update() {
+	speed := alienLaserSpeedPerSecond / float64(ebiten.TPS())
+
+	dx := math.Sin(al.rotation) * speed
+	dy := math.Cos(al.rotation) * -speed
+
+	al.position.X += dx
+	al.position.Y += dy
+
+	al.lasterObj.SetPosition(al.position.X, al.position.Y)
+}
+
+func (al *AlienLaser) Draw(screen *ebiten.Image) {
+	bounds := al.sprite.Bounds()
+	halfW := float64(bounds.Dx()) / 2
+	halfH := float64(bounds.Dy()) / 2
+
+	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Translate(-halfW, -halfH)
+	op.GeoM.Rotate(al.rotation)
+	op.GeoM.Translate(al.position.X, al.position.Y)
+
+	screen.DrawImage(al.sprite, op)
 }
