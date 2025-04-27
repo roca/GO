@@ -25,6 +25,7 @@ const (
 	numberOfStars        = 1000
 	alienAttackTime      = 3 * time.Second
 	alienSpawnTime       = 12 * time.Second
+	baseAlienVelocity   = 0.5
 )
 
 type GameScene struct {
@@ -92,6 +93,8 @@ func NewGameScene() *GameScene {
 		alienCount:           0,
 		alienLasers:          make(map[int]*AlienLaser),
 		alienLaserCount:      0,
+		alienSpawnTimer:      NewTimer(alienSpawnTime),
+		alienAttackTimer:     NewTimer(alienAttackTime),
 	}
 	g.player = NewPlayer(g)
 	g.space.Add(g.player.playerObj)
@@ -150,6 +153,12 @@ func (g *GameScene) Update(state *State) error {
 
 	g.spawnMeteors()
 
+	g.spawnAliens()
+
+	for _, a := range g.aliens {
+		a.Update()
+	}
+	
 	for _, m := range g.meteors {
 		m.Update()
 	}
@@ -220,6 +229,11 @@ func (g *GameScene) Draw(screen *ebiten.Image) {
 		g.player.hyperSpaceIndicator.Draw(screen)
 	}
 
+	// Draw the aliens
+	for _, a := range g.aliens {
+		a.Draw(screen)
+	}
+
 	// Update and draw the score
 	textToDraw := fmt.Sprintf("%06d", g.score)
 	op := &text.DrawOptions{
@@ -270,6 +284,10 @@ func (g *GameScene) Draw(screen *ebiten.Image) {
 
 func (g *GameScene) Layout(outsideWidth, outsideHeight int) (ScreenWidth, ScreenHeight int) {
 	return outsideWidth, outsideHeight
+}
+
+func (g *GameScene) spawnAliens() {
+	//TODO: spawnAliens()
 }
 
 func (g *GameScene) updateShield() {
