@@ -39,27 +39,35 @@ type GameScene struct {
 	lasers               map[int]*Laser  // A map of lasers
 	laserCount           int             // The counter for lasers
 	score                int
-	explosionSmallSprite *ebiten.Image   // The sprite for the small explosion
-	explosionSprite      *ebiten.Image   // The sprite for the explosion
-	explosionFrames      []*ebiten.Image // The frames for the explosion
-	cleanupTimer         *Timer          // The timer for cleaning up the explosion
-	playerIsDead         bool            // Is the player dead?
-	audioContext         *audio.Context  // The audio context for the game
-	thrustPlayer         *audio.Player   // The audio player for the thrust sound
-	exhaust              *Exhaust        // The exhaust for the player
-	laserOnePlayer       *audio.Player   // The audio player for the laser sound one
-	laserTwoPlayer       *audio.Player   // The audio player for the laser sound two
-	laserThreePlayer     *audio.Player   // The audio player for the laser sound three
-	explosionPlayer      *audio.Player   // The audio player for the explosion sound
-	beatOnePlayer        *audio.Player   // The audio player for the beat one sound
-	beatTwoPlayer        *audio.Player   // The audio player for the beat two sound
-	beatTimer            *Timer          // The timer for the beat sound
-	beatWaitTime         int             // The wait time for the beat sound
-	playBeatOne          bool            // Is the beat one sound playing?
-	stars                []*Star         // The stars in the game
-	currentLevel         int             // The current level the player is on
-	shield               *Shield         // The shield for the player
-	shieldsUpPlayer      *audio.Player   // The audio player for the shield sound
+	explosionSmallSprite *ebiten.Image       // The sprite for the small explosion
+	explosionSprite      *ebiten.Image       // The sprite for the explosion
+	explosionFrames      []*ebiten.Image     // The frames for the explosion
+	cleanupTimer         *Timer              // The timer for cleaning up the explosion
+	playerIsDead         bool                // Is the player dead?
+	audioContext         *audio.Context      // The audio context for the game
+	thrustPlayer         *audio.Player       // The audio player for the thrust sound
+	exhaust              *Exhaust            // The exhaust for the player
+	laserOnePlayer       *audio.Player       // The audio player for the laser sound one
+	laserTwoPlayer       *audio.Player       // The audio player for the laser sound two
+	laserThreePlayer     *audio.Player       // The audio player for the laser sound three
+	explosionPlayer      *audio.Player       // The audio player for the explosion sound
+	beatOnePlayer        *audio.Player       // The audio player for the beat one sound
+	beatTwoPlayer        *audio.Player       // The audio player for the beat two sound
+	beatTimer            *Timer              // The timer for the beat sound
+	beatWaitTime         int                 // The wait time for the beat sound
+	playBeatOne          bool                // Is the beat one sound playing?
+	stars                []*Star             // The stars in the game
+	currentLevel         int                 // The current level the player is on
+	shield               *Shield             // The shield for the player
+	shieldsUpPlayer      *audio.Player       // The audio player for the shield sound
+	alienAttackTimer     *Timer              // The timer for the alien attack
+	alienCount           int                 // The counter for the aliens
+	alienLaserCount      int                 // The counter for the alien lasers
+	alineLaserPlayer     *audio.Player       // The audio player for the alien laser sound
+	alienLasers          map[int]*AlienLaser // A map of alien lasers
+	alienSoundPlayer     *audio.Player       // The audio player for the alien sound
+	alienSpawnTimer      *Timer              // The timer for the alien spawn
+	aliens               map[int]*Alien      // A map of aliens
 }
 
 func NewGameScene() *GameScene {
@@ -80,6 +88,10 @@ func NewGameScene() *GameScene {
 		beatWaitTime:         baseBeatWaitTime,
 		stars:                GenerateStars(numberOfStars),
 		currentLevel:         1,
+		aliens:               make(map[int]*Alien),
+		alienCount:           0,
+		alienLasers:          make(map[int]*AlienLaser),
+		alienLaserCount:      0,
 	}
 	g.player = NewPlayer(g)
 	g.space.Add(g.player.playerObj)
@@ -112,6 +124,15 @@ func NewGameScene() *GameScene {
 
 	shieldsUpPlayer, _ := g.audioContext.NewPlayer(assets.ShieldSound)
 	g.shieldsUpPlayer = shieldsUpPlayer
+
+	alienLaserPlayer,_ := g.audioContext.NewPlayer(assets.AlienLaserSound)
+	g.alineLaserPlayer = alienLaserPlayer
+
+	alienSoundPlayer, _ := g.audioContext.NewPlayer(assets.AlienSound)
+	alienSoundPlayer.SetVolume(0.5)
+	g.alienSoundPlayer = alienSoundPlayer
+
+
 
 	return g
 }
