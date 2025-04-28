@@ -25,7 +25,7 @@ const (
 	numberOfStars        = 1000
 	alienAttackTime      = 3 * time.Second
 	alienSpawnTime       = 12 * time.Second
-	baseAlienVelocity   = 0.5
+	baseAlienVelocity    = 0.5
 )
 
 type GameScene struct {
@@ -128,14 +128,12 @@ func NewGameScene() *GameScene {
 	shieldsUpPlayer, _ := g.audioContext.NewPlayer(assets.ShieldSound)
 	g.shieldsUpPlayer = shieldsUpPlayer
 
-	alienLaserPlayer,_ := g.audioContext.NewPlayer(assets.AlienLaserSound)
+	alienLaserPlayer, _ := g.audioContext.NewPlayer(assets.AlienLaserSound)
 	g.alineLaserPlayer = alienLaserPlayer
 
 	alienSoundPlayer, _ := g.audioContext.NewPlayer(assets.AlienSound)
 	alienSoundPlayer.SetVolume(0.5)
 	g.alienSoundPlayer = alienSoundPlayer
-
-
 
 	return g
 }
@@ -151,14 +149,14 @@ func (g *GameScene) Update(state *State) error {
 
 	g.isPlayerDead(state)
 
-	g.spawnMeteors()
+	// g.spawnMeteors()
 
 	g.spawnAliens()
 
 	for _, a := range g.aliens {
 		a.Update()
 	}
-	
+
 	for _, m := range g.meteors {
 		m.Update()
 	}
@@ -288,6 +286,18 @@ func (g *GameScene) Layout(outsideWidth, outsideHeight int) (ScreenWidth, Screen
 
 func (g *GameScene) spawnAliens() {
 	//TODO: spawnAliens()
+	g.alienSpawnTimer.Update()
+	if g.alienSpawnTimer.IsReady() {
+		g.alienSpawnTimer.Reset()
+		rnd := rand.Intn(100-1) + 1
+		if rnd > 50 {
+			a := NewAlien(baseAlienVelocity, g)
+			g.space.Add(a.alienObj)
+			g.alienCount++
+			g.aliens[g.alienCount] = a
+		}
+	}
+
 }
 
 func (g *GameScene) updateShield() {
