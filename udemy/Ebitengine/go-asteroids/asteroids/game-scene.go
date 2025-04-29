@@ -319,7 +319,11 @@ func (g *GameScene) isPlayerCollidingWithAlien() {
 					g.explosionPlayer.Play()
 				}
 				g.player.isDying = true
-			} 
+			}
+			// } else {
+			// 	// Bounce the alien off the player
+			// 	g.bounceAlien(a)
+			// }
 		}
 	}
 }
@@ -334,12 +338,16 @@ func (g *GameScene) isPlayerHitByAlienLaser() {
 				}
 				g.player.isDying = true
 			}
+			// } else {
+			// 	// Bounce the alien laser off the player
+			// 	g.bounceAlienLaser(al)
+			// }
 		}
 	}
 }
 
 func (g *GameScene) isAlienHitByPlayerLaser() {
-	for _, a  := range g.aliens {
+	for _, a := range g.aliens {
 		for _, l := range g.lasers {
 			if a.alienObj.IsIntersecting(l.lasterObj) {
 				laserData := l.lasterObj.Data().(*ObjectData)
@@ -676,6 +684,27 @@ func (g *GameScene) bounceMeteor(m *Meteor) {
 	}
 
 	m.movement = movement
+}
+
+func (g *GameScene) bounceAlien(a *Alien) {
+	direction := Vector{
+		X: (ScreenWidth/2 - a.position.X) * -1,
+		Y: (ScreenHeight/2 - a.position.Y) * -1,
+	}
+	normalizedDirection := direction.Normalize()
+	velocity := g.baseVelocity
+
+	movement := Vector{
+		X: normalizedDirection.X * velocity,
+
+		Y: normalizedDirection.Y * velocity,
+	}
+
+	a.movement = movement
+}
+
+func (g *GameScene) bounceAlienLaser(al *AlienLaser) {
+	al.rotation = math.Atan2(g.player.position.Y-al.position.Y, g.player.position.X-al.position.X)
 }
 
 func (g *GameScene) cleanupMeteorsAndAliens() {
