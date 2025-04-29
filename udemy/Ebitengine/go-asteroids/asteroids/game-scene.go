@@ -177,6 +177,10 @@ func (g *GameScene) Update(state *State) error {
 
 	g.isLevelComplete(state)
 
+	g.removeOffScreenAliens()
+
+	g.removeOffScreenLasers()
+
 	return nil
 }
 
@@ -284,6 +288,28 @@ func (g *GameScene) Layout(outsideWidth, outsideHeight int) (ScreenWidth, Screen
 	return outsideWidth, outsideHeight
 }
 
+func (g *GameScene) removeOffScreenLasers() {
+	for i, l := range g.lasers {
+		if l.position.X > ScreenWidth+200 ||
+			l.position.Y > ScreenHeight+200 ||
+			l.position.X < -200 ||
+			l.position.Y < -200 {
+			g.space.Remove(l.lasterObj)
+			delete(g.lasers, i)
+		}
+	}
+
+	for i, l := range g.alienLasers {
+		if l.position.X > ScreenWidth+200 ||
+			l.position.Y > ScreenHeight+200 ||
+			l.position.X < -200 ||
+			l.position.Y < -200 {
+			g.space.Remove(l.lasterObj)
+			delete(g.alienLasers, i)
+		}
+	}
+}
+
 func (g *GameScene) spawnAliens() {
 	//TODO: spawnAliens()
 	g.alienSpawnTimer.Update()
@@ -298,6 +324,18 @@ func (g *GameScene) spawnAliens() {
 		}
 	}
 
+}
+
+func (g *GameScene) removeOffScreenAliens() {
+	for i, a := range g.aliens {
+		if a.position.X > ScreenWidth+200 ||
+			a.position.Y > ScreenHeight+200 ||
+			a.position.X < -200 ||
+			a.position.Y < -200 {
+			g.space.Remove(a.alienObj)
+			delete(g.aliens, i)
+		}
+	}
 }
 
 func (g *GameScene) updateShield() {
