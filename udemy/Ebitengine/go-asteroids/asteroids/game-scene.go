@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"go-asteroids/assets"
 	"log"
+	"math"
 	"math/rand"
 	"time"
 
@@ -26,6 +27,7 @@ const (
 	alienAttackTime      = 3 * time.Second
 	alienSpawnTime       = 12 * time.Second
 	baseAlienVelocity    = 0.5
+	maxNumberOfAliens    = 1
 )
 
 type GameScene struct {
@@ -157,6 +159,12 @@ func (g *GameScene) Update(state *State) error {
 		a.Update()
 	}
 
+	g.letAliensAttack()
+
+	for _, al := range g.alienLasers {
+		al.Update()
+	}
+
 	for _, m := range g.meteors {
 		m.Update()
 	}
@@ -236,6 +244,11 @@ func (g *GameScene) Draw(screen *ebiten.Image) {
 		a.Draw(screen)
 	}
 
+	// Draw the alien lasers
+	for _, al := range g.alienLasers {
+		al.Draw(screen)
+	}
+
 	// Update and draw the score
 	textToDraw := fmt.Sprintf("%06d", g.score)
 	op := &text.DrawOptions{
@@ -288,6 +301,60 @@ func (g *GameScene) Layout(outsideWidth, outsideHeight int) (ScreenWidth, Screen
 	return outsideWidth, outsideHeight
 }
 
+func (g *GameScene) letAliensAttack() {
+	if len(g.aliens) > 0 {
+		if !g.alienSoundPlayer.IsPlaying() {
+			_ = g.alienSoundPlayer.Rewind()
+			g.alienSoundPlayer.Play()
+		}
+
+		// Update the alien attack timer.
+		g.alienAttackTimer.Update()
+
+		// Is the timer reached ? If so, reset the timer and attack.
+		if g.alienAttackTimer.IsReady() {
+			g.alienAttackTimer.Reset()
+
+			for _, a := range g.aliens {
+				bounds := a.sprite.Bounds()
+				halfW := float64(bounds.Dx()) / 2
+				halfH := float64(bounds.Dy()) / 2
+
+				var degreesRadian float64
+
+				// Is the alien intelligent ?
+				if !a.isIntelligent {
+					// Fire in a random direction.
+					degreesRadian = rand.Float64() * (math.Pi * 2)
+				} else {
+					// Fire with some accuracy.
+					degreesRadian = math.Atan2(g.player.position.Y-a.position.Y, g.player.position.X-a.position.X)
+					degreesRadian = degreesRadian - math.Pi*-0.5
+				}
+
+				r := degreesRadian
+
+				offsetX := float64(a.sprite.Bounds().Dx() - int(halfW))
+				offsetY := float64(a.sprite.Bounds().Dy() - int(halfH))
+
+				spawnPos := Vector{
+					X: a.position.X + halfW + math.Sin(r) - offsetX,
+					Y: a.position.Y + halfH + math.Cos(r) - offsetY,
+				}
+
+				laser := NewAlienLaser(spawnPos, r)
+				g.alienCount++
+				g.alienLasers[g.alienCount] = laser
+				if !g.alineLaserPlayer.IsPlaying() {
+					_ = g.alineLaserPlayer.Rewind()
+					g.alineLaserPlayer.Play()
+				}
+			}
+		}
+
+	}
+}
+
 func (g *GameScene) removeOffScreenLasers() {
 	for i, l := range g.lasers {
 		if l.position.X > ScreenWidth+200 ||
@@ -313,17 +380,18 @@ func (g *GameScene) removeOffScreenLasers() {
 func (g *GameScene) spawnAliens() {
 	//TODO: spawnAliens()
 	g.alienSpawnTimer.Update()
-	if g.alienSpawnTimer.IsReady() {
-		g.alienSpawnTimer.Reset()
-		rnd := rand.Intn(100-1) + 1
-		if rnd > 50 {
-			a := NewAlien(baseAlienVelocity, g)
-			g.space.Add(a.alienObj)
-			g.alienCount++
-			g.aliens[g.alienCount] = a
+	if len(g.aliens) < maxNumberOfAliens {
+		if g.alienSpawnTimer.IsReady() {
+			g.alienSpawnTimer.Reset()
+			rnd := rand.Intn(100-1) + 1
+			if rnd > 50 {
+				a := NewAlien(baseAlienVelocity, g)
+				g.space.Add(a.alienObj)
+				g.alienCount++
+				g.aliens[g.alienCount] = a
+			}
 		}
 	}
-
 }
 
 func (g *GameScene) removeOffScreenAliens() {
