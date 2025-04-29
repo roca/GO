@@ -25,7 +25,7 @@ const (
 	baseBeatWaitTime     = 1600
 	numberOfStars        = 1000
 	alienAttackTime      = 3 * time.Second
-	alienSpawnTime       = 1 * time.Second
+	alienSpawnTime       = 12 * time.Second
 	baseAlienVelocity    = 0.5
 	maxNumberOfAliens    = 1
 )
