@@ -319,11 +319,10 @@ func (g *GameScene) isPlayerCollidingWithAlien() {
 					g.explosionPlayer.Play()
 				}
 				g.player.isDying = true
+			} else {
+				// Bounce the alien off the player
+				g.bounceAlien(a)
 			}
-			// } else {
-			// 	// Bounce the alien off the player
-			// 	g.bounceAlien(a)
-			// }
 		}
 	}
 }
@@ -337,11 +336,10 @@ func (g *GameScene) isPlayerHitByAlienLaser() {
 					g.explosionPlayer.Play()
 				}
 				g.player.isDying = true
+			} else {
+				// Bounce the alien laser off the player
+				g.bounceAlienLaser(al)
 			}
-			// } else {
-			// 	// Bounce the alien laser off the player
-			// 	g.bounceAlienLaser(al)
-			// }
 		}
 	}
 }
