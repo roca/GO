@@ -39,7 +39,9 @@ func run() error {
 		return fmt.Errorf("unable to marshal transaction: %w", err)
 	}
 
-	v := crypto.Keccak256(data)
+	stamp := []byte(fmt.Sprintf("\x19Ardan Signed Message:\n%d", len(data)))
+
+	v := crypto.Keccak256(stamp, data)
 
 	sig, err := crypto.Sign(v, privateKey)
 	if err != nil {
@@ -73,7 +75,9 @@ func run() error {
 		return fmt.Errorf("unable to marshal transaction: %w", err)
 	}
 
-	v2 := crypto.Keccak256(data2)
+	stamp2 := []byte(fmt.Sprintf("\x19Ardan Signed Message:\n%d", len(data2)))
+
+	v2 := crypto.Keccak256(stamp2, data2)
 
 	sig2, err := crypto.Sign(v2, privateKey)
 	if err != nil {
@@ -96,16 +100,21 @@ func run() error {
 		return fmt.Errorf("unable to marshal transaction: %w", err)
 	}
 
-	v3 := crypto.Keccak256(data3)
+	v3 := crypto.Keccak256(stamp, data3)
 
-	publicKey2, err := crypto.SigToPub(v3, sig2)
+	sig3, err := crypto.Sign(v3, privateKey)
+	if err != nil {
+		return fmt.Errorf("unable to sign transaction: %w", err)
+	}
+
+	publicKey2, err := crypto.SigToPub(v3, sig3)
 	if err != nil {
 		return fmt.Errorf("unable to recover public key from signature: %w", err)
 	}
 
 	extractedAddress = crypto.PubkeyToAddress(*publicKey2).String()
 
-	fmt.Println("Public key2:", extractedAddress)
+	fmt.Println("Public key3:", extractedAddress)
 
 	if extractedAddress != tx3.FromID {
 		return fmt.Errorf("extracted address does not match sender address")
