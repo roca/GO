@@ -23,15 +23,15 @@ func main() {
 
 func run() error {
 
+	privateKey, err := crypto.LoadECDSA("zblock/accounts/kennedy.ecdsa")
+	if err != nil {
+		return fmt.Errorf("unable to load private key for node: %w", err)
+	}
+
 	tx := Tx{
 		FromID: "Bill",
 		ToID:   "Aaron",
 		Value:  1000,
-	}
-
-	privateKey, err := crypto.LoadECDSA("zblock/accounts/kennedy.ecdsa")
-	if err != nil {
-		return fmt.Errorf("unable to load private key for node: %w", err)
 	}
 
 	data, err := json.Marshal(tx)
@@ -47,6 +47,16 @@ func run() error {
 	}
 
 	fmt.Println("Signature:", hexutil.Encode(sig))
+
+	// ===========================================================================================
+	// OVER THE WIRE
+
+	publicKey, err := crypto.SigToPub(v, sig)
+	if err != nil {
+		return fmt.Errorf("unable to recover public key from signature: %w", err)
+	}
+
+	fmt.Println("Public key:",crypto.PubkeyToAddress(*publicKey).String())
 
 	return nil
 }
