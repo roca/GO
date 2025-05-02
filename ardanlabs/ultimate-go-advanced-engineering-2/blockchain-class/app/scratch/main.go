@@ -29,7 +29,7 @@ func run() error {
 	}
 
 	tx := Tx{
-		FromID: "Bill",
+		FromID: "0xF01813E4B85e178A83e29B8E7bF26BD830a25f32",
 		ToID:   "Aaron",
 		Value:  1000,
 	}
@@ -56,7 +56,60 @@ func run() error {
 		return fmt.Errorf("unable to recover public key from signature: %w", err)
 	}
 
-	fmt.Println("Public key:",crypto.PubkeyToAddress(*publicKey).String())
+	extractedAddress := crypto.PubkeyToAddress(*publicKey).String()
+
+	fmt.Println("Public key2:", extractedAddress)
+
+	// ===========================================================================================
+
+	tx2 := Tx{
+		FromID: "0xF01813E4B85e178A83e29B8E7bF26BD830a25f32",
+		ToID:   "Frank",
+		Value:  250,
+	}
+
+	data2, err := json.Marshal(tx2)
+	if err != nil {
+		return fmt.Errorf("unable to marshal transaction: %w", err)
+	}
+
+	v2 := crypto.Keccak256(data2)
+
+	sig2, err := crypto.Sign(v2, privateKey)
+	if err != nil {
+		return fmt.Errorf("unable to sign transaction: %w", err)
+	}
+
+	fmt.Println("Signature2:", hexutil.Encode(sig2))
+
+	// ===========================================================================================
+	// OVER THE WIRE
+
+	tx3 := Tx{
+		FromID: "0xF01813E4B85e178A83e29B8E7bF26BD830a25f32",
+		ToID:   "Frank",
+		Value:  250,
+	}
+
+	data3, err := json.Marshal(tx3)
+	if err != nil {
+		return fmt.Errorf("unable to marshal transaction: %w", err)
+	}
+
+	v3 := crypto.Keccak256(data3)
+
+	publicKey2, err := crypto.SigToPub(v3, sig2)
+	if err != nil {
+		return fmt.Errorf("unable to recover public key from signature: %w", err)
+	}
+
+	extractedAddress = crypto.PubkeyToAddress(*publicKey2).String()
+
+	fmt.Println("Public key2:", extractedAddress)
+
+	if extractedAddress != tx3.FromID {
+		return fmt.Errorf("extracted address does not match sender address")
+	}
 
 	return nil
 }
