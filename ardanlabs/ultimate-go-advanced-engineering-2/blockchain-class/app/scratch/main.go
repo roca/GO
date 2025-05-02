@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/crypto"
 )
 
@@ -45,7 +46,7 @@ func run() error {
 		return fmt.Errorf("unable to sign transaction: %w", err)
 	}
 
-	fmt.Println("Signature:", string(sig))
+	fmt.Println("Signature:", hexutil.Encode(sig))
 
 	return nil
 }
