@@ -92,7 +92,7 @@ func run() error {
 	tx3 := Tx{
 		FromID: "0xF01813E4B85e178A83e29B8E7bF26BD830a25f32",
 		ToID:   "Frank",
-		Value:  250,
+		Value:  1000,
 	}
 
 	data3, err := json.Marshal(tx3)
@@ -100,7 +100,9 @@ func run() error {
 		return fmt.Errorf("unable to marshal transaction: %w", err)
 	}
 
-	v3 := crypto.Keccak256(stamp, data3)
+	stamp3 := []byte(fmt.Sprintf("\x19Ardan Signed Message:\n%d", len(data3)))
+
+	v3 := crypto.Keccak256(stamp3, data3)
 
 	sig3, err := crypto.Sign(v3, privateKey)
 	if err != nil {
