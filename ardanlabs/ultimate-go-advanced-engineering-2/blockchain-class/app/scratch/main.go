@@ -43,9 +43,9 @@ func run() error {
 
 	stamp := []byte(fmt.Sprintf("\x19Ardan Signed Message:\n%d", len(data)))
 
-	v := crypto.Keccak256(stamp, data)
+	v1 := crypto.Keccak256(stamp, data)
 
-	sig, err := crypto.Sign(v, privateKey)
+	sig, err := crypto.Sign(v1, privateKey)
 	if err != nil {
 		return fmt.Errorf("unable to sign transaction: %w", err)
 	}
@@ -55,7 +55,7 @@ func run() error {
 	// ===========================================================================================
 	// OVER THE WIRE
 
-	publicKey, err := crypto.SigToPub(v, sig)
+	publicKey, err := crypto.SigToPub(v1, sig)
 	if err != nil {
 		return fmt.Errorf("unable to recover public key from signature: %w", err)
 	}
@@ -124,10 +124,10 @@ func run() error {
 		return fmt.Errorf("extracted address does not match sender address")
 	}
 
-	// v, r, s, err := ToVRSFromHexSignature(sig3)
-	// if err != nil {
-	// 	return fmt.Errorf("unable to convert hex signature to v, r, s: %w", err)
-	// }
+	v, r, s, err := ToVRSFromHexSignature(string(sig3))
+	if err != nil {
+		return fmt.Errorf("unable to convert hex signature to v, r, s: %w", err)
+	}
 
 	fmt.Println("V|R|S:", v, r, s)
 
