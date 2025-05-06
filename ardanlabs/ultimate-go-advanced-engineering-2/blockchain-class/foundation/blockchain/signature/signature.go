@@ -15,6 +15,8 @@ import (
 // Ethereum and Bitcoin do this as well, but they use the value of 27.
 const ardanID = 29
 
+// =============================================================================
+
 // Sign uses the specified private key to sign the data.
 func Sign(value any, privateKey *ecdsa.PrivateKey) (v, r, s *big.Int, err error) {
 
