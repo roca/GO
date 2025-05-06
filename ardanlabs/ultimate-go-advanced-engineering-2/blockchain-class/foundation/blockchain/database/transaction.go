@@ -1,8 +1,11 @@
 package database
 
 import (
+	"crypto/ecdsa"
 	"errors"
 	"math/big"
+
+	"blockchain/foundation/blockchain/signature"
 )
 
 // Tx is the transactional information between two parties.
@@ -36,6 +39,27 @@ func NewTx(chainID uint16, nonce uint64, fromID AccountID, toID AccountID, value
 	}
 
 	return tx, nil
+}
+
+// Sign uses the specified private key to sign the transaction.
+func (tx Tx) Sign(privateKey *ecdsa.PrivateKey) (SignedTx, error) {
+
+	// Sign the transaction with the private key to produce a signature.
+	v, r, s, err := signature.Sign(tx, privateKey)
+	if err != nil {
+		return SignedTx{}, err
+	}
+
+	// Construct the signed transaction by adding the signature
+	// in the [R|S|V] format.
+	signedTx := SignedTx{
+		Tx: tx,
+		V:  v,
+		R:  r,
+		S:  s,
+	}
+
+	return signedTx, nil
 }
 
 // =============================================================================
