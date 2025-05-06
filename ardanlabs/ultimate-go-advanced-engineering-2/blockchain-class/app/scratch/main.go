@@ -124,7 +124,7 @@ func run() error {
 		return fmt.Errorf("extracted address does not match sender address")
 	}
 
-	v, r, s, err := ToVRSFromHexSignature(string(sig3))
+	v, r, s, err := ToVRSFromHexSignature(hexutil.Encode(sig3))
 	if err != nil {
 		return fmt.Errorf("unable to convert hex signature to v, r, s: %w", err)
 	}
