@@ -6,4 +6,4 @@
 
 - https://github.com/ardanlabs/blockchain
 
-- [Here is where i last left off](https://courses.ardanlabs.com/courses/take/ultimate-go-advanced-engineering-2/lessons/42936176-day-1-3-digital-signatures-and-blockchain-database)
+- [Here is where I last left off](https://courses.ardanlabs.com/courses/take/ultimate-go-advanced-engineering-2/lessons/42936178-day-2-1-transaction-types-and-accounting)
