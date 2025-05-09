@@ -32,6 +32,8 @@ func New(genesis genesis.Genesis, evHandler func(v string, args ...any)) (*Datab
 			return nil, err
 		}
 		db.accounts[accountID] = newAccount(accountID, balance)
+
+		evHandler("Account: %s, Balance: %d", accountID, balance)
 	}
 
 	return &db, nil
