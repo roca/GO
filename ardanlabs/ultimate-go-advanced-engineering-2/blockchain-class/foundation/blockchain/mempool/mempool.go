@@ -3,6 +3,7 @@ package mempool
 
 import (
 	"blockchain/foundation/blockchain/database"
+	"blockchain/foundation/blockchain/mempool/selector"
 	"errors"
 	"fmt"
 	"math"
@@ -12,20 +13,26 @@ import (
 
 // Mempool represents a cache of transactions organized by account:nonce.
 type Mempool struct {
-	mu   sync.RWMutex
-	pool map[string]database.BlockTx
+	mu       sync.RWMutex
+	pool     map[string]database.BlockTx
+	selectFn selector.Func
 }
 
 // New constructs a new mempool using the default sort strategy.
 func New() (*Mempool, error) {
-	return NewWithStrategy()
+	return NewWithStrategy(selector.StrategyTip)
 }
 
 // NewWithStrategy constructs a new mempool with specified sort strategy.
-func NewWithStrategy() (*Mempool, error) {
+func NewWithStrategy(strategy string) (*Mempool, error) {
+	selectFn, err := selector.Retrieve(strategy)
+	if err != nil {
+		return nil, err
+	}
 
 	mp := Mempool{
-		pool: make(map[string]database.BlockTx),
+		pool:     make(map[string]database.BlockTx),
+		selectFn: selectFn,
 	}
 
 	return &mp, nil
@@ -128,10 +135,9 @@ func (mp *Mempool) PickBest(howMany ...uint16) []database.BlockTx {
 	}
 	mp.mu.RUnlock()
 
-	// How to use number to limit the number of transactions selected.
-	
-
-	return nil
+	// The selection algorithms is expecting this slice of transactions
+	// organized by account.
+	return mp.selectFn(m, number)
 }
 
 // =============================================================================
