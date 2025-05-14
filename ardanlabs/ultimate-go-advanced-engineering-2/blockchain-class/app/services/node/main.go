@@ -16,6 +16,7 @@ import (
 	"blockchain/foundation/logger"
 
 	"blockchain/foundation/blockchain/database"
+
 	"github.com/ardanlabs/conf/v3"
 	"github.com/ethereum/go-ethereum/crypto"
 	"go.uber.org/zap"
@@ -63,6 +64,7 @@ func run(log *zap.SugaredLogger) error {
 		}
 		State struct {
 			Beneficiary string `conf:"default:miner1"`
+			SelectStrategy string   `conf:"default:Tip"`
 		}
 		NameService struct {
 			Folder string `conf:"default:zblock/accounts/"`
@@ -133,6 +135,7 @@ func run(log *zap.SugaredLogger) error {
 	state, err := state.New(state.Config{
 		BeneficiaryID:  database.PublicKeyToAccountID(privateKey.PublicKey),
 		Genesis:        genesis,
+		SelectStrategy: cfg.State.SelectStrategy,
 		EvHandler:      ev,
 	})
 	if err != nil {
