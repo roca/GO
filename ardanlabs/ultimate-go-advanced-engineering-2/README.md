@@ -6,4 +6,4 @@
 
 - https://github.com/ardanlabs/blockchain
 
-- [Here is where I last left off](https://courses.ardanlabs.com/courses/take/ultimate-go-advanced-engineering-2/lessons/42936179-day-2-2-memory-pools-and-public-facing-web-apis)
+- [Here is where I last left off: Day 2.3](https://courses.ardanlabs.com/courses/take/ultimate-go-advanced-engineering-2/lessons/42936180-day-2-3-public-facing-web-apis)
