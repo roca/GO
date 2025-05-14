@@ -96,3 +96,8 @@ func (s *State) UpsertMempool(tx database.BlockTx) error {
 func (s *State) Accounts() map[database.AccountID]database.Account {
 	return s.db.Copy()
 }
+
+// Genesis returns a copy of the genesis information.
+func (s *State) Genesis() genesis.Genesis {
+	return s.genesis
+}
