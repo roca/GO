@@ -47,3 +47,33 @@ func (h Handlers) Accounts(ctx context.Context, w http.ResponseWriter, r *http.R
 
 	return web.Respond(ctx, w, accounts, http.StatusOK)
 }
+
+// Mempool returns the set of uncommitted transactions.
+func (h Handlers) Mempool(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
+	acct := web.Param(r, "account")
+
+	mempool := h.State.Mempool()
+
+	trans := []tx{}
+	for _, tran := range mempool {
+		if acct != "" && ((acct != string(tran.FromID)) && (acct != string(tran.ToID))) {
+			continue
+		}
+
+		trans = append(trans, tx{
+			FromAccount: tran.FromID,
+			To:          tran.ToID,
+			ChainID:     tran.ChainID,
+			Nonce:       tran.Nonce,
+			Value:       tran.Value,
+			Tip:         tran.Tip,
+			Data:        tran.Data,
+			TimeStamp:   tran.TimeStamp,
+			GasPrice:    tran.GasPrice,
+			GasUnits:    tran.GasUnits,
+			Sig:         tran.SignatureString(),
+		})
+	}
+
+	return web.Respond(ctx, w, trans, http.StatusOK)
+}
