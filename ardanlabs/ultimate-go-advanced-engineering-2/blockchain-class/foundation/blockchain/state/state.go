@@ -5,6 +5,7 @@ package state
 import (
 	"blockchain/foundation/blockchain/database"
 	"blockchain/foundation/blockchain/genesis"
+	"blockchain/foundation/blockchain/mempool"
 	"sync"
 )
 
@@ -19,6 +20,7 @@ type EventHandler func(v string, args ...any)
 type Config struct {
 	BeneficiaryID database.AccountID
 	Genesis       genesis.Genesis
+	SelectStrategy string
 	EvHandler     EventHandler
 }
 
@@ -30,6 +32,7 @@ type State struct {
 	evHandler     EventHandler
 
 	genesis genesis.Genesis
+	mempool *mempool.Mempool
 	db      *database.Database
 }
 
@@ -49,11 +52,18 @@ func New(cfg Config) (*State, error) {
 		return nil, err
 	}
 
+	// Construct a mempool with the specified sort strategy.
+	mempool, err := mempool.NewWithStrategy(cfg.SelectStrategy)
+	if err != nil {
+		return nil, err
+	}
+
 	state := State{
 		beneficiaryID: cfg.BeneficiaryID,
 		evHandler:     ev,
 
 		genesis: cfg.Genesis,
+		mempool: mempool,
 		db:      db,
 	}
 
@@ -65,4 +75,24 @@ func (s *State) Shutdown() error {
 	defer s.evHandler("state: shutdown: completed")
 
 	return nil
+}
+
+// MempoolLength returns the current length of the mempool.
+func (s *State) MempoolLength() int {
+	return s.mempool.Count()
+}
+
+// Mempool returns a copy of the mempool.
+func (s *State) Mempool() []database.BlockTx {
+	return s.mempool.PickBest()
+}
+
+// UpsertMempool adds a new transaction to the mempool.
+func (s *State) UpsertMempool(tx database.BlockTx) error {
+	return s.mempool.Upsert(tx)
+}
+
+// Accounts returns a copy of the database accounts.
+func (s *State) Accounts() map[database.AccountID]database.Account {
+	return s.db.Copy()
 }
