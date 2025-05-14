@@ -63,8 +63,8 @@ func run(log *zap.SugaredLogger) error {
 			PrivateHost     string        `conf:"default:0.0.0.0:9080"`
 		}
 		State struct {
-			Beneficiary string `conf:"default:miner1"`
-			SelectStrategy string   `conf:"default:Tip"`
+			Beneficiary    string `conf:"default:miner1"`
+			SelectStrategy string `conf:"default:Tip"`
 		}
 		NameService struct {
 			Folder string `conf:"default:zblock/accounts/"`
@@ -183,6 +183,7 @@ func run(log *zap.SugaredLogger) error {
 	publicMux := handlers.PublicMux(handlers.MuxConfig{
 		Shutdown: shutdown,
 		Log:      log,
+		State:    state,
 	})
 
 	// Construct a server to service the requests against the mux.
