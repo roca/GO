@@ -10,6 +10,7 @@ import (
 	"blockchain/foundation/blockchain/state"
 	"blockchain/foundation/web"
 
+	"blockchain/foundation/nameservice"
 	"go.uber.org/zap"
 )
 
@@ -19,6 +20,7 @@ const version = "v1"
 type Config struct {
 	Log   *zap.SugaredLogger
 	State *state.State
+	NS    *nameservice.NameService
 }
 
 // PublicRoutes binds all the version 1 public routes.
@@ -26,6 +28,7 @@ func PublicRoutes(app *web.App, cfg Config) {
 	pbl := public.Handlers{
 		Log:   cfg.Log,
 		State: cfg.State,
+		NS:    cfg.NS,
 	}
 
 	app.Handle(http.MethodGet, version, "/genesis/list", pbl.Genesis)
@@ -33,7 +36,7 @@ func PublicRoutes(app *web.App, cfg Config) {
 	app.Handle(http.MethodGet, version, "/accounts/list:account", pbl.Accounts)
 	app.Handle(http.MethodGet, version, "/tx/uncommitted/list", pbl.Mempool)
 	app.Handle(http.MethodGet, version, "/tx/uncommitted/list:account", pbl.Mempool)
-	app.Handle(http.MethodPost,version, "/tx/submit", pbl.SubmitWalletTransaction)
+	app.Handle(http.MethodPost, version, "/tx/submit", pbl.SubmitWalletTransaction)
 	app.Handle(http.MethodPost, version, "/tx/proof/:block/", pbl.SubmitWalletTransaction)
 }
 
