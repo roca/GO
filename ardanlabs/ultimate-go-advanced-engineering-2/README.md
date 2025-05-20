@@ -6,4 +6,4 @@
 
 - https://github.com/ardanlabs/blockchain
 
-- [Here is where I last left off: Day 2.4](https://courses.ardanlabs.com/courses/take/ultimate-go-advanced-engineering-2/lessons/42936181-day-2-4-blocks-audit-trails-and-pow-mining)
+- [Here is where I last left off: Day 3.1](https://courses.ardanlabs.com/courses/take/ultimate-go-advanced-engineering-2/lessons/42936183-day-3-1-pow-concurrent-mining)
