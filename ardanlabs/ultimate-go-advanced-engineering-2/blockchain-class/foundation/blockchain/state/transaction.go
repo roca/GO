@@ -25,7 +25,7 @@ func (s *State) UpsertWalletTransaction(signedTx database.SignedTx) error {
 	}
 
 	// Hack
-	if s.mempool.Count() > 6 {
+	if s.mempool.Count() == 6 {
 		go func() {
 			s.MineNewBlock(context.Background())
 			s.mempool.Truncate()
