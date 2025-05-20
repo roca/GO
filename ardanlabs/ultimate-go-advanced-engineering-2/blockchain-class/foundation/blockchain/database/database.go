@@ -4,7 +4,9 @@ package database
 
 import (
 	"blockchain/foundation/blockchain/genesis"
+	"blockchain/foundation/blockchain/signature"
 	"errors"
+	"sort"
 	"sync"
 )
 
@@ -12,9 +14,10 @@ import (
 
 // Database manages data related to accounts who have transacted on the blockchain.
 type Database struct {
-	mu       sync.RWMutex
-	genesis  genesis.Genesis
-	accounts map[AccountID]Account
+	mu          sync.RWMutex
+	genesis     genesis.Genesis
+	latestBlock Block
+	accounts    map[AccountID]Account
 }
 
 // New constructs a new database and applies account genesis information and
@@ -70,4 +73,36 @@ func (db *Database) Copy() map[AccountID]Account {
 		accounts[accountID] = account
 	}
 	return accounts
+}
+
+// UpdateLatestBlock provides safe access to update the latest block.
+func (db *Database) UpdateLatestBlock(block Block) {
+	db.mu.Lock()
+	defer db.mu.Unlock()
+
+	db.latestBlock = block
+}
+
+// LatestBlock returns the latest block.
+func (db *Database) LatestBlock() Block {
+	db.mu.RLock()
+	defer db.mu.RUnlock()
+
+	return db.latestBlock
+}
+
+// HashState returns a hash based on the contents of the accounts and
+// their balances. This is added to each block and checked by peers.
+func (db *Database) HashState() string {
+	accounts := make([]Account, 0, len(db.accounts))
+	db.mu.RLock()
+	{
+		for _, account := range db.accounts {
+			accounts = append(accounts, account)
+		}
+	}
+	db.mu.RUnlock()
+
+	sort.Sort(byAccount(accounts))
+	return signature.Hash(accounts)
 }

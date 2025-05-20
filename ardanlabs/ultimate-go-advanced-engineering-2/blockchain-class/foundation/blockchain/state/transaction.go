@@ -1,6 +1,9 @@
 package state
 
-import "blockchain/foundation/blockchain/database"
+import (
+	"blockchain/foundation/blockchain/database"
+	"context"
+)
 
 // UpsertWalletTransaction accepts a transaction from a wallet for inclusion.
 func (s *State) UpsertWalletTransaction(signedTx database.SignedTx) error {
@@ -19,6 +22,14 @@ func (s *State) UpsertWalletTransaction(signedTx database.SignedTx) error {
 	tx := database.NewBlockTx(signedTx, s.genesis.GasPrice, oneUnitOfGas)
 	if err := s.mempool.Upsert(tx); err != nil {
 		return err
+	}
+
+	// Hack
+	if s.mempool.Count() > 6 {
+		go func() {
+			s.MineNewBlock(context.Background())
+			s.mempool.Truncate()
+		}()
 	}
 
 	return nil
