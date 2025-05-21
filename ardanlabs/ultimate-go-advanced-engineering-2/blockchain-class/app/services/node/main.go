@@ -13,11 +13,13 @@ import (
 	"blockchain/app/services/node/handlers"
 	"blockchain/foundation/blockchain/genesis"
 	"blockchain/foundation/blockchain/state"
+	"blockchain/foundation/blockchain/worker"
 	"blockchain/foundation/logger"
 
 	"blockchain/foundation/blockchain/database"
 
 	"blockchain/foundation/nameservice"
+
 	"github.com/ardanlabs/conf/v3"
 	"github.com/ethereum/go-ethereum/crypto"
 	"go.uber.org/zap"
@@ -158,6 +160,11 @@ func run(log *zap.SugaredLogger) error {
 		return err
 	}
 	defer state.Shutdown()
+
+	// The worker package implements the different workflows such as mining,
+	// transaction peer sharing, and peer updates. The worker will register
+	// itself with the state.
+	worker.Run(state, ev)
 
 	// =========================================================================
 	// Start Debug Service

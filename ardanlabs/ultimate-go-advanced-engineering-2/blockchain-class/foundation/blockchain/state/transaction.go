@@ -2,7 +2,6 @@ package state
 
 import (
 	"blockchain/foundation/blockchain/database"
-	"context"
 )
 
 // UpsertWalletTransaction accepts a transaction from a wallet for inclusion.
@@ -24,13 +23,7 @@ func (s *State) UpsertWalletTransaction(signedTx database.SignedTx) error {
 		return err
 	}
 
-	// Hack
-	if s.mempool.Count() == 6 {
-		go func() {
-			s.MineNewBlock(context.Background())
-			s.mempool.Truncate()
-		}()
-	}
+	s.Worker.SignalStartMining()
 
 	return nil
 }
