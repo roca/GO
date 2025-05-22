@@ -11,6 +11,7 @@ import (
 	"blockchain/foundation/web"
 
 	"blockchain/foundation/nameservice"
+
 	"go.uber.org/zap"
 )
 
@@ -30,6 +31,8 @@ func PublicRoutes(app *web.App, cfg Config) {
 		State: cfg.State,
 		NS:    cfg.NS,
 	}
+
+	app.Handle(http.MethodGet, version, "/camcel", pbl.Cancel)
 
 	app.Handle(http.MethodGet, version, "/genesis/list", pbl.Genesis)
 	app.Handle(http.MethodGet, version, "/accounts/list", pbl.Accounts)

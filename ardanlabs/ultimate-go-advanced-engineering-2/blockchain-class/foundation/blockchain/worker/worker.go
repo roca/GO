@@ -84,3 +84,25 @@ func (w *Worker) SignalStartMining() {
 	}
 	w.evHandler("worker: SignalStartMining: mining signaled")
 }
+
+// SignalCancelMining signals the G executing the runMiningOperation function
+// to stop immediately.
+func (w *Worker) SignalCancelMining() {
+	select {
+	case w.cancelMining <- true:
+	default:
+	}
+	w.evHandler("worker: SignalCancelMining: MINING: CANCEL: signaled")
+}
+
+// =============================================================================
+
+// isShutdown is used to test if a shutdown has been signaled.
+func (w *Worker) isShutdown() bool {
+	select {
+	case <-w.shut:
+		return true
+	default:
+		return false
+	}
+}
