@@ -32,8 +32,6 @@ func PublicRoutes(app *web.App, cfg Config) {
 		NS:    cfg.NS,
 	}
 
-	app.Handle(http.MethodGet, version, "/cancel", pbl.Cancel)
-
 	app.Handle(http.MethodGet, version, "/genesis/list", pbl.Genesis)
 	app.Handle(http.MethodGet, version, "/accounts/list", pbl.Accounts)
 	app.Handle(http.MethodGet, version, "/accounts/list:account", pbl.Accounts)
