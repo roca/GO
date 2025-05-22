@@ -57,6 +57,9 @@ func (s *State) MineNewBlock(ctx context.Context) (database.Block, error) {
 	// 	return database.Block{}, err
 	// }
 
+	// Remove the transactions from the mempool.
+	s.mempool.Truncate()
+
 	return block, nil
 
 }
