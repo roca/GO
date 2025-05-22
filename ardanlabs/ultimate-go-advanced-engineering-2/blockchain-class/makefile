@@ -16,10 +16,11 @@ SHELL := /bin/bash
 # Wallet Stuff
 # go run app/wallet/cli/main.go generate
 #
-# Bookeeping transactions
+# Bookkeeping transactions
 # curl -il -X GET http://localhost:8080/v1/genesis/list
 # curl -il -X GET http://localhost:8080/v1/accounts/list
 # curl -il -X GET http://localhost:8080/v1/tx/uncommitted/list
+# curl -il -X GET http://localhost:8080/v1/cancel
 
 # curl -il -X GET http://localhost:9080/v1/node/status
 # curl -il -X GET http://localhost:8080/v1/blocks/list
