@@ -5,10 +5,15 @@ import (
 	"blockchain/foundation/blockchain/signature"
 	"context"
 	"crypto/rand"
+	"errors"
 	"math"
 	"math/big"
 	"time"
 )
+
+// ErrChainForked is returned from validateNextBlock if another node's chain
+// is two or more blocks ahead of ours.
+var ErrChainForked = errors.New("blockchain forked, start resync")
 
 // BlockData represents what can be serialized to disk and over the network.
 type BlockData struct {
@@ -184,6 +189,22 @@ func (b Block) Hash() string {
 
 	return signature.Hash(b.Header)
 }
+
+// ValidateBlock takes a block and validates it to be included into the blockchain.
+func (b Block) ValidateBlock(previousBlock Block, stateRoot string, evHandler func(v string, args ...any)) error {
+	evHandler("database: ValidateBlock: validate: blk[%d]: check: chain is not forked", b.Header.Number)
+
+	// The node who sent this block has a chain that is two or more blocks ahead
+	// of ours. This means there has been a fork and we are on the wrong side.
+	nextNumber := previousBlock.Header.Number + 1
+	if b.Header.Number >= (nextNumber + 2) {
+		return ErrChainForked
+	}
+
+	return nil
+}
+
+// =============================================================================
 
 // isHashSolved checks the hash to make sure it complies with
 // the POW rules. We need to match a difficulty number of 0's.

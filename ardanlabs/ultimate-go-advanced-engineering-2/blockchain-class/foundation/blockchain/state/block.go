@@ -53,10 +53,34 @@ func (s *State) MineNewBlock(ctx context.Context) (database.Block, error) {
 	s.evHandler("state: MineNewBlock: MINING: validate and update database")
 
 	// Validate the block and then update the blockchain database.
-	// if err := s.validateUpdateDatabase(block); err != nil {
-	// 	return database.Block{}, err
-	// }
+	if err := s.validateUpdateDatabase(block); err != nil {
+		return database.Block{}, err
+	}
 
 	return block, nil
 
+}
+
+// =============================================================================
+
+// validateUpdateDatabase takes the block and validates the block against the
+// consensus rules. If the block passes, then the state of the node is updated
+// including adding the block to disk.
+func (s *State) validateUpdateDatabase(block database.Block) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	s.evHandler("state: validateUpdateDatabase: validate block")
+
+	// CORE NOTE: I could add logic to determine if this block was mined by this
+	// node or a peer. If the block is mined by this node, even if a peer beat
+	// me to this function for the same block number, I could replace the peer
+	// block with my own and attempt to have other peers accept my block instead.
+
+
+	if err := block.ValidateBlock(s.db.LatestBlock(), s.db.HashState(), s.evHandler); err != nil {
+		return err
+	}
+	
+	return nil
 }
