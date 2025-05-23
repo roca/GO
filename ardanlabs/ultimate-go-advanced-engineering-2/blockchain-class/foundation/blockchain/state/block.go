@@ -77,10 +77,38 @@ func (s *State) validateUpdateDatabase(block database.Block) error {
 	// me to this function for the same block number, I could replace the peer
 	// block with my own and attempt to have other peers accept my block instead.
 
-
 	if err := block.ValidateBlock(s.db.LatestBlock(), s.db.HashState(), s.evHandler); err != nil {
 		return err
 	}
-	
+
+	s.evHandler("state: validateUpdateDatabase: write to disk")
+
+	// Write the new block to the chain on disk.
+	// if err := s.db.Write(block); err != nil {
+	// 	return err
+	// }
+	s.db.UpdateLatestBlock(block)
+
+	s.evHandler("state: validateUpdateDatabase: update accounts and remove from mempool")
+
+	// Process the transactions and update the accounts.
+	for _, tx := range block.MerkleTree.Values() {
+		s.evHandler("state: validateUpdateDatabase: tx[%s] update and remove", tx)
+
+		// Remove this transaction from the mempool.
+		s.mempool.Delete(tx)
+
+		// Apply the balance changes based on this transaction.
+		if err := s.db.ApplyTransaction(block, tx); err != nil {
+			s.evHandler("state: validateUpdateDatabase: WARNING : %s", err)
+			continue
+		}
+	}
+
+	s.evHandler("state: validateUpdateDatabase: apply mining reward")
+
+	// Apply the mining reward for this block.
+	s.db.ApplyMiningReward(block)
+
 	return nil
 }
