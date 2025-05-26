@@ -98,6 +98,11 @@ func (s *State) Shutdown() error {
 	return nil
 }
 
+// LatestBlock returns a copy the current latest block.
+func (s *State) LatestBlock() database.Block {
+	return s.db.LatestBlock()
+}
+
 // MempoolLength returns the current length of the mempool.
 func (s *State) MempoolLength() int {
 	return s.mempool.Count()
