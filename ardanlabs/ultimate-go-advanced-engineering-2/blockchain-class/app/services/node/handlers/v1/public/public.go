@@ -10,8 +10,9 @@ import (
 	"blockchain/foundation/blockchain/state"
 	"blockchain/foundation/web"
 
-	"github.com/ardanlabs/blockchain/business/web/errs"
 	"blockchain/foundation/nameservice"
+
+	"github.com/ardanlabs/blockchain/business/web/errs"
 	"go.uber.org/zap"
 )
 
@@ -81,7 +82,24 @@ func (h Handlers) Accounts(ctx context.Context, w http.ResponseWriter, r *http.R
 		accounts = map[database.AccountID]database.Account{accountID: account}
 	}
 
-	return web.Respond(ctx, w, accounts, http.StatusOK)
+	resp := make([]act, 0, len(accounts))
+	for account, info := range accounts {
+		act := act{
+			Account: account,
+			Name:    h.NS.Lookup(account),
+			Balance: info.Balance,
+			Nonce:   info.Nonce,
+		}
+		resp = append(resp, act)
+	}
+
+	ai := actInfo{
+		LastestBlock: h.State.LatestBlock().Hash(),
+		Uncommitted:  len(h.State.Mempool()),
+		Accounts:     resp,
+	}
+
+	return web.Respond(ctx, w, ai, http.StatusOK)
 }
 
 // Mempool returns the set of uncommitted transactions.
