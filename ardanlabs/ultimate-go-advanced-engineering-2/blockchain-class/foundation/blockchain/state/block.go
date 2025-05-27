@@ -84,9 +84,9 @@ func (s *State) validateUpdateDatabase(block database.Block) error {
 	s.evHandler("state: validateUpdateDatabase: write to disk")
 
 	// Write the new block to the chain on disk.
-	// if err := s.db.Write(block); err != nil {
-	// 	return err
-	// }
+	if err := s.db.Write(block); err != nil {
+		return err
+	}
 	s.db.UpdateLatestBlock(block)
 
 	s.evHandler("state: validateUpdateDatabase: update accounts and remove from mempool")
