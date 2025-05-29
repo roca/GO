@@ -6,6 +6,7 @@ import (
 	"blockchain/foundation/blockchain/database"
 	"blockchain/foundation/blockchain/genesis"
 	"blockchain/foundation/blockchain/mempool"
+	"blockchain/foundation/blockchain/peer"
 	"sync"
 )
 
@@ -29,6 +30,7 @@ type Config struct {
 	BeneficiaryID  database.AccountID
 	Storage        database.Storage
 	Genesis        genesis.Genesis
+	KnownPeers     *peer.PeerSet
 	SelectStrategy string
 	EvHandler      EventHandler
 }
@@ -40,10 +42,11 @@ type State struct {
 	beneficiaryID database.AccountID
 	evHandler     EventHandler
 
-	storage database.Storage
-	genesis genesis.Genesis
-	mempool *mempool.Mempool
-	db      *database.Database
+	knownPeers *peer.PeerSet
+	storage    database.Storage
+	genesis    genesis.Genesis
+	mempool    *mempool.Mempool
+	db         *database.Database
 
 	Worker Worker
 }
@@ -72,12 +75,13 @@ func New(cfg Config) (*State, error) {
 
 	state := State{
 		beneficiaryID: cfg.BeneficiaryID,
-		storage: cfg.Storage,
+		storage:       cfg.Storage,
 		evHandler:     ev,
 
-		genesis: cfg.Genesis,
-		mempool: mempool,
-		db:      db,
+		knownPeers: cfg.KnownPeers,
+		genesis:    cfg.Genesis,
+		mempool:    mempool,
+		db:         db,
 	}
 
 	// The Worker is not set here. The call to worker.Run will assign itself
