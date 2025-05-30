@@ -28,6 +28,7 @@ type Worker interface {
 // the blockchain node.
 type Config struct {
 	BeneficiaryID  database.AccountID
+	Host           string
 	Storage        database.Storage
 	Genesis        genesis.Genesis
 	KnownPeers     *peer.PeerSet
@@ -41,6 +42,7 @@ type State struct {
 
 	beneficiaryID database.AccountID
 	evHandler     EventHandler
+	host          string
 
 	knownPeers *peer.PeerSet
 	storage    database.Storage
@@ -77,6 +79,7 @@ func New(cfg Config) (*State, error) {
 		beneficiaryID: cfg.BeneficiaryID,
 		storage:       cfg.Storage,
 		evHandler:     ev,
+		host:          cfg.Host,
 
 		knownPeers: cfg.KnownPeers,
 		genesis:    cfg.Genesis,
@@ -103,6 +106,11 @@ func (s *State) Shutdown() error {
 	s.Worker.Shutdown()
 
 	return nil
+}
+
+// Host returns a copy of host information.
+func (s *State) Host() string {
+	return s.host
 }
 
 // LatestBlock returns a copy the current latest block.
@@ -133,4 +141,16 @@ func (s *State) Accounts() map[database.AccountID]database.Account {
 // Genesis returns a copy of the genesis information.
 func (s *State) Genesis() genesis.Genesis {
 	return s.genesis
+}
+
+// AddKnownPeer provides the ability to add a new peer to
+// the known peer list.
+func (s *State) AddKnownPeer(peer peer.Peer) bool {
+	return s.knownPeers.Add(peer)
+}
+
+// KnownExternalPeers retrieves a copy of the known peer list without
+// including this node.
+func (s *State) KnownExternalPeers() []peer.Peer {
+	return s.knownPeers.Copy(s.host)
 }
