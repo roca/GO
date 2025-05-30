@@ -170,6 +170,7 @@ func run(log *zap.SugaredLogger) error {
 	// database and provides an API for application support.
 	state, err := state.New(state.Config{
 		BeneficiaryID:  database.PublicKeyToAccountID(privateKey.PublicKey),
+		Host:           cfg.Web.PrivateHost,
 		Storage:        storage,
 		Genesis:        genesis,
 		SelectStrategy: cfg.State.SelectStrategy,
