@@ -6,4 +6,4 @@
 
 - https://github.com/ardanlabs/blockchain
 
-- [Here is where I last left off: Day 4.1 29:00](https://courses.ardanlabs.com/courses/take/ultimate-go-advanced-engineering-2/lessons/42936186-day-4-1-review-and-peer-to-peer-networking)
+- [Here is where I last left off: Day 4.2 00:00](https://courses.ardanlabs.com/courses/take/ultimate-go-advanced-engineering-2/lessons/42936187-day-4-2-peer-to-peer-networking-and-sharing-transactions)
