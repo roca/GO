@@ -149,8 +149,20 @@ func (s *State) AddKnownPeer(peer peer.Peer) bool {
 	return s.knownPeers.Add(peer)
 }
 
+// RemoveKnownPeer provides the ability to remove a peer from
+// the known peer list.
+func (s *State) RemoveKnownPeer(peer peer.Peer) {
+	s.knownPeers.Remove(peer)
+}
+
 // KnownExternalPeers retrieves a copy of the known peer list without
 // including this node.
 func (s *State) KnownExternalPeers() []peer.Peer {
 	return s.knownPeers.Copy(s.host)
+}
+
+// KnownPeers retrieves a copy of the full known peer list which includes
+// this node as well. Used by the PoA selection algorithm.
+func (s *State) KnownPeers() []peer.Peer {
+	return s.knownPeers.Copy("")
 }
