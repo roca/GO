@@ -256,6 +256,8 @@ func run(log *zap.SugaredLogger) error {
 	privateMux := handlers.PrivateMux(handlers.MuxConfig{
 		Shutdown: shutdown,
 		Log:      log,
+		State:    state,
+		NS:       ns,
 	})
 
 	// Construct a server to service the requests against the mux.
