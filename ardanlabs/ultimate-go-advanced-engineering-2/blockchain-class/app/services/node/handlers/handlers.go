@@ -82,6 +82,8 @@ func PrivateMux(cfg MuxConfig) http.Handler {
 	// Load the v1 routes.
 	v1.PrivateRoutes(app, v1.Config{
 		Log: cfg.Log,
+		State: cfg.State,
+		NS: cfg.NS,
 	})
 
 	return app

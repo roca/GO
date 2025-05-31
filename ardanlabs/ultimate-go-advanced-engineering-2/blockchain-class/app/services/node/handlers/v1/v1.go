@@ -45,7 +45,9 @@ func PublicRoutes(app *web.App, cfg Config) {
 func PrivateRoutes(app *web.App, cfg Config) {
 	prv := private.Handlers{
 		Log: cfg.Log,
+		State: cfg.State,
+		NS: cfg.NS,
 	}
 
-	app.Handle(http.MethodGet, version, "/node/sample", prv.Sample)
+	app.Handle(http.MethodGet, version, "/node/status", prv.Status)
 }
