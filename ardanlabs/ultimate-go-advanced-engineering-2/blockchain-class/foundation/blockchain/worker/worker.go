@@ -3,6 +3,7 @@
 package worker
 
 import (
+	"blockchain/foundation/blockchain/database"
 	"blockchain/foundation/blockchain/state"
 	"sync"
 )
@@ -14,6 +15,7 @@ type Worker struct {
 	shut         chan struct{}
 	startMining  chan bool
 	cancelMining chan bool
+	txSharing    chan database.BlockTx
 	evHandler    state.EventHandler
 }
 
@@ -25,6 +27,7 @@ func Run(st *state.State, evHandler state.EventHandler) {
 		shut:         make(chan struct{}),
 		startMining:  make(chan bool, 1),
 		cancelMining: make(chan bool, 1),
+		txSharing:    make(chan database.BlockTx, maxTxShareRequests),
 		evHandler:    evHandler,
 	}
 
@@ -36,6 +39,7 @@ func Run(st *state.State, evHandler state.EventHandler) {
 
 	// Load the set of operations we need to run.
 	operations := []func(){
+		w.shareTxOperations,
 		w.powOperations,
 	}
 
