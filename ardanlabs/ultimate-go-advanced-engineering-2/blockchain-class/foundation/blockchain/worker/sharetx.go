@@ -19,4 +19,16 @@ const maxTxShareRequests = 100
 func (w *Worker) shareTxOperations() {
 	w.evHandler("worker: shareTxOperations: G started")
 	defer w.evHandler("worker: shareTxOperations: G completed")
+
+	for {
+		select {
+		case tx := <-w.txSharing:
+			if !w.isShutdown() {
+				w.state.NetSendTxToPeers(tx)
+			}
+		case <-w.shut:
+			w.evHandler("worker: shareTxOperations: received shut signal")
+			return
+		}
+	}
 }

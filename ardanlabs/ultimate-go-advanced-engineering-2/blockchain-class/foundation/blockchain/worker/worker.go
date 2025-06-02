@@ -102,6 +102,17 @@ func (w *Worker) SignalCancelMining() {
 	w.evHandler("worker: SignalCancelMining: MINING: CANCEL: signaled")
 }
 
+// SignalShareTx signals a share transaction operation. If
+// maxTxShareRequests signals exist in the channel, we won't send these.
+func (w *Worker) SignalShareTx(blockTx database.BlockTx) {
+	select {
+	case w.txSharing <- blockTx:
+		w.evHandler("worker: SignalShareTx: share Tx signaled")
+	default:
+		w.evHandler("worker: SignalShareTx: queue full, transactions won't be shared.")
+	}
+}
+
 // =============================================================================
 
 // isShutdown is used to test if a shutdown has been signaled.

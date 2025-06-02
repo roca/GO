@@ -111,3 +111,33 @@ func (h Handlers) Mempool(ctx context.Context, w http.ResponseWriter, r *http.Re
 	txs := h.State.Mempool()
 	return web.Respond(ctx, w, txs, http.StatusOK)
 }
+
+
+// SubmitNodeTransaction adds new node transactions to the mempool.
+func (h Handlers) SubmitNodeTransaction(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
+	v, err := web.GetValues(ctx)
+	if err != nil {
+		return web.NewShutdownError("web value missing from context")
+	}
+
+	// Decode the JSON in the post call into a block transaction.
+	var tx database.BlockTx
+	if err := web.Decode(r, &tx); err != nil {
+		return fmt.Errorf("unable to decode payload: %w", err)
+	}
+
+	// Ask the state package to add this transaction to the mempool and perform
+	// any other business logic.
+	h.Log.Infow("add tran", "traceid", v.TraceID, "sig:nonce", tx, "fron", tx.FromID, "to", tx.ToID, "value", tx.Value, "tip", tx.Tip)
+	if err := h.State.UpsertNodeTransaction(tx); err != nil {
+		return errs.NewTrusted(err, http.StatusBadRequest)
+	}
+
+	resp := struct {
+		Status string `json:"status"`
+	}{
+		Status: "transactions added to mempool",
+	}
+
+	return web.Respond(ctx, w, resp, http.StatusOK)
+}

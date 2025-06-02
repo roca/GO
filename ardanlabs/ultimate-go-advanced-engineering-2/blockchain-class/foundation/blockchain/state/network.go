@@ -32,6 +32,29 @@ func (s *State) NetSendNodeAvailableToPeers() {
 	}
 }
 
+// NetSendTxToPeers shares a new block transaction with the known peers.
+func (s *State) NetSendTxToPeers(tx database.BlockTx) {
+	s.evHandler("state: NetSendTxToPeers: started")
+	defer s.evHandler("state: NetSendTxToPeers: completed")
+
+	// CORE NOTE: Bitcoin does not send the full transaction immediately to save
+	// on bandwidth. A node will send the transaction's mempool key first so the
+	// receiving node can check if they already have the transaction or not. If
+	// the receiving node doesn't have it, then it will request the transaction
+	// based on the mempool key it received.
+
+	// For now, the Ardan blockchain just sends the full transaction.
+	for _, peer := range s.KnownExternalPeers() {
+		s.evHandler("state: NetSendTxToPeers: send: tx[%s] to peer[%s]", tx, peer)
+
+		url := fmt.Sprintf("%s/tx/submit", fmt.Sprintf(baseURL, peer.Host))
+
+		if err := send(http.MethodPost, url, tx, nil); err != nil {
+			s.evHandler("state: NetSendTxToPeers: WARNING: %s", err)
+		}
+	}
+}
+
 // NetRequestPeerStatus looks for new nodes on the blockchain by asking
 // known nodes for their peer list. New nodes are added to the list.
 func (s *State) NetRequestPeerStatus(pr peer.Peer) (peer.PeerStatus, error) {
