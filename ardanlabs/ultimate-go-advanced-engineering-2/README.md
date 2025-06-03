@@ -6,4 +6,4 @@
 
 - https://github.com/ardanlabs/blockchain
 
-- [Here is where I last left off: Day 4.3 32:00](https://courses.ardanlabs.com/courses/take/ultimate-go-advanced-engineering-2/lessons/42936188-day-4-3-peer-to-peer-networking-and-proposing-blocks)
+- [Here is where I last left off: Day 5.1 00:00](https://courses.ardanlabs.com/courses/take/ultimate-go-advanced-engineering-2/lessons/42936190-day-5-1-proof-of-authority)
