@@ -22,7 +22,7 @@ func (w *Worker) peerOperations() {
 	// is available for transaction and block submissions.
 
 	// TODO: I believe this is all happening with Sync
-	w.runPeersOperation()
+	// w.runPeersOperation()
 
 	for {
 		select {
