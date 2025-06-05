@@ -63,6 +63,7 @@ type Config struct {
 // State manages the blockchain database.
 type State struct {
 	mu sync.RWMutex
+	allowMining bool
 
 	beneficiaryID database.AccountID
 	evHandler     EventHandler
@@ -106,6 +107,7 @@ func New(cfg Config) (*State, error) {
 		evHandler:     ev,
 		host:          cfg.Host,
 		consensus:     cfg.Consensus,
+		allowMining:   true,
 
 		knownPeers: cfg.KnownPeers,
 		genesis:    cfg.Genesis,
@@ -132,6 +134,17 @@ func (s *State) Shutdown() error {
 	s.Worker.Shutdown()
 
 	return nil
+}
+
+// =============================================================================
+
+// IsMiningAllowed identifies if we are allowed to mine blocks. This
+// might be turned off if the blockchain needs to be re-synced.
+func (s *State) IsMiningAllowed() bool {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	return s.allowMining
 }
 
 // Consensus returns a copy of consensus algorithm being used.
