@@ -1,0 +1,89 @@
+package worker
+
+import (
+	"hash/fnv"
+	"sort"
+	"time"
+)
+
+// CORE NOTE: The POA mining operation is managed by this function which runs on
+// it's own goroutine. The node starts a loop that is on a 12 second timer. At
+// the beginning of each cycle the selection algorithm is executed which determines
+// if this node needs to mine the next block. If this node is not selected, it
+// waits for the next cycle to check the selection algorithm again.
+
+// cycleDuration sets the mining operation to happen every 12 seconds
+const secondsPerCycle = 12
+const cycleDuration = secondsPerCycle * time.Second
+
+// poaOperations handles mining.
+func (w *Worker) poaOperations() {
+	w.evHandler("worker: poaOperations: G started")
+	defer w.evHandler("worker: poaOperations: G completed")
+
+	ticker := time.NewTicker(cycleDuration)
+
+	// Start this on a secondsPerCycle mark: ex. MM.00, MM.12, MM.24, MM.36.
+	resetTicker(ticker, secondsPerCycle*time.Second)
+
+	for {
+		select {
+		case <-ticker.C:
+			if !w.isShutdown() {
+				w.runPoaOperation()
+			}
+		case <-w.shut:
+			w.evHandler("worker: poaOperations: received shut signal")
+			return
+		}
+
+		// Reset the ticker for the next cycle.
+		resetTicker(ticker, 0)
+	}
+}
+
+// runPoaOperation takes all the transactions from the mempool and writes a
+// new block to the database.
+func (w *Worker) runPoaOperation() {
+	w.evHandler("worker: runPoaOperation: started")
+	defer w.evHandler("worker: runPoaOperation: completed")
+
+	// Run the selection algorithm.
+	peer := w.selection()
+	w.evHandler("worker: runPoaOperation: SELECTED: %s", peer)
+}
+
+// selection selects a peer to be the next one to mine a block.
+func (w *Worker) selection() string {
+
+	// Retrive the know peers list which includes this node.
+	peers := w.state.KnownPeers()
+
+	// Just log information so we are clear what the list looks like.
+	w.evHandler("worker: runPoaOperation: selection: Host %s, List %v", w.state.Host(), peers)
+
+	// Sort the current list of peers by host.
+	names := make([]string, len(peers))
+	for i, peer := range peers {
+		names[i] = peer.Host
+	}
+	sort.Strings(names)
+
+	// Based on the latest block, pick an index number from the registry.
+	h := fnv.New32a()
+	h.Write([]byte(w.state.LatestBlock().Hash()))
+	integerHash := h.Sum32()
+	i := integerHash % uint32(len(names))
+
+	// Return the name of the node selected.
+	return names[i]
+}
+
+// =============================================================================
+
+// resetTicker makes sure the next tick happens on the described cadence.
+func resetTicker(ticker *time.Ticker, waitOnSecond time.Duration) {
+	nextTick := time.Now().Add(cycleDuration).Round(waitOnSecond)
+	diff := time.Until(nextTick)
+	ticker.Reset(diff)
+}
