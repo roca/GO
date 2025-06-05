@@ -61,6 +61,12 @@ func (w *Worker) runPoaOperation() {
 		return
 	}
 
+		// Validate we are allowed to mine and we are not in a resync.
+	if !w.state.IsMiningAllowed() {
+		w.evHandler("worker: runMiningOperation: MINING: turned off")
+		return
+	}
+
 	// Make sure there are transactions in the mempool.
 	length := w.state.MempoolLength()
 	if length == 0 {
