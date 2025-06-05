@@ -6,4 +6,4 @@
 
 - https://github.com/ardanlabs/blockchain
 
-- [Here is where I last left off: Day 5.1 35:00](https://courses.ardanlabs.com/courses/take/ultimate-go-advanced-engineering-2/lessons/42936190-day-5-1-proof-of-authority)
+- [Here is where I last left off: Day 5.2 00:00](https://courses.ardanlabs.com/courses/take/ultimate-go-advanced-engineering-2/lessons/42936191-day-5-2-chrome-plugin)
