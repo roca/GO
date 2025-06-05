@@ -10,6 +10,27 @@ import (
 	"sync"
 )
 
+/*
+	-- Blockchain
+	On chain fork, only remove the block need to be removed and reset.
+	Send batch of mempool tx's from txshare channel.
+	On Resync, only remove the blocks we know are bad.
+		Pass blk number to database.Reset
+		Set the correct lastblock
+		Accounting: Reverse each block
+
+	-- Testing
+	Worker concurrent testing
+*/
+
+// =============================================================================
+
+// The set of different consensus protocols that can be used.
+const (
+	ConsensusPOW = "POW"
+	ConsensusPOA = "POA"
+)
+
 // EventHandler defines a function that is called when events
 // occur in the processing of persisting blocks.
 type EventHandler func(v string, args ...any)
@@ -36,6 +57,7 @@ type Config struct {
 	KnownPeers     *peer.PeerSet
 	SelectStrategy string
 	EvHandler      EventHandler
+	Consensus      string
 }
 
 // State manages the blockchain database.
@@ -45,6 +67,7 @@ type State struct {
 	beneficiaryID database.AccountID
 	evHandler     EventHandler
 	host          string
+	consensus     string
 
 	knownPeers *peer.PeerSet
 	storage    database.Storage
@@ -82,6 +105,7 @@ func New(cfg Config) (*State, error) {
 		storage:       cfg.Storage,
 		evHandler:     ev,
 		host:          cfg.Host,
+		consensus:     cfg.Consensus,
 
 		knownPeers: cfg.KnownPeers,
 		genesis:    cfg.Genesis,
@@ -108,6 +132,11 @@ func (s *State) Shutdown() error {
 	s.Worker.Shutdown()
 
 	return nil
+}
+
+// Consensus returns a copy of consensus algorithm being used.
+func (s *State) Consensus() string {
+	return s.consensus
 }
 
 // Host returns a copy of host information.
