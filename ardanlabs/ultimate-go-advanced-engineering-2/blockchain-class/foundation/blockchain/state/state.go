@@ -63,6 +63,7 @@ type Config struct {
 // State manages the blockchain database.
 type State struct {
 	mu sync.RWMutex
+	resyncWG    sync.WaitGroup
 	allowMining bool
 
 	beneficiaryID database.AccountID
@@ -132,6 +133,9 @@ func (s *State) Shutdown() error {
 
 	// Stop all blockchain writing activity.
 	s.Worker.Shutdown()
+
+	// Wait for any resync to finish.
+	s.resyncWG.Wait()
 
 	return nil
 }
