@@ -1,3 +1,4 @@
 go 1.24.4
 
 use ./code/ultimate-go-debugging/day-1/cmds/debug/basic
+use ./code/ultimate-go-debugging/day-1/cmds/debug/user-input
