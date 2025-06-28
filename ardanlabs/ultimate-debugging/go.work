@@ -1,5 +1,10 @@
 go 1.24.4
 
 use ./code/ultimate-go-debugging/day-1/cmds/debug/basic
+
 use ./code/ultimate-go-debugging/day-1/cmds/debug/user-input
-use ./code/ultimate-go-debugging/day-1/cmds/test/trie
+
+use (
+	./code/ultimate-go-debugging/day-1/cmds/test/trie
+	./code/ultimate-go-debugging/json-rpc-api
+)
