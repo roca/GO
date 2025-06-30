@@ -7,4 +7,5 @@ use ./code/ultimate-go-debugging/day-1/cmds/debug/user-input
 use (
 	./code/ultimate-go-debugging/day-1/cmds/test/trie
 	./code/ultimate-go-debugging/json-rpc-api
+	./code/ultimate-go-debugging/json-rpc-api/testprog
 )
