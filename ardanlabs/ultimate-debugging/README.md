@@ -6,7 +6,7 @@
 git clone https://github.com/derekparker/ultimate-go-debugging.git --branch march2023
 ```
 
-[Heres where I left off: 7.2 00:00](https://courses.ardanlabs.com/courses/take/ultimate-debugging/lessons/46464720-part-1-1-introduction-setup-requirements)
+[Heres where I left off: 8.1 00:00](https://courses.ardanlabs.com/courses/take/ultimate-debugging/lessons/46464720-part-1-1-introduction-setup-requirements)
 
 ## [Go Wiki: Ubuntu](https://go.dev/wiki/Ubuntu)
 
