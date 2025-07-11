@@ -10,6 +10,7 @@ use (
 	./code/ultimate-go-debugging/json-rpc-api
 	./code/ultimate-go-debugging/json-rpc-api/testprog
 	./code/ultimate-go-debugging/profiling/gotest/trie
+	./code/ultimate-go-debugging/profiling/live
 	./code/ultimate-go-debugging/rr
 	./code/ultimate-go-debugging/scripting
 )
