@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <base target="_blank">
+  <title>Practical Go for Developers</title>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Slab" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+  <link rel="stylesheet" href="github.css">
+
+  <style>
+    body {
+        font-family: 'Roboto Slab', serif;
+    }
+    p.url {
+	font-family: Monospace;
+    }
+    span.line-numbers {
+        padding-right: 1em;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 id="practical-go-for-developers">Practical Go for Developers</h1>
+
+<p>ArdanLabs/353solutions ∴  2022 <br /><br />
+URL: <a href="http://www.353solutions.com/c/znga/">www.353solutions.com/c/znga/</a> (<a href="practical-go-workshop.zip">Download Zip</a> - Unzip and open <code>README.html</code>)</p>
+
+<p>Miki Tebeka<br />
+<i class="far fa-envelope"></i> <a href="mailto:miki@353solutions.com">miki@353solutions.com</a>, <i class="fab fa-twitter"></i> <a href="https://twitter.com/tebeka">@tebeka</a>, <i class="fab fa-linkedin-in"></i> <a href="https://www.linkedin.com/in/mikitebeka/">mikitebeka</a>, <i class="fab fa-blogger-b"></i> <a href="https://www.ardanlabs.com/blog/">blog</a></p>
+
+<h4 id="shameless-plugs">Shameless Plugs</h4>
+
+<ul>
+  <li><a href="https://www.linkedin.com/learning/go-essential-training/">Go Essential Training</a> - LinkedIn Learning
+    <ul>
+      <li><a href="https://www.linkedin.com/learning/instructors/miki-tebeka">Rest of classes</a></li>
+    </ul>
+  </li>
+  <li><a href="https://pragprog.com/titles/d-gobrain/go-brain-teasers/">Go Brain Teasers</a> book</li>
+</ul>
+
+<p><a href="dld.html">Final Exercise</a></p>
+
+<!--
+-->
+<hr />
+
+<h2 id="day-4">Day 4</h2>
+
+<h3 id="agenda">Agenda</h3>
+
+<ul>
+  <li>Testing your code
+    <ul>
+      <li>Working with the testing package</li>
+      <li>Using testify</li>
+      <li>Managing dependencies with go mod</li>
+    </ul>
+  </li>
+  <li>Structuring your code
+    <ul>
+      <li>Writing sub-packages</li>
+    </ul>
+  </li>
+  <li>Writing an HTTP server
+    <ul>
+      <li>Writing handlers</li>
+      <li>Using gorilla/mux for routing<br />
+Adding metrics &amp; logging</li>
+      <li>Using expvar for metrics</li>
+      <li>Using the log package and a look at user/zap</li>
+    </ul>
+  </li>
+  <li>Configuration patterns
+    <ul>
+      <li>Reading environment variables and a look at external packages</li>
+      <li>Using the flag package for command line processing</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="code">Code</h3>
+
+<p><code>nlp</code> project</p>
+
+<pre>
+├── <a href="html/nlp/go.mod.html">go.mod</a> - Project &amp; dependencies
+├── <a href="html/nlp/nlp.go.html">nlp.go</a> - Package code
+├── <a href="html/nlp/doc.go.html">doc.go</a> - Package level documentation
+├── <a href="html/nlp/nlp_test.go.html">nlp_test.go</a> - Test &amp; benchmark file
+├── <a href="html/nlp/example_test.go.html">example_test.go</a> - Testable example
+├── stemmer - Sub module
+│   ├── <a href="html/nlp/stemmer/stemmer.go.html">stemmer.go</a>
+│   └── <a href="html/nlp/stemmer/stemmer_test.go.html">stemmer_test.go</a>
+├── testdata - Test data
+│      └── <a href="html/nlp/testdata/tokenize_cases.yml.html">tokenize_cases.yml</a> - Test cases
+└── cmd  - Executables
+    └── nlpd - HTTP server
+        ├── <a href="html/nlp/cmd/nlpd/main.go.html">main.go</a>
+        └── <a href="html/nlp/cmd/nlpd/main_test.go.html">main_test.go</a>
+</pre>
+
+<p><a href="day-4.log">Terminal Log</a></p>
+
+<h3 id="links">Links</h3>
+
+<ul>
+  <li>Configuration
+    <ul>
+      <li><a href="https://github.com/kelseyhightower/envconfig">envconfig</a></li>
+      <li><a href="https://github.com/spf13/viper">viper</a> &amp; <a href="https://github.com/spf13/cobra">cobra</a></li>
+    </ul>
+  </li>
+  <li>Logging
+    <ul>
+      <li>Built-in <a href="https://pkg.go.dev/log/">log</a></li>
+      <li><a href="https://pkg.go.dev/go.uber.org/zap">uber/zap</a></li>
+      <li><a href="https://github.com/sirupsen/logrus">logrus</a></li>
+      <li><a href="https://github.com/rs/zerolog">zerolog</a></li>
+    </ul>
+  </li>
+  <li>Metrics
+    <ul>
+      <li>Built-in <a href="https://pkg.go.dev/expvar/">expvar</a></li>
+      <li><a href="https://opentelemetry.io/">Open Telemetry</a></li>
+      <li><a href="https://pkg.go.dev/github.com/prometheus/client_golang/prometheus">Prometheus</a></li>
+    </ul>
+  </li>
+  <li><a href="https://github.com/golang/go/wiki/CodeReviewComments">Go Code Review Comments</a></li>
+  <li><a href="https://go.dev/doc/tutorial/workspaces">Tutorial: Getting started with multi-module workspaces</a></li>
+  <li><a href="https://github.com/ardanlabs/service">Example Project Structure</a></li>
+  <li><a href="https://go.dev/doc/code.html">How to Write Go Code</a></li>
+  <li>Documentation
+    <ul>
+      <li><a href="https://go.dev/blog/godoc">Godoc: documenting Go code</a></li>
+      <li><a href="https://go.dev/blog/examples">Testable examples in Go</a></li>
+      <li><a href="https://godoc.org/github.com/fluhus/godoc-tricks">Go documentation tricks</a></li>
+      <li><a href="https://github.com/golang/go/blob/master/src/encoding/gob/doc.go">gob/doc.go</a> of the <code>gob</code> package. Generates <a href="https://pkg.go.dev/encoding/gob/">this documentation</a></li>
+      <li><code>go install golang.org/x/pkgsite/cmd/pkgsite@9ffe8b928e4fbd3ff7dcf984254629a47f8b6e63</code> (require go 1.18)</li>
+      <li><code>pkgsite -http=:8080</code> (open browser on http://localhost:8080/${module name})</li>
+    </ul>
+  </li>
+  <li><a href="https://research.swtch.com/deps">Out Software Dependency Problem</a> - Good read on dependencies by Russ Cox</li>
+  <li>Linters (static analysis)
+    <ul>
+      <li><a href="https://staticcheck.io/">staticcheck</a></li>
+      <li><a href="https://github.com/securego/gosec">gosec</a> - Security oriented</li>
+      <li><a href="https://pkg.go.dev/golang.org/x/tools/go/analysis">golang.org/x/tools/go/analysis</a> - Helpers to write analysis tools (see <a href="https://arslan.io/2019/06/13/using-go-analysis-to-write-a-custom-linter/">example</a>)</li>
+    </ul>
+  </li>
+  <li>Testing
+    <ul>
+      <li><a href="https://pkg.go.dev/testing/">testing</a></li>
+      <li><a href="https://pkg.go.dev/github.com/stretchr/testify">testify</a> - Many test utilities (including suites &amp; mocking)</li>
+      <li><a href="https://go.dev/doc/tutorial/fuzz">Tutorial: Getting started with fuzzing</a>
+        <ul>
+          <li><a href="https://pkg.go.dev/testing/quick">testing/quick</a> - Initial fuzzing library</li>
+        </ul>
+      </li>
+      <li><a href="https://golang.testcontainers.org/">test containers</a></li>
+    </ul>
+  </li>
+  <li>HTTP Servers
+    <ul>
+      <li><a href="https://pkg.go.dev/net/http/">net/http</a></li>
+      <li><a href="https://pkg.go.dev/net/http/httptest">net/http/httptest</a></li>
+      <li><a href="https://github.com/gorilla/mux">gorilla/mux</a> - HTTP router with more frills</li>
+      <li><a href="https://github.com/go-chi/chi">chi</a> - A nice web framework</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="data--other">Data &amp; Other</h3>
+
+<ul>
+  <li><a href="data/nlp.go">nlp.go</a></li>
+  <li><a href="data/stemmer.go">stemmer.go</a></li>
+  <li><a href="data/tokenize_cases.toml">tokenize_cases.toml</a>
+    <ul>
+      <li><code>github.com/BurntSushi/toml</code></li>
+    </ul>
+  </li>
+</ul>
+
+<!--
+    - [tokenize_cases.yml](data/tokenize_cases.yml)
+-->
+
+<hr />
+
+<h2 id="day-3">Day 3</h2>
+
+<h3 id="agenda-1">Agenda</h3>
+
+<ul>
+  <li>Distributing work
+    <ul>
+      <li>Using goroutines &amp; channels</li>
+      <li>Using the sync package to coordinate work</li>
+    </ul>
+  </li>
+  <li>Timeouts &amp; cancellation
+    <ul>
+      <li>Working with multiple channels using select</li>
+      <li>Using context for timeouts &amp; cancellations</li>
+      <li>Standard library support for context</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="code-1">Code</h3>
+
+<ul>
+  <li><a href="html/rtb/rtb.go.html">rtb.go</a> - Using <code>context</code> for cancellations</li>
+  <li><a href="html/select/select.go.html">select.go</a> - Using <code>select</code></li>
+  <li><a href="html/counter/counter.go.html">counter.go</a> - Using the race detector, sync.Mutex and sync/atomic</li>
+  <li><a href="html/payment/payment.go.html">payment.go</a> - Using sync.Once for idempotent operations</li>
+  <li><a href="html/sites_time/sites_time.go.html">sites_time.go</a> - Using sync.WaitGroup</li>
+  <li><a href="html/taxi/taxi_check.go.html">taxi_check.go</a> - Turn sequential code to parallel</li>
+  <li><a href="html/go_chan/go_chan.go.html">go_chan.go</a> - Goroutines &amp; channels</li>
+</ul>
+
+<!--
+- [github.go](html/github/github.go.html) - Adding context to HTTP requests
+-->
+
+<p><a href="day-3.log">Terminal Log</a></p>
+
+<h3 id="exercise">Exercise</h3>
+
+<p>In <code>taxi_check.go</code></p>
+<ul>
+  <li>Limit the number of goroutines to “n”. Which “n” yields the best results?</li>
+  <li>Cancel all goroutines once there’s an error or mismatch in signature</li>
+</ul>
+
+<h3 id="links-1">Links</h3>
+
+<ul>
+  <li><a href="https://go.dev/doc/articles/race_detector">The race detector</a></li>
+  <li><a href="https://github.com/uber-go/guide/blob/master/style.md">Uber Go Style Guide</a></li>
+  <li><a href="https://pkg.go.dev/golang.org/x/sync/errgroup">errgroup</a></li>
+  <li><a href="https://eng.uber.com/data-race-patterns-in-go/">Data Race Patterns in Go</a></li>
+  <li><a href="https://go.dev/blog/pipelines">Go Concurrency Patterns: Pipelines and cancellation</a></li>
+  <li><a href="https://go.dev/blog/context">Go Concurrency Patterns: Context</a></li>
+  <li><a href="https://dave.cheney.net/2013/04/30/curious-channels">Curious Channels</a></li>
+  <li><a href="https://www.ardanlabs.com/blog/2017/10/the-behavior-of-channels.html">The Behavior of Channels</a></li>
+  <li><a href="https://www.353solutions.com/channel-semantics">Channel Semantics</a></li>
+  <li><a href="https://medium.com/justforfunc/why-are-there-nil-channels-in-go-9877cc0b2308">Why are there nil channels in Go?</a></li>
+  <li><a href="https://en.wikipedia.org/wiki/Amdahl%27s_law">Amdahl’s Law</a> - Limits of concurrency</li>
+  <li><a href="https://twitter.com/jordancurve/status/1108475342468120576/photo/1">Computer Latency at Human Scale</a></li>
+  <li><a href="https://www.youtube.com/watch?v=cN_DpYBzKso">Concurrency is not Parallelism</a> by Rob Pike</li>
+  <li><a href="https://www.ardanlabs.com/blog/2018/08/scheduling-in-go-part2.html">Scheduling in Go</a></li>
+</ul>
+
+<h3 id="data--other-1">Data &amp; Other</h3>
+
+<ul>
+  <li><a href="data/rtb.go">rtb.go</a></li>
+  <li><a href="data/site_time.go">site_times.go</a></li>
+  <li><a href="data/taxi_check.go">taxi_check.go</a>
+    <ul>
+      <li><a href="https://storage.googleapis.com/353solutions/c/data/taxi-sha256.zip">taxi-sha256.zip</a></li>
+    </ul>
+  </li>
+</ul>
+
+<hr />
+
+<h2 id="day-2">Day 2</h2>
+
+<h3 id="agenda-2">Agenda</h3>
+
+<ul>
+  <li>Sorting
+    <ul>
+      <li>Working with slices</li>
+      <li>Writing methods</li>
+      <li>Understanding interfaces</li>
+    </ul>
+  </li>
+  <li>Catching panics
+    <ul>
+      <li>The built-in recover function</li>
+      <li>Named return values</li>
+    </ul>
+  </li>
+  <li>Processing text
+    <ul>
+      <li>Reading line by line with bufio.Scanner</li>
+      <li>Using regular expressions</li>
+      <li>Working with maps</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="code-2">Code</h3>
+
+<ul>
+  <li><a href="html/freq/freq.go.html">freq.go</a> - Most common word (files, regular expressions, maps)</li>
+  <li><a href="html/div/div.go.html">div.go</a> - Catching panics</li>
+  <li><a href="html/empty/empty.go.html">empty.go</a> - The empty interface, type assertions &amp; generics</li>
+  <li><a href="html/game/game.go.html">game.go</a> - Structs, methods &amp; interfaces</li>
+  <li><a href="html/slices/slices.go.html">slices.go</a> - Working with slices</li>
+</ul>
+
+<!--
+- [bench_test.go](html/slices/bench_test.go.html) - Benchmarking code
+-->
+
+<p><a href="day-2.log">Terminal Log</a></p>
+
+<h3 id="exercises">Exercises</h3>
+
+<ul>
+  <li>Read and understand the <a href="https://pkg.go.dev/sort/#pkg-examples">sort package examples</a></li>
+  <li>Implement <code>sortByDistance(players []Player, x, y int)</code> in <code>game.go</code></li>
+  <li>Change <code>mostCommon</code> to return the most common <code>n</code> words (e.g. <code>func mostCommon(r io.Reader, n int) ([]string, error)</code>)</li>
+</ul>
+
+<!--
+### Exercises
+
+- Finish `Player.Found` method
+
+
+- Write a `median(values []float64) (float64, error)` function
+    - Return error on no values
+    - Make sure you don't mutate `values` (e.g. `v := []float64{3, 1, 2}` and `median(v)` should not change `v`)
+    - Hints: `sort.Float64s`, built-in `copy`
+-->
+
+<h3 id="links-2">Links</h3>
+
+<ul>
+  <li><a href="https://regex101.com/">regex101</a> - Regular expression builder</li>
+  <li><a href="https://go-proverbs.github.io/">Go Proverbs</a> - Think about them ☺</li>
+  <li><a href="https://pkg.go.dev/sort/#pkg-examples">sort examples</a> - Read and try to understand</li>
+  <li><a href="https://go.dev/blog/when-generics">When to use generics</a></li>
+  <li><a href="https://go.dev/doc/tutorial/generics">Generics tutorial</a></li>
+  <li><a href="https://www.ardanlabs.com/blog/2014/05/methods-interfaces-and-embedded-types.html">Methods, interfaces &amp; embedded types in Go</a></li>
+  <li><a href="https://go.dev/tour/methods/1">Methods &amp; Interfaces</a> in the Go tour</li>
+  <li>Slices
+    <ul>
+      <li><a href="https://go.dev/blog/slices">Slices</a> &amp; <a href="https://go.dev/blog/go-slices-usage-and-internals">Slice internals</a> on the Go blog</li>
+      <li><a href="https://github.com/golang/go/wiki/SliceTricks">Slice tricks</a></li>
+    </ul>
+  </li>
+  <li>Error Handling
+    <ul>
+      <li><a href="https://go.dev/blog/defer-panic-and-recover">Defer, Panic and Recover</a></li>
+      <li><a href="https://pkg.go.dev/errors/">errors</a> package (<a href="https://go.dev/blog/go1.13-errors">Go 1.13</a>)</li>
+      <li><a href="https://github.com/pkg/errors">pkg/errors</a></li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="data--other-2">Data &amp; Other</h3>
+
+<ul>
+  <li><a href="data/sherlock.txt">sherlock.txt</a></li>
+</ul>
+
+<hr />
+<h2 id="day-1">Day 1</h2>
+
+<h3 id="agenda-3">Agenda</h3>
+
+<ul>
+  <li>Strings &amp; formatted output
+    <ul>
+      <li>What is a string?</li>
+      <li>Unicode basics</li>
+      <li>Using fmt package for formatted output</li>
+    </ul>
+  </li>
+  <li>Calling REST APIs
+    <ul>
+      <li>Making HTTP calls with net/http</li>
+      <li>Defining structs</li>
+      <li>Serializing JSON</li>
+    </ul>
+  </li>
+  <li>Working with files
+    <ul>
+      <li>Handling errors</li>
+      <li>Using defer to manage resources</li>
+      <li>Working with io.Reader &amp; io.Writer interfaces</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="code-3">Code</h3>
+
+<ul>
+  <li><a href="html/sha1/sha1.go.html">sha1.go</a> - Working with <code>io.Reader</code> &amp; <code>io.Writer</code></li>
+  <li><a href="html/github/github.go.html">github.go</a> - Calling REST APIs</li>
+  <li><a href="html/banner/banner.go.html">banner.go</a> - Strings &amp; printing</li>
+  <li><a href="html/hw/hw.go.html">hw.go</a> - Hello World</li>
+</ul>
+
+<!--
+- [kill_server.go](html/kill_server/kill_server.go.html) - Working with files, error handling
+- [str.go](html/str/str.go.html) - Working with strings
+-->
+
+<p><a href="day-1.log">Terminal Log</a></p>
+
+<!--
+### Exercise
+
+- Finish `githubInfo` in `github.go`
+- Change `fileSha1` to use gzip only if the file name ends with `.gz`. Otherwise calculate the SHA1 directly from the file, without decompressing it.
+    - e.g. Instead of `cat http.log.gz | gunzip -c | sha1sum` do `cat http.log | sha1sum`
+    - Hint: strings.HasSuffix
+-->
+
+<h3 id="links-3">Links</h3>
+
+<ul>
+  <li><a href="https://http.cat/">HTTP status cats</a></li>
+  <li><a href="https://pkg.go.dev/errors/">errors</a> package (<a href="https://go.dev/blog/go1.13-errors">Go 1.13</a>)</li>
+  <li><a href="https://pkg.go.dev/encoding/json">encoding/json</a></li>
+  <li><a href="https://pkg.go.dev/net/http">net/http</a></li>
+  <li><a href="https://dave.cheney.net/2015/11/05/lets-talk-about-logging">Let’s talk about logging</a> by Dave Cheney</li>
+  <li>Numbers
+    <ul>
+      <li><a href="https://pkg.go.dev/math/big/">math/big</a> - Big numbers</li>
+      <li><a href="https://go.dev/ref/spec#Numeric_types">Numeric types</a></li>
+    </ul>
+  </li>
+  <li>Strings
+    <ul>
+      <li><a href="https://unicode-table.com/">Unicode table</a></li>
+      <li><a href="https://pkg.go.dev/strings/">strings</a> package - string utilities</li>
+      <li><a href="https://go.dev/blog/strings">Go strings</a></li>
+    </ul>
+  </li>
+  <li><a href="https://www.353solutions.com/annotated-go">Annotated “Hello World”</a></li>
+  <li><a href="https://go.dev/doc/effective_go.html">Effective Go</a> - Read this!</li>
+  <li><a href="https://pkg.go.dev/">Go standard library</a> - official documentation</li>
+  <li><a href="https://do.dev/tour/">A Tour of Go</a></li>
+  <li>Setting Up
+    <ul>
+      <li><a href="https://go.dev/dl/">The Go SDK</a></li>
+      <li><a href="https://git-scm.com/">git</a></li>
+      <li>IDE’s: <a href="https://code.visualstudio.com/">Visual Studio Code</a> + <a href="https://marketplace.visualstudio.com/items?itemName=golang.Go">Go extension</a> or <a href="https://www.jetbrains.com/go/">Goland</a> (paid)</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="data--other-3">Data &amp; Other</h3>
+
+<ul>
+  <li><code>G☺</code></li>
+  <li><code>♡</code></li>
+  <li><a href="data/http.log.gz">http.log.gz</a></li>
+  <li><a href="data/response.json">response.json</a></li>
+</ul>
+
+    <hr />
+    Copyright&copy; <a href="http://www.353solutions.com" target="_blank">353solutions</a> &amp; <a href="https://www.ardanlabs.com/" target="_blank">ArdanLabs</a>.
+    <b>All rights reserved, DO NOT COPY!</b>
+  </div>
+</body>
+</html>
