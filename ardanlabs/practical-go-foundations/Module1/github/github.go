@@ -27,18 +27,17 @@ func main() {
 	fmt.Println("content-type:", ctype)
 
 	// io.Copy(os.Stdout, resp.Body)
-	type reply struct {
-		Name         string
-		Public_Repos int
+	var reply struct {
+		Name     string
+		NumRepos int `json:"public_repos"`
 	}
-	var rply reply
 	dec := json.NewDecoder(resp.Body)
-	if err := dec.Decode(&rply); err != nil {
+	if err := dec.Decode(&reply); err != nil {
 		fmt.Println("ERROR:", err)
 		os.Exit(1)
 	}
 
-	fmt.Println(rply)
+	fmt.Println(reply.Name, reply.NumRepos)
 
 	/* JSON <-> Go
 
