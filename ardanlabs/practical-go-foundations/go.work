@@ -1,6 +1,6 @@
 go 1.24.4
 
 use (
-	./Module1
+	./Module-2
 	./course-material/code
 )
