@@ -5,18 +5,14 @@ import (
 	"crypto/sha1"
 	"fmt"
 	"io"
-	"log/slog"
 	"os"
 	"strings"
 )
 
 func main() {
-	hash, err := SHA1Sig("http.log.gz")
-	if err != nil {
-		slog.Error("Error", "fileName:", "http.log.gz", err)
-	}
 
-	fmt.Println(hash)
+	fmt.Println(SHA1Sig("http.log.gz"))
+	fmt.Println(SHA1Sig("sha1.go"))
 
 }
 
@@ -34,7 +30,7 @@ func SHA1Sig(fileName string) (string, error) {
 
 	var r io.Reader = file
 
-	if strings.HasSuffix(fileName, ".gzip") {
+	if strings.HasSuffix(fileName, ".gz") {
 		// | gunzip
 		gz, err := gzip.NewReader(file)
 		if err != nil {
