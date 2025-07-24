@@ -1,7 +1,9 @@
 package main
 
 import (
+	"errors"
 	"fmt"
+	"slices"
 )
 
 func main() {
@@ -29,6 +31,22 @@ func main() {
 
 	i.Move(10, 20)
 	fmt.Printf("i (after move): %#v\n", i)
+
+	p1 := Player{
+		Name: "Parzival",
+	}
+	fmt.Printf("p1: %+v\n", p1)
+	fmt.Printf("p1.X: %+v\n", p1.Item.X)
+
+	p1.Move(100, 200)
+	fmt.Printf("p1: %+v\n", p1)
+
+	p1.AddKey("jade")
+	p1.AddKey("jade")
+	p1.AddKey("copper")
+	p1.AddKey("crystal")
+	p1.AddKey("crystal")
+	fmt.Printf("p1: %+v\n", p1)
 }
 
 // Move moves i by delta x & delta y
@@ -67,4 +85,30 @@ const (
 type Item struct {
 	X int
 	Y int
+}
+
+type Player struct {
+	Name string
+	Keys []string
+	Item
+}
+
+func (p *Player) AddKey(key string) {
+	if ok, err := p.Found(key); !ok && err != nil {
+		p.Keys = append(p.Keys, key)
+	}
+}
+
+func (p Player) Found(key string) (bool, error) {
+
+	// if slices.ContainsFunc(p.Keys, func(k string) bool {
+	// 	return k == key
+	// }) {
+	// 	return true, nil
+	// }
+
+	if slices.Contains(p.Keys, key) {
+		return true, nil
+	}
+	return false, errors.New("Key not found")
 }
