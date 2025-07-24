@@ -12,21 +12,29 @@ func main() {
 	fmt.Printf("i: %#v\n", i)
 
 	// Can be in any order, can omit fields
-	i = Item{
-		Y: 22,
-		// X: 11,
-	}
-	fmt.Printf("i: %#v\n", i)
+	// i = Item{
+	// 	Y: 22,
+	// 	// X: 11,
+	// }
+	// fmt.Printf("i: %#v\n", i)
 
-
-	fmt.Println(New(10,20))
-	fmt.Println(New(10,2000))
+	fmt.Println(New(10, 20))
+	fmt.Println(New(10, 2000))
 
 	/* Aside: %#v for debugging/logging
 	a, b := 1, "1"
 	fmt.Printf("a=%v, b=%v\n",a,b)
 	fmt.Printf("a=%#v, b=%#v\n",a,b)
 	*/
+
+	i.Move(10, 20)
+	fmt.Printf("i (after move): %#v\n", i)
+}
+
+// Move moves i by delta x & delta y
+func (i *Item) Move(dx, dy int) {
+	i.X += dx
+	i.Y += dy
 }
 
 /* Possible factory funcs
