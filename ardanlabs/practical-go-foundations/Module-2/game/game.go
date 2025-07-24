@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"slices"
 )
@@ -47,6 +46,7 @@ func main() {
 	p1.AddKey("crystal")
 	p1.AddKey("crystal")
 	fmt.Printf("p1: %+v\n", p1)
+	fmt.Println(p1.Found("gold"))
 }
 
 // Move moves i by delta x & delta y
@@ -110,5 +110,5 @@ func (p Player) Found(key string) (bool, error) {
 	if slices.Contains(p.Keys, key) {
 		return true, nil
 	}
-	return false, errors.New("Key not found")
+	return false, fmt.Errorf("unknown key: %#v", key)
 }
