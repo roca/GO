@@ -36,15 +36,19 @@ func New(x,y int) (Item, error)
 func New(x,y int) (*Item, error)
 */
 
-func New(x, y int) (Item, error) {
+func New(x, y int) (*Item, error) {
 	if x < 0 ||
 		x > maxX ||
 		y < 0 ||
 		y > maxY {
-		return Item{}, fmt.Errorf("%d/%d out of max range %d/%d", x, y, maxX, maxY)
+		return nil, fmt.Errorf("%d/%d out of max range %d/%d", x, y, maxX, maxY)
 	}
 
-	return Item{x, y}, nil
+	i := Item{x, y}
+
+	// Do: go build -gcflags=-m
+	// You'll see './game.go:47:2: moved to heap: i'
+	return &i, nil
 }
 
 const (
