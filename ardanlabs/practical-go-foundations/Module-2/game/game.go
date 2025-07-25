@@ -43,7 +43,29 @@ func main() {
 	fmt.Println(p1.Found("copper"))
 	fmt.Println(p1.Found("copper"))
 	fmt.Println(p1.Found("gold"))
-	fmt.Println("keys:",p1.Keys)
+	fmt.Println("keys:", p1.Keys)
+
+
+	ms := []Mover {
+		&i,
+		&p1,
+	}
+
+	moveAll(ms,50,50) 
+		for _,m :=range ms {
+			fmt.Println(m)
+		}
+	
+}
+
+type Mover interface {
+	Move(int, int)
+}
+
+func moveAll(ms []Mover, dx, dy int) {
+	for _, m := range ms {
+		m.Move(dx, dy)
+	}
 }
 
 // Move moves i by delta x & delta y
@@ -118,7 +140,7 @@ func (p *Player) Found(key string) error {
 		return fmt.Errorf("unknown key: %#v", key)
 	}
 
-	if !slices.Contains(p.Keys,key){
+	if !slices.Contains(p.Keys, key) {
 		p.Keys = append(p.Keys, key)
 	}
 
