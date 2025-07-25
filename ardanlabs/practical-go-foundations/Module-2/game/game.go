@@ -40,13 +40,10 @@ func main() {
 	p1.Move(100, 200)
 	fmt.Printf("p1: %+v\n", p1)
 
-	p1.AddKey("jade")
-	p1.AddKey("jade")
-	p1.AddKey("copper")
-	p1.AddKey("crystal")
-	p1.AddKey("crystal")
-	fmt.Printf("p1: %+v\n", p1)
+	fmt.Println(p1.Found("copper"))
+	fmt.Println(p1.Found("copper"))
 	fmt.Println(p1.Found("gold"))
+	fmt.Println("keys:",p1.Keys)
 }
 
 // Move moves i by delta x & delta y
@@ -93,22 +90,37 @@ type Player struct {
 	Item
 }
 
-func (p *Player) AddKey(key string) {
-	if ok, err := p.Found(key); !ok && err != nil {
+// func (p *Player) AddKey(key string) {
+// 	if ok, err := p.Found(key); !ok && err != nil {
+// 		p.Keys = append(p.Keys, key)
+// 	}
+// }
+
+// func (p Player) Found(key string) (bool, error) {
+
+// 	// if slices.ContainsFunc(p.Keys, func(k string) bool {
+// 	// 	return k == key
+// 	// }) {
+// 	// 	return true, nil
+// 	// }
+
+// 	if slices.Contains(p.Keys, key) {
+// 		return true, nil
+// 	}
+// 	return false, fmt.Errorf("unknown key: %#v", key)
+// }
+
+func (p *Player) Found(key string) error {
+	switch key {
+	case "copper", "jade", "crystal":
+		// OK
+	default:
+		return fmt.Errorf("unknown key: %#v", key)
+	}
+
+	if !slices.Contains(p.Keys,key){
 		p.Keys = append(p.Keys, key)
 	}
-}
 
-func (p Player) Found(key string) (bool, error) {
-
-	// if slices.ContainsFunc(p.Keys, func(k string) bool {
-	// 	return k == key
-	// }) {
-	// 	return true, nil
-	// }
-
-	if slices.Contains(p.Keys, key) {
-		return true, nil
-	}
-	return false, fmt.Errorf("unknown key: %#v", key)
+	return nil
 }
