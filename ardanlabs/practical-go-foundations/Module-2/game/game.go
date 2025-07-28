@@ -40,23 +40,37 @@ func main() {
 	p1.Move(100, 200)
 	fmt.Printf("p1: %+v\n", p1)
 
-	fmt.Println(p1.Found("copper"))
-	fmt.Println(p1.Found("copper"))
-	fmt.Println(p1.Found("gold"))
+	fmt.Println(p1.Found(Copper))
+	fmt.Println(p1.Found(Copper))
+	fmt.Println(p1.Found(Key(7)))
 	fmt.Println("keys:", p1.Keys)
 
-
-	ms := []Mover {
+	ms := []Mover{
 		&i,
 		&p1,
 	}
 
-	moveAll(ms,50,50) 
-		for _,m :=range ms {
-			fmt.Println(m)
-		}
-	
+	moveAll(ms, 50, 50)
+	for _, m := range ms {
+		fmt.Println(m)
+	}
+
 }
+
+/*
+
+	func Sort(s (s Sortable) {
+
+	// ...
+	}
+
+	type Sortable interface {
+	  Less(i, j int) bool
+	  Swap(i, j int)
+	  Len() int
+	}
+
+*/
 
 type Mover interface {
 	Move(int, int)
@@ -108,7 +122,7 @@ type Item struct {
 
 type Player struct {
 	Name string
-	Keys []string
+	Keys []Key
 	Item
 }
 
@@ -132,9 +146,30 @@ type Player struct {
 // 	return false, fmt.Errorf("unknown key: %#v", key)
 // }
 
-func (p *Player) Found(key string) error {
+type Key byte
+
+func (k Key) String() string {
+	switch k {
+	case Copper:
+		return "copper"
+	case Jade:
+		return "jade"
+	case Crystal:
+		return "crystal"
+	default:
+		return fmt.Sprintf("<Key %d", k)
+	}
+}
+
+const (
+	Copper Key = iota + 1
+	Jade
+	Crystal
+)
+
+func (p *Player) Found(key Key) error {
 	switch key {
-	case "copper", "jade", "crystal":
+	case Copper, Jade, Crystal:
 		// OK
 	default:
 		return fmt.Errorf("unknown key: %#v", key)
