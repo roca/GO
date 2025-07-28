@@ -146,6 +146,8 @@ type Player struct {
 // 	return false, fmt.Errorf("unknown key: %#v", key)
 // }
 
+// go install golang.org/x/tools/cmd/stringer@latest
+
 type Key byte
 
 func (k Key) String() string {
