@@ -157,7 +157,7 @@ func (k Key) String() string {
 	case Crystal:
 		return "crystal"
 	default:
-		return fmt.Sprintf("<Key %d", k)
+		return fmt.Sprintf("<Key %d>", k)
 	}
 }
 
@@ -172,7 +172,7 @@ func (p *Player) Found(key Key) error {
 	case Copper, Jade, Crystal:
 		// OK
 	default:
-		return fmt.Errorf("unknown key: %#v", key)
+		return fmt.Errorf("unknown key: %v", key)
 	}
 
 	if !slices.Contains(p.Keys, key) {
