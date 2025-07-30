@@ -1,6 +1,8 @@
-go 1.24.4
+go 1.24.5
 
 use (
 	./Module-2
+	./Module-3
+	./Module-4
 	./course-material/code
 )
