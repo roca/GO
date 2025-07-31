@@ -21,23 +21,28 @@ func main() {
 	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
-
-	for scanner.Scan() {
-		words := wordRe.FindAllString(scanner.Text(),-1)
-	}
-
-	scanner.Split(bufio.ScanWords)
-
-	// Set the scanner to split by words
-	scanner.Split(bufio.ScanWords)
-
 	wordFrequencies := make(map[string]int)
 
 	for scanner.Scan() {
-		word := scanner.Text()
-		wordFrequencies[word]++
-		//fmt.Println(word)
+		words := wordRe.FindAllString(scanner.Text(), -1)
+
+		for _, word := range words {
+			wordFrequencies[word]++
+		}
 	}
+	// This method give these top 5: [{the 5407} {and 2798} {of 2723} {to 2701} {a 2575}]
+
+	// scanner.Split(bufio.ScanWords)
+
+	// // Set the scanner to split by words
+	// scanner.Split(bufio.ScanWords)
+
+	// for scanner.Scan() {
+	// 	word := scanner.Text()
+	// 	wordFrequencies[word]++
+	// 	//fmt.Println(word)
+	// }
+	// This method give these top 5: [{the 5431} {I 3038} {and 2888} {to 2790} {of 2737}]
 
 	// Check for any errors during scanning
 	if err := scanner.Err(); err != nil {
