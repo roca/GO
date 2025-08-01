@@ -7,6 +7,7 @@ import (
 	"os"
 	"regexp"
 	"sort"
+	"strings"
 )
 
 // What are the N most common words in sherlock.txt
@@ -27,10 +28,10 @@ func main() {
 		words := wordRe.FindAllString(scanner.Text(), -1)
 
 		for _, word := range words {
-			wordFrequencies[word]++
+			wordFrequencies[strings.ToLower(word)]++
 		}
 	}
-	// This method give these top 5: [{the 5407} {and 2798} {of 2723} {to 2701} {a 2575}]
+	// This method give these top 5: [{the 5816} {and 3089} {i 3038} {to 2825} {of 2780}]
 
 	// scanner.Split(bufio.ScanWords)
 
@@ -39,19 +40,29 @@ func main() {
 
 	// for scanner.Scan() {
 	// 	word := scanner.Text()
-	// 	wordFrequencies[word]++
+	// 	wordFrequencies[strings.ToLower(word)]++
 	// 	//fmt.Println(word)
 	// }
-	// This method give these top 5: [{the 5431} {I 3038} {and 2888} {to 2790} {of 2737}]
+	// This method give these top 5: [{the 5703} {and 2882} {of 2758} {to 2720} {a 2648}]
 
 	// Check for any errors during scanning
 	if err := scanner.Err(); err != nil {
 		log.Fatalf("Error scanning file: %v", err)
 	}
 
-	pairList := rankByWordCount(wordFrequencies)
+	top := topN(wordFrequencies, 10)
 
-	fmt.Println(pairList[:5])
+	fmt.Println(top)
+}
+
+func topN(freq map[string]int, n int) []string {
+	pairList := rankByWordCount(freq)
+	words := []string{}
+
+	for _, p := range pairList[:n] {
+		words = append(words, p.Key)
+	}
+	return words
 }
 
 func rankByWordCount(wordFrequencies map[string]int) PairList {
