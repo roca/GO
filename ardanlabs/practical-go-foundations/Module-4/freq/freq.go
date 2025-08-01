@@ -4,8 +4,10 @@ import (
 	"bufio"
 	"fmt"
 	"log"
+	"maps"
 	"os"
 	"regexp"
+	"slices"
 	"sort"
 	"strings"
 )
@@ -56,6 +58,18 @@ func main() {
 }
 
 func topN(freq map[string]int, n int) []string {
+	words := slices.Collect(maps.Keys(freq))
+	sort.Slice(words, func(i, j int) bool {
+		wi, wj := words[i], words[j]
+		// Sort in reverse order
+		return freq[wi] > freq[wj]
+	})
+
+	n = min(n, len(words))
+	return words[:n]
+}
+
+func topN2(freq map[string]int, n int) []string {
 	pairList := rankByWordCount(freq)
 	words := []string{}
 
