@@ -30,6 +30,22 @@ func main() {
 	fmt.Println(v)
 
 	fmt.Println(sleepSort2([]int{20, 30, 10})) // [10 20 30]
+
+	go func() {
+		for i := range 4 {
+			ch <- i
+		}
+		close(ch)
+	}()
+
+	for i := range ch {
+		fmt.Println(">>", i)
+	}
+
+	v = <-ch
+	fmt.Println("closed:", v)
+	v, ok := <-ch
+	fmt.Println("closed:", v, "ok", ok)
 }
 
 func sleepSort(ns []int) []int {
@@ -52,6 +68,7 @@ func sleepSort(ns []int) []int {
 // collect all values from the a channel to a slice and return it
 func sleepSort2(ns []int) []int {
 	ch := make(chan int)
+
 	s := []int{}
 
 	for _, n := range ns {
@@ -62,14 +79,18 @@ func sleepSort2(ns []int) []int {
 		}()
 	}
 
-	/* 
+	i := 0
 	for n := range ch {
 		s = append(s, n)
+		i++
+		if i == len(ns) {
+			close(ch)
+		}
 	}
-	*/
-	for range ns {
-		s = append(s, <-ch)
-	}
+
+	// for range ns {
+	// 	s = append(s, <-ch)
+	// }
 
 	return s
 
