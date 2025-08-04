@@ -62,6 +62,11 @@ func sleepSort2(ns []int) []int {
 		}()
 	}
 
+	/* 
+	for n := range ch {
+		s = append(s, n)
+	}
+	*/
 	for range ns {
 		s = append(s, <-ch)
 	}
