@@ -1,11 +1,13 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
+	"time"
 )
 
 // Given a github user login, return name and number of public repos
@@ -13,7 +15,10 @@ import (
 // curl -i -H 'User-Agent: go' https://api.github.com/users/ardanlabs
 
 func main() {
-	Name, NumRepos, err := UserInfo("ardanlabs")
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	Name, NumRepos, err := UserInfo(ctx, "ardanlabs")
 	if err != nil {
 		fmt.Println("Error:", err)
 		os.Exit(1)
@@ -53,9 +58,16 @@ func demo() {
 }
 
 // UserInfo return name and number of public repos from GitHub API.
-func UserInfo(login string) (string, int, error) {
+func UserInfo(ctx context.Context, login string) (string, int, error) {
 	url := "https://api.github.com/users/" + login
-	resp, err := http.Get(url)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return "", 0, err
+	}
+
+	resp, err := http.DefaultClient.Do(req)
+	// resp, err := http.Get(url)
 	if err != nil {
 		return "", 0, err
 	}
