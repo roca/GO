@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	ch1, ch2 := make(chan string), make(chan string)
+	ch1, ch2 := make(chan string, 1), make(chan string, 1)
 
 	go func() {
 		time.Sleep(100 * time.Millisecond)
@@ -29,5 +29,6 @@ func main() {
 	// case <-time.After(10 * time.Millisecond):
 	// 	fmt.Println("timeout")
 	case <-ctx.Done():
+		fmt.Println("timeout")
 	}
 }
