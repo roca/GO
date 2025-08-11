@@ -2,6 +2,7 @@ package nlp
 
 import (
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/BurntSushi/toml"
@@ -136,4 +137,15 @@ func TestCasesFromYaml(t *testing.T) {
 		})
 	}
 
+}
+
+func FuzzTokenizer(f *testing.F) {
+	fn := func(t *testing.T, text string) {
+		tokens := Tokenize(text)
+		ltext := strings.ToLower(text)
+		for _, tok := range tokens {
+			require.Contains(t, ltext, tok)
+		}
+	}
+	f.Fuzz(fn)
 }
