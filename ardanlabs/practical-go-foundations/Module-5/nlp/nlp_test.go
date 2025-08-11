@@ -4,6 +4,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/BurntSushi/toml"
 	"github.com/stretchr/testify/require"
 )
 
@@ -38,7 +39,7 @@ func TestTokenizeTable(t *testing.T) {
 					t.Fatalf("expected %#v, got %#v", tc.expected, tokens)
 				}
 			*/
-			require.Equalf(t, tc.expected, tokens,"expected %#v, got %#v",tc.expected, tokens)
+			require.Equalf(t, tc.expected, tokens, "expected %#v, got %#v", tc.expected, tokens)
 		})
 	}
 }
@@ -49,4 +50,50 @@ func TestInCI(t *testing.T) {
 	if !inCI {
 		t.Skip("no in CI")
 	}
+}
+
+type tokenizedCase struct {
+	Text   string   `toml:"text"`
+	Tokens []string `toml:"tokens"`
+	Name   string   `toml:"name"`
+}
+
+func loadTokenizedCases(t *testing.T) []tokenizedCase {
+	file, err := os.Open("testdata/tokenize_cases.toml")
+	require.NoError(t, err)
+	defer file.Close()
+
+	decoder := toml.NewDecoder(file)
+
+	var data struct {
+		Cases []tokenizedCase `toml:"cases"`
+	}
+
+	_, err = decoder.Decode(&data)
+	require.NoError(t, err)
+
+	return data.Cases
+
+}
+
+func TestCasesFromToml(t *testing.T) {
+	cases := loadTokenizedCases(t)
+
+	for _, tc := range cases {
+		name := tc.Name
+		if name == "" {
+			name = tc.Text
+		}
+
+		t.Run(name, func(t *testing.T) {
+			tokens := Tokenize(tc.Text)
+
+			//TOML does not have nil
+			if tokens == nil {
+				tokens = []string{}
+			}
+			require.Equalf(t, tc.Tokens, tokens, "expected %#v, got %#v", tc.Tokens, tokens)
+		})
+	}
+
 }
