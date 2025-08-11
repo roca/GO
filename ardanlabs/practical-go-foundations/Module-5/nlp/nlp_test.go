@@ -6,6 +6,7 @@ import (
 
 	"github.com/BurntSushi/toml"
 	"github.com/stretchr/testify/require"
+	"gopkg.in/yaml.v3"
 )
 
 func TestTokenize(t *testing.T) {
@@ -52,13 +53,19 @@ func TestInCI(t *testing.T) {
 	}
 }
 
-type tokenizedCase struct {
+type tokenizedTomlCase struct {
 	Text   string   `toml:"text"`
 	Tokens []string `toml:"tokens"`
 	Name   string   `toml:"name"`
 }
 
-func loadTokenizedCases(t *testing.T) []tokenizedCase {
+type tokenizedYamlCase struct {
+	Text   string   `yaml:"text"`
+	Tokens []string `yaml:"tokens"`
+	Name   string   `yaml:"name"`
+}
+
+func loadTokenizedTomlCases(t *testing.T) []tokenizedTomlCase {
 	file, err := os.Open("testdata/tokenize_cases.toml")
 	require.NoError(t, err)
 	defer file.Close()
@@ -66,7 +73,7 @@ func loadTokenizedCases(t *testing.T) []tokenizedCase {
 	decoder := toml.NewDecoder(file)
 
 	var data struct {
-		Cases []tokenizedCase `toml:"cases"`
+		Cases []tokenizedTomlCase `toml:"cases"`
 	}
 
 	_, err = decoder.Decode(&data)
@@ -76,8 +83,24 @@ func loadTokenizedCases(t *testing.T) []tokenizedCase {
 
 }
 
+func loadTokenizedYamlCases(t *testing.T) []tokenizedYamlCase {
+	file, err := os.Open("testdata/tokenize_cases.yml")
+	require.NoError(t, err)
+	defer file.Close()
+
+	decoder := yaml.NewDecoder(file)
+
+	var data []tokenizedYamlCase
+
+	err = decoder.Decode(&data)
+	require.NoError(t, err)
+
+	return data
+
+}
+
 func TestCasesFromToml(t *testing.T) {
-	cases := loadTokenizedCases(t)
+	cases := loadTokenizedTomlCases(t)
 
 	for _, tc := range cases {
 		name := tc.Name
@@ -92,6 +115,23 @@ func TestCasesFromToml(t *testing.T) {
 			if tokens == nil {
 				tokens = []string{}
 			}
+			require.Equalf(t, tc.Tokens, tokens, "expected %#v, got %#v", tc.Tokens, tokens)
+		})
+	}
+
+}
+
+func TestCasesFromYaml(t *testing.T) {
+	cases := loadTokenizedYamlCases(t)
+
+	for _, tc := range cases {
+		name := tc.Name
+		if name == "" {
+			name = tc.Text
+		}
+
+		t.Run(name, func(t *testing.T) {
+			tokens := Tokenize(tc.Text)
 			require.Equalf(t, tc.Tokens, tokens, "expected %#v, got %#v", tc.Tokens, tokens)
 		})
 	}
