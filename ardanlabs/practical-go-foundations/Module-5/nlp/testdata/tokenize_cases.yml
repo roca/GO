@@ -1,13 +1,11 @@
 - text: Who's on first?
   tokens:
     - who
-    - s
     - on
     - first
 - text: What's on second?
   tokens:
     - what
-    - s
     - on
     - second
 - text: ""

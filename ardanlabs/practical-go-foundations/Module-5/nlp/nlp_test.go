@@ -14,7 +14,7 @@ func TestTokenize(t *testing.T) {
 	text := "Who's on first?"
 	tokens := Tokenize(text)
 
-	expected := []string{"who", "s", "on", "first"}
+	expected := []string{"who", "on", "first"}
 	/*
 		if !slices.Equal(expected, tokens) {
 			t.Fatalf("expected %#v, got %#v", expected, tokens)
@@ -28,8 +28,8 @@ func TestTokenizeTable(t *testing.T) {
 		text     string
 		expected []string
 	}{
-		{"Who's on first?", []string{"who", "s", "on", "first"}},
-		{"What's on second?", []string{"what", "s", "on", "second"}},
+		{"Who's on first?", []string{"who", "on", "first"}},
+		{"What's on second?", []string{"what", "on", "second"}},
 		{"", nil},
 	}
 
