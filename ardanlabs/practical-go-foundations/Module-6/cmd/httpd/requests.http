@@ -1,0 +1,11 @@
+### Health
+GET http://localhost:8080/health
+
+### Tokenize
+POST http://localhost:8080/tokenize HTTP/1.1
+Content-Type: application/json
+
+{
+	"text": "Who's on first?"
+}
+
