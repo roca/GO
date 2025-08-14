@@ -40,6 +40,11 @@ func tokenizeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if &text == nil || text.Text == "" {
+		http.Error(w, "text data can't be null", http.StatusBadRequest)
+		return
+	}
+
 	a := nlp.Tokenize(text.Text)
 
 	fmt.Fprintln(w, a)
