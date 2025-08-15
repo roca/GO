@@ -45,11 +45,15 @@ func tokenizeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	a := nlp.Tokenize(text.Text)
+	tokens := nlp.Tokenize(text.Text)
 
-	fmt.Fprintln(w, a)
+	w.Header().Set("content-type","application/json")
+	resp := map[string][]string{
+		"tokens": tokens,
+	}
+	json.NewEncoder(w).Encode(resp)
 
-	// fmt.Fprintf(os.Stdout, "text: %v\n", a)
+	
 }
 
 func healthHandler(w http.ResponseWriter, r *http.Request) {
