@@ -9,3 +9,6 @@ Content-Type: application/json
 	"text": "Who's on first?"
 }
 
+### Stem
+GET http://localhost:8080/stem/working
+

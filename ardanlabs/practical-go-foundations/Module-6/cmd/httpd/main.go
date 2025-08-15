@@ -7,11 +7,13 @@ import (
 	"os"
 
 	"github.com/roca/GO/tree/staging/ardanlabs/practical-go-foundations/Module-5/nlp"
+	"github.com/roca/GO/tree/staging/ardanlabs/practical-go-foundations/Module-5/nlp/stemmer"
 )
 
 func main() {
 	// Routing
 	http.HandleFunc("GET /health", healthHandler)
+	http.HandleFunc("GET /stem/{word}", stemHandler)
 	http.HandleFunc("POST /tokenize", tokenizeHandler)
 
 	addr := ":8080"
@@ -22,9 +24,20 @@ func main() {
 
 }
 
+func stemHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "GET" {
+		http.Error(w, "/stem only handles GET requests", http.StatusBadRequest)
+		return
+	}
+
+	word := r.PathValue("word")
+
+	fmt.Fprintln(w, "word stem:", stemmer.Stem(word))
+}
+
 func tokenizeHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
-		http.Error(w, "tokenizeHandler only handles POST requests", http.StatusBadRequest)
+		http.Error(w, "/tokenize only handles POST requests", http.StatusBadRequest)
 		return
 	}
 
@@ -47,13 +60,12 @@ func tokenizeHandler(w http.ResponseWriter, r *http.Request) {
 
 	tokens := nlp.Tokenize(text.Text)
 
-	w.Header().Set("content-type","application/json")
+	w.Header().Set("content-type", "application/json")
 	resp := map[string][]string{
 		"tokens": tokens,
 	}
 	json.NewEncoder(w).Encode(resp)
 
-	
 }
 
 func healthHandler(w http.ResponseWriter, r *http.Request) {
