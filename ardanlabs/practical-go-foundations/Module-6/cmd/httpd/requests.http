@@ -12,3 +12,6 @@ Content-Type: application/json
 ### Stem
 GET http://localhost:8080/stem/working
 
+### REST Client
+GET https://marketplace.visualstudio.com/items?itemName=humao.rest-client
+
