@@ -2,7 +2,9 @@ package main
 
 import (
 	"encoding/json"
+	"expvar"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"os"
 
@@ -10,11 +12,16 @@ import (
 	"github.com/roca/GO/tree/staging/ardanlabs/practical-go-foundations/Module-5/nlp/stemmer"
 )
 
+var (
+	stemCalls = expvar.NewInt("stemCalls")
+)
+
 func main() {
+	api := API{log: slog.Default().With("app", "nlp")}
 	// Routing
-	http.HandleFunc("GET /health", healthHandler)
-	http.HandleFunc("GET /stem/{word}", stemHandler)
-	http.HandleFunc("POST /tokenize", tokenizeHandler)
+	http.HandleFunc("GET /health", api.healthHandler)
+	http.HandleFunc("GET /stem/{word}", api.stemHandler)
+	http.HandleFunc("POST /tokenize", api.tokenizeHandler)
 
 	addr := ":8080"
 	if err := http.ListenAndServe(addr, nil); err != nil {
@@ -24,18 +31,24 @@ func main() {
 
 }
 
-func stemHandler(w http.ResponseWriter, r *http.Request) {
+type API struct {
+	log *slog.Logger
+}
+
+func (a *API) stemHandler(w http.ResponseWriter, r *http.Request) {
+	stemCalls.Add(1)
 	if r.Method != "GET" {
 		http.Error(w, "/stem only handles GET requests", http.StatusBadRequest)
 		return
 	}
 
 	word := r.PathValue("word")
+	a.log.Info("Stem", "word", word)
 
 	fmt.Fprintln(w, "word stem:", stemmer.Stem(word))
 }
 
-func tokenizeHandler(w http.ResponseWriter, r *http.Request) {
+func (a *API) tokenizeHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
 		http.Error(w, "/tokenize only handles POST requests", http.StatusBadRequest)
 		return
@@ -49,6 +62,7 @@ func tokenizeHandler(w http.ResponseWriter, r *http.Request) {
 
 	err := d.Decode(&text)
 	if err != nil {
+		a.log.Error("Tokenize", "error", err)
 		http.Error(w, "Could not get text data", http.StatusBadRequest)
 		return
 	}
@@ -68,8 +82,9 @@ func tokenizeHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func healthHandler(w http.ResponseWriter, r *http.Request) {
+func (a *API) healthHandler(w http.ResponseWriter, r *http.Request) {
 	if err := health(); err != nil {
+		a.log.Error("Health", "error", err)
 		http.Error(w, "health check failed", http.StatusInternalServerError)
 		return
 	}
