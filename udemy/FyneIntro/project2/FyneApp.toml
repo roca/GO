@@ -1,0 +1,8 @@
+Website = "https://fyne.io"
+
+[Details]
+  Icon = "Icon.png"
+  Name = "Project2 Demo"
+  ID = "io.fyne.demo"
+  Version = "1.0.0"
+  Build = 6
