@@ -24,7 +24,8 @@ func main() {
 		return string(text), nil
 	}
 
-	tools := []ToolDefinition{ReadFileDefinition}
+	// tools := []ToolDefinition{ReadFileDefinition}
+	tools := []ToolDefinition{}
 
 	agent := NewAgent(&client, getUserMessage, tools)
 
