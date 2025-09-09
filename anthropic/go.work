@@ -3,5 +3,6 @@ go 1.25.0
 use (
 	./example1
 	./example2
+	./example3
 	./go-agent
 )
