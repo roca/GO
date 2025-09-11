@@ -51,17 +51,11 @@ func add_assistant_message(messages []anthropic.MessageParam, message string) []
 // chat function    sends the conversation to the API and returns the assistant's response
 func chat(conversation []anthropic.MessageParam, temperature float64, system_options ...anthropic.TextBlockParam) (string, error) {
 
-	var temp float64 = 1.0
-
-	if temperature < temp {
-		temp = temperature
-	}
-
 	message_params := anthropic.MessageNewParams{
 		MaxTokens:   1024,
 		Model:       anthropic.ModelClaude3_5HaikuLatest,
 		Messages:    conversation,
-		Temperature: anthropic.Float(temp),
+		Temperature: anthropic.Float(temperature),
 	}
 
 	if len(system_options) > 0 {
