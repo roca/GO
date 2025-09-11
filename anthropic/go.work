@@ -6,5 +6,6 @@ use (
 	./example3
 	./example4
 	./example5
+	./example6
 	./go-agent
 )
