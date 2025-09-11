@@ -1,10 +1,8 @@
 package main
 
 import (
-	"bufio"
 	"context"
 	"fmt"
-	"os"
 
 	"github.com/anthropics/anthropic-sdk-go"
 )
@@ -12,9 +10,8 @@ import (
 var client anthropic.Client
 var system_prompt = anthropic.TextBlockParam{
 	Text: `
-	You are a patient math tutor.
-	Do not directly answer a sudent's question.
-	Prompt the student with questions to guide them to a solution step by step.
+	You are a python software engineer who writes very concise code.
+	Respond with answers as concisely as possible.
 	`,
 }
 
@@ -30,38 +27,17 @@ func init() {
 func main() {
 	var conversation []anthropic.MessageParam
 
-	fmt.Println("Hi. I'm your AI assistant. How can I help you?")
-	fmt.Println("Enter your message or (Ctrl-C to exit):")
+	userInput := "Write a Python function that checks a string for duplicate characters."
 
-	scanner := bufio.NewReader(os.Stdin)
-	for {
-		// 1. Prompt the user to enter some input - User does a Crtl-C exit out
-		fmt.Print("> ")
-		text, _, err := scanner.ReadLine()
-		if err != nil {
-			return
-		}
-		userInput := string(text)
+	conversation = add_user_message(conversation, userInput)
 
-		// 2.  Add it to the existing conversation
-		conversation = add_user_message(conversation, userInput)
-
-		// 3. Call the API
-		message, err := chat(conversation, system_prompt)
-		if err != nil {
-			panic(err.Error())
-		}
-
-		// 4. Print the assistant response message
-		fmt.Printf("%s\n", message)
-		fmt.Println("----------------------------")
-
-		// 5. Add assistant response to existing conversation
-		conversation = add_assistant_message(conversation, message)
-
-		// Repeat from stap #1
-
+	message, err := chat(conversation, system_prompt)
+	if err != nil {
+		panic(err.Error())
 	}
+
+	fmt.Printf("%s\n", message)
+	fmt.Println("----------------------------")
 }
 
 // add_user_message function    adds a user message to the conversation
