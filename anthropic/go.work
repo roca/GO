@@ -9,5 +9,6 @@ use (
 	./example6
 	./example7
 	./example8
+	./example9
 	./go-agent
 )
