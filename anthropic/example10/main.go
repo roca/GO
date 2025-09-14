@@ -70,12 +70,12 @@ func chat(conversation []anthropic.MessageParam, temperature float64, stop_seque
 		message_params.System = system_options // Optional system-level instructions to the model. (e.g. 'You are a helpful assistant.')
 	}
 
-	// Make a new Request
-	response_stream := client.Messages.NewStreaming(context.TODO(), message_params)
-
 	ch := make(chan string, 1)
 
 	go func() {
+		// Make a new Request
+		response_stream := client.Messages.NewStreaming(context.TODO(), message_params)
+
 		for response_stream.Next() {
 			current := response_stream.Current()
 			switch current.Type {
