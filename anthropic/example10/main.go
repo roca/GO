@@ -24,12 +24,14 @@ func main() {
 	userInput := "Generate three different sample AWS CLI commands. Each should be very short."
 	conversation = add_user_message(conversation, userInput)
 
-	//	assistant_prefilled_message := "```json"
-	//	conversation = add_assistant_message(conversation, assistant_prefilled_message)
+	assistant_prefilled_message := "Here are all three commands in a single block without any comments:\n```bash"
+	conversation = add_assistant_message(conversation, assistant_prefilled_message)
 
-	stop_sequences := []string{""}
+	var stop_sequences []string
 
-	err := chat(conversation, 1.0, stop_sequences)
+	stop_sequences = append(stop_sequences, "```")
+
+	err := chat(conversation, 0.0, stop_sequences)
 	if err != nil {
 		panic(err.Error())
 	}
