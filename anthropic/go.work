@@ -1,15 +1,16 @@
 go 1.25.0
 
 use (
-	./S1/example1
-	./S1/example10
-	./S1/example2
-	./S1/example3
-	./S1/example4
-	./S1/example5
-	./S1/example6
-	./S1/example7
-	./S1/example8
-	./S1/example9
-	./S1/go-agent
+	./example1
+	./example10
+	./example11
+	./example2
+	./example3
+	./example4
+	./example5
+	./example6
+	./example7
+	./example8
+	./example9
+	./go-agent
 )
