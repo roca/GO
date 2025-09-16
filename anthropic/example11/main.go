@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -10,6 +11,10 @@ import (
 )
 
 var client anthropic.Client
+
+type Task struct {
+	Task string `json:"task"`
+}
 
 func init() {
 	// Install dependencies
@@ -34,7 +39,7 @@ func main() {
 
 	text, err := chat(conversation, 0.0, stop_sequences)
 	if err != nil {
-		panic(err.Error())
+		log.Fatal(err)
 	}
 
 	err = os.WriteFile("dataset.json", []byte(text), 0644) // 0644 sets file permissions
@@ -42,6 +47,30 @@ func main() {
 		log.Fatal(err)
 	}
 	log.Println("File written successfully.")
+
+	// read from dataset.json
+
+	bytes, err := os.ReadFile("dataset.json")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var tasks []Task
+
+	err = json.Unmarshal(bytes, &tasks)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	runEval(tasks)
+}
+
+func runEval(tasks []Task) {
+	// Placeholder for evaluation logic
+	for i, task := range tasks {
+		fmt.Printf("%d: %s\n", i+1, task.Task)
+	}
+
 }
 
 func generate_dataset() string {
