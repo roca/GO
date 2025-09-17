@@ -65,12 +65,47 @@ func main() {
 	runEval(tasks)
 }
 
-func runEval(tasks []Task) {
-	// Placeholder for evaluation logic
-	for i, task := range tasks {
-		fmt.Printf("%d: %s\n", i+1, task.Task)
+// runTestCase function    Merges the prompt and the test case input and then returns the result
+func runPrompt(test_case Task) error {
+
+	prompt := fmt.Sprintf(`
+		Please solve the following task:
+
+		%s
+`, test_case.Task)
+
+	var conversation []anthropic.MessageParam
+	var stop_sequences []string
+
+	conversation = add_user_message(conversation, prompt)
+	text, err := chat(conversation, 0.0, stop_sequences)
+	if err != nil {
+		return err
 	}
 
+	fmt.Println(text)
+
+	return nil
+}
+
+// runTestCase function    Calls runPrompt and then grades the result
+func runTestCase(test_case Task) error {
+	return runPrompt(test_case)
+}
+
+// runEval function    Loads the dataset and calls runTestCase with each case
+func runEval(tasks []Task) error {
+
+	// Placeholder for evaluation logic
+	for i, task := range tasks {
+		fmt.Printf("Task(%d): %s\n", i+1, task.Task)
+		err := runTestCase(task)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func generate_dataset() string {
