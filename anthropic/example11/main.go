@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/anthropics/anthropic-sdk-go"
 )
@@ -172,7 +173,15 @@ func chat(conversation []anthropic.MessageParam, temperature float64, stop_seque
 
 	go func() {
 		// Make a new Request
-		response_stream := client.Messages.NewStreaming(context.TODO(), message_params)
+
+		timeout_ctx, cancel := context.WithTimeout(context.Background(), time.Duration(10*time.Minute))
+		defer func() {
+			cancel()
+			fmt.Println("context cancelled")
+			close(ch)
+		}()
+
+		response_stream := client.Messages.NewStreaming(timeout_ctx, message_params)
 
 		for response_stream.Next() {
 			current := response_stream.Current()
@@ -180,7 +189,7 @@ func chat(conversation []anthropic.MessageParam, temperature float64, stop_seque
 			case "content_block_delta":
 				ch <- fmt.Sprintf("%s", current.Delta.Text)
 			case "content_block_stop":
-				close(ch)
+				return
 			}
 		}
 	}()
