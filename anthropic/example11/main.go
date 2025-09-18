@@ -67,7 +67,7 @@ func main() {
 }
 
 // runTestCase function    Merges the prompt and the test case input and then returns the result
-func runPrompt(test_case Task) error {
+func runPrompt(test_case Task) (string, error) {
 
 	prompt := fmt.Sprintf(`
 		Please solve the following task:
@@ -81,17 +81,35 @@ func runPrompt(test_case Task) error {
 	conversation = add_user_message(conversation, prompt)
 	text, err := chat(conversation, 0.0, stop_sequences)
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	fmt.Println(text)
+	// fmt.Println(text)
 
-	return nil
+	return text, nil
+}
+
+type Result struct {
+	Output   string
+	TestCase Task
+	Score    float64
 }
 
 // runTestCase function    Calls runPrompt and then grades the result
-func runTestCase(test_case Task) error {
-	return runPrompt(test_case)
+func runTestCase(test_case Task) (*Result, error) {
+	output, err := runPrompt(test_case)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(output)
+
+	result := Result{
+		Output:   output,
+		TestCase: test_case,
+		Score:    10.0,
+	}
+
+	return &result, nil
 }
 
 // runEval function    Loads the dataset and calls runTestCase with each case
@@ -100,7 +118,7 @@ func runEval(tasks []Task) error {
 	// Placeholder for evaluation logic
 	for i, task := range tasks {
 		fmt.Printf("Task(%d): %s\n", i+1, task.Task)
-		err := runTestCase(task)
+		_, err := runTestCase(task)
 		if err != nil {
 			return err
 		}
