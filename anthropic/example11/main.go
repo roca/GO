@@ -63,7 +63,13 @@ func main() {
 		log.Fatal(err)
 	}
 
-	runEval(tasks)
+	results, err := runEval(tasks)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(*results)
+
 }
 
 // runTestCase function    Merges the prompt and the test case input and then returns the result
@@ -101,7 +107,6 @@ func runTestCase(test_case Task) (*Result, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(output)
 
 	result := Result{
 		Output:   output,
@@ -113,18 +118,22 @@ func runTestCase(test_case Task) (*Result, error) {
 }
 
 // runEval function    Loads the dataset and calls runTestCase with each case
-func runEval(tasks []Task) error {
+func runEval(tasks []Task) (*[]Result, error) {
+
+	var results []Result
 
 	// Placeholder for evaluation logic
-	for i, task := range tasks {
-		fmt.Printf("Task(%d): %s\n", i+1, task.Task)
-		_, err := runTestCase(task)
+	for _, task := range tasks {
+		// fmt.Printf("Task(%d): %s\n", i+1, task.Task)
+		result, err := runTestCase(task)
 		if err != nil {
-			return err
+			return nil, err
 		}
+
+		results = append(results, *result)
 	}
 
-	return nil
+	return &results, nil
 }
 
 func generate_dataset() string {
