@@ -68,7 +68,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Println(*results)
+	for i, result := range results {
+		fmt.Printf("%d. %s\n\n", i+1, result.TestCase.Task)
+		fmt.Printf("%s\n-----------------------------------------------------------\n\n", result.Output)
+	}
 
 }
 
@@ -118,7 +121,7 @@ func runTestCase(test_case Task) (*Result, error) {
 }
 
 // runEval function    Loads the dataset and calls runTestCase with each case
-func runEval(tasks []Task) (*[]Result, error) {
+func runEval(tasks []Task) ([]Result, error) {
 
 	var results []Result
 
@@ -133,7 +136,7 @@ func runEval(tasks []Task) (*[]Result, error) {
 		results = append(results, *result)
 	}
 
-	return &results, nil
+	return results, nil
 }
 
 func generate_dataset() string {
@@ -204,7 +207,7 @@ func chat(conversation []anthropic.MessageParam, temperature float64, stop_seque
 		timeout_ctx, cancel := context.WithTimeout(context.Background(), time.Duration(10*time.Minute))
 		defer func() {
 			cancel()
-			fmt.Println("context cancelled")
+			// fmt.Println("context cancelled")
 			close(ch)
 		}()
 
