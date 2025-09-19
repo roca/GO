@@ -7,6 +7,6 @@
         "task": "Write a JSON schema to validate an AWS Lambda function configuration"
     },
     {
-        "task": "Develop a regular expression to match valid AWS S3 bucket names (lowercase, numbers, hyphens, 3-63 characters)"
+        "task": "Develop a regular expression to match valid AWS S3 bucket names"
     }
 ]

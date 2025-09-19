@@ -70,8 +70,8 @@ func main() {
 
 	for i, result := range results {
 		fmt.Printf("Task %d. %s\n", i+1, result.TestCase.Task)
-		fmt.Printf("Score: %.2f\n\n", result.Score)
-		fmt.Printf("%s\n-----------------------------------------------------------\n\n", result.Output)
+		// fmt.Printf("Score: %.2f\n\n", result.Score)
+		// fmt.Printf("%s\n-----------------------------------------------------------\n\n", result.Output)
 	}
 
 }
@@ -107,28 +107,33 @@ type Result struct {
 
 func gradeByModel(test_case Task, output string) (float64, error) {
 
-	prompt := fmt.Sprintf(`
-		Please solve the following task:
-
-		%s
-`, test_case.Task)
+	eval_prompt := fmt.Sprintf(`
+You are an expert code reviewer. Evaluate this AI-generated solution.
+    
+Task: %s
+Solution: %s
+    
+Provide your evaluation as a structured JSON object with:
+- "strengths": An array of 1-3 key strengths
+- "weaknesses": An array of 1-3 key areas for improvement  
+- "reasoning": A concise explanation of your assessment
+- "score": A number between 1-10
+`, test_case.Task, output)
 
 	var conversation []anthropic.MessageParam
 	var stop_sequences []string
 
-	stop_sequences = append(stop_sequences, "```json")
+	stop_sequences = append(stop_sequences, "```")
 
-	conversation = add_user_message(conversation, prompt)
-	conversation = add_user_message(conversation, "```json")
+	conversation = add_user_message(conversation, eval_prompt)
+	conversation = add_assistant_message(conversation, "```json")
 	text, err := chat(conversation, 0.0, stop_sequences)
 	if err != nil {
 		return 0.0, err
 	}
 
-	// TODO: parse out jsons score and nreasoning
-	_ = text
 
-	// fmt.Println(text)
+	fmt.Println(text)
 
 	return 10.0, nil
 }
