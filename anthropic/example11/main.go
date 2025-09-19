@@ -70,7 +70,8 @@ func main() {
 
 	for i, result := range results {
 		fmt.Printf("Task %d. %s\n", i+1, result.TestCase.Task)
-		// fmt.Printf("Score: %.2f\n\n", result.Score)
+		fmt.Printf("Score: %.2f\n", result.Score)
+		fmt.Printf("Reasoning: %s\n\n", result.Reasoning)
 		// fmt.Printf("%s\n-----------------------------------------------------------\n\n", result.Output)
 	}
 
@@ -100,12 +101,20 @@ func runPrompt(test_case Task) (string, error) {
 }
 
 type Result struct {
-	Output   string
-	TestCase Task
-	Score    float64
+	Output    string
+	TestCase  Task
+	Score     float64
+	Reasoning string
 }
 
-func gradeByModel(test_case Task, output string) (float64, error) {
+type Evaluation struct {
+	Strengths  []string `json:"strengths"`
+	Weaknesses []string `json:"weaknesses"`
+	Reasoning  string   `json:"reasoning"`
+	Score      float64  `json:"score"`
+}
+
+func gradeByModel(test_case Task, output string) (Evaluation, error) {
 
 	eval_prompt := fmt.Sprintf(`
 You are an expert code reviewer. Evaluate this AI-generated solution.
@@ -129,13 +138,20 @@ Provide your evaluation as a structured JSON object with:
 	conversation = add_assistant_message(conversation, "```json")
 	text, err := chat(conversation, 0.0, stop_sequences)
 	if err != nil {
-		return 0.0, err
+		return Evaluation{}, err
 	}
 
+	var evaluation Evaluation
 
-	fmt.Println(text)
+	err = json.Unmarshal([]byte(text), &evaluation)
+	if err != nil {
+		fmt.Println("Error unmarshaling JSON:", err)
+		return Evaluation{}, err
+	}
 
-	return 10.0, nil
+	// fmt.Println(text)
+
+	return evaluation, nil
 }
 
 // runTestCase function    Calls runPrompt and then grades the result
@@ -145,15 +161,16 @@ func runTestCase(test_case Task) (*Result, error) {
 		return nil, err
 	}
 
-	score, err := gradeByModel(test_case, output)
+	evaluation, err := gradeByModel(test_case, output)
 	if err != nil {
 		return nil, err
 	}
 
 	result := Result{
-		Output:   output,
-		TestCase: test_case,
-		Score:    score,
+		Output:    output,
+		TestCase:  test_case,
+		Score:     evaluation.Score,
+		Reasoning: evaluation.Reasoning,
 	}
 
 	return &result, nil
