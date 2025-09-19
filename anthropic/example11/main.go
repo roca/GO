@@ -75,6 +75,14 @@ func main() {
 		// fmt.Printf("%s\n-----------------------------------------------------------\n\n", result.Output)
 	}
 
+	//Average score
+	var total_score float64
+	for _, result := range results {
+		total_score += result.Score
+	}
+	average_score := total_score / float64(len(results))
+	fmt.Printf("Average Score: %.2f\n", average_score)
+
 }
 
 // runTestCase function    Merges the prompt and the test case input and then returns the result
