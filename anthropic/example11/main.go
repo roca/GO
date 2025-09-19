@@ -69,7 +69,8 @@ func main() {
 	}
 
 	for i, result := range results {
-		fmt.Printf("%d. %s\n\n", i+1, result.TestCase.Task)
+		fmt.Printf("Task %d. %s\n", i+1, result.TestCase.Task)
+		fmt.Printf("Score: %.2f\n\n", result.Score)
 		fmt.Printf("%s\n-----------------------------------------------------------\n\n", result.Output)
 	}
 
@@ -104,6 +105,34 @@ type Result struct {
 	Score    float64
 }
 
+func gradeByModel(test_case Task, output string) (float64, error) {
+
+	prompt := fmt.Sprintf(`
+		Please solve the following task:
+
+		%s
+`, test_case.Task)
+
+	var conversation []anthropic.MessageParam
+	var stop_sequences []string
+
+	stop_sequences = append(stop_sequences, "```json")
+
+	conversation = add_user_message(conversation, prompt)
+	conversation = add_user_message(conversation, "```json")
+	text, err := chat(conversation, 0.0, stop_sequences)
+	if err != nil {
+		return 0.0, err
+	}
+
+	// TODO: parse out jsons score and nreasoning
+	_ = text
+
+	// fmt.Println(text)
+
+	return 10.0, nil
+}
+
 // runTestCase function    Calls runPrompt and then grades the result
 func runTestCase(test_case Task) (*Result, error) {
 	output, err := runPrompt(test_case)
@@ -111,10 +140,15 @@ func runTestCase(test_case Task) (*Result, error) {
 		return nil, err
 	}
 
+	score, err := gradeByModel(test_case, output)
+	if err != nil {
+		return nil, err
+	}
+
 	result := Result{
 		Output:   output,
 		TestCase: test_case,
-		Score:    10.0,
+		Score:    score,
 	}
 
 	return &result, nil
