@@ -7,6 +7,6 @@
         "task": "Write a JSON schema to validate the structure of an AWS CloudFormation template parameter definition"
     },
     {
-        "task": "Develop a regular expression to match valid AWS IAM username patterns (lowercase letters, numbers, and hyphens, 1-64 characters)"
+        "task": "Develop a regular expression to match valid AWS IAM username patterns (lowercase letters, numbers, and specific allowed special characters)"
     }
 ]
