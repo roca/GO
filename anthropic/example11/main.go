@@ -71,8 +71,8 @@ func main() {
 	for i, result := range results {
 		fmt.Printf("Task %d. %s\n", i+1, result.TestCase.Task)
 		fmt.Printf("Score: %.2f\n", result.Score)
-		fmt.Printf("Reasoning: %s\n\n", result.Reasoning)
-		// fmt.Printf("%s\n-----------------------------------------------------------\n\n", result.Output)
+		fmt.Printf("Reasoning: %s\n", result.Reasoning)
+		fmt.Printf("%s\n-----------------------------------------------------------\n\n", result.Output)
 	}
 
 	//Average score
@@ -207,8 +207,8 @@ func generate_dataset() string {
 
 	prompt := fmt.Sprintf(`
 Generate a evaluation dataset for a prompt evaluation. The dataset will be used to evaluate prompts
-that generate Python, JSON, or Regex specifically for AWS-related tasks. Generate an array of JSON objects,
-each representing task that requires Python, JSON, or a Regex to complete.
+that generate Go, JSON, or Regex specifically for AWS-related tasks. Generate an array of JSON objects,
+each representing task that requires Go, JSON, or a Regex to complete.
 
 Example output:
 %sjson
@@ -220,7 +220,7 @@ Example output:
 ]
 %s
 
-* Focus on tasks that can be solved by writing a single Python function, a single JSON object, or a regular expression.
+* Focus on tasks that can be solved by writing a single Go function, a single JSON object, or a regular expression.
 * Focus on tasks that do not require writing much code
 
 Please generate 3 objects.
