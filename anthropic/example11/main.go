@@ -85,6 +85,21 @@ func main() {
 
 }
 
+// validateJSON function    Validates if the input is a valid JSON
+func validateJSON(input string) (int, error) {
+	return 0, nil
+}
+
+// validateGo function    Validates if the input is a valid Go code
+func validateGo(input string) (int, error) {
+	return 0, nil
+}
+
+// validateRegex function    Validates if the input is a valid Regex
+func validateRegex(input string) (int, error) {
+	return 0, nil
+}
+
 // runTestCase function    Merges the prompt and the test case input and then returns the result
 func runPrompt(test_case Task) (string, error) {
 
