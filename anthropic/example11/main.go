@@ -4,8 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"go/parser"
+	"go/token"
 	"log"
 	"os"
+	"regexp"
 	"time"
 
 	"github.com/anthropics/anthropic-sdk-go"
@@ -86,18 +89,37 @@ func main() {
 }
 
 // validateJSON function    Validates if the input is a valid JSON
-func validateJSON(input string) (int, error) {
-	return 0, nil
+func validateJSON(text string) (int, error) {
+	// Unmarshal the text into a map
+	var js map[string]interface{}
+	err := json.Unmarshal([]byte(text), &js)
+	if err != nil {
+		return 0, err
+	}
+	return 10, nil
 }
 
 // validateGo function    Validates if the input is a valid Go code
-func validateGo(input string) (int, error) {
-	return 0, nil
+func validateGo(text string) (int, error) {
+	// Create a new FileSet. This is required by the parser to manage source file positions.
+	fset := token.NewFileSet()
+
+	// Parse the text and ceate an AST
+	_, err := parser.ParseFile(fset, "", text, parser.AllErrors)
+	if err != nil {
+		return 0, err
+	}
+	return 10, nil
 }
 
 // validateRegex function    Validates if the input is a valid Regex
-func validateRegex(input string) (int, error) {
-	return 0, nil
+func validateRegex(text string) (int, error) {
+	// Compile the regex
+	_, err := regexp.Compile(text)
+	if err != nil {
+		return 0, err
+	}
+	return 10, nil
 }
 
 // runTestCase function    Merges the prompt and the test case input and then returns the result
