@@ -73,10 +73,10 @@ func main() {
 	}
 
 	for i, result := range results {
-		fmt.Printf("%s Task %d. %s\n", result.TestCase.Format, i+1, result.TestCase.Task)
+		fmt.Printf("(%s) Task %d. %s\n", result.TestCase.Format, i+1, result.TestCase.Task)
 		fmt.Printf("Score: %.2f\n", result.Score)
-		fmt.Printf("Reasoning: %s\n\n", result.Reasoning)
-		// fmt.Printf("%s\n-----------------------------------------------------------\n\n", result.Output)
+		fmt.Printf("Reasoning: %s\n", result.Reasoning)
+		fmt.Printf("%s\n-----------------------------------------------------------\n\n", result.Output)
 	}
 
 	//Average score
