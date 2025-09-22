@@ -17,8 +17,9 @@ import (
 var client anthropic.Client
 
 type Task struct {
-	Task   string `json:"task"`
-	Format string `json:"format"`
+	Task             string `json:"task"`
+	Format           string `json:"format"`
+	SolutionCriteria string `json:"solution_criteria"`
 }
 
 func init() {
@@ -77,6 +78,7 @@ func main() {
 		fmt.Printf("ModelScore: %.2f\n", result.ModelScore)
 		fmt.Printf("SyntaxScore: %.2f\n", result.SyntaxScore)
 		fmt.Printf("Overall Score: %.2f\n", result.Score)
+		fmt.Printf("Solution Criteria: %s\n", result.TestCase.SolutionCriteria)
 		fmt.Printf("Reasoning: %s\n", result.Reasoning)
 		fmt.Printf("%s\n-----------------------------------------------------------\n\n", result.Output)
 	}
@@ -137,10 +139,13 @@ func runPrompt(test_case Task) (string, error) {
 
 		* Respond only with Go, JSON, or a plain regex, depending on what the task requires.
 		* All Go code must include necessary imports and package declarations.
-		* The package statement must be the first line of the code.
+		* Go code package statements must be the first line of the code.
 		* Do not use pyhton in any coding examples.
 		* Do not add any comments or commentary or explanation.
-`, test_case.Task)
+		* %s
+`, test_case.Task, test_case.SolutionCriteria)
+
+	// fmt.Println(prompt)
 
 	var conversation []anthropic.MessageParam
 	var stop_sequences []string
@@ -181,15 +186,27 @@ func gradeByModel(test_case Task, output string) (Evaluation, error) {
 	eval_prompt := fmt.Sprintf(`
 You are an expert code reviewer. Evaluate this AI-generated solution.
     
-Task: %s
-Solution: %s
+Original Task
+<task>
+%s
+</task>
+
+Solutioni to evaulate:
+<solution>
+%s
+</solution>
+
+Criteria you should use to evaulate the solution:
+<criteria>
+%s
+</criteria>
     
 Provide your evaluation as a structured JSON object with:
 - "strengths": An array of 1-3 key strengths
 - "weaknesses": An array of 1-3 key areas for improvement  
 - "reasoning": A concise explanation of your assessment
 - "score": A number between 1-10
-`, test_case.Task, output)
+`, test_case.Task, output, test_case.SolutionCriteria)
 
 	var conversation []anthropic.MessageParam
 	var stop_sequences []string
@@ -291,6 +308,7 @@ Example output:
     {
         "task": "Description of task",
 				"format": "go" or "json" or "regex"
+				"solution_criteria": "Some key criteria on what a good solution would look like for this task"
     },
     ...additional
 ]
@@ -298,6 +316,7 @@ Example output:
 
 * Focus on tasks that can be solved by writing a single Go function, a single JSON object, or a regular expression.
 * Focus on tasks that do not require writing much code
+* Add in some solution criteria on what a good solution would look like for this each task
 
 Please generate 3 objects.
 `, "```", "```")
