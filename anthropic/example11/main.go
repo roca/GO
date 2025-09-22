@@ -17,7 +17,8 @@ import (
 var client anthropic.Client
 
 type Task struct {
-	Task string `json:"task"`
+	Task   string `json:"task"`
+	Format string `json:"format"`
 }
 
 func init() {
@@ -72,10 +73,10 @@ func main() {
 	}
 
 	for i, result := range results {
-		fmt.Printf("Task %d. %s\n", i+1, result.TestCase.Task)
+		fmt.Printf("%s Task %d. %s\n", result.TestCase.Format, i+1, result.TestCase.Task)
 		fmt.Printf("Score: %.2f\n", result.Score)
-		fmt.Printf("Reasoning: %s\n", result.Reasoning)
-		fmt.Printf("%s\n-----------------------------------------------------------\n\n", result.Output)
+		fmt.Printf("Reasoning: %s\n\n", result.Reasoning)
+		// fmt.Printf("%s\n-----------------------------------------------------------\n\n", result.Output)
 	}
 
 	//Average score
@@ -129,12 +130,17 @@ func runPrompt(test_case Task) (string, error) {
 		Please solve the following task:
 
 		%s
+
+		* Respond only with Go, JSON, or a plain regex, depending on what the task requires.
+		* Do not add any comments or commentary or explanation.
+		* Do not use any pyhton in coding examples.
 `, test_case.Task)
 
 	var conversation []anthropic.MessageParam
 	var stop_sequences []string
 
 	conversation = add_user_message(conversation, prompt)
+	conversation = add_assistant_message(conversation, fmt.Sprintf("```%s", test_case.Format))
 	text, err := chat(conversation, 0.0, stop_sequences)
 	if err != nil {
 		return "", err
@@ -245,13 +251,14 @@ func generate_dataset() string {
 	prompt := fmt.Sprintf(`
 Generate a evaluation dataset for a prompt evaluation. The dataset will be used to evaluate prompts
 that generate Go, JSON, or Regex specifically for AWS-related tasks. Generate an array of JSON objects,
-each representing task that requires Go, JSON, or a Regex to complete.
+each representing task and format that requires Go, JSON, or a Regex to complete.
 
 Example output:
 %sjson
 [
     {
         "task": "Description of task",
+				"format": "go" or "json" or "regex"
     },
     ...additional
 ]
