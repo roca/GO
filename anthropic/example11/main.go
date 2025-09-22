@@ -74,7 +74,9 @@ func main() {
 
 	for i, result := range results {
 		fmt.Printf("(%s) Task %d. %s\n", result.TestCase.Format, i+1, result.TestCase.Task)
-		fmt.Printf("Score: %.2f\n", result.Score)
+		fmt.Printf("ModelScore: %.2f\n", result.ModelScore)
+		fmt.Printf("SyntaxScore: %.2f\n", result.SyntaxScore)
+		fmt.Printf("Overall Score: %.2f\n", result.Score)
 		fmt.Printf("Reasoning: %s\n", result.Reasoning)
 		fmt.Printf("%s\n-----------------------------------------------------------\n\n", result.Output)
 	}
@@ -85,7 +87,7 @@ func main() {
 		total_score += result.Score
 	}
 	average_score := total_score / float64(len(results))
-	fmt.Printf("Average Score: %.2f\n", average_score)
+	fmt.Printf("Average Score of all tasks: %.2f\n", average_score)
 
 }
 
@@ -108,6 +110,8 @@ func validateGo(text string) (int, error) {
 	// Parse the text and ceate an AST
 	_, err := parser.ParseFile(fset, "", text, parser.AllErrors)
 	if err != nil {
+		// fmt.Println("Error parsing Go code:", err)
+		// fmt.Println("Go code was:\n", text)
 		return 0, err
 	}
 	return 10, nil
@@ -132,12 +136,16 @@ func runPrompt(test_case Task) (string, error) {
 		%s
 
 		* Respond only with Go, JSON, or a plain regex, depending on what the task requires.
+		* All Go code must include necessary imports and package declarations.
+		* The package statement must be the first line of the code.
+		* Do not use pyhton in any coding examples.
 		* Do not add any comments or commentary or explanation.
-		* Do not use any pyhton in coding examples.
 `, test_case.Task)
 
 	var conversation []anthropic.MessageParam
 	var stop_sequences []string
+
+	stop_sequences = append(stop_sequences, "```")
 
 	conversation = add_user_message(conversation, prompt)
 	conversation = add_assistant_message(conversation, fmt.Sprintf("```%s", test_case.Format))
@@ -152,10 +160,12 @@ func runPrompt(test_case Task) (string, error) {
 }
 
 type Result struct {
-	Output    string
-	TestCase  Task
-	Score     float64
-	Reasoning string
+	Output      string
+	TestCase    Task
+	ModelScore  float64
+	SyntaxScore float64
+	Score       float64
+	Reasoning   string
 }
 
 type Evaluation struct {
@@ -165,6 +175,7 @@ type Evaluation struct {
 	Score      float64  `json:"score"`
 }
 
+// gradeByModel function    Calls the model to grade the output
 func gradeByModel(test_case Task, output string) (Evaluation, error) {
 
 	eval_prompt := fmt.Sprintf(`
@@ -196,13 +207,26 @@ Provide your evaluation as a structured JSON object with:
 
 	err = json.Unmarshal([]byte(text), &evaluation)
 	if err != nil {
-		fmt.Println("Error unmarshaling JSON:", err)
+		log.Println("Error unmarshaling JSON:", err)
 		return Evaluation{}, err
 	}
 
 	// fmt.Println(text)
 
 	return evaluation, nil
+}
+
+func gradeBySyntax(test_case Task, output string) (int, error) {
+	switch test_case.Format {
+	case "json":
+		return validateJSON(output)
+	case "go":
+		return validateGo(output)
+	case "regex":
+		return validateRegex(output)
+	default:
+		return 0, fmt.Errorf("unknown format: %s", test_case.Format)
+	}
 }
 
 // runTestCase function    Calls runPrompt and then grades the result
@@ -217,11 +241,18 @@ func runTestCase(test_case Task) (*Result, error) {
 		return nil, err
 	}
 
+	syntax_score, err := gradeBySyntax(test_case, output)
+	if err != nil {
+		return nil, err
+	}
+
 	result := Result{
-		Output:    output,
-		TestCase:  test_case,
-		Score:     evaluation.Score,
-		Reasoning: evaluation.Reasoning,
+		Output:      output,
+		TestCase:    test_case,
+		ModelScore:  evaluation.Score,
+		SyntaxScore: float64(syntax_score),
+		Score:       (evaluation.Score + float64(syntax_score)) / 2,
+		Reasoning:   evaluation.Reasoning,
 	}
 
 	return &result, nil
@@ -246,6 +277,7 @@ func runEval(tasks []Task) ([]Result, error) {
 	return results, nil
 }
 
+// generate_dataset function    Generates a prompt to create a dataset
 func generate_dataset() string {
 
 	prompt := fmt.Sprintf(`
