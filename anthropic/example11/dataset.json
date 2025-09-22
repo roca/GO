@@ -1,12 +1,15 @@
 
 [
     {
-        "task": "Create a JSON configuration for an AWS Lambda function that sets up environment variables for database connection credentials"
+        "task": "Create a regular expression to validate an AWS IAM username (must start with a letter, can include letters, numbers, and certain special characters, max 64 characters)",
+        "format": "regex"
     },
     {
-        "task": "Write a Go function to validate an AWS S3 bucket name according to AWS naming rules (lowercase, 3-63 characters, no consecutive periods)"
+        "task": "Write a Go function to extract the AWS region from an ARN (Amazon Resource Name) string",
+        "format": "go"
     },
     {
-        "task": "Develop a regular expression to extract the AWS region from an ARN (Amazon Resource Name) string"
+        "task": "Create a JSON object representing the basic configuration for an AWS S3 bucket policy that allows public read access",
+        "format": "json"
     }
 ]
