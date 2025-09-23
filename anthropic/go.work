@@ -1,9 +1,10 @@
-go 1.25.0
+go 1.25.1
 
 use (
 	./example1
 	./example10
 	./example11
+	./example12
 	./example2
 	./example3
 	./example4
