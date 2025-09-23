@@ -2,13 +2,14 @@ package main
 
 import (
 	"example12/prompt_evaluator"
+	"fmt"
 	"log"
 )
 
 func main() {
 	evaluator := prompt_evaluator.PromptEvaluator{}
 
-	_, err := evaluator.GenerateDataset(
+	ideas, err := evaluator.GenerateUniqueIdeas(
 		"Write a compact, concise 1 day meal plan for a single athlete",
 		map[string]string{
 			"height":       "Athlete's height in cm",
@@ -21,6 +22,10 @@ func main() {
 	)
 	if err != nil {
 		log.Fatalf("Could not create dataset: %v", err)
+	}
+
+	for i, idea := range ideas {
+		fmt.Printf("Idea %d: %s\n", i, idea)
 	}
 
 }
