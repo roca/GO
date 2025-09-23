@@ -24,8 +24,19 @@ func main() {
 		log.Fatalf("Could not create dataset: %v", err)
 	}
 
-	for i, idea := range ideas {
-		fmt.Printf("Idea %d: %s\n", i, idea)
+	for _, idea := range ideas {
+		evaluator.GenerateTestCase(
+			"Write a compact, concise 1 day meal plan for a single athlete",
+			idea,
+			map[string]string{
+				"height":       "Athlete's height in cm",
+				"weight":       "Athlete's weight in kg",
+				"goal":         "Goal of the athlete",
+				"restrictions": "Dietery restrictions",
+			},
+		)
+
+		fmt.Println("--------------------------------------------------")
 	}
 
 }

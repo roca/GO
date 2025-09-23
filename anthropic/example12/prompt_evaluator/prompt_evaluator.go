@@ -32,6 +32,25 @@ func (pe *PromptEvaluator) GenerateTestCase(
 	idea Idea,
 	prompt_inputs_spec map[string]string,
 ) {
+
+	prompt := generateTestCasePrompt(task_description, idea, prompt_inputs_spec)
+	// fmt.Println(prompt)
+
+	var conversation []anthropic.MessageParam
+
+	conversation = ai.Add_user_message(conversation, prompt)
+	conversation = ai.Add_assistant_message(conversation, "```json")
+
+	var stop_sequences []string
+
+	stop_sequences = append(stop_sequences, "```")
+	text, err := ai.Chat(conversation, 0.7, stop_sequences, system_prompt_test_cases)
+	if err != nil {
+		log.Fatalf("Chat error: %v", err)
+	}
+
+	fmt.Println(text)
+
 }
 
 func (pe *PromptEvaluator) GenerateUniqueIdeas(
@@ -53,7 +72,7 @@ func (pe *PromptEvaluator) GenerateUniqueIdeas(
 
 	stop_sequences = append(stop_sequences, "```")
 
-	text, err := ai.Chat(conversation, 0.0, stop_sequences, system_prompt_ideas)
+	text, err := ai.Chat(conversation, 1.0, stop_sequences, system_prompt_ideas)
 	if err != nil {
 		return []Idea{}, err
 	}
@@ -138,26 +157,35 @@ func generateTestCasePrompt(
 	prompt_inputs_spec map[string]string,
 ) string {
 
+	allowed_keys := []string{}
+	example_prompt_inputs := []string{}
+
+	for k, v := range prompt_inputs_spec {
+		allowed_keys = append(allowed_keys, fmt.Sprintf(`"%s"`, k))
+		example_prompt_inputs = append(example_prompt_inputs, fmt.Sprintf(`"%s": "EXAMPLE_VALUE", // %s`, k, v))
+	}
+
 	prompt := fmt.Sprintf(` 
         Generate a single detailed test case for a prompt evaluation based on:
         
         <task_description>
-        {task_description}
+        %s
         </task_description>
         
         <specific_idea>
-        {idea}
+        %s
         </specific_idea>
         
         <allowed_input_keys>
-        {allowed_keys}
+        %s
         </allowed_input_keys>
         
         Output Format:
+        %s
         %sjson
         {{
             "prompt_inputs": {{
-            {example_prompt_inputs}
+            		%s
             }},
             "solution_criteria": ["criterion 1", "criterion 2", ...] // Concise list of criteria for evaluating the solution, 1 to 4 items
         }}
@@ -194,7 +222,7 @@ func generateTestCasePrompt(
         %sjson
         {
             "prompt_inputs": {
-                "content": "The transition to renewable energy encompasses numerous interdependent dimensions. Solar photovoltaic technology has seen dramatic cost reductions, with panel efficiency improving 24% since 2010 while manufacturing costs declined by 89%, making it economically competitive with fossil fuels in many markets. Concurrently, wind energy has evolved through innovative turbine designs featuring carbon-fiber composite blades and advanced control systems that increase energy capture by 35% in low-wind conditions."
+                "content": "The transition to renewable energy encompasses numerous interdependent dimensions. Solar photovoltaic technology has seen dramatic cost reductions, with panel efficiency improving 24 percent since 2010 while manufacturing costs declined by 89 percent, making it economically competitive with fossil fuels in many markets. Concurrently, wind energy has evolved through innovative turbine designs featuring carbon-fiber composite blades and advanced control systems that increase energy capture by 35 percent in low-wind conditions."
             },
             "solution_criteria": [
                 "Includes all topics mentioned"   
@@ -203,7 +231,7 @@ func generateTestCasePrompt(
         %s
         </ideal_output>
         This is ideal output because the solution criteria is concise and doesn't ask for anything outside of the scope of the task description.
-        `, "```", "```", "```", "```")
+        `, task_description, idea, strings.Join(allowed_keys, ", "), strings.Join(example_prompt_inputs, "\n\t"), "```", "ppp", "```", "```", "```")
 
 	return prompt
 }
