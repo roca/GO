@@ -1,6 +1,6 @@
 module example7
 
-go 1.25.0
+go 1.25.1
 
 require github.com/anthropics/anthropic-sdk-go v1.12.0
 
