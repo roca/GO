@@ -31,7 +31,7 @@ func (pe *PromptEvaluator) GenerateTestCase(
 	task_description string,
 	idea Idea,
 	prompt_inputs_spec map[string]string,
-) {
+) (TestCase, error) {
 
 	prompt := generateTestCasePrompt(task_description, idea, prompt_inputs_spec)
 	// fmt.Println(prompt)
@@ -49,8 +49,14 @@ func (pe *PromptEvaluator) GenerateTestCase(
 		log.Fatalf("Chat error: %v", err)
 	}
 
-	fmt.Println(text)
+	var test_case TestCase
 
+	err = json.Unmarshal([]byte(text), &test_case)
+	if err != nil {
+		return TestCase{}, err
+	}
+
+	return test_case, nil
 }
 
 func (pe *PromptEvaluator) GenerateUniqueIdeas(
@@ -246,15 +252,20 @@ type Task struct {
 	Task             string            `json:"task"`
 	Format           string            `json:"format"`
 	SolutionCriteria string            `json:"solution_criteria"`
-	PromptInputs     map[string]string `json:"prompt_inputs"`
+	PromptInputSpecs map[string]string `json:"prompt_input_specs"`
+}
+
+type TestCase struct {
+	PromptInputs     map[string]any `json:"prompt_inputs"`
+	SolutionCriteria []string       `json:"solution_criteria"`
 }
 
 // gradeByModel function    Calls the model to grade the output
 func gradeOutput(test_case Task, output string, extra_criteria string) (Evaluation, error) {
 
-	prompt_inputs := []string{}
-	example_prompt_inputs := []string{}
-	solution_criteria := test_case.SolutionCriteria
+	// 	prompt_inputs := []string{}
+	// 	example_prompt_inputs := []string{}
+	// 	solution_criteria := test_case.SolutionCriteria
 
 	eval_prompt := fmt.Sprintf(`
         Your task is to evaluate the following AI-generated solution with EXTREME RIGOR.
@@ -301,7 +312,7 @@ func gradeOutput(test_case Task, output string, extra_criteria string) (Evaluati
         - "reasoning": A concise explanation of your overall assessment
         - "score": A number between 1-10
 
-        Respond with JSON. Keep your response concise and direct.
+        Respond with %s. Keep your response concise and direct.
         Example response shape:
         {{
             "strengths": string[],
@@ -309,7 +320,7 @@ func gradeOutput(test_case Task, output string, extra_criteria string) (Evaluati
             "reasoning": string,
             "score": number
         }
-`, test_case.Task, test_case.PromptInputs, output, test_case.SolutionCriteria, extra_criteria)
+`, test_case.Task, test_case.PromptInputSpecs, output, test_case.SolutionCriteria, extra_criteria, test_case.Format)
 
 	var conversation []anthropic.MessageParam
 	var stop_sequences []string

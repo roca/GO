@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"example12/prompt_evaluator"
 	"fmt"
 	"log"
@@ -8,15 +9,20 @@ import (
 
 func main() {
 	evaluator := prompt_evaluator.PromptEvaluator{}
-
-	ideas, err := evaluator.GenerateUniqueIdeas(
-		"Write a compact, concise 1 day meal plan for a single athlete",
-		map[string]string{
+	task := prompt_evaluator.Task{
+		Task: "Write a compact, concise 1 day meal plan for a single athlete",
+		PromptInputSpecs: map[string]string{
 			"height":       "Athlete's height in cm",
 			"weight":       "Athlete's weight in kg",
 			"goal":         "Goal of the athlete",
 			"restrictions": "Dietery restrictions",
 		},
+		Format: "JSON",
+	}
+
+	ideas, err := evaluator.GenerateUniqueIdeas(
+		task.Task,
+		task.PromptInputSpecs,
 		"dataset.json",
 		3,
 	)
@@ -25,16 +31,21 @@ func main() {
 	}
 
 	for _, idea := range ideas {
-		evaluator.GenerateTestCase(
-			"Write a compact, concise 1 day meal plan for a single athlete",
+		test_case, err := evaluator.GenerateTestCase(
+			task.Task,
 			idea,
-			map[string]string{
-				"height":       "Athlete's height in cm",
-				"weight":       "Athlete's weight in kg",
-				"goal":         "Goal of the athlete",
-				"restrictions": "Dietery restrictions",
-			},
+			task.PromptInputSpecs,
 		)
+		if err != nil {
+			log.Fatalf("Could not create TestCase: %v", err)
+		}
+
+		bytes, err := json.MarshalIndent(test_case, "", "\t")
+		if err != nil {
+			log.Fatalf("Could not MarshalIndent TestCase: %v", err)
+		}
+
+		fmt.Println(string(bytes))
 
 		fmt.Println("--------------------------------------------------")
 	}
