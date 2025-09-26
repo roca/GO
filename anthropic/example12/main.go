@@ -31,6 +31,8 @@ func main() {
 	}
 
 	for _, idea := range ideas {
+		fmt.Println("--------------------------------------------------")
+		fmt.Printf("Idea: %s\n", idea)
 		test_case, err := evaluator.GenerateTestCase(
 			task.Task,
 			idea,
