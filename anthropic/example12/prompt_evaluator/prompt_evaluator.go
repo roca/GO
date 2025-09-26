@@ -27,6 +27,46 @@ type Idea string
 type PromptEvaluator struct {
 }
 
+func (pe *PromptEvaluator) RunTestCase(test_case TestCase) {
+	prompt := fmt.Sprintf(`
+	What should this person eat?
+
+	- Height: %s
+	- Weight: %s
+	- Goal: %s
+	- Dietary restrictions: %s
+
+  Solution Criteria: 
+
+	%s
+	`,
+		test_case.PromptInputs["height"],
+		test_case.PromptInputs["weight"],
+		test_case.PromptInputs["goal"],
+		test_case.PromptInputs["restrictions"],
+		strings.Join(test_case.SolutionCriteria, ".\n\t"),
+	)
+
+	fmt.Println("++++++++++++++++++++++++++++++++++++++++++++++++++")
+	fmt.Println(prompt)
+	fmt.Println("++++++++++++++++++++++++++++++++++++++++++++++++++")
+
+	var conversation []anthropic.MessageParam
+
+	conversation = ai.Add_user_message(conversation, prompt)
+	// conversation = ai.Add_assistant_message(conversation, "```json")
+
+	var stop_sequences []string
+
+	// stop_sequences = append(stop_sequences, "```")
+	text, err := ai.Chat(conversation, 0.7, stop_sequences, system_prompt_test_cases)
+	if err != nil {
+		log.Fatalf("Chat error: %v", err)
+	}
+
+	fmt.Println(text)
+}
+
 func (pe *PromptEvaluator) GenerateTestCase(
 	task_description string,
 	idea Idea,

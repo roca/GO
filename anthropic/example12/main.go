@@ -49,6 +49,8 @@ func main() {
 
 		fmt.Println(string(bytes))
 
+		evaluator.RunTestCase(test_case)
+
 		fmt.Println("--------------------------------------------------")
 	}
 
