@@ -27,7 +27,7 @@ type Idea string
 type PromptEvaluator struct {
 }
 
-func (pe *PromptEvaluator) RunTestCase(test_case TestCase) {
+func (pe *PromptEvaluator) RunTestCase(test_case TestCase) string {
 	prompt := fmt.Sprintf(`
 	What should this person eat?
 
@@ -64,7 +64,7 @@ func (pe *PromptEvaluator) RunTestCase(test_case TestCase) {
 		log.Fatalf("Chat error: %v", err)
 	}
 
-	fmt.Println(text)
+	return text
 }
 
 func (pe *PromptEvaluator) GenerateTestCase(
@@ -301,7 +301,7 @@ type TestCase struct {
 }
 
 // gradeByModel function    Calls the model to grade the output
-func gradeOutput(test_case Task, output string, extra_criteria string) (Evaluation, error) {
+func (pe *PromptEvaluator) GradeOutput(test_case Task, output string, extra_criteria string) (Evaluation, error) {
 
 	// 	prompt_inputs := []string{}
 	// 	example_prompt_inputs := []string{}
@@ -382,7 +382,7 @@ func gradeOutput(test_case Task, output string, extra_criteria string) (Evaluati
 		return Evaluation{}, err
 	}
 
-	// fmt.Println(text)
+	fmt.Println(text)
 
 	return evaluation, nil
 }

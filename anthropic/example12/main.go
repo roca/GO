@@ -49,7 +49,13 @@ func main() {
 
 		fmt.Println(string(bytes))
 
-		evaluator.RunTestCase(test_case)
+		output := evaluator.RunTestCase(test_case)
+		fmt.Printf("Test Result:\n%s\n", output)
+
+		_, err = evaluator.GradeOutput(task, output, "")
+		if err != nil {
+			log.Fatalf("Could not MarshalIndent evaluation output: %v", err)
+		}
 
 		fmt.Println("--------------------------------------------------")
 	}
