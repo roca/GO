@@ -1,6 +1,6 @@
 
 [
-    "Extreme athlete profile: Test meal plan generation for a tall, heavyweight powerlifter with strict vegan restrictions seeking muscle gain",
-    "Minimalist endurance scenario: Validate meal plan for a petite marathon runner with gluten-free requirements targeting weight maintenance",
-    "Metabolic challenge: Design nutrition plan for a recovery-focused athlete with high-protein needs and dairy allergies targeting body recomposition"
+    "Test edge case of extreme weight training athlete with high protein, low carb diet and vegan restrictions",
+    "Test scenario for underweight endurance runner seeking muscle gain with no dairy or gluten limitations",
+    "Test metabolically challenged athlete with significant weight loss goal and multiple food allergies (nuts, shellfish, soy)"
 ]
