@@ -287,6 +287,8 @@ type Evaluation struct {
 	Weaknesses []string `json:"weaknesses"`
 	Reasoning  string   `json:"reasoning"`
 	Score      float64  `json:"score"`
+	Idea
+	Output string
 }
 type Task struct {
 	Task             string            `json:"task"`

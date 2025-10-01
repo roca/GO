@@ -62,6 +62,10 @@ func main() {
 		if err != nil {
 			log.Fatalf("Could not MarshalIndent evaluation output: %v", err)
 		}
+
+		evaluation.Idea = idea
+		evaluation.Output = output
+
 		evaluations = append(evaluations, evaluation)
 
 		scores = append(scores, float64(evaluation.Score))
@@ -94,7 +98,7 @@ func generatePromptEvaluationReport(evaluations []prompt_evaluator.Evaluation, s
 	}
 
 	max_possible_score := 10
-	avg_score := score_sum / float64(len(scores))
+	avg_score := (score_sum / float64(len(scores))) / float64(max_possible_score) * 100
 
 	tmpl, err := template.ParseFiles("template.html")
 	if err != nil {
@@ -105,10 +109,12 @@ func generatePromptEvaluationReport(evaluations []prompt_evaluator.Evaluation, s
 		TotalTests       int
 		AvgScore         float64
 		MaxPossibleScore int
+		Evaluations      []prompt_evaluator.Evaluation
 	}{
 		TotalTests:       total_tests,
 		AvgScore:         avg_score,
 		MaxPossibleScore: max_possible_score,
+		Evaluations:      evaluations,
 	}
 
 	err = tmpl.Execute(outputFile, pageData)

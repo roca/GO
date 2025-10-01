@@ -116,7 +116,7 @@
         </div>
         <div class="stat-box">
           <div>Average Score</div>
-          <div class="stat-value">{{.AvgScore}}</div>
+          <div class="stat-value">{{ printf "%.2f" .AvgScore}}%</div>
         </div>
         <div class="stat-box">
           <div>Pass Rate (≥7)</div>
@@ -137,16 +137,18 @@
         </tr>
       </thead>
       <tbody>
+        {{range .Evaluations}}
         <tr>
-          <td>{result["test_case"]["scenario"]}</td>
+          <td>{{.Idea}}</td>
           <td class="prompt-inputs">{prompt_inputs_html}</td>
           <td class="criteria">• {criteria_string}</td>
-          <td class="output"><pre>{result["output"]}</pre></td>
+          <td class="output"><pre>{{.Output}}</pre></td>
           <td class="score-col">
-            <span class="score {score_class}">{score}</span>
+            <span class="score {score_class}">{{.Score}}</span>
           </td>
-          <td class="reasoning">{result["reasoning"]}</td>
+          <td class="reasoning">{{.Reasoning}}</td>
         </tr>
+        {{end}}
       </tbody>
     </table>
   </body>
