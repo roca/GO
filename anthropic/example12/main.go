@@ -95,7 +95,6 @@ func generatePromptEvaluationReport(evaluations []prompt_evaluator.Evaluation, s
 
 	max_possible_score := 10
 	avg_score := score_sum / float64(len(scores))
-	fmt.Println(score_sum)
 
 	tmpl, err := template.ParseFiles("template.html")
 	if err != nil {
