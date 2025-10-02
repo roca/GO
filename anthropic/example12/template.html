@@ -140,8 +140,8 @@
         {{range .Evaluations}}
         <tr>
           <td>{{.Idea}}</td>
-          <td class="prompt-inputs">{prompt_inputs_html}</td>
-          <td class="criteria">• {criteria_string}</td>
+          <td class="prompt-inputs">{{mapJoin .TestCase.PromptInputs}}</td>
+          <td class="criteria">{{join "<br />" .TestCase.SolutionCriteria}}</td>
           <td class="output"><pre>{{.Output}}</pre></td>
           <td class="score-col">
             <span class="score {score_class}">{{.Score}}</span>
