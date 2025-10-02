@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sort"
+	"strings"
 	"text/template"
 )
 
@@ -65,6 +67,7 @@ func main() {
 
 		evaluation.Idea = idea
 		evaluation.Output = output
+		evaluation.TestCase = test_case
 
 		evaluations = append(evaluations, evaluation)
 
@@ -89,6 +92,39 @@ func generatePromptEvaluationReport(evaluations []prompt_evaluator.Evaluation, s
 	}
 	defer outputFile.Close() // Ensure the file is closed
 
+	join := func(sep string, s []string) string {
+		var s2 []string
+		for _, str := range s {
+			s2 = append(s2, fmt.Sprintf("<li>%s</li>", str))
+		}
+		return strings.Join(s2, sep)
+	}
+
+	mapJoin := func(m map[string]any) string {
+		var s []string
+		var unit string
+
+		keys := make([]string, 0, len(m))
+		for k := range m {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+
+		for _, k := range keys {
+			switch k {
+			case "weight":
+				unit = "kg"
+			case "height":
+				unit = "cm"
+			default:
+				unit = ""
+			}
+			s = append(s, fmt.Sprintf("<li><strong>%s:</strong> %v %s</li>", k, m[k], unit))
+		}
+
+		return strings.Join(s, "")
+	}
+
 	var score_sum float64
 
 	total_tests := len(evaluations)
@@ -100,7 +136,10 @@ func generatePromptEvaluationReport(evaluations []prompt_evaluator.Evaluation, s
 	max_possible_score := 10
 	avg_score := (score_sum / float64(len(scores))) / float64(max_possible_score) * 100
 
-	tmpl, err := template.ParseFiles("template.html")
+	tmpl, err := template.New("template.html").Funcs(template.FuncMap{
+		"join":    join,
+		"mapJoin": mapJoin,
+	}).ParseFiles("template.html")
 	if err != nil {
 		return err
 	}

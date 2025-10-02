@@ -116,7 +116,7 @@
         </div>
         <div class="stat-box">
           <div>Average Score</div>
-          <div class="stat-value">46.67%</div>
+          <div class="stat-value">36.67%</div>
         </div>
         <div class="stat-box">
           <div>Pass Rate (≥7)</div>
@@ -139,189 +139,211 @@
       <tbody>
         
         <tr>
-          <td>Edge Case: Extreme Athlete Profile - Testing a professional mountain climber with severe gluten and dairy allergies, requiring high calorie dense nutrition at high altitude</td>
-          <td class="prompt-inputs">{prompt_inputs_html}</td>
-          <td class="criteria">• {criteria_string}</td>
-          <td class="output"><pre>Nutritional Strategy for High-Altitude Mountain Climbing Performance
+          <td>Test an extreme body type scenario with a very tall powerlifter having significant muscle mass and specific protein requirements</td>
+          <td class="prompt-inputs"><li><strong>goal:</strong> Muscle maintenance and strength optimization for competitive powerlifting </li><li><strong>height:</strong> 203 cm</li><li><strong>restrictions:</strong> High protein requirement, lactose intolerant </li><li><strong>weight:</strong> 145 kg</li></td>
+          <td class="criteria"><li>Provide minimum 250g protein intake</li><br /><li>Ensure 4000-4500 total daily calories</li><br /><li>Balance macronutrients for powerlifting performance</li><br /><li>Accommodate lactose intolerance</li></td>
+          <td class="output"><pre>Nutrition Plan for Competitive Powerlifter:
 
-Calorie Profile:
-- Total Daily Calories: 4200-4500 calories
-- Macronutrient Breakdown:
-  * Carbohydrates: 55% (575g)
-  * Protein: 25% (260g)
-  * Healthy Fats: 20% (93g)
+Macronutrient Breakdown:
+- Protein: 300g (1200 calories)
+- Carbohydrates: 450g (1800 calories)
+- Fats: 110g (990 calories)
+Total Calories: 4,000
 
-Meal Plan Components:
+Protein Sources (Lactose-Free):
+- Chicken breast (8 oz, 3x daily)
+- Lean beef (8 oz, 2x daily)
+- Turkey (6 oz)
+- Egg whites (6-8 eggs daily)
+- Plant-based protein isolate (2 shakes)
+- Salmon (6 oz)
+- Lean ground turkey
 
-Breakfast (1000 calories):
-- Quinoa porridge with almond milk
-- Chia seed and hemp protein blend
-- Dried fruits (goji berries, dates)
-- Coconut oil
-- Almond butter
-- Gluten-free oats
+Carbohydrate Sources:
+- Sweet potatoes
+- Brown rice
+- Quinoa
+- Oats (gluten-free)
+- Fruits (bananas, berries)
 
-Mid-Morning Snack (500 calories):
-- Rice protein smoothie
-- Banana
-- Coconut water
-- Spirulina powder
-- Pumpkin seeds
-
-Lunch (1000 calories):
-- Grilled wild salmon
-- Sweet potato
-- Roasted vegetables
+Healthy Fat Sources:
 - Avocado
 - Olive oil
-- Quinoa
+- Almonds
+- Chia seeds
+- Salmon
+- Coconut oil
 
-Afternoon Snack (500 calories):
-- Gluten-free energy bars
-- Nuts (almonds, walnuts)
-- Dried mango
-- Electrolyte supplement
+Lactose-Free Alternatives:
+- Almond milk protein shakes
+- Coconut yogurt
+- Lactase enzyme supplements
+- Dairy-free protein powders
 
-Dinner (1000 calories):
-- Grass-fed lean beef
-- Brown rice
-- Steamed green vegetables
-- Coconut amino acids
-- Turmeric
-- Ginger
+Meal Timing:
+- 6 meals per day
+- Protein distributed evenly
+- Pre and post-workout nutrition focused
 
-Key Nutritional Considerations:
-- High-altitude adaptation supplements
-- Electrolyte balance
-- Anti-inflammatory ingredients
-- Easily digestible proteins
-- Complex carbohydrates
-- Omega-3 rich foods
+Supplements:
+- Creatine monohydrate
+- Multivitamin
+- Omega-3 fish oil
 
-Hydration: 4-5 liters water daily</pre></td>
+Hydration: 
+- 1 gallon water daily</pre></td>
           <td class="score-col">
             <span class="score {score_class}">3</span>
           </td>
-          <td class="reasoning">While the solution provides a robust nutritional strategy, it fails to directly address the original task requirements of creating a personalized 1-day meal plan. The solution appears generic and not tailored to a specific athlete's characteristics. The meal plan lacks direct connection to the input parameters of height, weight, and specific athletic goal.</td>
+          <td class="reasoning">While the solution provides a robust nutritional framework for a powerlifter, it fails to address the core requirement of creating a personalized meal plan based on the specific athlete's height, weight, and goal. The solution is generic and does not demonstrate adaptive nutritional planning. The lack of individualization prevents this from being a truly effective athlete nutrition strategy.</td>
         </tr>
         
         <tr>
-          <td>Niche Sport Scenario: Precision Testing for a rhythmic gymnast with strict vegan restrictions and low body weight, needing precise macro-nutrient balance</td>
-          <td class="prompt-inputs">{prompt_inputs_html}</td>
-          <td class="criteria">• {criteria_string}</td>
-          <td class="output"><pre>Nutritional Profile Analysis:
-- Height: 165 cm
-- Weight: 48 kg
-- Sport: Rhythmic Gymnastics
-- Calorie Needs: Approximately 1800-2000 calories/day
-- Macronutrient Target: 
-  • Protein: 1.6-2.0g per kg body weight (75-96g)
-  • Carbs: 45-55% of total calories
-  • Healthy Fats: 25-30% of total calories
+          <td>Test a multi-restriction diet case with an athlete who has multiple dietary constraints like vegan, gluten-free, and nut allergies</td>
+          <td class="prompt-inputs"><li><strong>goal:</strong> muscle maintenance during training </li><li><strong>height:</strong> 175 cm</li><li><strong>restrictions:</strong> vegan, gluten-free, nut allergy </li><li><strong>weight:</strong> 72 kg</li></td>
+          <td class="criteria"><li>Provide 2000-2500 calorie meal plan</li><br /><li>Ensure complete protein sources for vegan diet</li><br /><li>Exclude gluten and nuts from all meals</li><br /><li>Support athlete's training energy requirements</li></td>
+          <td class="output"><pre>Personalized Vegan, Gluten-Free Meal Plan for Muscle Maintenance
 
-Vegan Performance-Optimized Meal Plan:
+Daily Calorie Target: 2300 calories
+Macronutrient Breakdown:
+- Protein: 138g (20-25%)
+- Carbohydrates: 288g (50-55%)
+- Fats: 77g (25-30%)
+
+Protein Sources:
+- Tofu
+- Tempeh
+- Quinoa
+- Pea protein
+- Seitan (if gluten-free variety)
+- Lentils
+- Hemp seeds
+
+Sample Daily Meal Plan:
+
+Breakfast (600 calories):
+- Tofu scramble with spinach
+- Quinoa porridge
+- Chia seed pudding
+- Gluten-free oats
+- Pea protein smoothie with berries
+
+Mid-Morning Snack (300 calories):
+- Roasted edamame
+- Gluten-free rice cakes
+- Seed-based protein bar
+
+Lunch (550 calories):
+- Lentil and vegetable stir-fry
+- Quinoa base
+- Tempeh protein
+- Seed sprinkle
+
+Afternoon Snack (300 calories):
+- Protein shake
+- Roasted chickpeas
+- Fresh fruits
+
+Dinner (550 calories):
+- Grilled tofu
+- Sweet potato
+- Steamed vegetables
+- Hemp seed garnish
+
+Key Considerations:
+- Gluten-free certified products
+- No nut-based ingredients
+- Complete amino acid profile
+- High-energy density for training</pre></td>
+          <td class="score-col">
+            <span class="score {score_class}">3</span>
+          </td>
+          <td class="reasoning">While the solution provides a structured meal plan with good nutritional principles, it fails to address the core requirement of personalizing the plan to the specific athlete's metrics. The input parameters of height, weight, and goal were not utilized, making the solution generic rather than truly personalized.</td>
+        </tr>
+        
+        <tr>
+          <td>Test a weight loss goal scenario for a smaller endurance athlete with specific macronutrient balance and caloric deficit needs</td>
+          <td class="prompt-inputs"><li><strong>goal:</strong> weight loss and endurance performance optimization </li><li><strong>height:</strong> 165 cm</li><li><strong>restrictions:</strong> vegetarian, lactose intolerant </li><li><strong>weight:</strong> 58 kg</li></td>
+          <td class="criteria"><li>Provide a 1-day meal plan under 1800 calories</li><br /><li>Maintain protein intake of 1.6-2.0g per kg of body weight</li><br /><li>Include balanced macronutrient distribution for endurance athlete</li><br /><li>Respect vegetarian and lactose-free dietary constraints</li></td>
+          <td class="output"><pre>Let's break this down systematically:
+
+1. Nutritional Calculations:
+- Body Weight: 58 kg
+- Protein Requirement: 1.8g/kg = 104.4g protein/day
+- Calorie Target: 1800 calories
+- Macronutrient Distribution: 
+  * Protein: 30% (135g)
+  * Carbs: 45% (203g)
+  * Fats: 25% (50g)
+
+Meal Plan:
 
 Breakfast (450 calories):
-- Tofu scramble with spinach and nutritional yeast
-- Chia seed pudding with almond milk
-- Mixed berries
-- Protein: Silken tofu (15g)
-- Complex carbs from chia seeds
+- Tofu scramble with spinach
+- Quinoa
+- Chia seed pudding (made with almond milk)
+- 1 banana
+- Protein: 25g
+- Carbs: 50g
+- Healthy fats: 15g
 
-Mid-Morning Snack (200 calories):
-- Protein smoothie
-  • Pea protein powder
-  • Banana
-  • Almond butter
-  • Spinach
+Mid-Morning Snack (250 calories):
+- Plant-based protein smoothie
+- Mixed berries
+- Almond butter
+- Protein: 20g
+- Carbs: 30g
+- Fats: 10g
 
 Lunch (500 calories):
-- Quinoa and black bean bowl
-- Roasted vegetables
-- Tahini dressing
-- Protein: Quinoa and black beans (20g)
-- High nutrient density
+- Lentil and vegetable Buddha bowl
+- Roasted tempeh
+- Mixed greens
+- Olive oil dressing
+- Protein: 30g
+- Carbs: 60g
+- Fats: 15g
 
 Afternoon Snack (250 calories):
 - Edamame
-- Raw almonds
+- Hummus
 - Carrot sticks
+- Pumpkin seeds
+- Protein: 15g
+- Carbs: 25g
+- Fats: 10g
 
-Dinner (400 calories):
-- Lentil and vegetable stir-fry
-- Tempeh protein
-- Cauliflower rice
-- Protein: Lentils and tempeh (25g)
+Dinner (350 calories):
+- Grilled portobello mushroom
+- Quinoa
+- Roasted vegetables
+- Nutritional yeast
+- Protein: 20g
+- Carbs: 40g
+- Fats: 10g
 
-Key Nutritional Considerations:
-- Complete plant-based protein sources
-- B12 supplementation recommended
-- Iron-rich foods
-- Anti-inflammatory ingredients
-- Low processed food content
+Total Daily Intake:
+- Calories: 1800
+- Protein: 110g (meets 1.6-2.0g/kg requirement)
+- Carbs: 205g
+- Fats: 60g
 
-Estimated Nutrition Profile:
-- Total Calories: 1800
-- Protein: 85g
-- Carbs: 210g
-- Healthy Fats: 55g
+Key Considerations:
+- 100% Vegetarian
+- Lactose-free
+- High protein for muscle recovery
+- Complex carbohydrates for endurance
+- Balanced micronutrient profile
 
-Supplements to Consider:
-- Vegan B12
-- Algae-based Omega-3
-- Vitamin D
-- Iron supplement</pre></td>
+Recommendations:
+- Supplement with B12
+- Consider plant-based protein powder
+- Stay hydrated
+- Adjust portions based on training intensity</pre></td>
           <td class="score-col">
-            <span class="score {score_class}">7</span>
+            <span class="score {score_class}">5</span>
           </td>
-          <td class="reasoning">The solution provides a well-structured, nutritionally balanced meal plan for a vegan athlete in rhythmic gymnastics. It demonstrates careful consideration of macronutrient ratios, calorie needs, and protein sources. However, the solution does not explicitly address the athlete's specific performance goal, which was part of the original input requirements. The meal plan is technically sound but lacks direct alignment with a potential performance objective.</td>
-        </tr>
-        
-        <tr>
-          <td>Performance Challenge: Testing meal plan for a heavyweight powerlifter with type-2 diabetes and significant muscle gain goals, requiring careful carbohydrate and protein management</td>
-          <td class="prompt-inputs">{prompt_inputs_html}</td>
-          <td class="criteria">• {criteria_string}</td>
-          <td class="output"><pre>Nutrition Profile Analysis and Recommended Meal Plan:
-
-Nutritional Calculation:
-- Basal Metabolic Rate (BMR): ~2000-2200 calories
-- Activity & Muscle Gain Adjustment: +800-1300 calories
-- Total Daily Caloric Need: 3000-3500 calories ✓
-
-Macronutrient Breakdown:
-1. Protein: 250g (33.3%) 
-   - Lean proteins: Chicken, turkey, fish, lean beef
-   - Supports muscle growth
-   - Helps manage insulin response
-
-2. Carbohydrates: 75-100g (10%) 
-   - Low glycemic index sources
-   - Vegetables: Spinach, broccoli, cauliflower
-   - Limited whole grains: Quinoa, sweet potato
-   - Controlled to manage diabetes
-
-3. Fats: 120-150g (35-40%)
-   - Healthy sources: Avocado, nuts, olive oil
-   - Supports hormone production
-   - Stabilizes blood sugar
-
-Sample Daily Meal Plan:
-- Breakfast: Egg white omelet, spinach, salmon
-- Mid-Morning: Protein shake, almonds
-- Lunch: Grilled chicken, quinoa, mixed vegetables
-- Post-Workout: Whey protein, berries
-- Dinner: Lean beef, roasted vegetables
-- Evening: Greek yogurt, chia seeds
-
-Recommended Supplements:
-- Omega-3
-- Chromium
-- Magnesium
-- Vitamin D</pre></td>
-          <td class="score-col">
-            <span class="score {score_class}">4</span>
-          </td>
-          <td class="reasoning">While the solution provides a solid nutritional framework, it fails to leverage the specific input parameters of height, weight, and athlete goal. The meal plan appears generic and not tailored to an individual athlete's precise needs. The solution demonstrates nutritional knowledge but lacks the required personalization specified in the original task description.</td>
+          <td class="reasoning">The solution provides a structured meal plan with solid nutritional calculations, but fails to directly address the specific inputs of athlete's goal, height, and potential dietary restrictions. While technically comprehensive, it doesn't demonstrate adaptive planning based on the provided input parameters.</td>
         </tr>
         
       </tbody>

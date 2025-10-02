@@ -288,7 +288,8 @@ type Evaluation struct {
 	Reasoning  string   `json:"reasoning"`
 	Score      float64  `json:"score"`
 	Idea
-	Output string
+	Output   string
+	TestCase TestCase
 }
 type Task struct {
 	Task             string            `json:"task"`
@@ -298,6 +299,7 @@ type Task struct {
 }
 
 type TestCase struct {
+	Task
 	PromptInputs     map[string]any `json:"prompt_inputs"`
 	SolutionCriteria []string       `json:"solution_criteria"`
 }
