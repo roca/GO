@@ -27,7 +27,7 @@ type Idea string
 type PromptEvaluator struct {
 }
 
-func (pe *PromptEvaluator) RunTestCase(test_case TestCase) string {
+func (pe *PromptEvaluator) RunTestCase(test_case TestCase) (string, string) {
 	prompt := fmt.Sprintf(`
 	Generate a one-day meal plan for an athlete that meets their dietary restrictions.
 
@@ -72,7 +72,7 @@ func (pe *PromptEvaluator) RunTestCase(test_case TestCase) string {
 		log.Fatalf("Chat error: %v", err)
 	}
 
-	return text
+	return prompt, text
 }
 
 func (pe *PromptEvaluator) GenerateTestCase(
@@ -298,6 +298,7 @@ type Evaluation struct {
 	Idea
 	Output   string
 	TestCase TestCase
+	Prompt   string
 }
 type Task struct {
 	Task             string            `json:"task"`
