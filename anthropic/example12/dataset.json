@@ -1,6 +1,8 @@
 
 [
-    "Test an extreme body type scenario with a very tall powerlifter having significant muscle mass and specific protein requirements",
-    "Test a multi-restriction diet case with an athlete who has multiple dietary constraints like vegan, gluten-free, and nut allergies",
-    "Test a weight loss goal scenario for a smaller endurance athlete with specific macronutrient balance and caloric deficit needs"
+    "Edge Case: Extreme Athlete Physique - Test prompt with a very tall (200cm) and heavy (120kg) powerlifter seeking muscle gain, with no dietary restrictions, to verify balanced nutritional planning",
+    
+    "Specialized Scenario: High-Performance Vegan Athlete - Test prompt with a medium-height gymnast (170cm, 65kg) who is vegan and aims for lean muscle maintenance, checking nutritional diversity and protein sources",
+    
+    "Medical Challenge: Athlete with Complex Dietary Needs - Test prompt with a shorter (160cm) endurance runner weighing 55kg, requiring gluten-free and low-FODMAP meal plan for optimal training performance, assessing adaptability to strict dietary constraints"
 ]

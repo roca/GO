@@ -29,12 +29,20 @@ type PromptEvaluator struct {
 
 func (pe *PromptEvaluator) RunTestCase(test_case TestCase) string {
 	prompt := fmt.Sprintf(`
-	What should this person eat?
+	Generate a one-day meal plan for an athlete that meets their dietary restrictions.
 
 	- Height: %s
 	- Weight: %s
 	- Goal: %s
 	- Dietary restrictions: %s
+
+	Guidelines:
+	1. Include accurate daily calorie amount
+	2. Show protein, fat, and carb amouts
+	3. Specify when to eat each meal
+	4. Use only foods that fit restrictions
+	5. List all portioin sizes in graams
+	6. Keep budget-frendly if mentioned
 
   Solution Criteria: 
 

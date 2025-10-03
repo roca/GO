@@ -129,9 +129,14 @@ func generatePromptEvaluationReport(evaluations []prompt_evaluator.Evaluation, s
 
 	total_tests := len(evaluations)
 
+	sum_passed := 0
 	for _, score := range scores {
 		score_sum = score_sum + float64(score)
+		if score >= 7.0 {
+			sum_passed = sum_passed + 1
+		}
 	}
+	pass_rate := float64(sum_passed) / float64(total_tests) * 100
 
 	max_possible_score := 10
 	avg_score := (score_sum / float64(len(scores))) / float64(max_possible_score) * 100
@@ -148,11 +153,13 @@ func generatePromptEvaluationReport(evaluations []prompt_evaluator.Evaluation, s
 		TotalTests       int
 		AvgScore         float64
 		MaxPossibleScore int
+		PassRate         float64
 		Evaluations      []prompt_evaluator.Evaluation
 	}{
 		TotalTests:       total_tests,
 		AvgScore:         avg_score,
 		MaxPossibleScore: max_possible_score,
+		PassRate:         pass_rate,
 		Evaluations:      evaluations,
 	}
 
