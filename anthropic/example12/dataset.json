@@ -1,8 +1,6 @@
 
 [
-    "Edge Case: Extreme Athlete Physique - Test prompt with a very tall (200cm) and heavy (120kg) powerlifter seeking muscle gain, with no dietary restrictions, to verify balanced nutritional planning",
-    
-    "Specialized Scenario: High-Performance Vegan Athlete - Test prompt with a medium-height gymnast (170cm, 65kg) who is vegan and aims for lean muscle maintenance, checking nutritional diversity and protein sources",
-    
-    "Medical Challenge: Athlete with Complex Dietary Needs - Test prompt with a shorter (160cm) endurance runner weighing 55kg, requiring gluten-free and low-FODMAP meal plan for optimal training performance, assessing adaptability to strict dietary constraints"
+    "Edge case: Extreme athlete profile with high-performance endurance training goal, very tall (205 cm) and heavyweight (130 kg), requiring high-calorie vegan meal plan",
+    "Minimalist scenario: Amateur athlete with strict gluten-free and low-carb restrictions, moderate height (170 cm), and weight loss goal, focusing on protein-rich alternatives",
+    "Complex metabolic scenario: Paralympic athlete with limited mobility, shorter stature (155 cm), lower weight (60 kg), requiring adaptive nutritional plan targeting muscle maintenance and recovery"
 ]

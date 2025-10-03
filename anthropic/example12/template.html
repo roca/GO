@@ -125,23 +125,29 @@
       </div>
     </div>
 
-    <table>
+    <table style="width: 100%">
       <thead>
         <tr>
-          <th>Scenario</th>
-          <th>Prompt Inputs</th>
-          <th>Solution Criteria</th>
-          <th>Output</th>
-          <th>Score</th>
-          <th>Reasoning</th>
+          <th style="width: 20%">Scenario</th>
+          <th style="width: 25%">Prompt</th>
+          <!-- 
+            <th>Prompt Inputs</th>
+            <th>Solution Criteria</th>
+          -->
+          <th style="width: 25%">Output</th>
+          <th style="width: 5%">Score</th>
+          <th style="width: 25%">Reasoning</th>
         </tr>
       </thead>
       <tbody>
         {{range .Evaluations}}
         <tr>
           <td>{{.Idea}}</td>
-          <td class="prompt-inputs">{{mapJoin .TestCase.PromptInputs}}</td>
-          <td class="criteria">{{join "<br />" .TestCase.SolutionCriteria}}</td>
+          <td>{{replace .Prompt "\n" "<br />" }}</td>
+          <!-- 
+            <td class="prompt-inputs">{{mapJoin .TestCase.PromptInputs}}</td>
+            <td class="criteria">{{join "<br />" .TestCase.SolutionCriteria}}</td>
+          -->
           <td class="output"><pre>{{.Output}}</pre></td>
           <td class="score-col">
             <span class="score {score_class}">{{.Score}}</span>

@@ -57,7 +57,7 @@ func main() {
 
 		fmt.Println(string(bytes))
 
-		output := evaluator.RunTestCase(test_case)
+		prompt, output := evaluator.RunTestCase(test_case)
 		fmt.Printf("Test Result:\n%s\n", output)
 
 		evaluation, err := evaluator.GradeOutput(task, output, "")
@@ -68,6 +68,7 @@ func main() {
 		evaluation.Idea = idea
 		evaluation.Output = output
 		evaluation.TestCase = test_case
+		evaluation.Prompt = prompt
 
 		evaluations = append(evaluations, evaluation)
 
@@ -98,6 +99,10 @@ func generatePromptEvaluationReport(evaluations []prompt_evaluator.Evaluation, s
 			s2 = append(s2, fmt.Sprintf("<li>%s</li>", str))
 		}
 		return strings.Join(s2, sep)
+	}
+
+	replace := func(input, from, to string) string {
+		return strings.ReplaceAll(input, from, to)
 	}
 
 	mapJoin := func(m map[string]any) string {
@@ -144,6 +149,7 @@ func generatePromptEvaluationReport(evaluations []prompt_evaluator.Evaluation, s
 	tmpl, err := template.New("template.html").Funcs(template.FuncMap{
 		"join":    join,
 		"mapJoin": mapJoin,
+		"replace": replace,
 	}).ParseFiles("template.html")
 	if err != nil {
 		return err
