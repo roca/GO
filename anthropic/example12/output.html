@@ -116,11 +116,11 @@
         </div>
         <div class="stat-box">
           <div>Average Score</div>
-          <div class="stat-value">76.67%</div>
+          <div class="stat-value">53.33%</div>
         </div>
         <div class="stat-box">
           <div>Pass Rate (≥7)</div>
-          <div class="stat-value">100.00%</div>
+          <div class="stat-value">0.00%</div>
         </div>
       </div>
     </div>
@@ -142,293 +142,272 @@
       <tbody>
         
         <tr>
-          <td>Edge case: Extreme athlete profile with high-performance endurance training goal, very tall (205 cm) and heavyweight (130 kg), requiring high-calorie vegan meal plan</td>
-          <td><br />	Generate a one-day meal plan for an athlete that meets their dietary restrictions.<br /><br />	- Height: 205<br />	- Weight: 130<br />	- Goal: High-performance endurance training with vegan nutrition optimization<br />	- Dietary restrictions: Vegan diet, high-calorie requirements, no animal products<br /><br />	Guidelines:<br />	1. Include accurate daily calorie amount<br />	2. Show protein, fat, and carb amouts<br />	3. Specify when to eat each meal<br />	4. Use only foods that fit restrictions<br />	5. List all portioin sizes in graams<br />	6. Keep budget-frendly if mentioned<br /><br />  Solution Criteria: <br /><br />	Provide 4000-5000 daily calorie meal plan.<br />	Ensure complete protein coverage from plant sources.<br />	Balance macronutrients for endurance training recovery.<br />	Meet nutritional needs without animal products<br />	</td>
+          <td>Edge case testing with extreme body measurements: Very tall (215 cm) and very light (50 kg) athlete with strict vegan restrictions and muscle gain goal</td>
+          <td>Generate a one-day meal plan for an athlete that meets their dietary restrictions.<br /><br />	<athlete_information><br />	- Height: 215<br />	- Weight: 50<br />	- Goal: Muscle Gain<br />	- Dietary restrictions: Vegan<br />	</athlete_information><br /><br />	Guidelines:<br />	1. Include accurate daily calorie amount<br />	2. Show protein, fat, and carb amouts<br />	3. Specify when to eat each meal<br />	4. Use only foods that fit restrictions<br />	5. List all portioin sizes in graams<br />	6. Keep budget-frendly if mentioned<br /><br />  Solution Criteria: <br /><br />	Provide a 1-day meal plan meeting vegan protein requirements.<br />	Ensure total caloric intake supports muscle gain for underweight athlete.<br />	Include protein sources compatible with vegan diet.<br />	Balance macronutrients for muscle development<br />	</td>
           <!-- 
-            <td class="prompt-inputs"><li><strong>goal:</strong> High-performance endurance training with vegan nutrition optimization </li><li><strong>height:</strong> 205 cm</li><li><strong>restrictions:</strong> Vegan diet, high-calorie requirements, no animal products </li><li><strong>weight:</strong> 130 kg</li></td>
-            <td class="criteria"><li>Provide 4000-5000 daily calorie meal plan</li><br /><li>Ensure complete protein coverage from plant sources</li><br /><li>Balance macronutrients for endurance training recovery</li><br /><li>Meet nutritional needs without animal products</li></td>
+            <td class="prompt-inputs"><li><strong>goal:</strong> Muscle Gain </li><li><strong>height:</strong> 215 cm</li><li><strong>restrictions:</strong> Vegan </li><li><strong>weight:</strong> 50 kg</li></td>
+            <td class="criteria"><li>Provide a 1-day meal plan meeting vegan protein requirements</li><br /><li>Ensure total caloric intake supports muscle gain for underweight athlete</li><br /><li>Include protein sources compatible with vegan diet</li><br /><li>Balance macronutrients for muscle development</li></td>
           -->
-          <td class="output"><pre>Vegan High-Performance Endurance Athlete Meal Plan
+          <td class="output"><pre>Athlete Meal Plan Analysis and Design:
 
-Athlete Profile:
-- Height: 205 cm
-- Weight: 130 kg
-- Daily Calorie Target: 4,500 calories
-- Macronutrient Breakdown:
-  - Protein: 25% (281g)
-  - Carbs: 55% (619g)
-  - Fat: 20% (100g)
+Preliminary Calculations:
+- Basal Metabolic Rate (BMR): Approximately 1,600 calories
+- Muscle Gain Calorie Surplus: +500 calories
+- Total Daily Calories: 2,100 calories
+- Macronutrient Target:
+  * Protein: 120g (25-30%)
+  * Carbs: 270g (50-55%)
+  * Fats: 70g (20-25%)
 
-Meal Plan:
+DETAILED MEAL PLAN:
 
-🌅 Pre-Morning Training (6:00 AM)
-- Protein Smoothie:
-  - 100g plant-based protein powder (pea/hemp blend)
-  - 200g banana
-  - 50g spinach
-  - 30g chia seeds
-  - 250ml almond milk
-Calories: 650
-Protein: 55g, Carbs: 70g, Fat: 22g
+🌅 Breakfast (7:00 AM)
+- Tofu Scramble
+  * Firm tofu (200g)
+  * Spinach (100g)
+  * Nutritional yeast (20g)
+- Chia seed pudding (150g)
+Calories: 550
+Protein: 35g
 
-🍳 Post-Training Breakfast (8:30 AM)
-- Tofu Scramble:
-  - 250g extra-firm tofu
-  - 100g mixed vegetables
-  - 50g nutritional yeast
-- 100g quinoa
-- 50g avocado
-Calories: 800
-Protein: 60g, Carbs: 90g, Fat: 35g
+🥗 Mid-Morning Snack (10:00 AM)
+- Vegan protein smoothie
+  * Pea protein powder (30g)
+  * Banana (100g)
+  * Almond milk (250ml)
+  * Almond butter (15g)
+Calories: 350
+Protein: 25g
 
-🥗 Mid-Morning Meal (11:00 AM)
-- Lentil and Grain Power Bowl:
-  - 200g cooked lentils
-  - 100g brown rice
-  - 100g roasted sweet potato
-  - 50g mixed nuts
-  - Tahini dressing
-Calories: 750
-Protein: 45g, Carbs: 110g, Fat: 25g
-
-🍽️ Lunch (2:00 PM)
-- Tempeh and Vegetable Stir-Fry:
-  - 250g tempeh
-  - 150g mixed vegetables
-  - 100g brown rice
-  - Soy-ginger sauce
-- 50g hemp seeds
-Calories: 850
-Protein: 65g, Carbs: 100g, Fat: 35g
-
-🥜 Afternoon Snack (4:30 PM)
-- Protein Energy Balls:
-  - 100g dates
-  - 50g plant protein powder
-  - 50g almond butter
-  - 30g pumpkin seeds
+🍲 Lunch (1:00 PM)
+- Quinoa black bean bowl
+  * Quinoa (150g)
+  * Black beans (150g)
+  * Roasted vegetables (200g)
+  * Tahini dressing (30g)
 Calories: 500
-Protein: 30g, Carbs: 60g, Fat: 25g
+Protein: 25g
 
-🍲 Dinner (7:00 PM)
-- Black Bean and Quinoa Protein Bowl:
-  - 250g black beans
-  - 150g quinoa
-  - 100g roasted vegetables
-  - Nutritional yeast
-  - Pumpkin seed topping
-Calories: 650
-Protein: 55g, Carbs: 110g, Fat: 20g
+🥜 Afternoon Snack (4:00 PM)
+- Edamame (150g)
+- Mixed nuts (50g)
+Calories: 250
+Protein: 15g
 
-🌙 Evening Protein Shake (9:30 PM)
-- Recovery Shake:
-  - 100g vegan protein powder
-  - 200ml oat milk
-  - 50g mixed berries
-  - 30g flaxseeds
-Calories: 300
-Protein: 40g, Carbs: 30g, Fat: 15g
-
-Total Daily Intake:
-- Calories: 4,500
-- Protein: 350g
-- Carbs: 570g
-- Fat: 177g
-
-Key Nutritional Strategies:
-- Complete plant-based protein sources
-- High complex carbohydrate intake
-- Balanced essential fatty acids
-- Nutrient-dense whole foods
-- Supports endurance training recovery
-
-Hydration Recommendation:
-- 4-5 liters of water throughout the day
-- Electrolyte supplementation
-
-Budget-Friendly Tips:
-- Buy bulk legumes, grains
-- Seasonal vegetable selection
-- Affordable protein sources: lentils, beans, tofu</pre></td>
-          <td class="score-col">
-            <span class="score {score_class}">8</span>
-          </td>
-          <td class="reasoning">The solution provides an extremely thorough vegan meal plan with meticulous nutritional breakdown. It addresses caloric and macronutrient needs for a large athlete, offering strategic meal timing and diverse plant-based protein sources. While comprehensive, the solution could benefit from more context about the specific athletic goal and potential individual dietary constraints.</td>
-        </tr>
-        
-        <tr>
-          <td>Minimalist scenario: Amateur athlete with strict gluten-free and low-carb restrictions, moderate height (170 cm), and weight loss goal, focusing on protein-rich alternatives</td>
-          <td><br />	Generate a one-day meal plan for an athlete that meets their dietary restrictions.<br /><br />	- Height: 170<br />	- Weight: 72<br />	- Goal: weight loss<br />	- Dietary restrictions: gluten-free, low-carb<br /><br />	Guidelines:<br />	1. Include accurate daily calorie amount<br />	2. Show protein, fat, and carb amouts<br />	3. Specify when to eat each meal<br />	4. Use only foods that fit restrictions<br />	5. List all portioin sizes in graams<br />	6. Keep budget-frendly if mentioned<br /><br />  Solution Criteria: <br /><br />	Provide a complete 1-day meal plan.<br />	Ensure gluten-free ingredients.<br />	Maintain low-carbohydrate profile.<br />	Prioritize protein-rich meal options<br />	</td>
-          <!-- 
-            <td class="prompt-inputs"><li><strong>goal:</strong> weight loss </li><li><strong>height:</strong> 170 cm</li><li><strong>restrictions:</strong> gluten-free, low-carb </li><li><strong>weight:</strong> 72 kg</li></td>
-            <td class="criteria"><li>Provide a complete 1-day meal plan</li><br /><li>Ensure gluten-free ingredients</li><br /><li>Maintain low-carbohydrate profile</li><br /><li>Prioritize protein-rich meal options</li></td>
-          -->
-          <td class="output"><pre>Athlete Meal Plan Analysis and Design
-
-Calorie Calculation:
-- Basal Metabolic Rate (BMR): ~1,700 calories
-- Weight Loss Goal: 10-15% calorie deficit
-- Daily Target: 1,450-1,550 calories
-- Macronutrient Split:
-  * Protein: 30% (110-120g)
-  * Fat: 40% (65-70g)
-  * Carbs: 30% (110-120g)
-
-DAILY MEAL PLAN
-
-Breakfast (7:00 AM) - 350 calories
-- Spinach and Feta Egg Scramble
-  * 3 whole eggs (180g)
-  * Spinach (50g)
-  * Feta cheese (30g)
-  * Olive oil (10g)
-- Protein: 25g
-- Carbs: 3g
-- Fat: 28g
-
-Mid-Morning Snack (10:00 AM) - 200 calories
-- Almond and Chia Seed Mix
-  * Almonds (30g)
-  * Chia seeds (15g)
-- Protein: 8g
-- Carbs: 5g
-- Fat: 16g
-
-Lunch (12:30 PM) - 400 calories
-- Grilled Chicken Salad
-  * Chicken breast (120g)
-  * Mixed greens (80g)
-  * Cucumber (50g)
-  * Avocado (40g)
-  * Olive oil dressing (15g)
-- Protein: 35g
-- Carbs: 8g
-- Fat: 22g
-
-Afternoon Snack (3:30 PM) - 250 calories
-- Protein Smoothie
-  * Whey protein isolate (30g)
-  * Almond milk (200ml)
-  * Frozen berries (50g)
-- Protein: 25g
-- Carbs: 10g
-- Fat: 5g
-
-Dinner (6:30 PM) - 350 calories
-- Baked Salmon with Roasted Vegetables
-  * Salmon fillet (120g)
-  * Broccoli (100g)
-  * Cauliflower (100g)
-  * Coconut oil (10g)
-- Protein: 30g
-  * Carbs: 10g
-  * Fat: 20g
-
-Daily Totals:
-- Calories: 1,550
-- Protein: 123g
-- Carbs: 36g
-- Fat: 91g
+🍽️ Dinner (7:00 PM)
+- Tempeh stir-fry
+  * Tempeh (200g)
+  * Mixed vegetables (250g)
+  * Brown rice (150g)
+Calories: 450
+Protein: 30g
 
 Key Features:
-✓ Gluten-free
-✓ Low-carbohydrate
-✓ High-protein
-✓ Weight loss oriented
-✓ Balanced nutrition
+- 100% Vegan
+- High protein sources
+- Balanced macronutrients
+- Supports muscle gain
+- Budget-friendly ingredients
+
+Total Daily Intake:
+- Calories: 2,100
+- Protein: 130g
+- Carbs: 275g
+- Fats: 75g
 
 Recommendations:
-- Drink 3-4 liters of water daily
-- Take multivitamin supplement
+- Hydrate well
+- Consider vegan protein supplements
 - Adjust portions based on training intensity</pre></td>
           <td class="score-col">
-            <span class="score {score_class}">7</span>
+            <span class="score {score_class}">4</span>
           </td>
-          <td class="reasoning">The solution provides a well-structured, nutritionally sound meal plan with precise caloric and macronutrient targeting. However, the lack of specific athlete context means the plan is somewhat generic. While technically meeting the basic requirement of a 1-day meal plan, it doesn't demonstrate adaptive personalization based on the input parameters.</td>
+          <td class="reasoning">While the meal plan demonstrates nutritional expertise and provides a structured approach, it fails to incorporate the specific input parameters of height, weight, and athlete goal. The solution appears generic rather than tailored, which undermines its effectiveness as a personalized athlete nutrition plan.</td>
         </tr>
         
         <tr>
-          <td>Complex metabolic scenario: Paralympic athlete with limited mobility, shorter stature (155 cm), lower weight (60 kg), requiring adaptive nutritional plan targeting muscle maintenance and recovery</td>
-          <td><br />	Generate a one-day meal plan for an athlete that meets their dietary restrictions.<br /><br />	- Height: 155<br />	- Weight: 60<br />	- Goal: Muscle maintenance and performance optimization for Paralympic athlete<br />	- Dietary restrictions: Adaptive nutritional needs, limited mobility diet plan<br /><br />	Guidelines:<br />	1. Include accurate daily calorie amount<br />	2. Show protein, fat, and carb amouts<br />	3. Specify when to eat each meal<br />	4. Use only foods that fit restrictions<br />	5. List all portioin sizes in graams<br />	6. Keep budget-frendly if mentioned<br /><br />  Solution Criteria: <br /><br />	Provides full day meal plan with appropriate caloric density.<br />	Includes protein-rich meals supporting muscle recovery.<br />	Accommodates limited mobility metabolic requirements.<br />	Ensures nutritional balance for Paralympic athlete profile<br />	</td>
+          <td>High-performance scenario: Professional endurance athlete with multiple dietary allergies (gluten, dairy) seeking optimal nutritional balance for marathon training</td>
+          <td>Generate a one-day meal plan for an athlete that meets their dietary restrictions.<br /><br />	<athlete_information><br />	- Height: 178<br />	- Weight: 72<br />	- Goal: Marathon training nutritional optimization<br />	- Dietary restrictions: Gluten-free, dairy-free diet<br />	</athlete_information><br /><br />	Guidelines:<br />	1. Include accurate daily calorie amount<br />	2. Show protein, fat, and carb amouts<br />	3. Specify when to eat each meal<br />	4. Use only foods that fit restrictions<br />	5. List all portioin sizes in graams<br />	6. Keep budget-frendly if mentioned<br /><br />  Solution Criteria: <br /><br />	Provide 2000-2500 calorie meal plan.<br />	Ensure complete protein coverage without dairy/gluten.<br />	Include balanced macronutrient distribution for endurance training.<br />	Support high-energy athletic performance<br />	</td>
           <!-- 
-            <td class="prompt-inputs"><li><strong>goal:</strong> Muscle maintenance and performance optimization for Paralympic athlete </li><li><strong>height:</strong> 155 cm</li><li><strong>restrictions:</strong> Adaptive nutritional needs, limited mobility diet plan </li><li><strong>weight:</strong> 60 kg</li></td>
-            <td class="criteria"><li>Provides full day meal plan with appropriate caloric density</li><br /><li>Includes protein-rich meals supporting muscle recovery</li><br /><li>Accommodates limited mobility metabolic requirements</li><br /><li>Ensures nutritional balance for Paralympic athlete profile</li></td>
+            <td class="prompt-inputs"><li><strong>goal:</strong> Marathon training nutritional optimization </li><li><strong>height:</strong> 178 cm</li><li><strong>restrictions:</strong> Gluten-free, dairy-free diet </li><li><strong>weight:</strong> 72 kg</li></td>
+            <td class="criteria"><li>Provide 2000-2500 calorie meal plan</li><br /><li>Ensure complete protein coverage without dairy/gluten</li><br /><li>Include balanced macronutrient distribution for endurance training</li><br /><li>Support high-energy athletic performance</li></td>
           -->
-          <td class="output"><pre>Paralympic Athlete Nutrition Plan
+          <td class="output"><pre>Athlete Meal Plan for Marathon Training (Gluten-Free, Dairy-Free)
 
-Athlete Profile:
-- Height: 155 cm
-- Weight: 60 kg
-- Goal: Muscle Maintenance & Performance Optimization
+Calorie Calculation:
+- Base Metabolic Rate (BMR): Approximately 1,800 calories
+- Training Adjustment: +600-700 calories
+- Total Daily Calories: 2,400 calories
 
-Calculated Daily Nutritional Requirements:
-- Total Daily Calories: 2,400 kcal
-- Protein: 120g (20% of calories)
-- Carbohydrates: 300g (50% of calories)
-- Fats: 80g (30% of calories)
+Macronutrient Breakdown:
+- Protein: 120g (20%)
+- Carbohydrates: 360g (60%)
+- Fats: 80g (20%)
 
 Meal Plan:
 
-🍳 Breakfast (7:00 AM) - 600 kcal
-- Protein-fortified quinoa porridge (150g)
-- Greek yogurt, low-fat (100g)
-- Chia seeds (20g)
-- Blended soft fruits (50g)
-- Protein: 35g, Carbs: 65g, Fats: 15g
+6:00 AM - Pre-Morning Training Meal
+- Quinoa porridge (150g)
+- Almond milk (200ml)
+- Chia seeds (30g)
+- Banana (100g)
+Calories: 450
+Protein: 15g, Carbs: 65g, Fats: 18g
 
-🥗 Mid-Morning Snack (10:00 AM) - 300 kcal
-- Protein smoothie with:
-  - Whey protein isolate (30g)
-  - Banana (100g)
-  - Almond milk (200ml)
-- Protein: 25g, Carbs: 30g, Fats: 10g
+8:30 AM - Post-Training Breakfast
+- Scrambled eggs with spinach (3 eggs, 100g spinach)
+- Sweet potato hash (200g)
+- Avocado (100g)
+Calories: 550
+Protein: 25g, Carbs: 45g, Fats: 35g
 
-🍽️ Lunch (12:30 PM) - 650 kcal
-- Soft-cooked salmon (120g)
-- Mashed sweet potato (150g)
-- Steamed spinach (100g)
-- Olive oil drizzle (15ml)
-- Protein: 30g, Carbs: 70g, Fats: 25g
+12:00 PM - Lunch
+- Grilled chicken breast (200g)
+- Quinoa salad (150g)
+- Mixed vegetables (150g)
+- Olive oil dressing (30ml)
+Calories: 500
+Protein: 40g, Carbs: 50g, Fats: 20g
 
-🍎 Afternoon Snack (3:30 PM) - 250 kcal
-- Protein pudding (100g)
-- Mixed nuts, ground (30g)
-- Soft apple compote (50g)
-- Protein: 15g, Carbs: 25g, Fats: 15g
+3:30 PM - Pre-Afternoon Training Snack
+- Almond butter (30g)
+- Rice cakes (2 pieces)
+- Berries (100g)
+Calories: 300
+Protein: 10g, Carbs: 40g, Fats: 15g
 
-🍲 Dinner (6:30 PM) - 600 kcal
-- Tender chicken breast (150g)
-- Risotto with vegetables (200g)
-- Pureed broccoli (100g)
-- Protein: 35g, Carbs: 80g, Fats: 15g
+6:00 PM - Dinner
+- Salmon fillet (200g)
+- Roasted sweet potato (200g)
+- Steamed broccoli (150g)
+- Coconut oil (15ml)
+Calories: 500
+Protein: 35g, Carbs: 50g, Fats: 25g
 
-Special Considerations:
-- Soft, easily digestible textures
-- High protein content
-- Nutrient-dense ingredients
-- Adaptable for limited mobility
-- Budget-friendly whole food sources
+9:00 PM - Recovery Shake
+- Vegan protein powder (30g)
+- Coconut water (250ml)
+- Banana (100g)
+Calories: 250
+Protein: 25g, Carbs: 40g, Fats: 5g
 
 Hydration:
-- Water intake: 2-3 liters daily
-- Electrolyte supplementation recommended
+- Water intake: 3-4 liters throughout the day
+- Electrolyte supplement during long training sessions
 
-Nutritional Adaptations:
-- Protein powder for easy consumption
-- Soft-cooked proteins
-- Blended/pureed vegetables
-- Easily chewable ingredients
+Key Considerations:
+- All meals are gluten-free and dairy-free
+- Balanced macronutrient distribution
+- High-quality protein sources
+- Complex carbohydrates for sustained energy
+- Healthy fats for recovery and hormone balance
+
+Budget-Friendly Tips:
+- Buy proteins in bulk
+- Choose seasonal vegetables
+- Use frozen berries
+- Purchase store-brand alternatives
+
+Notes:
+- Adjust portion sizes based on individual metabolism
+- Consult nutritionist for personalized plan
+- Monitor energy levels and performance</pre></td>
+          <td class="score-col">
+            <span class="score {score_class}">6</span>
+          </td>
+          <td class="reasoning">The solution provides a structured meal plan with good nutritional balance, but fails to demonstrate direct customization based on the specific athlete's inputs. While comprehensive, it lacks the personalized precision implied by the original task description of creating a meal plan for a 'single athlete'.</td>
+        </tr>
+        
+        <tr>
+          <td>Metabolic diversity test: Athlete with unique metabolic condition (e.g., hypothyroidism) requiring specialized macro-nutrient distribution for weight management goal</td>
+          <td>Generate a one-day meal plan for an athlete that meets their dietary restrictions.<br /><br />	<athlete_information><br />	- Height: 175<br />	- Weight: 82<br />	- Goal: Weight stabilization and muscle preservation<br />	- Dietary restrictions: Hypothyroidism, low metabolic rate, gluten-free diet<br />	</athlete_information><br /><br />	Guidelines:<br />	1. Include accurate daily calorie amount<br />	2. Show protein, fat, and carb amouts<br />	3. Specify when to eat each meal<br />	4. Use only foods that fit restrictions<br />	5. List all portioin sizes in graams<br />	6. Keep budget-frendly if mentioned<br /><br />  Solution Criteria: <br /><br />	Provide macro-nutrient balanced meal plan.<br />	Accommodate hypothyroidism metabolic constraints.<br />	Support weight management goal.<br />	Ensure nutritional completeness within dietary restrictions<br />	</td>
+          <!-- 
+            <td class="prompt-inputs"><li><strong>goal:</strong> Weight stabilization and muscle preservation </li><li><strong>height:</strong> 175 cm</li><li><strong>restrictions:</strong> Hypothyroidism, low metabolic rate, gluten-free diet </li><li><strong>weight:</strong> 82 kg</li></td>
+            <td class="criteria"><li>Provide macro-nutrient balanced meal plan</li><br /><li>Accommodate hypothyroidism metabolic constraints</li><br /><li>Support weight management goal</li><br /><li>Ensure nutritional completeness within dietary restrictions</li></td>
+          -->
+          <td class="output"><pre>Athlete Meal Plan Analysis and Recommendation
+
+Calorie Calculation:
+- Base Metabolic Rate (BMR): ~1,800 calories
+- Activity Level Adjustment: +400 calories
+- Total Daily Calories: 2,200 calories
+
+Macronutrient Breakdown:
+- Protein: 30% (165g)
+- Carbohydrates: 40% (220g)
+- Fats: 30% (73g)
+
+Meal Plan:
+
+Breakfast (7:00 AM) - 550 calories
+- Quinoa porridge (100g)
+- Almond milk (250ml)
+- Chia seeds (20g)
+- Blueberries (50g)
+- Almonds (30g)
+Macros: Protein 25g, Carbs 55g, Fat 18g
+
+Mid-Morning Snack (10:00 AM) - 300 calories
+- Greek yogurt (150g, lactose-free)
+- Gluten-free granola (40g)
+- Pumpkin seeds (20g)
+Macros: Protein 20g, Carbs 25g, Fat 15g
+
+Lunch (1:00 PM) - 600 calories
+- Grilled chicken breast (150g)
+- Sweet potato (100g)
+- Roasted vegetables (mixed, 150g)
+- Olive oil dressing (15ml)
+Macros: Protein 40g, Carbs 60g, Fat 20g
+
+Afternoon Snack (4:00 PM) - 250 calories
+- Rice cakes (50g)
+- Almond butter (30g)
+- Banana (100g)
+Macros: Protein 10g, Carbs 35g, Fat 12g
+
+Dinner (7:00 PM) - 500 calories
+- Salmon fillet (120g)
+- Quinoa (100g)
+- Steamed broccoli (150g)
+- Lemon-herb seasoning
+Macros: Protein 35g, Carbs 40g, Fat 20g
+
+Hypothyroidism Considerations:
+- Selenium-rich foods (Brazil nuts)
+- Iodine sources (seafood)
+- Balanced, consistent meal timing
+- Gluten-free to reduce inflammation
+
+Budget-Friendly Modifications:
+- Use frozen vegetables
+- Buy proteins in bulk
+- Choose seasonal produce
+- Use cost-effective protein sources like eggs
+
+Hydration:
+- Water intake: 3-4 liters daily
+- Herbal tea supplementation
+
+Supplement Recommendation:
+- Selenium supplement
+- Vitamin D
+- Omega-3 fish oil
 
 Monitoring Recommendations:
-- Regular nutritionist consultation
-- Adjust macronutrients based on training intensity
-- Personalized supplementation assessment
+- Regular thyroid function tests
+- Body composition tracking
+- Adjust meal plan based on progress
 
-This meal plan provides a comprehensive, adaptive nutrition strategy tailored to a Paralympic athlete's specific needs, focusing on muscle maintenance, performance optimization, and ease of consumption.</pre></td>
+This meal plan provides:
+- Gluten-free options
+- Thyroid-supportive nutrients
+- Balanced macronutrients
+- Weight stabilization support</pre></td>
           <td class="score-col">
-            <span class="score {score_class}">8</span>
+            <span class="score {score_class}">6</span>
           </td>
-          <td class="reasoning">The solution provides a robust, well-structured meal plan that demonstrates deep understanding of an athlete's nutritional needs. While comprehensive, it does not fully address potential individual dietary restrictions or provide hyper-personalized recommendations based on specific training regimens.</td>
+          <td class="reasoning">The solution provides a structured meal plan with nutritional detail, but fails to demonstrate direct customization based on the original task inputs. While comprehensive, it does not explicitly show how the plan is tailored to a specific athlete's height, weight, or performance goal. The meal plan appears somewhat generic despite its detailed presentation.</td>
         </tr>
         
       </tbody>
