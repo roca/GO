@@ -28,13 +28,14 @@ type PromptEvaluator struct {
 }
 
 func (pe *PromptEvaluator) RunTestCase(test_case TestCase) (string, string) {
-	prompt := fmt.Sprintf(`
-	Generate a one-day meal plan for an athlete that meets their dietary restrictions.
+	prompt := fmt.Sprintf(`Generate a one-day meal plan for an athlete that meets their dietary restrictions.
 
+	<athlete_information>
 	- Height: %s
 	- Weight: %s
 	- Goal: %s
 	- Dietary restrictions: %s
+	</athlete_information>
 
 	Guidelines:
 	1. Include accurate daily calorie amount

@@ -1,6 +1,6 @@
 
 [
-    "Edge case: Extreme athlete profile with high-performance endurance training goal, very tall (205 cm) and heavyweight (130 kg), requiring high-calorie vegan meal plan",
-    "Minimalist scenario: Amateur athlete with strict gluten-free and low-carb restrictions, moderate height (170 cm), and weight loss goal, focusing on protein-rich alternatives",
-    "Complex metabolic scenario: Paralympic athlete with limited mobility, shorter stature (155 cm), lower weight (60 kg), requiring adaptive nutritional plan targeting muscle maintenance and recovery"
+    "Edge case testing with extreme body measurements: Very tall (215 cm) and very light (50 kg) athlete with strict vegan restrictions and muscle gain goal",
+    "High-performance scenario: Professional endurance athlete with multiple dietary allergies (gluten, dairy) seeking optimal nutritional balance for marathon training",
+    "Metabolic diversity test: Athlete with unique metabolic condition (e.g., hypothyroidism) requiring specialized macro-nutrient distribution for weight management goal"
 ]
