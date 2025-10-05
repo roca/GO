@@ -1,6 +1,6 @@
 
 [
-    "Edge case testing with extreme body measurements: Very tall (215 cm) and very light (50 kg) athlete with strict vegan restrictions and muscle gain goal",
-    "High-performance scenario: Professional endurance athlete with multiple dietary allergies (gluten, dairy) seeking optimal nutritional balance for marathon training",
-    "Metabolic diversity test: Athlete with unique metabolic condition (e.g., hypothyroidism) requiring specialized macro-nutrient distribution for weight management goal"
+    "Extreme athlete scenario: Test prompt with a very tall, muscular powerlifter with strict keto diet restrictions and muscle gain goal",
+    "Minimalist scenario: Test prompt with a petite endurance runner with vegan restrictions and weight maintenance goal",
+    "Medical challenge scenario: Test prompt with an athlete recovering from injury, requiring high-protein diet with gluten-free restrictions and rehabilitation goal"
 ]

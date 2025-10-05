@@ -45,7 +45,211 @@ func (pe *PromptEvaluator) RunTestCase(test_case TestCase) (string, string) {
 	5. List all portioin sizes in graams
 	6. Keep budget-frendly if mentioned
 
-  Solution Criteria: 
+Here is an example of poor input and output:
+
+<example_poor_input>
+- Height: 215
+- Weight: 110
+- Goal: muscle gain
+- Dietary restrictions: vegan
+<example_poor_input>
+
+<example_poor_output>
+Athlete Meal Plan Analysis and Design
+
+Calorie Calculation:
+- Basal Metabolic Rate (BMR): ~2400 calories
+- Activity Level Adjustment: +500-600 calories
+- Total Daily Caloric Need: ~3000 calories
+
+Macronutrient Breakdown:
+- Protein: 225g (30%)
+- Carbohydrates: 375g (50%)
+- Fats: 83g (20%)
+
+MEAL PLAN
+
+Breakfast (7:00 AM):
+- Tofu Scramble
+  * Extra firm tofu (250g)
+  * Nutritional yeast (30g)
+  * Spinach (100g)
+  * Bell peppers (80g)
+- Protein smoothie
+  * Pea protein powder (50g)
+  * Banana (150g)
+  * Almond milk (250ml)
+Calories: 750
+Protein: 65g
+
+Mid-Morning Snack (10:00 AM):
+- Protein energy balls
+  * Dates (50g)
+  * Chia seeds (25g)
+  * Hemp protein (40g)
+Calories: 350
+Protein: 35g
+
+Lunch (1:00 PM):
+- Quinoa black bean bowl
+  * Quinoa (200g)
+  * Black beans (150g)
+  * Tempeh (150g)
+  * Avocado (100g)
+  * Mixed vegetables (150g)
+Calories: 825
+Protein: 60g
+
+Post-Workout (4:00 PM):
+- Vegan protein shake
+  * Soy protein isolate (60g)
+  * Oat milk (250ml)
+  * Frozen berries (100g)
+Calories: 400
+Protein: 50g
+
+Dinner (7:00 PM):
+- Lentil and seitan stir-fry
+  * Seitan (200g)
+  * Red lentils (150g)
+  * Brown rice (150g)
+  * Broccoli (120g)
+  * Coconut aminos (30ml)
+Calories: 675
+Protein: 65g
+
+Total Daily Intake:
+- Calories: 3000
+- Protein: 275g
+- Carbohydrates: 375g
+- Fats: 85g
+
+Key Considerations:
+- 100% Vegan
+- High-protein sources
+- Balanced macronutrients
+- Muscle gain focused
+- Budget-friendly ingredients
+
+Recommendations:
+- Supplement with B12
+- Stay hydrated
+- Adjust portions as needed
+</example_poor_output>
+
+While the solution provides a structured meal plan with balanced nutrition, it fails to demonstrate how the plan was tailored to the specific athlete's parameters. The solution does not utilize the input map of height, weight, goal, and dietary restrictions, which are critical for creating a truly personalized nutrition strategy. The meal plan appears generic and not dynamically generated based on individual athlete needs.
+
+Here is an example of good input and output:
+		
+<example_good_input> 
+- Height: 192
+- Weight: 118
+- Goal: Muscle mass gain and high-performance strength training
+- Dietary restrictions: No dairy, gluten-free diet
+</example_good_input>
+
+<example_good_output>
+I'll create a comprehensive, personalized meal plan for the athlete based on the provided specifications. Here's a detailed approach:
+
+ATHLETE PROFILE ANALYSIS:
+- Height: 192 cm
+- Weight: 118 kg
+- Goal: Muscle mass gain and high-performance strength training
+- Dietary Restrictions: No dairy, gluten-free diet
+
+CALORIE & MACRONUTRIENT CALCULATION:
+1. Basal Metabolic Rate (BMR) Calculation:
+   - Using Mifflin-St Jeor Equation
+   - BMR = (10 × weight) + (6.25 × height) - (5 × age) + 5
+   - Assuming age 25: BMR ≈ 2,350 calories
+
+2. Activity Level Adjustment:
+   - Strength training, high-intensity: Multiply BMR by 1.7
+   - Total Daily Energy Expenditure (TDEE): 3,995 calories
+   - Muscle Gain Goal: Add 300-500 calories
+   - Target Daily Intake: 4,300 calories
+
+3. Macronutrient Breakdown:
+   - Protein: 2.2g per kg body weight = 259g (30%)
+   - Carbohydrates: 5.5g per kg body weight = 649g (60%)
+   - Fats: 1.2g per kg body weight = 142g (10%)
+
+MEAL PLAN:
+
+Breakfast (7:00 AM) - 1,000 calories:
+- Gluten-free oats (100g)
+- Egg whites (200g)
+- Almond butter (50g)
+- Banana (150g)
+- Gluten-free protein powder (50g)
+- Coconut milk (250ml)
+Macros: 
+- Protein: 75g
+- Carbs: 120g
+- Fats: 35g
+
+Mid-Morning Snack (10:00 AM) - 600 calories:
+- Chicken breast (150g)
+- Sweet potato (200g)
+- Avocado (100g)
+- Mixed nuts (50g)
+Macros:
+- Protein: 50g
+- Carbs: 80g
+- Fats: 30g
+
+Lunch (1:00 PM) - 1,100 calories:
+- Grass-fed beef (200g)
+- Quinoa (150g)
+- Roasted vegetables (200g)
+- Olive oil (30ml)
+- Almonds (50g)
+Macros:
+- Protein: 80g
+- Carbs: 150g
+- Fats: 40g
+
+Post-Workout (4:00 PM) - 800 calories:
+- Gluten-free protein shake (60g)
+- Rice cakes (100g)
+- Lean turkey (150g)
+- Coconut water (250ml)
+Macros:
+- Protein: 70g
+- Carbs: 100g
+- Fats: 15g
+
+Dinner (7:00 PM) - 800 calories:
+- Wild-caught salmon (200g)
+- Cauliflower rice (150g)
+- Asparagus (100g)
+- Almond-based sauce (50ml)
+Macros:
+- Protein: 65g
+- Carbs: 80g
+- Fats: 35g
+
+BUDGET-FRIENDLY CONSIDERATIONS:
+- Use frozen vegetables
+- Buy proteins in bulk
+- Choose seasonal produce
+- Utilize cost-effective protein sources like eggs and chicken
+
+ADDITIONAL RECOMMENDATIONS:
+- Hydration: 4-5 liters of water daily
+- Supplement with gluten-free, dairy-free multivitamin
+- Consider creatine monohydrate for muscle gain
+
+TOTAL DAILY INTAKE:
+- Calories: 4,300
+- Protein: 340g
+- Carbohydrates: 530g
+- Fats: 155g
+
+This meal plan is precisely tailored to the athlete's specific height, weight, goal, and dietary restrictions, ensuring optimal nutrition for muscle mass gain and high-performance strength training.
+</example_good_output>
+
+The solution provides a highly detailed, scientifically-grounded meal plan that addresses the core requirements of creating a one-day nutritional strategy for an athlete. It systematically breaks down caloric needs, macronutrient distribution, and meal composition while respecting specified dietary constraints. The plan demonstrates technical nutritional expertise and personalization.
 
 	%s
 	`,
