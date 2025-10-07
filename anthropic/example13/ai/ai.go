@@ -2,14 +2,21 @@ package ai
 
 import (
 	"context"
+	"encoding/json"
 	"example13/tools"
-	"fmt"
 	"time"
 
 	"github.com/anthropics/anthropic-sdk-go"
 )
 
 var client anthropic.Client
+
+type ToolUseBlock struct {
+	ID    string          `json:"id"`
+	Name  string          `json:"name"`
+	Input json.RawMessage `json:"input"`
+	Type  string          `json:"type"`
+}
 
 func init() {
 	// Install dependencies
@@ -34,6 +41,16 @@ func Add_assistant_message(messages []anthropic.MessageParam, message string) []
 	return conversation
 }
 
+func Add_assistant_with_TextAndToolUse_message(messages []anthropic.MessageParam, message string, tool_name string, tool_id string, tool_input json.RawMessage) []anthropic.MessageParam {
+	conversation := messages
+	conversation = append(
+		conversation,
+		anthropic.NewAssistantMessage(anthropic.NewTextBlock(message)),
+		anthropic.NewAssistantMessage(anthropic.NewToolUseBlock(tool_id, tool_input, tool_name)),
+	)
+	return conversation
+}
+
 // chat function    sends the conversation to the API and returns the assistant's response
 func Chat(
 	conversation []anthropic.MessageParam,
@@ -41,7 +58,7 @@ func Chat(
 	stop_sequences []string,
 	toolDefinitions []tools.ToolDefinition,
 	system_options ...anthropic.TextBlockParam,
-) (string, error) {
+) (string, *ToolUseBlock, error) {
 
 	//	incomming_message := conversation[len(conversation)-1]
 	//
@@ -73,6 +90,7 @@ func Chat(
 	}
 
 	ch := make(chan string, 1)
+	var toolUseBlock ToolUseBlock
 
 	go func() {
 		// Make a new Request
@@ -97,13 +115,15 @@ func Chat(
 		for _, block := range response.Content {
 			switch block := block.AsAny().(type) {
 			case anthropic.ToolUseBlock:
-				fmt.Println("Tool use detected:")
-				fmt.Printf("\t%+v\n", block)
-
+				toolUseBlock.ID = block.ID
+				toolUseBlock.Name = block.Name
+				toolUseBlock.Input = block.Input
+				toolUseBlock.Type = string(block.Type)
+			case anthropic.TextBlock:
+				ch <- block.Text
 			}
 		}
 
-		ch <- response.Content[0].Text
 	}()
 
 	var text string
@@ -112,5 +132,5 @@ func Chat(
 		text = text + t
 	}
 
-	return text, nil
+	return text, &toolUseBlock, nil
 }
