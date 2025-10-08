@@ -15,9 +15,8 @@ func main() {
 
 	evaluator := prompt_evaluator.PromptEvaluator{}
 
-	prompt, text := evaluator.RunGetTimeChat(toolDefinitions)
+	_, text := evaluator.RunGetTimeChat(toolDefinitions)
 
-	fmt.Printf("Prompt: %s\n---------------------------------------------\n", prompt)
 	fmt.Printf("Response: %s\n", text)
 
 }

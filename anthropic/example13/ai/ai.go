@@ -34,6 +34,13 @@ func Add_user_message(messages []anthropic.MessageParam, message string) []anthr
 	return conversation
 }
 
+// Add_user_with_ToolResultt_message function    adds a user message with tool results to the conversation
+func Add_user_with_ToolResult_message(messages []anthropic.MessageParam, toolResults []anthropic.ContentBlockParamUnion) []anthropic.MessageParam {
+	conversation := messages
+	conversation = append(conversation, anthropic.NewUserMessage(toolResults...))
+	return conversation
+}
+
 // add_assistant_message function    adds an assistant message to the conversation
 func Add_assistant_message(messages []anthropic.MessageParam, message string) []anthropic.MessageParam {
 	conversation := messages
@@ -41,6 +48,7 @@ func Add_assistant_message(messages []anthropic.MessageParam, message string) []
 	return conversation
 }
 
+// Add_assistant_with_TextAndToolUse_message function    adds an assistant message with a tool use to the conversation
 func Add_assistant_with_TextAndToolUse_message(messages []anthropic.MessageParam, message string, tool_name string, tool_id string, tool_input json.RawMessage) []anthropic.MessageParam {
 	conversation := messages
 	conversation = append(
