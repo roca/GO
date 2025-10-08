@@ -13,11 +13,11 @@ import (
 type PromptEvaluator struct {
 }
 
+// RunGetTimeChat method    runs a chat to get the current time using the provided tools
 func (pe *PromptEvaluator) RunGetTimeChat(tools []tools.ToolDefinition) (string, string) {
-	prompt := `
-	What is the exact time, formatted as 2006-01-02 15:04:05 ?
+	prompt := ` What is the exact time, formatted as 2006-01-02 15:04:05 ? `
+	fmt.Printf("Prompt: %s\n---------------------------------------------\n", prompt)
 
-`
 	var conversation []anthropic.MessageParam
 
 	conversation = ai.Add_user_message(conversation, prompt)
@@ -46,7 +46,7 @@ func (pe *PromptEvaluator) RunGetTimeChat(tools []tools.ToolDefinition) (string,
 	// fmt.Printf("\t%+v\n", toolResults)
 
 	// ? Let the LLM know what the results of the tool call were.
-	conversation = append(conversation, anthropic.NewUserMessage(toolResults...))
+	conversation = ai.Add_user_with_ToolResult_message(conversation, toolResults)
 
 	text, toolUseBlock, err = ai.Chat(conversation, 0.7, nil, nil)
 	if err != nil {
@@ -56,6 +56,7 @@ func (pe *PromptEvaluator) RunGetTimeChat(tools []tools.ToolDefinition) (string,
 	return prompt, text
 }
 
+// executeTool function    executes a tool based on its name and input, returning the result
 func executeTool(tools []tools.ToolDefinition, id string, name string, input json.RawMessage) anthropic.ContentBlockParamUnion {
 
 	var toolDefIndx int

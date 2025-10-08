@@ -18,7 +18,7 @@ type ToolDefinition struct {
 
 var GetTimeToolDefinition = ToolDefinition{
 	Name:        "get_time_tool",
-	Description: "Gets then current using a format like '%Y-%M-YD'",
+	Description: "Gets the current using a format like '%Y-%M-YD'",
 	InputSchema: GetTimeInputSchema,
 	Function:    GetTime,
 }
