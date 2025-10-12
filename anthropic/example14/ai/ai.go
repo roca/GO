@@ -66,7 +66,7 @@ func Chat(
 	stop_sequences []string,
 	toolDefinitions []tools.ToolDefinition,
 	system_options ...anthropic.TextBlockParam,
-) (string, ToolUseBlock, error) {
+) (string, []ToolUseBlock, error) {
 
 	//	incomming_message := conversation[len(conversation)-1]
 	//
@@ -98,7 +98,7 @@ func Chat(
 	}
 
 	ch := make(chan string, 1)
-	var toolUseBlock ToolUseBlock
+	var toolUseBlocks []ToolUseBlock
 
 	go func() {
 		// Make a new Request
@@ -115,18 +115,20 @@ func Chat(
 			ch <- "No response from AI"
 			return
 		}
-		if len(response.Content) == 0 {
-			ch <- "No content from AI"
-			return
-		}
+		// if len(response.Content) == 0 {
+		// 	ch <- "No content from AI"
+		// 	return
+		// }
 
 		for _, block := range response.Content {
 			switch block := block.AsAny().(type) {
 			case anthropic.ToolUseBlock:
+				var toolUseBlock ToolUseBlock
 				toolUseBlock.ID = block.ID
 				toolUseBlock.Name = block.Name
 				toolUseBlock.Input = block.Input
 				toolUseBlock.Type = string(block.Type)
+				toolUseBlocks = append(toolUseBlocks, toolUseBlock)
 			case anthropic.TextBlock:
 				ch <- block.Text
 			}
@@ -140,5 +142,5 @@ func Chat(
 		text = text + t
 	}
 
-	return text, toolUseBlock, nil
+	return text, toolUseBlocks, nil
 }

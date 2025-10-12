@@ -6,17 +6,21 @@ import (
 	"example14/tools"
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/anthropics/anthropic-sdk-go"
 )
+
+var repeatedString string = strings.Repeat("-", 80)
 
 type PromptEvaluator struct {
 }
 
 // RunGetTimeChat method    runs a chat to get the current time using the provided tools
 func (pe *PromptEvaluator) RunGetTimeChat(tools []tools.ToolDefinition) (string, string) {
-	prompt := ` What is the exact time, formatted as 2006-01-02 15:04:05 ? `
-	fmt.Printf("Prompt: %s\n---------------------------------------------\n", prompt)
+	prompt := ` What date is it 103 days from today ? 
+`
+	fmt.Printf("Prompt: %s\n%s\n", prompt, repeatedString)
 
 	var conversation []anthropic.MessageParam
 
@@ -25,27 +29,34 @@ func (pe *PromptEvaluator) RunGetTimeChat(tools []tools.ToolDefinition) (string,
 
 	var stop_sequences []string
 	var text string
-	var toolResults []anthropic.ContentBlockParamUnion
 
 	// stop_sequences = append(stop_sequences, "```")
-	text, toolUseBlock, err := ai.Chat(conversation, 0.7, stop_sequences, tools)
+	text, toolUseBlocks, err := ai.Chat(conversation, 0.0, stop_sequences, tools)
 	if err != nil {
 		log.Fatalf("Chat error: %v", err)
 	}
 
-	for toolUseBlock.ID != "" {
-		result := executeTool(tools, toolUseBlock.ID, toolUseBlock.Name, toolUseBlock.Input)
-		toolResults = append(toolResults, result)
+	for {
 
-		conversation = ai.Add_assistant_with_TextAndToolUse_message(conversation, text, toolUseBlock.Name, toolUseBlock.ID, toolUseBlock.Input)
-		conversation = ai.Add_user_with_ToolResult_message(conversation, toolResults)
+		if len(toolUseBlocks) > 0 {
+			// fmt.Printf("Tool use blocks found: %d\n", len(toolUseBlocks))
+			var toolResults []anthropic.ContentBlockParamUnion
+			for _, toolUseBlock := range toolUseBlocks {
+				result := executeTool(tools, toolUseBlock.ID, toolUseBlock.Name, toolUseBlock.Input)
+				toolResults = append(toolResults, result)
+				conversation = ai.Add_assistant_with_TextAndToolUse_message(conversation, text, toolUseBlock.Name, toolUseBlock.ID, toolUseBlock.Input)
+			}
 
-		text, toolUseBlock, err = ai.Chat(conversation, 0.7, nil, tools)
+			conversation = ai.Add_user_with_ToolResult_message(conversation, toolResults)
+		}
+
+		text, toolUseBlocks, err = ai.Chat(conversation, 0.0, nil, tools)
 		if err != nil {
 			log.Fatalf("Chat error: %v", err)
 		}
+		// fmt.Println(text)
 
-		if toolUseBlock.ID == "" {
+		if len(toolUseBlocks) == 0 {
 			break
 		}
 
@@ -72,7 +83,7 @@ func executeTool(tools []tools.ToolDefinition, id string, name string, input jso
 		return anthropic.NewToolResultBlock(id, "tool not found", true)
 	}
 
-	fmt.Printf("Executing tool {%s}. Execution id: {%s}\n", name, id)
+	fmt.Printf("Executing tool {%s}. Execution id: {%s}, Input %s\n", name, id, string(input))
 
 	response, err := tools[toolDefIndx].Function(input)
 

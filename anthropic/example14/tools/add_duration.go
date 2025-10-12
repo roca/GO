@@ -6,14 +6,9 @@ import (
 	"time"
 )
 
-var AddDurationTool = ToolDefinition{
-	Name:        "add_duration_tool",
-	Description: "Adds a duration to a given timestamp and returns the new timestamp.",
-}
-
 var AddDurationToolDefinition = ToolDefinition{
-	Name:        "get_time_tool",
-	Description: "Gets the current using a format like '%Y-%M-YD'",
+	Name:        "add_duration_tool",
+	Description: "Adds a duration in days to a given time and returns the new time.",
 	InputSchema: AddDurationInputSchema,
 	Function:    AddDuration,
 }

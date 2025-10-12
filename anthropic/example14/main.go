@@ -10,9 +10,9 @@ func main() {
 	var toolDefinitions []tools.ToolDefinition
 
 	getTimeTool := tools.GetTimeToolDefinition
-	// addDurationTool := tools.AddDurationToolDefinition
+	addDurationTool := tools.AddDurationToolDefinition
 
-	toolDefinitions = append(toolDefinitions, getTimeTool)
+	toolDefinitions = append(toolDefinitions, getTimeTool, addDurationTool)
 
 	evaluator := prompt_evaluator.PromptEvaluator{}
 
