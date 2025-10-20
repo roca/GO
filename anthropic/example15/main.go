@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"regexp"
+	"strings"
 )
 
 func main() {
@@ -16,7 +18,9 @@ func main() {
 
 	text := string(content)
 
-	chunks := ChunkByChar(text, 500, 150)
+	// chunks := ChunkByChar(text, 500, 150)
+	// chunks := ChunkBySentence(text, 5, 1)
+	chunks := ChunkBySectiion(text)
 
 	for _, chunk := range chunks {
 		fmt.Print(chunk, "\n---\n")
@@ -40,4 +44,29 @@ func ChunkByChar(text string, chunk_size, chunk_over_lap int) []string {
 	}
 
 	return chunks
+}
+
+func ChunkBySentence(text string, max_sentences_per_chunk, overlap_sentences int) []string {
+	regexPatern := `([.!?])(\s+)`
+	re := regexp.MustCompile(regexPatern)
+	sentences := re.Split(text, -1)
+	var chunks []string
+
+	for start_idx := 0; start_idx < len(sentences); {
+		end_idx := min(start_idx+max_sentences_per_chunk, len(sentences))
+		current_chunk := sentences[start_idx:end_idx]
+		chunks = append(chunks, strings.Join(current_chunk, " "))
+
+		start_idx += max_sentences_per_chunk - overlap_sentences
+
+		if start_idx < 0 {
+			start_idx = 0
+		}
+	}
+	return chunks
+}
+
+func ChunkBySectiion(text string) []string {
+	sections := strings.Split(text, "\n## ")
+	return sections
 }
