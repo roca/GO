@@ -1,11 +1,14 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
 	"regexp"
 	"strings"
+
+	"github.com/vendasta/langchaingo/embeddings/voyageai"
 )
 
 func main() {
@@ -22,9 +25,29 @@ func main() {
 	// chunks := ChunkBySentence(text, 5, 1)
 	chunks := ChunkBySectiion(text)
 
-	for _, chunk := range chunks {
-		fmt.Print(chunk, "\n---\n")
+	PrintEmbeddings(chunks)
+}
+
+func PrintEmbeddings(texts []string) {
+	embedder, err := voyageai.NewVoyageAI(
+		voyageai.WithToken(os.Getenv("VOYAGE_API_KEY")),
+		voyageai.WithModel("voyage-3-large"),
+	)
+	if err != nil {
+		log.Fatalf("Failed to create VoyageAI embedder: %v", err)
 	}
+
+	// Embed the documents
+	embeddings, err := embedder.EmbedDocuments(context.Background(), texts)
+	if err != nil {
+		log.Fatalf("Failed to embed documents: %v", err)
+	}
+
+	// Print the embeddings
+	for i, embedding := range embeddings {
+		fmt.Printf("Embedding for text:\n'%s':\nLength: %d\n-------------------------------\n", texts[i], len(embedding))
+	}
+
 }
 
 func ChunkByChar(text string, chunk_size, chunk_over_lap int) []string {
