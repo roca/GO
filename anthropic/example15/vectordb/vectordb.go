@@ -11,23 +11,27 @@ type Embedding []float64
 
 type VectorDB map[string]Embedding
 
+func NewVectorDB() VectorDB {
+	return make(VectorDB)
+}
+
 func (db VectorDB) Add(content string, embedding Embedding) {
 	db[content] = embedding
 }
 
-func (db VectorDB) Search(query string, topK int, distanceMetric string) ([]string, error) {
+type Result struct {
+	Content  string
+	Distance float64
+}
+
+func (db VectorDB) Search(query string, topK int, distanceMetric string) ([]Result, error) {
 	queryEmbedding, err := embedder.GetEmbeddings([]string{query})
 	if err != nil {
 		return nil, fmt.Errorf("failed to get embedding for query: %w", err)
 	}
 
 	// Find the top K closest embeddings
-	type result struct {
-		content  string
-		distance float64
-	}
-
-	var results []result
+	var results []Result
 
 	for content, embedding := range db {
 		var dist float64
@@ -42,18 +46,18 @@ func (db VectorDB) Search(query string, topK int, distanceMetric string) ([]stri
 		if err != nil {
 			return nil, fmt.Errorf("failed to compute distance: %w", err)
 		}
-		results = append(results, result{content, dist})
+		results = append(results, Result{content, dist})
 	}
 
 	// Sort results by distance
 	sort.Slice(results, func(i, j int) bool {
-		return results[i].distance < results[j].distance
+		return results[i].Distance < results[j].Distance
 	})
 
 	// Return top K results
-	var topResults []string
+	var topResults []Result
 	for i := 0; i < topK && i < len(results); i++ {
-		topResults = append(topResults, results[i].content)
+		topResults = append(topResults, results[i])
 	}
 
 	return topResults, nil

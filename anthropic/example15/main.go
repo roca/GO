@@ -2,6 +2,8 @@ package main
 
 import (
 	"example15/embedder"
+	"example15/vectordb"
+	"fmt"
 	"log"
 	"os"
 	"regexp"
@@ -28,13 +30,40 @@ func main() {
 
 	text := string(content)
 
+	// 1. Chunk the text by section.
 	// chunks := ChunkByChar(text, 500, 150)
 	// chunks := ChunkBySentence(text, 5, 1)
 	chunks := ChunkBySectiion(text)
 
-	err = embedder.PrintEmbeddings(chunks)
+	// 2. Generate embeddings for each chunk.
+	embeddings, err := embedder.GetEmbeddings(chunks)
 	if err != nil {
-		log.Fatalf("Error printing embeddings: %v", err)
+		log.Fatalf("Error generating embeddings: %v", err)
+	}
+
+	// 3. Create a vector store and add each embedding to it.
+	vectordb := vectordb.NewVectorDB()
+	for i := range len(chunks) {
+		vectordb.Add(chunks[i], embeddings[i])
+	}
+
+	i := 0
+	for text, embedding := range vectordb {
+		fmt.Printf("Embedding for text %d:\n'%s':\nLength: %d\n-------------------------------\n", i, text, len(embedding))
+		i++
+	}
+
+	// 4. Some time later, a user will ask a question. Generate and embeding for it.
+	// 5. Search the store with the embedding, find the two most relevant chunks.
+	results, err := vectordb.Search("What did the software engineering dept do last year?", 3, "cosine")
+	if err != nil {
+		log.Fatalf("Error searching vector DB: %v", err)
+	}
+
+	fmt.Println("Top 3 relevant chunks:")
+	for _, res := range results {
+		l := min(100, len(res.Content))
+		fmt.Println(res.Distance, ":", res.Content[0:l])
 	}
 }
 
