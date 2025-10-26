@@ -2,11 +2,12 @@ package main
 
 import (
 	"example15/embedder"
-	"example15/vectordb"
+	"example15/indexdb"
 	"fmt"
 	"log"
 	"os"
 	"regexp"
+	"sort"
 	"strings"
 )
 
@@ -42,9 +43,11 @@ func main() {
 	}
 
 	// 3. Create a vector store and add each embedding to it.
-	vectordb := vectordb.NewVectorDB()
+	vectordb := indexdb.NewVectorDB()
+	bm25db := indexdb.NewBM25Index(1.5, 0.75, nil)
 	for i := range len(chunks) {
-		vectordb.Add(chunks[i], embeddings[i])
+		vectordb.AddDocument(chunks[i], embeddings[i])
+		bm25db.AddDocument("content", chunks[i])
 	}
 
 	i := 0
@@ -55,16 +58,53 @@ func main() {
 
 	// 4. Some time later, a user will ask a question. Generate and embeding for it.
 	// 5. Search the store with the embedding, find the two most relevant chunks.
-	results, err := vectordb.Search("What did the software engineering dept do last year?", 3, "cosine")
+	query := "What happened with INC-2023-Q4-011 ?"
+	results, err := vectordb.Search(query, 3, "cosine")
+	results_bm23db, _ := bm25db.Search(query, 3, 1.0)
 	if err != nil {
 		log.Fatalf("Error searching vector DB: %v", err)
 	}
+	fmt.Println("---------------------------------------------------------")
 
-	fmt.Println("Top 3 relevant chunks:")
+	fmt.Println("Top 3 relevant chunks for :", query)
 	for _, res := range results {
 		l := min(100, len(res.Content))
 		fmt.Println(res.Distance, ":", res.Content[0:l])
 	}
+	fmt.Println("---------------------------------------------------------")
+
+	fmt.Println("Top 3 relevant chunks for BM25 DB:", query)
+	for _, res := range results_bm23db {
+		l := min(100, len(res.Document["content"].(string)))
+		fmt.Println(res.Score, ":", res.Document["content"].(string)[0:l])
+
+	}
+
+	fmt.Println("---------------------------------------------------------")
+
+	resultsMerged := SortResultsByScore(indexdb.MergeIndexDBresults(results, results_bm23db))
+	fmt.Println("Top relevant chunks from merged results:", query)
+	for i, r := range resultsMerged {
+		if i >= 3 {
+			break
+		}
+		l := min(100, len(r.Content))
+		fmt.Println(r.Distance, ":", r.Content[0:l])
+	}
+}
+
+func SortResultsByScore(merged map[string]float64) []indexdb.Result {
+	var results []indexdb.Result
+	for content, score := range merged {
+		results = append(results, indexdb.Result{Content: content, Distance: score})
+	}
+
+	// Sort results by score in descending order
+	sort.Slice(results, func(i, j int) bool {
+		return results[i].Distance > results[j].Distance
+	})
+
+	return results
 }
 
 func ChunkByChar(text string, chunk_size, chunk_over_lap int) []string {
