@@ -1,4 +1,4 @@
-package vectordb
+package indexdb
 
 import (
 	"example15/embedder"
@@ -15,8 +15,9 @@ func NewVectorDB() VectorDB {
 	return make(VectorDB)
 }
 
-func (db VectorDB) Add(content string, embedding Embedding) {
+func (db VectorDB) AddDocument(content string, embedding Embedding) error {
 	db[content] = embedding
+	return nil
 }
 
 type Result struct {
@@ -47,6 +48,8 @@ func (db VectorDB) Search(query string, topK int, distanceMetric string) ([]Resu
 			return nil, fmt.Errorf("failed to compute distance: %w", err)
 		}
 		results = append(results, Result{content, dist})
+
+		fmt.Println(dist, ":", content[0:min(100, len(content))])
 	}
 
 	// Sort results by distance
@@ -110,7 +113,7 @@ func cosineDistance(a, b Embedding) (float64, error) {
 	}
 
 	cosineSim := dot / (magA * magB)
-	cosineSim = math.Min(math.Max(cosineSim, -1), 1) // Clamp to [-1, 1] to avoid numerical issues
+	cosineSim = max(-1.0, min(1.0, cosineSim)) // Clamp to [-1, 1] to avoid numerical issues
 
 	return 1.0 - cosineSim, nil
 }
