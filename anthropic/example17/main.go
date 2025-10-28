@@ -21,7 +21,7 @@ func main() {
 	}
 	encodedString := base64.StdEncoding.EncodeToString(byteData)
 
-	fmt.Println("Base64 Encoded String:", encodedString)
+	// fmt.Println("Base64 Encoded String:", encodedString)
 
 	var conversation []anthropic.MessageParam
 
