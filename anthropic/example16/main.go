@@ -43,7 +43,7 @@ For each item above (1-5), write one sentence summarizing your findings, with yo
 
 func main() {
 
-	byteData, err := ReadFile("images/prop3.png")
+	byteData, err := ReadFile(os.Args[1])
 	if err != nil {
 		panic(err)
 	}
