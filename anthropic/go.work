@@ -1,6 +1,7 @@
 go 1.25.3
 
 use (
+	./cli_project
 	./example1
 	./example10
 	./example11
