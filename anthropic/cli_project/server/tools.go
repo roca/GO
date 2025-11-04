@@ -56,5 +56,7 @@ func EditDocument(ctx context.Context, req *mcp.CallToolRequest, input EditInput
 		return nil, Output{}, fmt.Errorf("Doc with id %s not found", input.DocID)
 	}
 
-	return nil, Output{Content: strings.ReplaceAll(content, input.OldStr, input.NewStr)}, nil
+	docs[input.DocID] = strings.ReplaceAll(content, input.OldStr, input.NewStr)
+
+	return nil, Output{Content: docs[input.DocID]}, nil
 }
