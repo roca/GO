@@ -1,8 +1,8 @@
 package main
 
 import (
-	"context"
 	"log"
+	"net/http"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
@@ -25,9 +25,16 @@ func main() {
 	mcp.AddTool(server, read_doc_tool, ReadDocument)
 	mcp.AddTool(server, edit_doc_tool, EditDocument)
 
-	// Run the server over stdin/stdout, until the client disconnects.
-	if err := server.Run(context.Background(), &mcp.StdioTransport{}); err != nil {
-		log.Fatal(err)
-	}
+	addr := ":8080"
+
+	// Run the server over http
+	log.Printf("MCP servers serving at %s", addr)
+
+	handler := mcp.NewSSEHandler(func(request *http.Request) *mcp.Server {
+		url := request.URL.Path
+		log.Printf("Handling request for URL %s\n", url)
+		return server
+	}, nil)
+	log.Fatal(http.ListenAndServe(addr, handler))
 
 }
