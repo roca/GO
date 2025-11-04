@@ -24,8 +24,8 @@ func main() {
 
 	// Call a tool on the server.
 	params := &mcp.CallToolParams{
-		Name:      "read_file",
-		Arguments: map[string]any{"path": "main.go"},
+		Name:      "read_doc_contents",
+		Arguments: map[string]any{"doc_id": "plan.md"},
 	}
 	res, err := session.CallTool(ctx, params)
 	if err != nil {
