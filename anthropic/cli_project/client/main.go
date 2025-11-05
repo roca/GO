@@ -1,50 +1,65 @@
 package main
 
 import (
+	"bufio"
 	"context"
-	"log"
+	"fmt"
+	"os"
 
+	"github.com/anthropics/anthropic-sdk-go"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
+var anthropicClient anthropic.Client
+var mcpClient *mcp.Client
+
+func init() {
+	// Install dependencies
+	// Load env varaibles
+	// SDK looks for 'ANTHROPIC_API_KEY' env by default
+
+	// Create an API Client
+	anthropicClient = anthropic.NewClient()
+
+	// Create a new MCP client, with no features.:w
+
+	mcpClient = mcp.NewClient(&mcp.Implementation{Name: "mcp-client", Version: "v1.0.0"}, nil)
+}
+
 func main() {
-	ctx := context.Background()
 
-	// Create a new client, with no features.:w
+	scanner := bufio.NewReader(os.Stdin)
 
-	client := mcp.NewClient(&mcp.Implementation{Name: "mcp-client", Version: "v1.0.0"}, nil)
+	getUserMessage := func() (string, error) {
+		text, _, err := scanner.ReadLine()
 
-	// Connect to a server over http
-	// transport := &mcp.CommandTransport{Command: exec.Command("../server/myserver")}
-	transport := &mcp.SSEClientTransport{Endpoint: "http://localhost:8080/"}
+		if err != nil {
+			return "", err
+		}
 
-	session, err := client.Connect(ctx, transport, nil)
+		return string(text), nil
+	}
+
+	// tools := []ToolDefinition{ReadFileDefinition}
+	tools := []*mcp.Tool{}
+
+	read_doc_tool := &mcp.Tool{
+		Name:        "read_doc_contents",
+		Description: "Read the contents of a document and return it as a string",
+	}
+
+	edit_doc_tool := &mcp.Tool{
+		Name:        "edit_document",
+		Description: "Edit a document by replacing a string in the documents content with a new string",
+	}
+
+	tools = append(tools, read_doc_tool, edit_doc_tool)
+
+	agent := NewAgent(&anthropicClient, mcpClient, getUserMessage, tools)
+
+	err := agent.run(context.TODO())
+
 	if err != nil {
-		log.Fatal(err)
-	}
-	defer session.Close()
-
-	// 	toolResults, err := session.ListTools(ctx, &mcp.ListToolsParams{})
-	// 	if err != nil {
-	// 		log.Fatalf("ListTools failed: %v", err)
-	// 	}
-	// 	for _, tool := range toolResults.Tools {
-	// 		log.Printf("Tool: %s - %s", tool.Name, tool.Description)
-	// 	}
-
-	// Call a tool on the server.
-	params := &mcp.CallToolParams{
-		Name:      "read_doc_contents",
-		Arguments: map[string]any{"doc_id": "plan.md"},
-	}
-	res, err := session.CallTool(ctx, params)
-	if err != nil {
-		log.Fatalf("CallTool failed: %v", err)
-	}
-	if res.IsError {
-		log.Fatal("tool failed")
-	}
-	for _, c := range res.Content {
-		log.Print(c.(*mcp.TextContent).Text)
+		fmt.Printf("Error: %s\n", err.Error())
 	}
 }
