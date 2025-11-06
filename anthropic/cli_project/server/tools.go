@@ -18,11 +18,11 @@ var docs map[string]string = map[string]string{
 }
 
 type ReadInput struct {
-	DocID string `json:"doc_id" jsonschema:"Id of the document to read"`
+	DocID string `json:"doc_id" jsonschema:"ID (etc. name) of the document to read"`
 }
 
 type EditInput struct {
-	DocID  string `json:"doc_id" jsonschema:"Id of the document to read"`
+	DocID  string `json:"doc_id" jsonschema:"ID (etc. name) of the document to read"`
 	OldStr string `json:"old_str" jsonschema:"The text to replace. Must match exactly, including whitespace"`
 	NewStr string `json:"new_str" jsonschema:"The new text to insert in palce of the old text"`
 }

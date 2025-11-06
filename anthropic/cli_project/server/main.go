@@ -12,6 +12,15 @@ func main() {
 	// Create a server with a single tool.
 	server := mcp.NewServer(&mcp.Implementation{Name: "greeter", Version: "v1.0.0"}, nil)
 
+	AddListDocIDsResource(server)
+	AddDocContentResource(server)
+
+	handler := mcp.NewSSEHandler(func(request *http.Request) *mcp.Server {
+		url := request.URL.Path
+		log.Printf("Handling request for URL %s\n", url)
+		return server
+	}, nil)
+
 	read_doc_tool := &mcp.Tool{
 		Name:        "read_doc_contents",
 		Description: "Read the contents of a document and return it as a string",
@@ -30,11 +39,6 @@ func main() {
 	// Run the server over http
 	log.Printf("MCP servers serving at %s", addr)
 
-	handler := mcp.NewSSEHandler(func(request *http.Request) *mcp.Server {
-		url := request.URL.Path
-		log.Printf("Handling request for URL %s\n", url)
-		return server
-	}, nil)
 	log.Fatal(http.ListenAndServe(addr, handler))
 
 }
