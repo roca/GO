@@ -1,11 +1,11 @@
 package main
 
 import (
-	"bufio"
 	"context"
 	"fmt"
-	"os"
 
+	"atomicgo.dev/keyboard"
+	"atomicgo.dev/keyboard/keys"
 	"github.com/anthropics/anthropic-sdk-go"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
@@ -28,14 +28,34 @@ func init() {
 
 func main() {
 
-	scanner := bufio.NewReader(os.Stdin)
-
 	getUserMessage := func() (string, error) {
-		text, _, err := scanner.ReadLine()
+		text := ""
 
-		if err != nil {
-			return "", err
-		}
+		keyboard.Listen(func(key keys.Key) (stop bool, err error) {
+			text += ""
+
+			switch key.Code {
+			case keys.Enter:
+				return true, nil
+			case keys.Backspace:
+				if len(text) > 0 {
+					text = text[:len(text)-1]
+					fmt.Print("\b \b")
+				}
+				return false, nil
+			case keys.Space:
+				fmt.Print(" ")
+				text += " "
+				return false, nil
+			case keys.RuneKey:
+				fmt.Print(key.String())
+				text += key.String()
+				return false, nil
+			default:
+				return false, nil
+			}
+
+		})
 
 		return string(text), nil
 	}
