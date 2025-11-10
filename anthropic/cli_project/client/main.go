@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"atomicgo.dev/keyboard"
 	"atomicgo.dev/keyboard/keys"
@@ -29,7 +30,30 @@ func init() {
 
 func getDocumentIDS(menu *gocliselect.Menu) {
 
+	ctx := context.Background()
+
 	// TODO: reach out to the MCP server
+	// Connect to a server over http
+	// transport := &mcp.CommandTransport{Command: exec.Command("../server/myserver")}
+	transport := &mcp.SSEClientTransport{Endpoint: "http://localhost:8080/"}
+
+	session, err := mcpClient.Connect(ctx, transport, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer session.Close()
+
+	results, err := session.ReadResource(ctx, &mcp.ReadResourceParams{
+		URI: "docs://documents",
+	})
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, content := range results.Contents {
+		menu.AddItem(content.Text, content.Text)
+	}
 
 }
 
@@ -56,7 +80,7 @@ func getUserMessage() (string, error) {
 			text += " "
 			return false, nil
 		case keys.CtrlAt:
-			choice := menu.Display()
+			choice := docIDMenu.Display()
 			text += choice
 			fmt.Print(text)
 			return false, nil
