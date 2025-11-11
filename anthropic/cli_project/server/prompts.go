@@ -11,7 +11,7 @@ func AddReformatToMarkdownPrompt(server *mcp.Server) {
 	var argements []*mcp.PromptArgument = []*mcp.PromptArgument{
 		{
 			Name:        "doc_id",
-			Description: "ID (etc. name) of the document to read",
+			Description: "ID (etc. name) of the document to reformeat to markdown",
 		},
 	}
 
@@ -25,7 +25,17 @@ func AddReformatToMarkdownPrompt(server *mcp.Server) {
 		doc_id := req.Params.Arguments["doc_id"]
 
 		tc := &mcp.TextContent{
-			Text: fmt.Sprintf("Please reformat the document with ID %s to be in markdown format.", doc_id),
+			Text: fmt.Sprintf(`
+				Your goal is to reformat a document to be written with mardowdn syntax.
+
+				The id of the document you need to reformat is :
+				<document_id>
+				%s
+				</document_id
+ 
+        Add in headers, bullet points, tables, etc as necessary. Feel free to add in extra text, but don't change the meaning of the report.
+        Use the 'edit_document' tool to edit the document. After the document has been edited, respond with the final version of the doc. Don't explain your changes.
+				`, doc_id),
 		}
 
 		result := &mcp.GetPromptResult{
