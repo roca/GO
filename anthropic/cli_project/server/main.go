@@ -14,6 +14,7 @@ func main() {
 
 	AddListDocIDsResource(server)
 	AddDocContentResource(server)
+	AddReformatToMarkdownPrompt(server)
 
 	handler := mcp.NewSSEHandler(func(request *http.Request) *mcp.Server {
 		url := request.URL.Path
