@@ -1,0 +1,22 @@
+version: "3.1"
+
+services:
+  anthropic-client:
+    container_name: anthropic-client
+    image: ghcr.io/anthropics/anthropic-quickstarts:computer-use-demo-latest
+    privileged: true
+    ports:
+      - "8080:8080"
+      - "6080:6080"
+      - "8501:8501"
+      - "5900:5900"
+    environment:
+      - ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY
+    volumes:
+      - $HOME/.anthropic:/home/computeruse/.anthropic
+    working_dir: /home/computeruse
+    command: >
+      bash -c "
+        ./entrypoint.sh &
+        tail -f /dev/null
+      "
