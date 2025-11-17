@@ -1,2 +1,6 @@
 test.http
 .secret
+cli_project/Dockerfile
+cli_project/ssh/
+cli_project/ssl/
+
