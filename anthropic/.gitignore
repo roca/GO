@@ -3,4 +3,5 @@ test.http
 cli_project/Dockerfile
 cli_project/ssh/
 cli_project/ssl/
+cli_project/k8s/
 
