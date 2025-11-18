@@ -5,7 +5,7 @@
 To build the Docker image for the server, run the following command from the root directory of the project:
 
 ```bash
-docker build -t mcp-server .
+docker build -t mcp-server --platform linux/amd64 .
 ```
 
 ## Docker run
