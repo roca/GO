@@ -32,8 +32,14 @@ func main() {
 		Description: "Edit a document by replacing a string in the documents content with a new string",
 	}
 
+	get_jira_ticket_tool := &mcp.Tool{
+		Name:        "get_jira_ticket",
+		Description: "Fetch details of a Jira ticket given its TicketID",
+	}
+
 	mcp.AddTool(server, read_doc_tool, ReadDocument)
 	mcp.AddTool(server, edit_doc_tool, EditDocument)
+	mcp.AddTool(server, get_jira_ticket_tool, GetJiraTicket)
 
 	addr := ":8080"
 

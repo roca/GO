@@ -2,7 +2,11 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"io"
+	"net/http"
+	"os"
 	"strings"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -16,6 +20,12 @@ var docs map[string]string = map[string]string{
 	"plan.md":         "The plan outlines the steps for the project's implementation.",
 	"spec.txt":        "These specifications define the technical requirements for the equipment.",
 }
+
+type JiraTicketInput struct {
+	TicketID string `json:"ticket_id" jsonschema:"ID of the Jira ticket to retrieve"`
+}
+
+type JiraTicket map[string]any
 
 type ReadInput struct {
 	DocID string `json:"doc_id" jsonschema:"ID (etc. name) of the document to read"`
@@ -59,4 +69,47 @@ func EditDocument(ctx context.Context, req *mcp.CallToolRequest, input EditInput
 	docs[input.DocID] = strings.ReplaceAll(content, input.OldStr, input.NewStr)
 
 	return nil, Output{Content: docs[input.DocID]}, nil
+}
+
+func GetJiraTicket(ctx context.Context, req *mcp.CallToolRequest, input JiraTicketInput) (
+	*mcp.CallToolResult,
+	JiraTicket,
+	error,
+) {
+
+	// In a real implementation, you would fetch the ticket from Jira's API.
+	// Here, we return a mock ticket for demonstration purposes.
+
+	if input.TicketID == "" {
+		return nil, JiraTicket{}, fmt.Errorf("TicketID cannot be empty")
+	}
+	request, err := http.NewRequest("GET", "https://jira.regeneron.com/rest/api/2/issue/"+input.TicketID, nil)
+	if err != nil {
+		return nil, JiraTicket{}, fmt.Errorf("Failed to create Jira API request: %v", err)
+	}
+
+	request.Header.Add("Content-Type", "application/json")
+	request.Header.Add("Authorization", "Bearer "+os.Getenv("JIRA_API_TOKEN"))
+
+	client := &http.Client{}
+
+	response, err := client.Do(request)
+	if err != nil || response.StatusCode != 200 {
+		return nil, JiraTicket{}, fmt.Errorf("Failed to fetch ticket from Jira API: %v", err)
+	}
+	defer response.Body.Close()
+
+	var ticket JiraTicket
+
+	bytes, err := io.ReadAll(response.Body)
+	if err != nil {
+		return nil, JiraTicket{}, fmt.Errorf("Failed to read Jira ticket response body: %v", err)
+	}
+
+	err = json.Unmarshal(bytes, &ticket)
+	if err != nil {
+		return nil, JiraTicket{}, fmt.Errorf("Failed to decode Jira ticket JSON: %v", err)
+	}
+
+	return nil, ticket, nil
 }
