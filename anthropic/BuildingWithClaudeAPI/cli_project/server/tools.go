@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -85,6 +86,7 @@ func GetJiraTicket(ctx context.Context, req *mcp.CallToolRequest, input JiraTick
 	}
 	request, err := http.NewRequest("GET", "https://jira.regeneron.com/rest/api/2/issue/"+input.TicketID, nil)
 	if err != nil {
+		log.Printf("Failed to create Jira API request: %v", err)
 		return nil, JiraTicket{}, fmt.Errorf("Failed to create Jira API request: %v", err)
 	}
 
@@ -93,8 +95,10 @@ func GetJiraTicket(ctx context.Context, req *mcp.CallToolRequest, input JiraTick
 
 	client := &http.Client{}
 
+	log.Println("Executing:", request.URL)
 	response, err := client.Do(request)
 	if err != nil || response.StatusCode != 200 {
+		log.Printf("Failed to fetch ticket from Jira API: %v", err)
 		return nil, JiraTicket{}, fmt.Errorf("Failed to fetch ticket from Jira API: %v", err)
 	}
 	defer response.Body.Close()
@@ -102,12 +106,14 @@ func GetJiraTicket(ctx context.Context, req *mcp.CallToolRequest, input JiraTick
 	var ticket JiraTicket
 
 	bytes, err := io.ReadAll(response.Body)
+	log.Printf("Failed to read Jira ticket response body: %v", err)
 	if err != nil {
 		return nil, JiraTicket{}, fmt.Errorf("Failed to read Jira ticket response body: %v", err)
 	}
 
 	err = json.Unmarshal(bytes, &ticket)
 	if err != nil {
+		log.Printf("Failed to decode Jira ticket JSON: %v", err)
 		return nil, JiraTicket{}, fmt.Errorf("Failed to decode Jira ticket JSON: %v", err)
 	}
 
