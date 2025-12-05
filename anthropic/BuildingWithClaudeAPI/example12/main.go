@@ -14,7 +14,10 @@ import (
 func main() {
 	evaluator := prompt_evaluator.PromptEvaluator{}
 	task := prompt_evaluator.Task{
-		Task: "Write a compact, concise 1 day meal plan for a single athlete",
+		Task: `Write a compact, concise 1 day meal plan for a professional cyclist based on the following inputs. 
+		The meal plan should include breakfast, lunch, dinner, and snacks. Each meal should be balanced and provide the necessary nutrients for an athlete. 
+		Present the meal plan in a clear and organized format.
+		This athletes weight is 52 kg and height is 160 cm. The goal of the athlete is to build muscle mass.`,
 		PromptInputSpecs: map[string]string{
 			"height":       "Athlete's height in cm",
 			"weight":       "Athlete's weight in kg",
@@ -28,7 +31,7 @@ func main() {
 		task.Task,
 		task.PromptInputSpecs,
 		"dataset.json",
-		3,
+		4,
 	)
 	if err != nil {
 		log.Fatalf("Could not create dataset: %v", err)
