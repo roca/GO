@@ -1,4 +1,4 @@
-module langchain-go-app
+module example01
 
 go 1.25.3
 
