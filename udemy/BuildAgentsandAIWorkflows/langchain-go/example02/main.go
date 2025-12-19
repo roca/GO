@@ -2,5 +2,8 @@ package main
 
 func main() {
 	// stringPromptTemplates()
-	StandardTemplateDefinition()
+	// standardTemplateDefinition()
+	// jinjaPromptTemplates()
+	multilinePromptTemplates()
+
 }
