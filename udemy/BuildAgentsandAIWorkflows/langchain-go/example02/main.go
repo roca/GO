@@ -4,6 +4,7 @@ func main() {
 	// stringPromptTemplates()
 	// standardTemplateDefinition()
 	// jinjaPromptTemplates()
-	multilinePromptTemplates()
+	// multilinePromptTemplates()
+	partialVariablePromptTemplates()
 
 }
