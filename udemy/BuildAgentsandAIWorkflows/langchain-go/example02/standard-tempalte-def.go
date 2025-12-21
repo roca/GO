@@ -6,7 +6,7 @@ import (
 	"github.com/tmc/langchaingo/prompts"
 )
 
-func standardTemplateDefinition() {
+func standardTemplateDefinition() string {
 
 	templateWithProps := prompts.PromptTemplate{
 		Template:       "Research {{.topic}} on '{{.website}}'",
@@ -20,5 +20,7 @@ func standardTemplateDefinition() {
 	})
 
 	fmt.Println(prompt)
+
+	return prompt
 
 }
