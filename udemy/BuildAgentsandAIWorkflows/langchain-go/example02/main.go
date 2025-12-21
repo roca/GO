@@ -5,6 +5,7 @@ func main() {
 	// standardTemplateDefinition()
 	// jinjaPromptTemplates()
 	// multilinePromptTemplates()
-	partialVariablePromptTemplates()
+	// partialVariablePromptTemplates()
+	promptWithModels()
 
 }
