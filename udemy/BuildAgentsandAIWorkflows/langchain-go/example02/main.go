@@ -26,6 +26,7 @@ func main() {
 	// multilinePromptTemplates()
 	// partialVariablePromptTemplates()
 	// promptWithModels()
-	chatPromptTemplate()
+	// chatPromptTemplate()
+	usingChatModels()
 
 }
