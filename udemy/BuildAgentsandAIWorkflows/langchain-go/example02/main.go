@@ -1,12 +1,15 @@
 package main
 
 import (
+	"context"
 	"log"
 
 	"github.com/tmc/langchaingo/llms/anthropic"
+	"github.com/tmc/langchaingo/llms/googleai"
 )
 
 var llm *anthropic.LLM
+var llmGenAI *googleai.GoogleAI
 
 func init() {
 	var err error
@@ -17,6 +20,9 @@ func init() {
 	if err != nil {
 		log.Fatalf("Failed to create Anthropic LLM: %v", err)
 	}
+
+	ctx := context.Background()
+	llmGenAI, err = googleai.New(ctx)
 }
 
 func main() {
@@ -27,6 +33,6 @@ func main() {
 	// partialVariablePromptTemplates()
 	// promptWithModels()
 	// chatPromptTemplate()
-	usingChatModels()
-
+	// usingChatModels()
+	usingGoogleGenAI()
 }
