@@ -33,6 +33,6 @@ func main() {
 	// partialVariablePromptTemplates()
 	// promptWithModels()
 	// chatPromptTemplate()
-	// usingChatModels()
-	usingGoogleGenAI()
+	usingChatModels()
+	// usingGoogleGenAI()
 }
