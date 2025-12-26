@@ -8,31 +8,38 @@ import (
 	"github.com/tmc/langchaingo/llms/googleai"
 )
 
-var llm *anthropic.LLM
+var llmAnthropic *anthropic.LLM
 var llmGenAI *googleai.GoogleAI
 
 func init() {
 	var err error
 
-	llm, err = anthropic.New(
+	llmAnthropic, err = anthropic.New(
 		anthropic.WithModel("claude-haiku-4-5-20251001"),
+		// anthropic.WithToken(os.Getenv("SOME_API_KEY")), // Default API Key from environment variable ANTHROPIC_API_KEY
 	)
 	if err != nil {
 		log.Fatalf("Failed to create Anthropic LLM: %v", err)
 	}
 
 	ctx := context.Background()
-	llmGenAI, err = googleai.New(ctx)
+	llmGenAI, err = googleai.New(
+		ctx,
+		// googleai.WithAPIKey(os.Getenv("SOME_API_KEY")), // Default API Key from environment variable GOOGLE_API_KEY
+
+	)
+
 }
 
 func main() {
-	// stringPromptTemplates()
+	// stringToTemplates()
 	// standardTemplateDefinition()
-	// jinjaPromptTemplates()
-	// multilinePromptTemplates()
-	// partialVariablePromptTemplates()
+	// jinjaToTemplates()
+	// multilineToTemplates()
+	// partialVariableTemplates()
 	// promptWithModels()
 	// chatPromptTemplate()
-	usingChatModels()
+	// usingChatModels()
 	// usingGoogleGenAI()
+	usingModelConfigurations()
 }

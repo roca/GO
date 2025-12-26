@@ -6,7 +6,7 @@ import (
 	"github.com/tmc/langchaingo/prompts"
 )
 
-func jinjaPromptTemplates() {
+func jinjaToTemplates() {
 
 	templateWithJinja := prompts.PromptTemplate{
 		Template:       "Translate '{{statment}}' from {{lang1}} to {{lang2}}.",

@@ -6,7 +6,7 @@ import (
 	"github.com/tmc/langchaingo/prompts"
 )
 
-func stringPromptTemplates() string {
+func stringToTemplates() string {
 	simpleTemplate := prompts.NewPromptTemplate(
 		"Write a {{.content_type}} about {{.subject}}",
 		[]string{"content_type", "subject"},

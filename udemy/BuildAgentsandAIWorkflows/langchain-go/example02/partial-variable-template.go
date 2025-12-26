@@ -7,7 +7,7 @@ import (
 	"github.com/tmc/langchaingo/prompts"
 )
 
-func partialVariablePromptTemplates() {
+func partialVariableTemplates() {
 
 	templateWithJinja := prompts.PromptTemplate{
 		Template:       "I want the {{company_name}} financial report for the date {{date}}.",
