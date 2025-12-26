@@ -6,7 +6,7 @@ import (
 	"github.com/tmc/langchaingo/prompts"
 )
 
-func multilinePromptTemplates() {
+func multilineToTemplates() {
 
 	templateString := `
 	Display the following list of {{.profession}}

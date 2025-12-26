@@ -13,7 +13,7 @@ func usingChatModels() {
 	prompt := "Who invented the microphone"
 
 	ctx := context.Background()
-	completion, err := llms.GenerateFromSinglePrompt(ctx, llm, prompt)
+	completion, err := llms.GenerateFromSinglePrompt(ctx, llmAnthropic, prompt)
 	if err != nil {
 		log.Fatalf("LLM call failed: %v", err)
 	}

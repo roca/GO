@@ -34,7 +34,7 @@ func chatPromptTemplate() {
 	fmt.Println(formattedChatPrompt)
 
 	ctx := context.Background()
-	completion, err := llms.GenerateFromSinglePrompt(ctx, llm, formattedChatPrompt)
+	completion, err := llms.GenerateFromSinglePrompt(ctx, llmAnthropic, formattedChatPrompt)
 	if err != nil {
 		log.Fatalf("LLM call failed: %v", err)
 	}
