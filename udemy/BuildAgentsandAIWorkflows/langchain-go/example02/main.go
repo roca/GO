@@ -41,5 +41,6 @@ func main() {
 	// chatPromptTemplate()
 	// usingChatModels()
 	// usingGoogleGenAI()
-	usingModelConfigurations()
+	// usingModelConfigurations()
+	responseConfiguration()
 }

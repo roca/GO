@@ -16,7 +16,6 @@ func usingModelConfigurations() {
 	llm, err := anthropic.New(
 		anthropic.WithModel("claude-haiku-4-5-20251001"),
 		// anthropic.WithToken(os.Getenv("SOME_API_KEY")), // Default API Key from environment variable ANTHROPIC_API_KEY
-		anthropic.With
 	)
 	if err != nil {
 		log.Fatalf("Failed to create Anthropic LLM: %v", err)
