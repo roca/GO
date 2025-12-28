@@ -42,5 +42,6 @@ func main() {
 	// usingChatModels()
 	// usingGoogleGenAI()
 	// usingModelConfigurations()
-	responseConfiguration()
+	// responseConfiguration()
+	usingChatModels()
 }

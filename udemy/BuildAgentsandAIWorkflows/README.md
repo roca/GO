@@ -5,3 +5,5 @@
 - [Googgle AI Studio: https://aistudio.google.com/](https://aistudio.google.com/)
 
 - [LangChain Go Documentation: https://pkg.go.dev/github.com/tmc/langchaingo](https://pkg.go.dev/github.com/tmc/langchaingo)
+
+- [Ollama: https://ollama.com/](https://ollama.com/)
