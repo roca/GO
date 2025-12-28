@@ -21,7 +21,7 @@ func main() {
 		MaxTokens: 1024,
 		Model:     anthropic.ModelClaude3_5HaikuLatest,
 		Messages: []anthropic.MessageParam{
-			anthropic.NewUserMessage(anthropic.NewTextBlock("What is a quaternion? Answer in one sentence.")),
+			anthropic.NewUserMessage(anthropic.NewTextBlock("What is a planks constant? ")),
 		},
 	})
 	if err != nil {
