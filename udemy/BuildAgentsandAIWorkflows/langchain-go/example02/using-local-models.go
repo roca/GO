@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 
+	"github.com/tmc/langchaingo/llms"
 	"github.com/tmc/langchaingo/llms/ollama"
 )
 
@@ -18,9 +19,13 @@ func usingLocalModels() {
 		log.Fatal(err)
 	}
 
-	prompt := "What is the capital of United States ?"
+	prompt := "Write a poem about fast cars."
 
-	response, err := localModel.Call(ctx, prompt)
+	response, err := llms.GenerateFromSinglePrompt(
+		ctx,
+		localModel,
+		prompt,
+	)
 	if err != nil {
 		log.Fatal(err)
 	}
