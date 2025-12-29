@@ -44,5 +44,6 @@ func main() {
 	// usingModelConfigurations()
 	// responseConfiguration()
 	// usingChatModels()
-	usingLocalModels()
+	// usingLocalModels()
+	UsingFakeLLMs()
 }
