@@ -47,5 +47,6 @@ func main() {
 	// usingLocalModels()
 	// UsingFakeLLMs()
 	// llmChainsDemo()
-	sequentialChainsDemo()
+	// sequentialChainsDemo()
+	conversationalChainsDemo()
 }
