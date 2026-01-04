@@ -49,5 +49,7 @@ func main() {
 	// llmChainsDemo()
 	// sequentialChainsDemo()
 	// conversationalChainsDemo()
-	reActAgentDemo()
+	// reActAgentDemo()
+	// usingCustomTool()
+	browsingAgent()
 }
