@@ -2,7 +2,10 @@ module example02
 
 go 1.25.3
 
-require github.com/tmc/langchaingo v0.1.14
+require (
+	github.com/tmc/langchaingo v0.1.14
+	github.com/vendasta/langchaingo v0.1.13
+)
 
 require (
 	cloud.google.com/go v0.116.0 // indirect
@@ -38,7 +41,7 @@ require (
 	github.com/nikolalohinski/gonja v1.5.3 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.9 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
-	github.com/pkoukk/tiktoken-go v0.1.6 // indirect
+	github.com/pkoukk/tiktoken-go v0.1.8 // indirect
 	github.com/shopspring/decimal v1.2.0 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/spf13/cast v1.3.1 // indirect
