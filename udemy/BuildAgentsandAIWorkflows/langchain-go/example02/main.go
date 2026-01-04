@@ -48,5 +48,6 @@ func main() {
 	// UsingFakeLLMs()
 	// llmChainsDemo()
 	// sequentialChainsDemo()
-	conversationalChainsDemo()
+	// conversationalChainsDemo()
+	reActAgentDemo()
 }
