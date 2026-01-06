@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/bedrockruntime"
 	"github.com/tmc/langchaingo/llms"
 	"github.com/tmc/langchaingo/llms/anthropic"
 	"github.com/tmc/langchaingo/llms/bedrock"
@@ -23,10 +25,17 @@ func init() {
 	if err != nil {
 		log.Fatalf("Failed to create Anthropic LLM: %v", err)
 	}
+	cfg, err := config.LoadDefaultConfig(
+		context.TODO(),
+		config.WithSharedConfigProfile("default"),
+		config.WithRegion("us-east-1"),
+	)
+	client := bedrockruntime.NewFromConfig(cfg) // Assumes AWS credentials are set in the environment
 
 	// Create Bedrock LLM options
 	opts := []bedrock.Option{
-		bedrock.WithModel("amazon.titan-text-lite-v1"),
+		bedrock.WithClient(client),
+		bedrock.WithModel("global.anthropic.claude-haiku-4-5-20251001-v1:0"),
 	}
 
 	// ctx := context.Background()
@@ -38,7 +47,7 @@ func init() {
 }
 
 func main() {
-	prompt := "What is the capital of France?"
+	prompt := "What is the capital of the United States?"
 
 	ctx := context.Background()
 	completion, err := llms.GenerateFromSinglePrompt(ctx, llmBedrock, prompt)
