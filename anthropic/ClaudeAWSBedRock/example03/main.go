@@ -50,7 +50,9 @@ func main() {
 	reader := bufio.NewReader(os.Stdin)
 
 	fmt.Println("🤖 Conversational Chatbot Started")
-	fmt.Println("Type 'exit' or 'quit' to end the conversation\n")
+	fmt.Println("Type 'exit' or 'quit' to end the conversation")
+
+	AddUserMessage(ctx, bufferMemory, "System: You are Python engineer who writes very concise code.")
 
 	for {
 
@@ -93,7 +95,6 @@ func main() {
 
 		// Add memory variables to inputs
 		maps.Copy(inputs, memVars)
-
 		// for k, v := range memVars {
 		//	inputs[k] = v
 		// }
