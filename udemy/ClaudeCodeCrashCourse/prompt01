@@ -1,0 +1,8 @@
+I want you to help me write a spec file for a project I am building. Its called
+"hookhub". Its a place where cool open source claude hooks are dispalyed and 
+browsed. Search on claude hooks and write an intial spec for this. Remember its
+an MVP ATM and we need only the functionality of dispalying the hooks. Hooks are
+found in github respository, they have name, category, description and link to
+repo. The main page shouild display the hooks in a grid like view.
+
+I want you to write it in to a spec directory and make this a CLAUDE.md file.
