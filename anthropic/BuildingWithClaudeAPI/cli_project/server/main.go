@@ -37,9 +37,15 @@ func main() {
 		Description: "Fetch details of a Jira ticket given its TicketID",
 	}
 
+	update_jira_ticket_tool := &mcp.Tool{
+		Name:        "update_jira_ticket",
+		Description: "Update a Jira ticket by adding a comment to it",
+	}
+
 	mcp.AddTool(server, read_doc_tool, ReadDocument)
 	mcp.AddTool(server, edit_doc_tool, EditDocument)
 	mcp.AddTool(server, get_jira_ticket_tool, GetJiraTicket)
+	mcp.AddTool(server, update_jira_ticket_tool, UpdateJiraTicket)
 
 	addr := ":8080"
 

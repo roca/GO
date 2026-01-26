@@ -13,7 +13,7 @@ docker build -t mcp-server --platform linux/amd64 .
 To run the Docker container for the server, use the following command:
 
 ```bash
-docker run -p 8000:8000 mcp-server
+docker run -p 8080:8080 mcp-server
 ```
 
 ## Docker tag for AWS ECR

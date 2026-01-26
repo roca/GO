@@ -26,6 +26,11 @@ type JiraTicketInput struct {
 	TicketID string `json:"ticket_id" jsonschema:"ID of the Jira ticket to retrieve"`
 }
 
+type UpdateJiraTicketInput struct {
+	TicketID string `json:"ticket_id" jsonschema:"ID of the Jira ticket to update"`
+	Comment  string `json:"comment" jsonschema:"The comment text to add to the ticket"`
+}
+
 type JiraTicket map[string]any
 
 type ReadInput struct {
@@ -106,8 +111,8 @@ func GetJiraTicket(ctx context.Context, req *mcp.CallToolRequest, input JiraTick
 	var ticket JiraTicket
 
 	bytes, err := io.ReadAll(response.Body)
-	log.Printf("Failed to read Jira ticket response body: %v", err)
 	if err != nil {
+		log.Printf("Failed to read Jira ticket response body: %v", err)
 		return nil, JiraTicket{}, fmt.Errorf("Failed to read Jira ticket response body: %v", err)
 	}
 
@@ -118,4 +123,71 @@ func GetJiraTicket(ctx context.Context, req *mcp.CallToolRequest, input JiraTick
 	}
 
 	return nil, ticket, nil
+}
+
+func UpdateJiraTicket(ctx context.Context, req *mcp.CallToolRequest, input UpdateJiraTicketInput) (
+	*mcp.CallToolResult,
+	JiraTicket,
+	error,
+) {
+
+	// Validate inputs
+	if input.TicketID == "" {
+		return nil, JiraTicket{}, fmt.Errorf("TicketID cannot be empty")
+	}
+	if input.Comment == "" {
+		return nil, JiraTicket{}, fmt.Errorf("Comment cannot be empty")
+	}
+
+	// Prepare the comment payload
+	commentPayload := map[string]interface{}{
+		"body": input.Comment,
+	}
+	payloadBytes, err := json.Marshal(commentPayload)
+	if err != nil {
+		log.Printf("Failed to marshal comment payload: %v", err)
+		return nil, JiraTicket{}, fmt.Errorf("Failed to marshal comment payload: %v", err)
+	}
+
+	// Create POST request to add comment
+	url := "https://jira.regeneron.com/rest/api/2/issue/" + input.TicketID + "/comment"
+	request, err := http.NewRequest("POST", url, strings.NewReader(string(payloadBytes)))
+	if err != nil {
+		log.Printf("Failed to create Jira API request: %v", err)
+		return nil, JiraTicket{}, fmt.Errorf("Failed to create Jira API request: %v", err)
+	}
+
+	request.Header.Add("Content-Type", "application/json")
+	request.Header.Add("Authorization", "Bearer "+os.Getenv("JIRA_API_TOKEN"))
+
+	client := &http.Client{}
+
+	log.Println("Executing:", request.URL)
+	response, err := client.Do(request)
+	if err != nil {
+		log.Printf("Failed to add comment to Jira ticket: %v", err)
+		return nil, JiraTicket{}, fmt.Errorf("Failed to add comment to Jira ticket: %v", err)
+	}
+	defer response.Body.Close()
+
+	if response.StatusCode != 201 && response.StatusCode != 200 {
+		log.Printf("Jira API returned status code: %d", response.StatusCode)
+		return nil, JiraTicket{}, fmt.Errorf("Jira API returned status code: %d", response.StatusCode)
+	}
+
+	var commentResponse JiraTicket
+
+	bytes, err := io.ReadAll(response.Body)
+	if err != nil {
+		log.Printf("Failed to read Jira comment response body: %v", err)
+		return nil, JiraTicket{}, fmt.Errorf("Failed to read Jira comment response body: %v", err)
+	}
+
+	err = json.Unmarshal(bytes, &commentResponse)
+	if err != nil {
+		log.Printf("Failed to decode Jira comment response JSON: %v", err)
+		return nil, JiraTicket{}, fmt.Errorf("Failed to decode Jira comment response JSON: %v", err)
+	}
+
+	return nil, commentResponse, nil
 }
