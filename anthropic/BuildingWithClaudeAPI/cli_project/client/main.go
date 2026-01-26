@@ -112,7 +112,17 @@ func main() {
 		Description: "Edit a document by replacing a string in the documents content with a new string",
 	}
 
-	tools = append(tools, read_doc_tool, edit_doc_tool)
+	get_jira_ticket_tool := &mcp.Tool{
+		Name:        "get_jira_ticket",
+		Description: "Fetch details of a Jira ticket given its TicketID",
+	}
+
+	update_jira_ticket_tool := &mcp.Tool{
+		Name:        "update_jira_ticket",
+		Description: "Update a Jira ticket by adding a comment to it",
+	}
+
+	tools = append(tools, read_doc_tool, edit_doc_tool, get_jira_ticket_tool, update_jira_ticket_tool)
 
 	agent := NewAgent(&anthropicClient, mcpClient, getUserMessage, tools)
 
