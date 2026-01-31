@@ -9,30 +9,56 @@ import (
 	"strings"
 )
 
+// IDs for search types
 const (
-	DFS = iota
-	BFS
-	GBFS
-	AStar
-	DIJKSTRA
+	DFS      = iota // Depth-First Search
+	BFS             // Breadth-First Search
+	GBFS            // Greedy Best-First Search
+	AStar           // A* Search
+	DIJKSTRA        // Dijkstra's Algorithm
 )
 
+// Point represents a coordinate in the maze
 type Point struct {
 	Row int
 	Col int
 }
 
+// Wall represents a cell in the maze, indicating if it's a wall or open space
 type Wall struct {
 	State Point
 	wall  bool
 }
 
+// Node represents a state in the search tree,
+// including its index, state, parent node, and action taken to reach it
+type Node struct {
+	index  int
+	State  Point
+	Parent *Node
+	Action string
+}
+
+// Solution represents the result of a search,
+type Solution struct {
+	Actions []string
+	Cells   []Point
+}
+
+// Maze represents the maze structure with its dimensions, start and goal points, and wall layout
 type Maze struct {
-	Height int
-	Width  int
-	Start  Point
-	Goal   Point
-	Walls  [][]Wall
+	Height      int
+	Width       int
+	Start       Point
+	Goal        Point
+	Walls       [][]Wall
+	CurrentNode *Node
+	Solution    Solution
+	Explored    []Point
+	Steps       int
+	NumExplored int
+	Debug       bool
+	SearchType  int
 }
 
 func main() {
