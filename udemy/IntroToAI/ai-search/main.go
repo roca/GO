@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"strings"
+	"time"
 )
 
 // IDs for search types
@@ -75,7 +76,34 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Printf("Maze Height/Width: %d/%d\n", m.Height, m.Width)
+	startTime := time.Now()
+
+	switch strings.ToLower(searchType) {
+	case "dfs":
+		m.SearchType = DFS
+		solveDFS(&m)
+	default:
+		fmt.Printf("Search type %s not recognized\n", searchType)
+		os.Exit(1)
+	}
+
+	if len(m.Solution.Actions) > 0 {
+		fmt.Println("Solution:")
+		//TODO: Print Maze
+		fmt.Println("Solution is", len(m.Solution.Cells), "steps.")
+		fmt.Println("Time to solve:", time.Since(startTime))
+	} else {
+		fmt.Println("No solution found.")
+	}
+
+	fmt.Println("Total nodes explored:", len(m.Explored))
+}
+
+func solveDFS(m *Maze) {
+	var s DepthFirstSearch
+	s.Game = m
+	fmt.Println("Goal is at:", s.Game.Goal)
+	s.Solve()
 }
 
 func (g *Maze) Load(fileName string) error {
@@ -112,6 +140,7 @@ func (g *Maze) Load(fileName string) error {
 	if !foundStart {
 		return fmt.Errorf("start point 'A' not found in the maze")
 	}
+
 	if !foundEnd {
 		return fmt.Errorf("end point 'B' not found in the maze")
 	}
@@ -154,6 +183,5 @@ func (g *Maze) Load(fileName string) error {
 	}
 
 	g.Walls = rows
-
 	return nil
 }
