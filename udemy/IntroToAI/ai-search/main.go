@@ -104,13 +104,30 @@ func (g *Maze) printMaze() {
 		for c, col := range row {
 			if col.wall {
 
-				// Block big square icon
+				// Get big square icon
 				// Press control + command + space to access emoji menu
 				fmt.Print("█")
 			} else if g.Start.Row == col.State.Row && g.Start.Col == col.State.Col {
 				fmt.Print("A")
+			} else if g.Goal.Row == col.State.Row && g.Goal.Col == col.State.Col {
+				fmt.Print("B")
+			} else if g.inSolution(Point{Row: r, Col: c}) {
+				fmt.Print("*")
+			} else {
+				fmt.Print(" ")
 			}
 		}
+		fmt.Println()
+	}
+}
+
+func (g *Maze) inSolution(p Point) bool {
+	for _, step := range g.Solution.Cells {
+		if step.Row == p.Row && step.Col == p.Col {
+			return true
+		}
+	}
+	return false
 }
 
 func solveDFS(m *Maze) {
