@@ -89,7 +89,7 @@ func main() {
 
 	if len(m.Solution.Actions) > 0 {
 		fmt.Println("Solution:")
-		//TODO: Print Maze
+		m.printMaze()
 		fmt.Println("Solution is", len(m.Solution.Cells), "steps.")
 		fmt.Println("Time to solve:", time.Since(startTime))
 	} else {
@@ -97,6 +97,20 @@ func main() {
 	}
 
 	fmt.Println("Total nodes explored:", len(m.Explored))
+}
+
+func (g *Maze) printMaze() {
+	for r, row := range g.Walls {
+		for c, col := range row {
+			if col.wall {
+
+				// Block big square icon
+				// Press control + command + space to access emoji menu
+				fmt.Print("█")
+			} else if g.Start.Row == col.State.Row && g.Start.Col == col.State.Col {
+				fmt.Print("A")
+			}
+		}
 }
 
 func solveDFS(m *Maze) {
