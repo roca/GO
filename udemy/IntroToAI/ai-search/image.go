@@ -8,6 +8,7 @@ import (
 	"image/png"
 	"os"
 
+	"github.com/StephaneBunel/bresenham"
 	"golang.org/x/image/font"
 	"golang.org/x/image/font/basicfont"
 	"golang.org/x/image/math/fixed"
@@ -79,6 +80,14 @@ func (g *Maze) OutputImage(fileName ...string) {
 				g.drawSquare(col, p, img, color.White, cellSize, j*cellSize, i*cellSize)
 			}
 		}
+	}
+
+	// Draw a grid
+	for i, _ := range g.Walls {
+		bresenham.DrawLine(img, 0, i*cellSize, g.Width*cellSize, i*cellSize, gray)
+	}
+	for i := 0; i <= g.Width; i++ {
+		bresenham.DrawLine(img, i*cellSize, 0, i*cellSize, g.Height*cellSize, gray)
 	}
 
 	f, _ := os.Create(outFile)
