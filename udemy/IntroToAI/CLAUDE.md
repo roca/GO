@@ -20,9 +20,20 @@ cd ai-search
 go run main.go -file mazes/maze.txt -search dfs
 ```
 
-Planned search algorithms (only DFS currently implemented):
-- `dfs` - Depth-First Search (implemented)
-- `bfs` - Breadth-First Search (planned)
+Available command-line flags:
+- `-file <path>`: Maze file to solve (default: "maze.txt")
+- `-search <algorithm>`: Search algorithm to use (default: "dfs")
+- `-debug`: Enable verbose debugging output to console
+- `-animate`: Generate an animated PNG showing the search process
+
+Example with animation:
+```bash
+go run main.go -file mazes/maze-100-steps.txt -search dfs -animate
+```
+
+Search algorithms:
+- `dfs` - Depth-First Search (implemented) - Uses LIFO stack, randomizes neighbor order
+- `bfs` - Breadth-First Search (implemented) - Uses FIFO queue, guarantees shortest path
 - `gbfs` - Greedy Best-First Search (planned)
 - `astar` - A* Search (planned)
 - `dijkstra` - Dijkstra's Algorithm (planned)
@@ -58,6 +69,7 @@ All defined in `ai-search/main.go`:
   - `NumExplored`: Count of explored nodes
   - `Debug`: Boolean flag for verbose debug output
   - `SearchType`: Algorithm constant (DFS, BFS, etc.)
+  - `Animate`: Boolean flag for animation generation
 
 - **Point**: Row/column coordinate (used for positions in the maze)
 
@@ -117,12 +129,57 @@ Each search algorithm follows a common structure (see `dfs.go` for the DFS imple
 
 4. **IMPORTANT**: When checking if a cell is traversable in `Neighbors()`, use `wall == false` (open path), not `wall == true` (wall)
 
-5. **Neighbor Ordering**: The DFS implementation randomizes neighbor order before adding them to the frontier. This means multiple runs may explore different paths even with the same maze.
+5. **Neighbor Ordering**:
+   - DFS (`dfs.go`): Randomizes neighbor order before adding them to the frontier. Multiple runs may explore different paths even with the same maze.
+   - BFS (`bfs.go`): Does NOT randomize - explores neighbors in consistent order (up, down, left, right) to guarantee shortest path.
 
-6. **Helper Functions**: `helpers.go` contains utility functions like `inExplored()` for checking if a Point has been visited.
+6. **Algorithm Differences**:
+   - DFS uses LIFO (Last In, First Out) - removes from end of frontier like a stack
+   - BFS uses FIFO (First In, First Out) - removes from beginning of frontier like a queue
+   - BFS guarantees the shortest path but may explore more nodes
+   - DFS may find a solution faster but doesn't guarantee optimality
 
-7. **Main Entry Point**: `main.go` handles file loading, validation, and dispatches to the appropriate solve function based on the `-search` flag
+7. **Helper Functions**: `helpers.go` contains utility functions like `inExplored()` for checking if a Point has been visited.
+
+8. **Main Entry Point**: `main.go` handles file loading, validation, and dispatches to the appropriate solve function based on the `-search` flag
+
+### Image Generation
+
+The program generates visual output using `image.go`:
+
+- **Static Image**: After solving, generates `image.png` showing the final solution with:
+  - Black: Walls
+  - Dark Green: Start position ('A')
+  - Red: Goal position ('B')
+  - Green: Solution path
+  - Yellow: Explored cells (not part of solution)
+  - White: Unvisited cells
+  - Cell coordinates displayed on each cell
+
+- **Animation**: With `-animate` flag, generates `animation.png` (APNG format) showing the search process step-by-step:
+  - Each frame stored temporarily in `tmp/` directory
+  - Final animation combines all frames with the solution
+  - Orange color indicates the current node being processed
+
+- **Cell Size**: Images use 60x60 pixel cells (configurable via `cellSize` constant in `image.go`)
+
+- **Grid Lines**: Gray grid lines separate cells for clarity
+
+### Directory Structure
+
+- `mazes/`: Contains maze text files for testing different scenarios
+  - `maze.txt`: Basic maze
+  - `maze2.txt`: Alternative maze
+  - `maze-100-steps.txt`: Larger maze with longer solution path
+- `tmp/`: Temporary storage for animation frames (auto-created and emptied on startup)
 
 ## Module Organization
 
 This is a Go workspace project. When adding new modules or working with dependencies, use the workspace-aware commands and ensure `go.work` is updated if needed.
+
+### Dependencies
+
+The project uses the following external packages:
+- `github.com/StephaneBunel/bresenham`: For drawing grid lines
+- `github.com/kettek/apng`: For creating animated PNG files
+- `golang.org/x/image/font`: For rendering text on images
