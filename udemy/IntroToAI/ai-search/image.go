@@ -6,9 +6,11 @@ import (
 	"image/color"
 	"image/draw"
 	"image/png"
+	"log"
 	"os"
 
 	"github.com/StephaneBunel/bresenham"
+	"github.com/kettek/apng"
 	"golang.org/x/image/font"
 	"golang.org/x/image/font/basicfont"
 	"golang.org/x/image/math/fixed"
@@ -117,4 +119,45 @@ func (g *Maze) printLocation(p Point, c color.Color, patch *image.RGBA) {
 		Dot:  point,
 	}
 	d.DrawString(fmt.Sprintf("[%d,%d]", p.Row, p.Col))
+}
+
+func (g *Maze) OutPutAnimatedImage() {
+	output := "./animation.png"
+
+	files, _ := os.ReadDir("./tmp")
+
+	var images []string
+	var delays []int
+
+	for _, file := range files {
+		images = append(images, fmt.Sprintf("./tmp/%s", file.Name()))
+		delays = append(delays, 30) // delay in 300ms
+	}
+	images = append(images, "./image.png")
+
+	a := apng.APNG{
+		Frames: make([]apng.Frame, len(images)),
+	}
+	out, _ := os.Create(output)
+	defer out.Close()
+
+	for i, imgPath := range images {
+		f, err := os.Open(imgPath)
+		if err != nil {
+			fmt.Println("Error opening image:", err)
+			os.Exit(1)
+		}
+		defer f.Close()
+		img, err := png.Decode(f)
+		if err != nil {
+			continue
+		}
+		a.Frames[i].Image = img
+	}
+
+	err := apng.Encode(out, a)
+	if err != nil {
+		log.Println("Error encoding APNG:", err)
+	}
+
 }
