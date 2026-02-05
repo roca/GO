@@ -42,6 +42,7 @@ func (dfs *DepthFirstSearch) Remove() (*Node, error) {
 				fmt.Printf("Node State: %v\n", n.State)
 			}
 		}
+		// DFS uses LIFO (Last In, First Out) - remove from the end
 		node := dfs.Frontier[len(dfs.Frontier)-1]
 		dfs.Frontier = dfs.Frontier[:len(dfs.Frontier)-1]
 		return node, nil
