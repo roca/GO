@@ -7,24 +7,25 @@ import (
 	"slices"
 )
 
-// DijkstraSearch struct implements Dijkstra's algorithm
-type DijkstraSearch struct {
-	Frontier PriorityQueueDijkstra
+// AstarSearch struct implements Dijkstra's algorithm
+type AstarSearch struct {
+	Frontier PriorityQueueAstar
 	Game     *Maze
 }
 
-func (d *DijkstraSearch) GetFrontier() []*Node {
+func (d *AstarSearch) GetFrontier() []*Node {
 	return d.Frontier
 }
 
-func (d *DijkstraSearch) Add(node *Node) {
+func (d *AstarSearch) Add(node *Node) {
 	node.CostToGoal = node.ManhattanDistance(d.Game.Start) // Cost from start to this node
+	node.EstimatedCostToGoal = euclideanDist(node.State, d.Game.Goal) + float64(node.CostToGoal)
 	d.Frontier.Push(node)
 	// Re-establish the heap property after adding a new node
 	heap.Init(&d.Frontier)
 }
 
-func (d *DijkstraSearch) ContainsState(i *Node) bool {
+func (d *AstarSearch) ContainsState(i *Node) bool {
 	for _, node := range d.Frontier {
 		if node.State == i.State {
 			return true
@@ -33,11 +34,11 @@ func (d *DijkstraSearch) ContainsState(i *Node) bool {
 	return false
 }
 
-func (d *DijkstraSearch) Empty() bool {
+func (d *AstarSearch) Empty() bool {
 	return d.Frontier.Len() == 0
 }
 
-func (d *DijkstraSearch) Remove() (*Node, error) {
+func (d *AstarSearch) Remove() (*Node, error) {
 	if !d.Empty() {
 		if d.Game.Debug {
 			fmt.Println("Dijkstra Frontier before remove:")
@@ -52,12 +53,12 @@ func (d *DijkstraSearch) Remove() (*Node, error) {
 	return nil, fmt.Errorf("Frontier is empty")
 }
 
-func (d *DijkstraSearch) Solve() {
-	fmt.Println("Solving maze using Dijkstra's Algorithm...")
+func (d *AstarSearch) Solve() {
+	fmt.Println("Solving maze using A* Algorithm...")
 	d.Game.NumExplored = 0
 
 	// Initialize the priority queue
-	d.Frontier = make(PriorityQueueDijkstra, 0)
+	d.Frontier = make(PriorityQueueAstar, 0)
 	heap.Init(&d.Frontier)
 
 	start := Node{
@@ -165,7 +166,7 @@ func (d *DijkstraSearch) Solve() {
 	}
 }
 
-func (d *DijkstraSearch) Neighbors(node *Node) []*Node {
+func (d *AstarSearch) Neighbors(node *Node) []*Node {
 	row := node.State.Row
 	col := node.State.Col
 

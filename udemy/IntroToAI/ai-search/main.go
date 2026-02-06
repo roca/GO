@@ -15,7 +15,7 @@ const (
 	DFS      = iota // Depth-First Search
 	BFS             // Breadth-First Search
 	GBFS            // Greedy Best-First Search
-	AStar           // A* Search
+	ASTAR           // A* Search
 	DIJKSTRA        // Dijkstra's Algorithm
 )
 
@@ -34,11 +34,12 @@ type Wall struct {
 // Node represents a state in the search tree,
 // including its index, state, parent node, and action taken to reach it
 type Node struct {
-	index      int
-	State      Point
-	Parent     *Node
-	Action     string
-	CostToGoal int
+	index               int
+	State               Point
+	Parent              *Node
+	Action              string
+	CostToGoal          int
+	EstimatedCostToGoal float64 // For A* search
 }
 
 func (n *Node) ManhattanDistance(goal Point) int {
@@ -99,9 +100,15 @@ func main() {
 	case "bfs":
 		m.SearchType = BFS
 		solveBFS(&m)
+	case "gbfs":
+		m.SearchType = GBFS
+		solveGBFS(&m)
 	case "dijkstra":
 		m.SearchType = DIJKSTRA
 		solveDijkstra(&m)
+	case "astar":
+		m.SearchType = ASTAR
+		solveAStar(&m)
 	default:
 		fmt.Printf("Search type %s not recognized\n", searchType)
 		os.Exit(1)
@@ -171,8 +178,22 @@ func solveBFS(m *Maze) {
 	s.Solve()
 }
 
+func solveGBFS(m *Maze) {
+	var s GBFSSearch
+	s.Game = m
+	fmt.Println("Goal is at:", m.Goal)
+	s.Solve()
+}
+
 func solveDijkstra(m *Maze) {
 	var s DijkstraSearch
+	s.Game = m
+	fmt.Println("Goal is at:", s.Game.Goal)
+	s.Solve()
+}
+
+func solveAStar(m *Maze) {
+	var s AstarSearch
 	s.Game = m
 	fmt.Println("Goal is at:", s.Game.Goal)
 	s.Solve()
