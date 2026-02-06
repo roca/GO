@@ -34,9 +34,9 @@ go run main.go -file mazes/maze-100-steps.txt -search dfs -animate
 Search algorithms:
 - `dfs` - Depth-First Search (implemented) - Uses LIFO stack, randomizes neighbor order
 - `bfs` - Breadth-First Search (implemented) - Uses FIFO queue, guarantees shortest path
+- `dijkstra` - Dijkstra's Algorithm (implemented) - Uses priority queue, guarantees shortest path
 - `gbfs` - Greedy Best-First Search (planned)
 - `astar` - A* Search (planned)
-- `dijkstra` - Dijkstra's Algorithm (planned)
 
 ### Building
 
@@ -81,6 +81,7 @@ All defined in `ai-search/main.go`:
   - `State`: Point representing position
   - `Parent`: Pointer to parent node (for path reconstruction)
   - `Action`: String describing how we got here ("up", "down", "left", "right")
+  - `CostToGoal`: Integer cost (used by Dijkstra and A*)
 
 - **Solution**: Final result with:
   - `Actions`: Slice of direction strings
@@ -110,12 +111,12 @@ A######
 Each search algorithm follows a common structure (see `dfs.go` for the DFS implementation):
 
 1. **Algorithm Struct**: Contains:
-   - `Frontier`: Slice of `*Node` representing the search frontier
+   - `Frontier`: Slice of `*Node` representing the search frontier (or `PriorityQueueDijkstra` for Dijkstra)
    - `Game`: Pointer to the `Maze` being solved
 
 2. **Required Methods**:
    - `Add(node *Node)`: Add a node to the frontier
-   - `Remove() (*Node, error)`: Remove and return a node from the frontier (LIFO for DFS, FIFO for BFS, etc.)
+   - `Remove() (*Node, error)`: Remove and return a node from the frontier (LIFO for DFS, FIFO for BFS, priority for Dijkstra)
    - `ContainsState(node *Node) bool`: Check if a state is already in the frontier
    - `Empty() bool`: Check if the frontier is empty
    - `Neighbors(node *Node) []*Node`: Generate valid neighboring states from current node
@@ -132,12 +133,15 @@ Each search algorithm follows a common structure (see `dfs.go` for the DFS imple
 5. **Neighbor Ordering**:
    - DFS (`dfs.go`): Randomizes neighbor order before adding them to the frontier. Multiple runs may explore different paths even with the same maze.
    - BFS (`bfs.go`): Does NOT randomize - explores neighbors in consistent order (up, down, left, right) to guarantee shortest path.
+   - Dijkstra (`dijkstra.go`): Does NOT randomize - uses priority queue based on `CostToGoal`.
 
 6. **Algorithm Differences**:
    - DFS uses LIFO (Last In, First Out) - removes from end of frontier like a stack
    - BFS uses FIFO (First In, First Out) - removes from beginning of frontier like a queue
+   - Dijkstra uses a priority queue - removes node with lowest cost
    - BFS guarantees the shortest path but may explore more nodes
    - DFS may find a solution faster but doesn't guarantee optimality
+   - Dijkstra guarantees the shortest path and is optimal for weighted graphs
 
 7. **Helper Functions**: `helpers.go` contains utility functions like `inExplored()` for checking if a Point has been visited.
 
@@ -155,6 +159,7 @@ The program generates visual output using `image.go`:
   - Yellow: Explored cells (not part of solution)
   - White: Unvisited cells
   - Cell coordinates displayed on each cell
+  - For Dijkstra, Manhattan distance from start is displayed
 
 - **Animation**: With `-animate` flag, generates `animation.png` (APNG format) showing the search process step-by-step:
   - Each frame stored temporarily in `tmp/` directory

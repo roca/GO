@@ -99,6 +99,9 @@ func main() {
 	case "bfs":
 		m.SearchType = BFS
 		solveBFS(&m)
+	case "dijkstra":
+		m.SearchType = DIJKSTRA
+		solveDijkstra(&m)
 	default:
 		fmt.Printf("Search type %s not recognized\n", searchType)
 		os.Exit(1)
@@ -163,6 +166,13 @@ func solveDFS(m *Maze) {
 
 func solveBFS(m *Maze) {
 	var s BreadthFirstSearch
+	s.Game = m
+	fmt.Println("Goal is at:", s.Game.Goal)
+	s.Solve()
+}
+
+func solveDijkstra(m *Maze) {
+	var s DijkstraSearch
 	s.Game = m
 	fmt.Println("Goal is at:", s.Game.Goal)
 	s.Solve()

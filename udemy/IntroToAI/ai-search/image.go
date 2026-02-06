@@ -103,10 +103,31 @@ func (g *Maze) drawSquare(w Wall, p Point, img *image.RGBA, fillColor color.Colo
 
 	if !w.wall {
 		// Print the x y coordinates of this cell
+		switch g.SearchType {
+		case DIJKSTRA:
+			g.printManhattanCost(p, color.Black, patch)
+		default:
+			// Do nothing
+		}
 		g.printLocation(p, color.Black, patch)
 	}
 
 	draw.Draw(img, image.Rect(offsetX, offsetY, offsetX+size, offsetY+size), patch, image.Point{}, draw.Src)
+}
+
+// printManhattanCost
+func (g *Maze) printManhattanCost(p Point, c color.Color, patch *image.RGBA) {
+	point := fixed.Point26_6{X: fixed.I(6), Y: fixed.I(17)}
+	d := &font.Drawer{
+		Dst:  patch,
+		Src:  image.NewUniform(c),
+		Face: basicfont.Face7x13,
+		Dot:  point,
+	}
+	n := Node{
+		State: p,
+	}
+	d.DrawString(fmt.Sprintf("%d", n.ManhattanDistance(g.Start)))
 }
 
 // printLocation
