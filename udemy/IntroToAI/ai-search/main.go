@@ -34,10 +34,15 @@ type Wall struct {
 // Node represents a state in the search tree,
 // including its index, state, parent node, and action taken to reach it
 type Node struct {
-	index  int
-	State  Point
-	Parent *Node
-	Action string
+	index      int
+	State      Point
+	Parent     *Node
+	Action     string
+	CostToGoal int
+}
+
+func (n *Node) ManhattanDistance(goal Point) int {
+	return abs(n.State.Row-goal.Row) + abs(n.State.Col-goal.Col)
 }
 
 // Solution represents the result of a search,
