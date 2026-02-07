@@ -74,7 +74,10 @@ func (g *Maze) OutputImage(fileName ...string) {
 			} else if col.State == g.CurrentNode.State {
 				// draw orange square for current node
 				g.drawSquare(col, p, img, orange, cellSize, j*cellSize, i*cellSize)
-			} else if inExplored(Point{i, j}, g.Explored) {
+			} else if col.State.Water {
+				// draw blue square for water
+				g.drawSquare(col, p, img, blue, cellSize, j*cellSize, i*cellSize)
+			} else if inExplored(Point{Row: i, Col: j, Water: false}, g.Explored) {
 				// draw yellow square for explored
 				g.drawSquare(col, p, img, yellow, cellSize, j*cellSize, i*cellSize)
 			} else {
@@ -97,11 +100,11 @@ func (g *Maze) OutputImage(fileName ...string) {
 }
 
 // drawSquare
-func (g *Maze) drawSquare(w Wall, p Point, img *image.RGBA, fillColor color.Color, size, offsetX, offsetY int) {
+func (g *Maze) drawSquare(col Wall, p Point, img *image.RGBA, fillColor color.Color, size, offsetX, offsetY int) {
 	patch := image.NewRGBA(image.Rect(0, 0, size, size))
 	draw.Draw(patch, patch.Bounds(), &image.Uniform{C: fillColor}, image.Point{}, draw.Src)
 
-	if !w.wall {
+	if !col.wall {
 		// Print the x y coordinates of this cell
 		switch g.SearchType {
 		case DIJKSTRA, GBFS:
@@ -111,10 +114,27 @@ func (g *Maze) drawSquare(w Wall, p Point, img *image.RGBA, fillColor color.Colo
 		default:
 			// Do nothing
 		}
+		// Check to see if this cell is flooded
+		if col.State.Water {
+			g.printWater(blue, patch)
+		}
+		// Print the location of this cell
 		g.printLocation(p, color.Black, patch)
 	}
 
 	draw.Draw(img, image.Rect(offsetX, offsetY, offsetX+size, offsetY+size), patch, image.Point{}, draw.Src)
+}
+
+// printWater
+func (g *Maze) printWater(c color.Color, patch *image.RGBA) {
+	point := fixed.Point26_6{X: fixed.I(50), Y: fixed.I(18)}
+	d := &font.Drawer{
+		Dst:  patch,
+		Src:  image.NewUniform(c),
+		Face: basicfont.Face7x13,
+		Dot:  point,
+	}
+	d.DrawString("W")
 }
 
 // printTotalCost

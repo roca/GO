@@ -21,8 +21,9 @@ const (
 
 // Point represents a coordinate in the maze
 type Point struct {
-	Row int
-	Col int
+	Row   int
+	Col   int
+	Water bool
 }
 
 // Wall represents a cell in the maze, indicating if it's a wall or open space
@@ -263,6 +264,11 @@ func (g *Maze) Load(fileName string) error {
 				wall.State.Row = i
 				wall.State.Col = j
 				wall.wall = false
+			case "w":
+				wall.State.Row = i
+				wall.State.Col = j
+				wall.wall = false
+				wall.State.Water = true
 			case "#":
 				wall.State.Row = i
 				wall.State.Col = j

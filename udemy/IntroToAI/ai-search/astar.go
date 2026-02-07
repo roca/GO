@@ -7,6 +7,8 @@ import (
 	"slices"
 )
 
+const FloodedCost = 100
+
 // AstarSearch struct implements Dijkstra's algorithm
 type AstarSearch struct {
 	Frontier PriorityQueueAstar
@@ -20,6 +22,9 @@ func (d *AstarSearch) GetFrontier() []*Node {
 func (d *AstarSearch) Add(node *Node) {
 	node.CostToGoal = node.ManhattanDistance(d.Game.Start) // Cost from start to this node
 	node.EstimatedCostToGoal = euclideanDist(node.State, d.Game.Goal) + float64(node.CostToGoal)
+	if node.State.Water {
+		node.EstimatedCostToGoal += FloodedCost
+	}
 	d.Frontier.Push(node)
 	// Re-establish the heap property after adding a new node
 	heap.Init(&d.Frontier)
@@ -182,6 +187,9 @@ func (d *AstarSearch) Neighbors(node *Node) []*Node {
 		if 0 <= candidate.State.Row && candidate.State.Row < d.Game.Height {
 			if 0 <= candidate.State.Col && candidate.State.Col < d.Game.Width {
 				if !d.Game.Walls[candidate.State.Row][candidate.State.Col].wall {
+					if d.Game.Walls[candidate.State.Row][candidate.State.Col].State.Water {
+						candidate.State.Water = true
+					}
 					neighbors = append(neighbors, candidate)
 				}
 			}

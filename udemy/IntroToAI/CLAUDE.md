@@ -31,6 +31,11 @@ Example with animation:
 go run main.go -file mazes/maze-100-steps.txt -search dfs -animate
 ```
 
+Example with flooded/water cells:
+```bash
+go run main.go -file flooded-mazes/maze-flooded.txt -search astar
+```
+
 Search algorithms:
 - `dfs` - Depth-First Search (implemented) - Uses LIFO stack, randomizes neighbor order
 - `bfs` - Breadth-First Search (implemented) - Uses FIFO queue, guarantees shortest path
@@ -72,6 +77,8 @@ All defined in `ai-search/main.go`:
   - `Animate`: Boolean flag for animation generation
 
 - **Point**: Row/column coordinate (used for positions in the maze)
+  - `Row`, `Col`: Integer coordinates
+  - `Water`: Boolean flag indicating if this cell is flooded/water (affects cost in A*)
 
 - **Wall**: Cell in the maze grid with:
   - `State`: Point representing position
@@ -91,11 +98,12 @@ All defined in `ai-search/main.go`:
 
 ### Maze File Format
 
-Maze files are stored in `ai-search/mazes/` as text files with:
+Maze files are stored in `ai-search/mazes/` and `ai-search/flooded-mazes/` as text files with:
 - `A` - Start position
 - `B` - Goal position
 - `#` - Walls
 - ` ` (space) - Open path
+- `w` - Water/flooded cell (traversable but with high cost in A*)
 - Newlines define rows
 
 Example:
@@ -144,13 +152,13 @@ Each search algorithm follows a common structure (see `dfs.go` for the DFS imple
    - **BFS**: FIFO (First In, First Out) - removes from beginning of frontier like a queue
    - **Dijkstra**: Priority queue ordered by cumulative cost from start (g(n)) - removes node with lowest cost
    - **GBFS**: Priority queue ordered by heuristic only (h(n)) - removes node with lowest heuristic value (Manhattan distance to goal)
-   - **A***: Priority queue ordered by f(n) = g(n) + h(n), where g(n) is actual cost from start and h(n) is Euclidean distance to goal - removes node with lowest estimated total cost
+   - **A***: Priority queue ordered by f(n) = g(n) + h(n), where g(n) is actual cost from start and h(n) is Euclidean distance to goal - removes node with lowest estimated total cost. **Special feature**: Water cells add a penalty cost (`FloodedCost = 100`) to discourage traversal through flooded areas
    - **Optimality**:
      - BFS guarantees shortest path but may explore more nodes (609 nodes for maze-100-steps.txt)
      - DFS may find a solution faster but doesn't guarantee optimality
      - Dijkstra guarantees shortest path and is optimal for weighted graphs (100 steps for maze-100-steps.txt)
      - GBFS is fast and explores fewer nodes (158 nodes for maze-100-steps.txt) but doesn't guarantee shortest path (108 steps)
-     - A* guarantees shortest path (when using admissible heuristic) and is generally more efficient than Dijkstra
+     - A* guarantees shortest path (when using admissible heuristic) and is generally more efficient than Dijkstra. Can handle weighted terrain (water cells) by adding cost penalties
 
 7. **Helper Functions**: `helpers.go` contains utility functions:
    - `inExplored(Point, []Point) bool`: Check if a Point has been visited
@@ -170,6 +178,19 @@ Each search algorithm follows a common structure (see `dfs.go` for the DFS imple
    - `solveGBFS(m *Maze)`: Entry point for GBFS
    - `solveDijkstra(m *Maze)`: Entry point for Dijkstra
    - `solveAStar(m *Maze)`: Entry point for A*
+
+### Water/Flooded Cells Feature
+
+The codebase supports weighted terrain through water/flooded cells:
+
+- **Maze Representation**: Water cells are marked with `w` in maze files (see `flooded-mazes/` directory)
+- **Cost Model**: In `astar.go`, the constant `FloodedCost = 100` adds a significant penalty to the estimated cost when traversing water cells
+- **Implementation**:
+  - The `Point` struct has a `Water` boolean field set during maze loading
+  - In A*'s `Add()` method: if `node.State.Water` is true, add `FloodedCost` to `EstimatedCostToGoal`
+  - In A*'s `Neighbors()` method: water state is propagated from the maze's Wall grid to the neighbor nodes
+- **Visualization**: Water cells are rendered in blue in the generated images
+- **Use Case**: Demonstrates how A* can handle weighted graphs where different terrain types have different traversal costs
 
 ### Implementing a New Search Algorithm
 
@@ -206,6 +227,7 @@ The program generates visual output using `image.go`:
   - Red: Goal position ('B')
   - Green: Solution path
   - Yellow: Explored cells (not part of solution)
+  - Blue: Water/flooded cells (traversable with high cost)
   - White: Unvisited cells
   - Cell coordinates displayed on each cell
   - For informed search algorithms (Dijkstra, GBFS, A*), distance metrics are displayed on cells
@@ -225,6 +247,8 @@ The program generates visual output using `image.go`:
   - `maze.txt`: Basic maze
   - `maze2.txt`: Alternative maze
   - `maze-100-steps.txt`: Larger maze with longer solution path
+- `flooded-mazes/`: Contains mazes with water cells (marked with 'w')
+  - `maze-flooded.txt`: Maze with flooded/water areas
 - `tmp/`: Temporary storage for animation frames (auto-created and emptied on startup)
 
 ## Module Organization
