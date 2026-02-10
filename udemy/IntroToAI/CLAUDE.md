@@ -8,8 +8,9 @@ This repository contains code for a Udemy course on Introduction to AI and Machi
 
 ## Project Structure
 
-The repository uses Go workspaces (`go.work`) with a single module:
+The repository uses Go workspaces (`go.work`) with the following modules:
 - `ai-search/` - Main AI search algorithms project for maze solving
+- `vacuum-1/` - Empty module placeholder (not yet implemented)
 
 ## Commands
 
