@@ -10,4 +10,7 @@ func main() {
 	flag.BoolVar(&animate, "animate", true, "Animate while cleaning")
 	flag.Parse()
 
+	room := NewRoom(configFile, animate)
+	_ = room
+
 }

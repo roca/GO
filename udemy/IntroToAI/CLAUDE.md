@@ -10,7 +10,7 @@ This repository contains code for a Udemy course on Introduction to AI and Machi
 
 The repository uses Go workspaces (`go.work`) with the following modules:
 - `ai-search/` - Main AI search algorithms project for maze solving
-- `vacuum-1/` - Empty module placeholder (not yet implemented)
+- `vacuum-1/` - Room cleaning robot simulator (work in progress)
 
 ## Commands
 
@@ -251,6 +251,111 @@ The program generates visual output using `image.go`:
 - `flooded-mazes/`: Contains mazes with water cells (marked with 'w')
   - `maze-flooded.txt`: Maze with flooded/water areas
 - `tmp/`: Temporary storage for animation frames (auto-created and emptied on startup)
+
+## Vacuum-1 Module
+
+The `vacuum-1` module is a room cleaning robot simulator (work in progress). It simulates autonomous robot vacuum cleaners navigating and cleaning rooms with obstacles.
+
+### Running Vacuum-1
+
+```bash
+cd vacuum-1
+go run main.go -file empty.json -algorithm random -animate
+```
+
+Available command-line flags:
+- `-file <path>`: Path to the room configuration file (default: "empty.json")
+- `-algorithm <name>`: Cleaning algorithm to use (default: "random")
+- `-animate <bool>`: Enable/disable animation while cleaning (default: true)
+
+### Vacuum-1 Data Structures
+
+All defined in `vacuum-1/world.go`:
+
+- **Room**: Main simulation state containing:
+  - `Grid`: 2D array of Cell structs representing the room
+  - `Width`, `Height`: Room dimensions
+  - `CleanableCellCount`: Total number of cells that can be cleaned
+  - `CleanedCellCount`: Number of cells that have been cleaned
+  - `Animate`: Boolean flag for animation
+
+- **Cell**: Individual grid cell with:
+  - `Type`: String ("clean", "dirty", "wall", "furniture", "bike")
+  - `Cleaned`: Boolean indicating if cell has been cleaned
+  - `Obstacle`: Boolean indicating if cell contains an obstacle
+  - `ObstacleName`: String name of the obstacle if present
+
+- **Point**: 2D coordinate with `X`, `Y` integer fields
+
+- **Furniture**: Obstacle configuration with:
+  - `X`, `Y`: Position coordinates
+  - `Width`, `Height`: Dimensions
+  - `Name`: Human-readable name (e.g., "Couch", "Coffee Table", "Bicycle")
+  - `Type`: String type identifier
+
+- **RoomConfig**: JSON configuration structure with:
+  - `Width`, `Height`: Room dimensions
+  - `Furniture`: Array of Furniture objects to place in the room
+
+### Display Characters
+
+The simulator uses Unicode emoji for visualization:
+- 🔴 (`charRobot`): Robot vacuum position
+- 🟦 (`charWall`): Walls
+- 🪑 (`charFurniture`): Furniture obstacles
+- 🧽 (`charClean`): Cleaned cells
+- 🟫 (`charDirty`): Dirty/uncleaned cells
+- 🟢 (`carPath`): Robot's path
+- 🐱 (`charCat`): Cat obstacle (with random stopping behavior)
+
+### Room Configuration Files
+
+Room configurations are stored as JSON files in `vacuum-1/`:
+- `empty.json`: Empty room with just robot dock position
+- `room.json`: Room with furniture obstacles (couch, coffee table, bicycle)
+
+Configuration format:
+```json
+{
+  "width": 300,
+  "height": 300,
+  "robot": {
+    "diameter": 30,
+    "dockX": 150,
+    "dockY": 150,
+    "startDirection": 0
+  },
+  "furniture": [
+    {
+      "id": 1,
+      "x": 50,
+      "y": 50,
+      "width": 200,
+      "height": 40,
+      "name": "Couch",
+      "type": "furniture"
+    }
+  ]
+}
+```
+
+### Implementation Status
+
+- ✅ Basic data structures defined (Room, Cell, Furniture, Point)
+- ✅ Command-line argument parsing
+- ✅ Room configuration loading setup
+- ⏳ Robot implementation (`robot.go` is currently empty)
+- ⏳ Cleaning algorithms (random walk, etc.)
+- ⏳ Room initialization from config file
+- ⏳ Animation/visualization system
+- ⏳ Path planning and obstacle avoidance
+
+### Constants
+
+- `cellSize`: 10 pixels per cell
+- `moveDelay`: 50 milliseconds between moves
+- `catStopProbability`: 0.1 (10% chance cat stops moving each step)
+- `catStopDuration`: 5 seconds when cat stops
 
 ## Module Organization
 
