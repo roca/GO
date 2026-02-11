@@ -4,7 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-This repository contains code for a Udemy course on Introduction to AI and Machine Learning with Go. The primary project is `ai-search`, which implements various pathfinding algorithms to solve maze problems.
+This repository contains code for a Udemy course: [Introduction to AI and Machine Learning with Go](https://www.udemy.com/course/introduction-to-ai-and-machine-learning-with-go-golang)
+
+The primary project is `ai-search`, which implements various pathfinding algorithms to solve maze problems.
 
 ## Project Structure
 
@@ -314,6 +316,10 @@ Room configurations are stored as JSON files in `vacuum-1/`:
 - `empty.json`: Empty room with just robot dock position
 - `room.json`: Room with furniture obstacles (couch, coffee table, bicycle)
 
+**Note**: The current `room.json` file has syntax errors (missing commas on lines 3, 17, 27, 36 and extra quote on line 38). Use `empty.json` as a template for valid JSON structure.
+
+**Note**: The JSON configuration includes a `robot` field with dock position and start direction, but this is not yet used by the current implementation. The `RoomConfig` struct in `world.go` only loads `Width`, `Height`, and `Furniture` fields.
+
 Configuration format:
 ```json
 {
@@ -343,10 +349,11 @@ Configuration format:
 
 - ✅ Basic data structures defined (Room, Cell, Furniture, Point)
 - ✅ Command-line argument parsing
-- ✅ Room configuration loading setup
+- ✅ Room configuration loading (`LoadRoomConfig()` fully implemented)
+- ✅ Room initialization (`NewRoom()` creates grid and walls)
+- ⏳ Furniture placement (TODO in world.go line 90)
 - ⏳ Robot implementation (`robot.go` is currently empty)
 - ⏳ Cleaning algorithms (random walk, etc.)
-- ⏳ Room initialization from config file
 - ⏳ Animation/visualization system
 - ⏳ Path planning and obstacle avoidance
 
@@ -360,6 +367,19 @@ Configuration format:
 ## Module Organization
 
 This is a Go workspace project. When adding new modules or working with dependencies, use the workspace-aware commands and ensure `go.work` is updated if needed.
+
+### Requirements
+
+- Go 1.25.6 or later (specified in go.work and module go.mod files)
+
+### Working with Go Workspaces
+
+Common workspace commands:
+```bash
+go work sync              # Sync workspace dependencies
+go work use ./new-module  # Add a new module to the workspace
+go work edit -dropuse ./module  # Remove a module from the workspace
+```
 
 ### Dependencies
 

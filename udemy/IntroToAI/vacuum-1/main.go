@@ -1,6 +1,9 @@
 package main
 
-import "flag"
+import (
+	"flag"
+	"fmt"
+)
 
 func main() {
 	var configFile, algorithm string
@@ -11,6 +14,5 @@ func main() {
 	flag.Parse()
 
 	room := NewRoom(configFile, animate)
-	_ = room
-
+	fmt.Println(room.CleanableCellCount)
 }

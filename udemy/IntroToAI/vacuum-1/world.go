@@ -1,6 +1,11 @@
 package main
 
-import "time"
+import (
+	"encoding/json"
+	"log"
+	"os"
+	"time"
+)
 
 const (
 	// Display characters
@@ -53,5 +58,71 @@ type RoomConfig struct {
 }
 
 func NewRoom(configFile string, animate bool) *Room {
-	return &Room{}
+	// Load from JSON config configFile
+	roomConfig, err := LoadRoomConfig(configFile)
+	if err != nil {
+		log.Fatalf("Failed to load room config: %v", err)
+	}
+
+	// Convert dimensions to grid cells.
+	gridWidth := roomConfig.Width / cellSize
+	gridHeight := roomConfig.Height / cellSize
+
+	// Create grid
+	grid := make([][]Cell, gridWidth)
+	for i := range grid {
+		grid[i] = make([]Cell, gridHeight)
+		for j := range grid[i] {
+			grid[i][j] = Cell{Type: "dirty", Cleaned: false, Obstacle: false}
+		}
+	}
+
+	// Add walls
+	for i := 0; i < gridWidth; i++ {
+		grid[i][0] = Cell{Type: "wall", Cleaned: false, Obstacle: true, ObstacleName: "wall"}
+		grid[i][gridHeight-1] = Cell{Type: "wall", Cleaned: false, Obstacle: true, ObstacleName: "wall"}
+	}
+	for j := 0; j < gridHeight; j++ {
+		grid[0][j] = Cell{Type: "wall", Cleaned: false, Obstacle: true, ObstacleName: "wall"}
+		grid[gridWidth-1][j] = Cell{Type: "wall", Cleaned: false, Obstacle: true, ObstacleName: "wall"}
+	}
+
+	// TODO: Add furniture
+
+	// Count cleanable cells
+	cleanableCellCount := 0
+	for i := 0; i < gridWidth; i++ {
+		for j := 0; j < gridHeight; j++ {
+			if !grid[i][j].Obstacle {
+				cleanableCellCount++
+			}
+		}
+	}
+
+	return &Room{
+		Grid:               grid,
+		Width:              gridWidth,
+		Height:             gridHeight,
+		CleanableCellCount: cleanableCellCount,
+		CleanedCellCount:   0,
+		Animate:            animate,
+	}
+}
+
+func LoadRoomConfig(filename string) (*RoomConfig, error) {
+	// Implement JSON loading logic here
+
+	// Read JSON file.
+	jsonData, err := os.ReadFile(filename)
+	if err != nil {
+		return nil, err
+	}
+
+	var config RoomConfig
+	// Parse JSON data.
+	if err := json.Unmarshal(jsonData, &config); err != nil {
+		return nil, err
+	}
+
+	return &config, nil
 }
