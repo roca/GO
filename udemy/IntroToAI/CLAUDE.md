@@ -299,6 +299,13 @@ All defined in `vacuum-1/world.go`:
   - `Width`, `Height`: Room dimensions
   - `Furniture`: Array of Furniture objects to place in the room
 
+- **Robot**: Autonomous vacuum robot with:
+  - `Position`: Point representing current location
+  - `Path`: Slice of Points representing the path traveled
+  - `CleanRoom`: Function pointer to the cleaning algorithm
+  - `Direction`: Float64 representing the robot's orientation
+  - `ObstaclesEncountered`: Map tracking encountered obstacles by name
+
 ### Display Characters
 
 The simulator uses Unicode emoji for visualization:
@@ -351,10 +358,12 @@ Configuration format:
 - ✅ Command-line argument parsing
 - ✅ Room configuration loading (`LoadRoomConfig()` fully implemented)
 - ✅ Room initialization (`NewRoom()` creates grid and walls)
-- ⏳ Furniture placement (TODO in world.go line 90)
-- ⏳ Robot implementation (`robot.go` is currently empty)
+- ✅ Robot struct defined with Position, Path, Direction, and CleanRoom function fields
+- ✅ Display system (`Display()` renders room with emoji characters)
+- ⏳ Furniture placement (TODO in world.go line 91)
+- ⏳ Robot initialization (needs to set initial position and direction)
 - ⏳ Cleaning algorithms (random walk, etc.)
-- ⏳ Animation/visualization system
+- ⏳ Animation/visualization system (display exists, animation loop needed)
 - ⏳ Path planning and obstacle avoidance
 
 ### Constants
@@ -363,6 +372,18 @@ Configuration format:
 - `moveDelay`: 50 milliseconds between moves
 - `catStopProbability`: 0.1 (10% chance cat stops moving each step)
 - `catStopDuration`: 5 seconds when cat stops
+
+### Room Display
+
+The `Display()` method renders the current room state to the console:
+- Clears the screen before each render
+- Shows robot position, obstacles, and cell states using emoji characters
+- Displays cleaning progress percentage at the bottom
+- Optional `showPath` parameter to visualize the robot's traveled path
+
+### Helper Functions
+
+- `isInPath(Point, []Point) bool`: Check if a point exists in the robot's path (used for visualization)
 
 ## Module Organization
 

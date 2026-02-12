@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -14,7 +15,7 @@ const (
 	charFurniture      = "🪑"
 	charClean          = "🧽"
 	charDirty          = "🟫"
-	carPath            = "🟢"
+	charPath           = "🟢"
 	charCat            = "🐱" // Display character for the cat
 	catStopProbability = 0.1 // Probability that the cat will stop moving at each step
 	catStopDuration    = 5   // Duration (in seconds) that the cat will stop moving when it decides to stop
@@ -125,4 +126,45 @@ func LoadRoomConfig(filename string) (*RoomConfig, error) {
 	}
 
 	return &config, nil
+}
+
+func (r *Room) Display(robot *Robot, showPath bool) {
+	// Clear the screen
+	fmt.Print("\033[H\033[2J")
+
+	for j := range r.Height {
+		for i := range r.Width {
+			if robot.Position.X == i && robot.Position.Y == j {
+				fmt.Print(charRobot)
+			} else if showPath && isInPath(Point{X: i, Y: j}, robot.Path) {
+				fmt.Print(charPath)
+			} else {
+				cell := r.Grid[i][j]
+				switch cell.Type {
+				case "wall":
+					fmt.Print(charWall)
+				case "furniture":
+					fmt.Print(charFurniture)
+				case "clean":
+					fmt.Print(charClean)
+				case "dirty":
+					fmt.Print(charDirty)
+				}
+			}
+		}
+		fmt.Println()
+	}
+
+	// Dispaly cleaning progress
+	percentCleaned := float64(r.CleanedCellCount) / float64(r.CleanableCellCount) * 100
+	fmt.Printf("Cleaning Progress: %.2f%% (%d/%d) cells cleaned)\n", percentCleaned, r.CleanedCellCount, r.CleanableCellCount)
+}
+
+func isInPath(point Point, path []Point) bool {
+	for _, p := range path {
+		if p.X == point.X && p.Y == point.Y {
+			return true
+		}
+	}
+	return false
 }
