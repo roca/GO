@@ -8,6 +8,11 @@ type Robot struct {
 	ObstaclesEncountered map[string]bool
 }
 
-func NewRobot() *Robot {
-	return &Robot{}
+func NewRobot(startX, startY int) *Robot {
+	return &Robot{
+		Position:             Point{X: startX, Y: startY},
+		Path:                 []Point{{X: startX, Y: startY}},
+		ObstaclesEncountered: make(map[string]bool),
+		CleanRoom:            CleanRoomRandomWalk,
+	}
 }

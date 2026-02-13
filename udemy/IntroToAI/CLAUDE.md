@@ -258,6 +258,8 @@ The program generates visual output using `image.go`:
 
 The `vacuum-1` module is a room cleaning robot simulator (work in progress). It simulates autonomous robot vacuum cleaners navigating and cleaning rooms with obstacles.
 
+**Current Status**: The vacuum-1 module has core infrastructure in place (room loading, grid creation, robot initialization, display system). The random walk cleaning algorithm exists as a stub in `random.go` and needs full implementation. Next steps include implementing movement logic, collision detection, and the actual random walk algorithm.
+
 ### Running Vacuum-1
 
 ```bash
@@ -305,6 +307,12 @@ All defined in `vacuum-1/world.go`:
   - `CleanRoom`: Function pointer to the cleaning algorithm
   - `Direction`: Float64 representing the robot's orientation
   - `ObstaclesEncountered`: Map tracking encountered obstacles by name
+
+- **NewRobot()**: Constructor function that creates a new robot
+  - Takes `startX, startY` integers for initial position
+  - Initializes `Position`, `Path`, and `ObstaclesEncountered` fields
+  - Sets default `CleanRoom` function to `CleanRoomRandomWalk`
+  - Returns `*Robot` pointer
 
 ### Display Characters
 
@@ -360,9 +368,10 @@ Configuration format:
 - ✅ Room initialization (`NewRoom()` creates grid and walls)
 - ✅ Robot struct defined with Position, Path, Direction, and CleanRoom function fields
 - ✅ Display system (`Display()` renders room with emoji characters)
+- ✅ Robot initialization (`NewRobot()` constructor implemented)
+- ✅ Main workflow and algorithm dispatch (in `main.go`)
 - ⏳ Furniture placement (TODO in world.go line 91)
-- ⏳ Robot initialization (needs to set initial position and direction)
-- ⏳ Cleaning algorithms (random walk, etc.)
+- ⏳ Cleaning algorithms (random walk stub created in `random.go`, needs full implementation)
 - ⏳ Animation/visualization system (display exists, animation loop needed)
 - ⏳ Path planning and obstacle avoidance
 
@@ -384,6 +393,27 @@ The `Display()` method renders the current room state to the console:
 ### Helper Functions
 
 - `isInPath(Point, []Point) bool`: Check if a point exists in the robot's path (used for visualization)
+- `displaySummary(room *Room, robot *Robot, moveCount int, cleaningTime time.Duration)`: Display final cleaning statistics including room size, coverage percentage, total moves, cleaning time, and efficiency (cells per move)
+
+### Cleaning Algorithms
+
+Cleaning algorithms are implemented in separate files and assigned to robots via function pointers:
+
+- **random.go**: Contains `CleanRoomRandomWalk(*Room, *Robot)` function
+  - Currently a stub implementation
+  - Intended to implement random walk cleaning pattern
+  - Calls `displaySummary()` when complete
+
+### Main Execution Flow
+
+The `main.go` file orchestrates the vacuum simulation:
+
+1. Parse command-line flags (`-file`, `-algorithm`, `-animate`)
+2. Create room using `NewRoom(configFile, animate)`
+3. Create robot using `NewRobot(1, 1)` (starts at position 1,1)
+4. Assign cleaning algorithm to robot based on `-algorithm` flag:
+   - `"random"`: Uses `CleanRoomRandomWalk` function
+5. Execute cleaning: `robot.CleanRoom(room, robot)`
 
 ## Module Organization
 

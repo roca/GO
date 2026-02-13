@@ -168,3 +168,28 @@ func isInPath(point Point, path []Point) bool {
 	}
 	return false
 }
+
+func displaySummary(room *Room, robot *Robot, moveCount int, cleaningTime time.Duration) {
+	// Display the final room state with the robot's path
+	fmt.Println("\nFinal room state with robot's path:")
+	room.Display(robot, true)
+
+	// Display summary
+	fmt.Println("\n============= Cleaning Summary =============")
+	fmt.Printf("Room size: %d x %d (%d cm x %d cm)\n", room.Width, room.Height, room.Width*cellSize, room.Height*cellSize)
+
+	//Calulate coverage percentage
+	percentCleaned := float64(room.CleanedCellCount) / float64(room.CleanableCellCount) * 100
+	fmt.Printf("Coverage: %.2f%% (%d/%d cells cleaned)\n", percentCleaned, room.CleanedCellCount, room.CleanableCellCount)
+
+	//Display time and moves
+	fmt.Printf("Total moves: %d\n", moveCount)
+	fmt.Printf("Cleaning time: %v\n", cleaningTime)
+
+	// Calculate efficiency (cells cleaned per move)
+	efficiency := float64(room.CleanedCellCount) / float64(moveCount)
+	fmt.Printf("Efficiency: %.2f cells cleaned per move\n", efficiency)
+
+	fmt.Println()
+	fmt.Println("===========================================")
+}
