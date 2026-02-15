@@ -56,7 +56,7 @@ No test files exist in the codebase currently.
 - **Maze**: Main game state - grid of Walls, Start/Goal Points, Solution, Explored list, search config
 - **Point**: Row/Col coordinate with `Water` boolean (for flooded cells)
 - **Wall**: Grid cell with `State` (Point) and `wall` boolean (`true` = impassable)
-- **Node**: Search tree node with State, Parent pointer, Action, cost fields (`CostToGoal` for g(n), `EstimatedCostToGoal` for f(n))
+- **Node**: Search tree node with State, Parent pointer, Action, cost fields (`CostToGoal` for g(n), `EstimatedCostToGoal` for f(n)). Has `ManhattanDistance(goal Point) int` method.
 - **Solution**: Result with Actions (direction strings) and Cells (path Points)
 
 Search type constants: `DFS=0, BFS=1, GBFS=2, ASTAR=3, DIJKSTRA=4`
@@ -135,8 +135,21 @@ Files in `ai-search/mazes/` and `ai-search/flooded-mazes/`:
 
 ### Current Status
 
-- **Complete**: Data structures, CLI parsing, room config loading (`LoadRoomConfig()`), room initialization (`NewRoom()`), robot constructor (`NewRobot()`), display system (`Display()`), main workflow
-- **TODO**: Furniture placement (world.go ~line 91), random walk algorithm implementation (random.go is a stub), movement/collision logic, animation loop
+- **Complete**: Data structures, CLI parsing, room config loading (`LoadRoomConfig()`), room initialization (`NewRoom()`), robot constructor (`NewRobot()`), display system (`Display()`), furniture placement, main workflow
+- **TODO**: Random walk algorithm implementation (random.go is a stub), movement/collision logic, animation loop
+
+### Known Bugs
+
+- `Clean()` in robot.go:33 increments `CleanableCellCount` instead of `CleanedCellCount`
+- `Display()` in world.go handles cell type `"clean"` but `Clean()` sets type to `"cleaned"` — cleaned cells won't render with any character
+- `RecordObstacle()` in robot.go:50 has off-by-one: `y <= room.Height` should be `y < room.Height`
+- Typo `"furnniture"` in robot.go:51 (should be `"furniture"`) — obstacle recording never matches furniture cells
+
+### Constants (world.go)
+
+- `cellSize = 10`: Room dimensions (cm) are divided by this to get grid dimensions (e.g., 300cm → 30 cells)
+- `moveDelay = 50ms`: Animation delay between moves
+- `catStopProbability = 0.1`, `catStopDuration = 5`: Cat obstacle behavior (not yet implemented)
 
 ### Key Types (world.go, robot.go)
 
@@ -144,6 +157,8 @@ Files in `ai-search/mazes/` and `ai-search/flooded-mazes/`:
 - **Cell**: Type string ("clean"/"dirty"/"wall"/"furniture"/"bike"), Cleaned/Obstacle booleans
 - **Robot**: Position, Path, Direction (float64), CleanRoom function pointer, ObstaclesEncountered map
 - **RoomConfig**: JSON structure with Width, Height, Furniture array
+
+**Grid convention**: `grid[x][y]` where x is column and y is row (column-major). Display iterates rows (j) then columns (i).
 
 ### Display Characters
 
