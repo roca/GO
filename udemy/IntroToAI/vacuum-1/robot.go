@@ -47,7 +47,7 @@ func CheckAdjacentObstacles(robot *Robot, room *Room) {
 }
 
 func RecordObstacle(robot *Robot, room *Room, x, y int) {
-	if x >= 0 && x < room.Width && y >= 0 && y <= room.Height && room.Grid[x][y].Obstacle {
+	if x >= 0 && x < room.Width && y >= 0 && y < room.Height && room.Grid[x][y].Obstacle {
 		if room.Grid[x][y].Type == "furnniture" && room.Grid[x][y].ObstacleName != "" {
 			robot.ObstaclesEncountered[room.Grid[x][y].ObstacleName] = true
 		}
