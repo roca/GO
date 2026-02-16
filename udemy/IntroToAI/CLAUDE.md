@@ -136,13 +136,13 @@ Files in `ai-search/mazes/` and `ai-search/flooded-mazes/`:
 ### Current Status
 
 - **Complete**: Data structures, CLI parsing, room config loading (`LoadRoomConfig()`), room initialization (`NewRoom()`), robot constructor (`NewRobot()`), display system (`Display()`), furniture placement, main workflow
+- **In Progress**: A* pathfinding in `astar.go` — has priority queue and main loop shell but is missing neighbor exploration, `reconstructPath` function, and has unused `closedSet` variable (does not compile)
 - **TODO**: Random walk algorithm implementation (random.go is a stub), movement/collision logic, animation loop
 
 ### Known Bugs
 
 - `Clean()` in robot.go:33 increments `CleanableCellCount` instead of `CleanedCellCount`
 - `Display()` in world.go handles cell type `"clean"` but `Clean()` sets type to `"cleaned"` — cleaned cells won't render with any character
-- `RecordObstacle()` in robot.go:50 has off-by-one: `y <= room.Height` should be `y < room.Height`
 - Typo `"furnniture"` in robot.go:51 (should be `"furniture"`) — obstacle recording never matches furniture cells
 
 ### Constants (world.go)
@@ -171,6 +171,10 @@ JSON files in `vacuum-1/`. Use `empty.json` as template.
 **Known issue**: `room.json` has syntax errors (missing commas on lines 3, 17, 27, 36 and extra quote on line 38). Do not use without fixing.
 
 The JSON `robot` field (dock position, start direction) exists in config files but is not loaded by `RoomConfig` struct.
+
+### Pathfinding (astar.go)
+
+A* implementation for room navigation, separate from the ai-search module's A*. Uses a `PriorityQueue` of `PGItem` structs with `container/heap`. The `heuristic()` function uses Manhattan distance. Currently incomplete — the main loop pops items and checks goal but does not explore neighbors or reconstruct the path.
 
 ### Cleaning Algorithms
 
