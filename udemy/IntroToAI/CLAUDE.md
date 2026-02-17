@@ -135,9 +135,8 @@ Files in `ai-search/mazes/` and `ai-search/flooded-mazes/`:
 
 ### Current Status
 
-- **Complete**: Data structures, CLI parsing, room config loading (`LoadRoomConfig()`), room initialization (`NewRoom()`), robot constructor (`NewRobot()`), display system (`Display()`), furniture placement, main workflow
-- **In Progress**: A* pathfinding in `astar.go` — has priority queue and main loop shell but is missing neighbor exploration, `reconstructPath` function, and has unused `closedSet` variable (does not compile)
-- **TODO**: Random walk algorithm implementation (random.go is a stub), movement/collision logic, animation loop
+- **Complete**: Data structures, CLI parsing, room config loading (`LoadRoomConfig()`), room initialization (`NewRoom()`), robot constructor (`NewRobot()`), display system (`Display()`), furniture placement, main workflow, A* pathfinding in `astar.go` (priority queue, neighbor exploration, `reconstructPath`, closed set tracking)
+- **TODO**: Random walk algorithm implementation (random.go is a stub), movement/collision logic, animation loop, integration of A* pathfinding into cleaning algorithms
 
 ### Known Bugs
 
@@ -160,6 +159,8 @@ Files in `ai-search/mazes/` and `ai-search/flooded-mazes/`:
 
 **Grid convention**: `grid[x][y]` where x is column and y is row (column-major). Display iterates rows (j) then columns (i).
 
+**Shared state**: The `directions` variable (N/E/S/W offsets) is defined in `robot.go` and used by both robot movement and `astar.go` pathfinding.
+
 ### Display Characters
 
 🔴 Robot, 🟦 Wall, 🪑 Furniture, 🧽 Clean, 🟫 Dirty, 🟢 Path, 🐱 Cat
@@ -168,13 +169,11 @@ Files in `ai-search/mazes/` and `ai-search/flooded-mazes/`:
 
 JSON files in `vacuum-1/`. Use `empty.json` as template.
 
-**Known issue**: `room.json` has syntax errors (missing commas on lines 3, 17, 27, 36 and extra quote on line 38). Do not use without fixing.
-
 The JSON `robot` field (dock position, start direction) exists in config files but is not loaded by `RoomConfig` struct.
 
 ### Pathfinding (astar.go)
 
-A* implementation for room navigation, separate from the ai-search module's A*. Uses a `PriorityQueue` of `PGItem` structs with `container/heap`. The `heuristic()` function uses Manhattan distance. Currently incomplete — the main loop pops items and checks goal but does not explore neighbors or reconstruct the path.
+A* implementation for room navigation, separate from the ai-search module's A*. Uses a `PriorityQueue` of `PGItem` structs with `container/heap`. The `heuristic()` function uses Manhattan distance. Complete implementation: maintains open/closed sets, explores 4-directional neighbors via `directions` (defined in robot.go), tracks g/f scores, and reconstructs path via `cameFrom` map. Called as `Astar(room, start, goal) []Point`.
 
 ### Cleaning Algorithms
 

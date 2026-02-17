@@ -80,9 +80,59 @@ func Astar(room *Room, start Point, goal Point) []Point {
 		if current.X == goal.X && current.Y == goal.Y {
 			return reconstructPath(cameFrom, current)
 		}
+
+		//Mark current point as processed by adding it to the closed set
+		closedSet[current] = true
+
+		// Check all neighbors of the current point
+		for _, dir := range directions {
+			neighbor := Point{X: current.X + dir[0], Y: current.Y + dir[1]}
+
+			// Skip if neighbor is invalid or in the closed set
+			if !room.IsValid(neighbor.X, neighbor.Y) || closedSet[neighbor] {
+				continue
+			}
+
+			// Calculate tentative g-score for the neighbor
+			tentativeGScore := gScore[current] + 1
+
+			// If this path to neighbor is better, update scores and path
+			if _, exists := gScore[neighbor]; !exists || tentativeGScore < gScore[neighbor] {
+				// Update path information
+				cameFrom[neighbor] = current
+				gScore[neighbor] = tentativeGScore
+				fScore[neighbor] = tentativeGScore + heuristic(neighbor, goal)
+
+				// Update priority queue
+				if item, exists := openSetItems[neighbor]; exists {
+					pq.Update(item, fScore[neighbor])
+				} else {
+					// Add new neighbor to the priority queue
+					neighborItem := &PGItem{point: neighbor, priority: fScore[neighbor]}
+					heap.Push(&pq, neighborItem)
+					openSetItems[neighbor] = neighborItem
+				}
+
+			}
+		}
 	}
+
+	return []Point{} // Return empty path if no path is found
 }
 
 func heuristic(a, b Point) float64 {
 	return math.Abs(float64(a.X-b.X)) + math.Abs(float64(a.Y-b.Y))
+}
+
+func reconstructPath(cameFrom map[Point]Point, current Point) []Point {
+	path := []Point{current}
+	for {
+		prev, exists := cameFrom[current]
+		if !exists {
+			break
+		}
+		path = append([]Point{prev}, path...)
+		current = prev
+	}
+	return path
 }
