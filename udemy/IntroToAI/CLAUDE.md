@@ -18,9 +18,9 @@ The repository uses Go workspaces (`go.work`) with two modules:
 
 ```bash
 cd ai-search
-go run main.go -file mazes/maze.txt -search dfs
-go run main.go -file mazes/maze-100-steps.txt -search astar -animate
-go run main.go -file flooded-mazes/maze-flooded.txt -search astar
+go run . -file mazes/maze.txt -search dfs
+go run . -file mazes/maze-100-steps.txt -search astar -animate
+go run . -file flooded-mazes/maze-flooded.txt -search astar
 go build  # produces ./ai-search binary
 ```
 
@@ -32,10 +32,13 @@ Algorithms: `dfs`, `bfs`, `dijkstra`, `gbfs`, `astar`
 
 ```bash
 cd vacuum-1
-go run main.go -file empty.json -algorithm random -animate
+go run . -file empty.json -algorithm random -animate
+go run . -file room.json -algorithm random -animate
 ```
 
 Flags: `-file <path>`, `-algorithm <name>`, `-animate <bool>`
+
+**Note**: `vacuum-1` currently has compiler errors in `random.go` (unused variables) that must be fixed before it will build.
 
 ### Go Workspace
 
@@ -135,14 +138,17 @@ Files in `ai-search/mazes/` and `ai-search/flooded-mazes/`:
 
 ### Current Status
 
-- **Complete**: Data structures, CLI parsing, room config loading (`LoadRoomConfig()`), room initialization (`NewRoom()`), robot constructor (`NewRobot()`), display system (`Display()`), furniture placement, main workflow, A* pathfinding in `astar.go` (priority queue, neighbor exploration, `reconstructPath`, closed set tracking)
-- **TODO**: Random walk algorithm implementation (random.go is a stub), movement/collision logic, animation loop, integration of A* pathfinding into cleaning algorithms
+- **Complete**: Data structures, CLI parsing, room config loading (`LoadRoomConfig()`), room initialization (`NewRoom()`), robot constructor (`NewRobot()`), display system (`Display()`), furniture placement, main workflow, A* pathfinding in `astar.go` (priority queue, neighbor exploration, `reconstructPath`, closed set tracking), summary display (`displaySummary()`)
+- **TODO**: Random walk algorithm implementation (random.go has scaffolding with loop structure and timing but the loop body is comment stubs — no actual movement logic), movement/collision logic, animation loop, integration of A* pathfinding into cleaning algorithms
 
 ### Known Bugs
 
 - `Clean()` in robot.go:33 increments `CleanableCellCount` instead of `CleanedCellCount`
 - `Display()` in world.go handles cell type `"clean"` but `Clean()` sets type to `"cleaned"` — cleaned cells won't render with any character
 - Typo `"furnniture"` in robot.go:51 (should be `"furniture"`) — obstacle recording never matches furniture cells
+- `CleanRoomRandomWalk()` in random.go:21 loop condition is `CleanableCellCount < CleanedCellCount` (inverted — should be `CleanedCellCount < CleanableCellCount`)
+- random.go:11-12 declares `stuckCount` and `maxStuckCount` but never uses them — causes compiler error (`declared and not used`)
+- `Display()` switch in world.go has no case for `"bike"` type — bike furniture cells render as blank
 
 ### Constants (world.go)
 
@@ -177,7 +183,7 @@ A* implementation for room navigation, separate from the ai-search module's A*. 
 
 ### Cleaning Algorithms
 
-Assigned to robots via function pointers. Currently only `CleanRoomRandomWalk` in `random.go` (stub - calls `displaySummary()` immediately without movement logic).
+Assigned to robots via function pointers. Currently only `CleanRoomRandomWalk` in `random.go` (scaffolding with loop structure, timing, and initial position cleaning, but the loop body is comment stubs describing intended behavior: random angle generation, Bresenham line paths, stuck detection with A* fallback, and adaptive dirty cell scanning).
 
 ### Execution Flow
 
