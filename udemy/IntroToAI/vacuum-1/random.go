@@ -2,6 +2,7 @@ package main
 
 import (
 	"math"
+	"math/rand/v2"
 	"time"
 )
 
@@ -23,14 +24,43 @@ func CleanRoomRandomWalk(room *Room, robot *Robot) {
 
 	for moveCount < maxMoves && room.CleanableCellCount < room.CleanedCellCount {
 		// Generate a random angle in radians
+		angle := rand.Float64() * 2 * math.Pi
 
 		// Calulate a direction vector based on the random angle
+		dx := math.Cos(angle)
+		dy := math.Sin(angle)
 
 		// Use Bressenham's line algorithm to determine the path from the robot's current position to the target position
+		moves := moveAtAngleUntilObstacle(room, robot, dx, dy)
+		moveCount += moves
 
 		// If we didn't move very much, increment stuck counter and possibly change strategy
+		if moves < 3 {
+			stuckCount++
 
-		// If stuck too many times, use A* to find a path to nearest dirty cell
+			// If stuck too many times, use A* to find a path to nearest dirty cell
+			if stuckCount >= maxStuckCount {
+				stuckCount = 0
+				dirtyCell := findNearestDirtyCell(room, robot.Position)
+				if dirtyCell.X != -1 && dirtyCell.Y != -1 {
+					path := Astar(room, robot.Position, dirtyCell)
+					if len(path) > 1 {
+						// Move along the path
+						for i := 1; i < len(path); i++ {
+							robot.Position = path[i]
+							robot.Path = append(robot.Path, robot.Position)
+							Clean(robot, room)
+							if room.Animate {
+								room.Display(robot, false)
+								time.Sleep(moveDelay)
+							}
+							moveCount++
+						}
+					}
+				}
+
+			}
+		}
 
 		// Add some adaptive behavior, Scan for dirty cells every once in awhile
 
@@ -43,6 +73,42 @@ func CleanRoomRandomWalk(room *Room, robot *Robot) {
 	cleaningTime := time.Since(startTime)
 
 	displaySummary(room, robot, moveCount, cleaningTime)
+}
+
+func moveAtAngleUntilObstacle(room *Room, robot *Robot, dx, dy float64) int {
+	moveCount := 0
+	maxDistance := math.Max(float64(room.Width), float64(room.Height)) * 2
+	startX, startY := robot.Position.X, robot.Position.Y
+
+	endX := startX + int(dx*maxDistance)
+	endY := startY + int(dy*maxDistance)
+
+	points := bresenhamLine(startX, startY, endX, endY)
+
+	// Move along line until hitting an obstacle
+	for i := 1; i < len(points); i++ {
+		x, y := points[i].X, points[i].Y
+
+		if !room.IsValid(x, y) {
+			break
+		}
+
+		// Move the robot to the new position
+		robot.Position = Point{X: x, Y: y}
+		robot.Path = append(robot.Path, robot.Position)
+
+		Clean(robot, room)
+
+		// Animate the room if needed
+		if room.Animate {
+			room.Display(robot, false)
+			time.Sleep(moveDelay)
+		}
+
+		moveCount++
+	}
+
+	return moveCount
 }
 
 func bresenhamLine(x0, y0, x1, y1 int) []Point {

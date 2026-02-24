@@ -38,8 +38,6 @@ go run . -file room.json -algorithm random -animate
 
 Flags: `-file <path>`, `-algorithm <name>`, `-animate <bool>`
 
-**Note**: `vacuum-1` currently has compiler errors in `random.go` (unused variables) that must be fixed before it will build.
-
 ### Go Workspace
 
 ```bash
@@ -138,17 +136,16 @@ Files in `ai-search/mazes/` and `ai-search/flooded-mazes/`:
 
 ### Current Status
 
-- **Complete**: Data structures, CLI parsing, room config loading (`LoadRoomConfig()`), room initialization (`NewRoom()`), robot constructor (`NewRobot()`), display system (`Display()`), furniture placement, main workflow, A* pathfinding in `astar.go` (priority queue, neighbor exploration, `reconstructPath`, closed set tracking), summary display (`displaySummary()`)
-- **TODO**: Random walk algorithm implementation (random.go has scaffolding with loop structure and timing but the loop body is comment stubs — no actual movement logic), movement/collision logic, animation loop, integration of A* pathfinding into cleaning algorithms
-- **Helper functions added**: `bresenhamLine(x0, y0, x1, y1) []Point` (Bresenham's line algorithm for path calculation), `Abs(x) int` (integer absolute value), `findNearestDirtyCell(room, position) Point` (scans grid for nearest dirty cell using Manhattan distance — note: currently doesn't filter by cell dirty status)
+- **Complete**: Data structures, CLI parsing, room config loading (`LoadRoomConfig()`), room initialization (`NewRoom()`), robot constructor (`NewRobot()`), display system (`Display()`), furniture placement, main workflow, A* pathfinding in `astar.go`, summary display (`displaySummary()`), random walk core loop with movement, stuck detection, and A* fallback
+- **Implemented helpers** (all in `random.go`): `bresenhamLine(x0, y0, x1, y1) []Point` (Bresenham's line algorithm), `moveAtAngleUntilObstacle(room, robot, dx, dy) int` (moves robot along a vector until hitting obstacle), `Abs(x) int` (integer absolute value), `findNearestDirtyCell(room, position) Point` (scans grid for nearest cell using Manhattan distance — note: currently doesn't filter by cell dirty status)
+- **TODO**: Additional cleaning algorithms beyond random walk, cat obstacle behavior, loading robot dock position from JSON config
 
 ### Known Bugs
 
 - `Clean()` in robot.go:33 increments `CleanableCellCount` instead of `CleanedCellCount` — room starts with correct count from `NewRoom()` but cleaning corrupts it
 - `Display()` in world.go handles cell type `"clean"` but `Clean()` sets type to `"cleaned"` — cleaned cells won't render with any character
 - Typo `"furnniture"` in robot.go:51 (should be `"furniture"`) — obstacle recording never matches furniture cells
-- `CleanRoomRandomWalk()` in random.go:24 loop condition is `CleanableCellCount < CleanedCellCount` (inverted — should be `CleanedCellCount < CleanableCellCount`)
-- random.go:14-15 declares `stuckCount` and `maxStuckCount` but never uses them — causes compiler error (`declared and not used`)
+- `CleanRoomRandomWalk()` in random.go:25 loop condition is `CleanableCellCount < CleanedCellCount` (inverted — should be `CleanedCellCount < CleanableCellCount`)
 - `Display()` switch in world.go has no case for `"bike"` type — bike furniture cells render as blank
 - `findNearestDirtyCell()` in random.go doesn't check if cells are actually dirty — scans all non-wall interior cells
 
@@ -185,7 +182,7 @@ A* implementation for room navigation, separate from the ai-search module's A*. 
 
 ### Cleaning Algorithms
 
-Assigned to robots via function pointers. Currently only `CleanRoomRandomWalk` in `random.go` (scaffolding with loop structure, timing, and initial position cleaning, but the loop body is comment stubs describing intended behavior: random angle generation, Bresenham line paths, stuck detection with A* fallback, and adaptive dirty cell scanning). Helper functions `bresenhamLine()`, `Abs()`, and `findNearestDirtyCell()` are implemented but not yet called from the main loop.
+Assigned to robots via function pointers. Currently only `CleanRoomRandomWalk` in `random.go`. The algorithm: generates a random angle, computes a direction vector, uses `moveAtAngleUntilObstacle()` to move along that vector cleaning cells, and tracks a stuck counter — when stuck too many times consecutively, falls back to A* pathfinding toward the nearest dirty cell. All helper functions (`bresenhamLine()`, `moveAtAngleUntilObstacle()`, `Abs()`, `findNearestDirtyCell()`) are in `random.go`.
 
 ### Execution Flow
 
