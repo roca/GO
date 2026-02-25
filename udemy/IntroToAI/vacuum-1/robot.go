@@ -20,7 +20,6 @@ func NewRobot(startX, startY int) *Robot {
 		Position:             Point{X: startX, Y: startY},
 		Path:                 []Point{{X: startX, Y: startY}},
 		ObstaclesEncountered: make(map[string]bool),
-		CleanRoom:            CleanRoomRandomWalk,
 	}
 }
 
@@ -29,8 +28,8 @@ func Clean(robot *Robot, room *Room) {
 
 	if !room.Grid[x][y].Cleaned && !room.Grid[x][y].Obstacle {
 		room.Grid[x][y].Cleaned = true
-		room.Grid[x][y].Type = "cleaned"
-		room.CleanableCellCount++
+		room.Grid[x][y].Type = "clean"
+		room.CleanedCellCount++
 	}
 
 	CheckAdjacentObstacles(robot, room)
@@ -47,8 +46,8 @@ func CheckAdjacentObstacles(robot *Robot, room *Room) {
 }
 
 func RecordObstacle(robot *Robot, room *Room, x, y int) {
-	if x >= 0 && x < room.Width && y >= 0 && y < room.Height && room.Grid[x][y].Obstacle {
-		if room.Grid[x][y].Type == "furnniture" && room.Grid[x][y].ObstacleName != "" {
+	if x >= 0 && x < room.Width && y >= 0 && y <= room.Height && room.Grid[x][y].Obstacle {
+		if room.Grid[x][y].Type == "furniture" && room.Grid[x][y].ObstacleName != "" {
 			robot.ObstaclesEncountered[room.Grid[x][y].ObstacleName] = true
 		}
 	}

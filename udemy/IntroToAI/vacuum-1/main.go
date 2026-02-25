@@ -8,9 +8,9 @@ import (
 func main() {
 	var configFile, algorithm string
 	var animate bool
-	flag.StringVar(&configFile, "file", "empty.json", "Path to the configuration file")
-	flag.StringVar(&algorithm, "algorithm", "random", "Cleaning Algorithm, Cleaning algorithm to use (random, ...")
-	flag.BoolVar(&animate, "animate", true, "Animate while cleaning")
+	flag.StringVar(&configFile, "file", "empty.json", "configuration file")
+	flag.StringVar(&algorithm, "algorithm", "random", "cleaning algorithm")
+	flag.BoolVar(&animate, "animate", true, "animate while cleaning")
 	flag.Parse()
 
 	room := NewRoom(configFile, animate)
@@ -19,13 +19,12 @@ func main() {
 	// Get a robot.
 	robot := NewRobot(1, 1)
 
-	// Assign a cleaning algorithm to the robot.
+	// Assign a cleaning algorithm.
 	switch algorithm {
 	case "random":
 		robot.CleanRoom = CleanRoomRandomWalk
 	default:
-		// Do nothing
-		return
+		// Do nothing.
 	}
 
 	// Clean the room.

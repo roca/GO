@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"os"
 	"time"
 )
@@ -13,12 +12,12 @@ const (
 	charRobot          = "🔴"
 	charWall           = "🟦"
 	charFurniture      = "🪑"
-	charClean          = "🧽"
+	charClean          = "🧼"
 	charDirty          = "🟫"
 	charPath           = "🟢"
-	charCat            = "🐱" // Display character for the cat
-	catStopProbability = 0.1 // Probability that the cat will stop moving at each step
-	catStopDuration    = 5   // Duration (in seconds) that the cat will stop moving when it decides to stop
+	charCat            = "🐱" // Display character for cat
+	catStopProbability = 0.1 // Probability of cat stopping
+	catStopDuration    = 5   // Duration cat stays still (in animation frames)
 	moveDelay          = 50 * time.Millisecond
 	cellSize           = 10
 )
@@ -28,7 +27,7 @@ type Point struct {
 }
 
 type Cell struct {
-	Type         string // "clean", "dirty", "wall", "furniture", "bike"
+	Type         string // wall, furniture, clean, dirty, bike
 	Cleaned      bool
 	Obstacle     bool
 	ObstacleName string
@@ -59,10 +58,11 @@ type RoomConfig struct {
 }
 
 func NewRoom(configFile string, animate bool) *Room {
-	// Load from JSON config configFile
+	// Load from JSON config.
 	roomConfig, err := LoadRoomConfig(configFile)
 	if err != nil {
-		log.Fatalf("Failed to load room config: %v", err)
+		fmt.Println(err)
+		os.Exit(1)
 	}
 
 	// Convert dimensions to grid cells.
@@ -78,31 +78,32 @@ func NewRoom(configFile string, animate bool) *Room {
 		}
 	}
 
-	// Add walls
+	// Add walls.
 	for i := 0; i < gridWidth; i++ {
 		grid[i][0] = Cell{Type: "wall", Cleaned: false, Obstacle: true, ObstacleName: "wall"}
 		grid[i][gridHeight-1] = Cell{Type: "wall", Cleaned: false, Obstacle: true, ObstacleName: "wall"}
 	}
+
 	for j := 0; j < gridHeight; j++ {
 		grid[0][j] = Cell{Type: "wall", Cleaned: false, Obstacle: true, ObstacleName: "wall"}
 		grid[gridWidth-1][j] = Cell{Type: "wall", Cleaned: false, Obstacle: true, ObstacleName: "wall"}
 	}
 
-	// Add furniture
-	for _, f := range roomConfig.Furniture {
+	// Add furniture. 
+	for _, f := range roomConfig.Furniture{
 		x := f.X / cellSize
 		y := f.Y / cellSize
 		width := f.Width / cellSize
 		height := f.Height / cellSize
-
+		
 		for i := x; i < x+width; i++ {
 			for j := y; j < y+height; j++ {
-				grid[i][j] = Cell{Type: f.Type, Cleaned: false, Obstacle: true, ObstacleName: f.Name}
+				grid[i][j] = Cell{Type: "furniture", Cleaned: false, Obstacle: true, ObstacleName: f.Name}
 			}
 		}
 	}
 
-	// Count cleanable cells
+	// Count cleanable cells.
 	cleanableCellCount := 0
 	for i := 0; i < gridWidth; i++ {
 		for j := 0; j < gridHeight; j++ {
@@ -113,45 +114,45 @@ func NewRoom(configFile string, animate bool) *Room {
 	}
 
 	return &Room{
-		Grid:               grid,
-		Width:              gridWidth,
-		Height:             gridHeight,
+		Grid: grid,
+		Width: gridWidth,
+		Height: gridHeight,
 		CleanableCellCount: cleanableCellCount,
-		CleanedCellCount:   0,
-		Animate:            animate,
+		CleanedCellCount: 0,
+		Animate: animate,
 	}
 }
 
 func LoadRoomConfig(filename string) (*RoomConfig, error) {
-	// Implement JSON loading logic here
-
 	// Read JSON file.
 	jsonData, err := os.ReadFile(filename)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error reading json file: %v", err)
 	}
 
+	// Parse JSON
 	var config RoomConfig
-	// Parse JSON data.
 	if err := json.Unmarshal(jsonData, &config); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error parsing JSON: %v", err)
 	}
 
 	return &config, nil
 }
 
-func (r *Room) Display(robot *Robot, showPath bool) {
-	// Clear the screen
+func (room *Room) Display(robot *Robot, showPath bool) {
+	// Windows users can use github.com/inancgumus/screen
+	// call screen.Clear()
+	// Clear the screen.
 	fmt.Print("\033[H\033[2J")
 
-	for j := range r.Height {
-		for i := range r.Width {
+	for j := range room.Height {
+		for i := range room.Width {
 			if robot.Position.X == i && robot.Position.Y == j {
 				fmt.Print(charRobot)
 			} else if showPath && isInPath(Point{X: i, Y: j}, robot.Path) {
 				fmt.Print(charPath)
 			} else {
-				cell := r.Grid[i][j]
+				cell := room.Grid[i][j]
 				switch cell.Type {
 				case "wall":
 					fmt.Print(charWall)
@@ -167,10 +168,11 @@ func (r *Room) Display(robot *Robot, showPath bool) {
 		fmt.Println()
 	}
 
-	// Dispaly cleaning progress
-	percentCleaned := float64(r.CleanedCellCount) / float64(r.CleanableCellCount) * 100
-	fmt.Printf("Cleaning Progress: %.2f%% (%d/%d) cells cleaned)\n", percentCleaned, r.CleanedCellCount, r.CleanableCellCount)
+	// Display cleaning progress
+	percentCleaned := float64(room.CleanedCellCount) / float64(room.CleanableCellCount) * 100
+	fmt.Printf("Cleaning Progress: %.2f%% (%d/%d cells cleaned)\n", percentCleaned, room.CleanedCellCount, room.CleanableCellCount)
 }
+
 
 func isInPath(point Point, path []Point) bool {
 	for _, p := range path {
@@ -182,33 +184,29 @@ func isInPath(point Point, path []Point) bool {
 }
 
 func displaySummary(room *Room, robot *Robot, moveCount int, cleaningTime time.Duration) {
-	// Display the final room state with the robot's path
+	// Display the final room state with the robot's path.
 	fmt.Println("\nFinal room state with robot's path:")
 	room.Display(robot, true)
 
-	// Display summary
-	fmt.Println("\n============= Cleaning Summary =============")
-	fmt.Printf("Room size: %d x %d (%d cm x %d cm)\n", room.Width, room.Height, room.Width*cellSize, room.Height*cellSize)
+	fmt.Println("\n======== Cleaning Summary ========")
+	fmt.Printf("Room size: %d x %d (%d cm x %d cm)\n", room.Width, room.Height, room.Width * cellSize, room.Height * cellSize)
 
-	//Calulate coverage percentage
+	// Calculate coverage percentage.
 	percentCleaned := float64(room.CleanedCellCount) / float64(room.CleanableCellCount) * 100
 	fmt.Printf("Coverage: %.2f%% (%d/%d cells cleaned)\n", percentCleaned, room.CleanedCellCount, room.CleanableCellCount)
 
-	//Display time and moves
+	// Display time and moves.
 	fmt.Printf("Total moves: %d\n", moveCount)
 	fmt.Printf("Cleaning time: %v\n", cleaningTime)
 
-	// Calculate efficiency (cells cleaned per move)
+	// Calculate efficiency (cells cleaned per move).
 	efficiency := float64(room.CleanedCellCount) / float64(moveCount)
 	fmt.Printf("Efficiency: %.2f cells cleaned per move\n", efficiency)
 
 	fmt.Println()
-	fmt.Println("===========================================")
+	fmt.Println("================================")
 }
 
 func (room *Room) IsValid(x, y int) bool {
-	if x >= 0 && x < room.Width && y >= 0 && y < room.Height && !room.Grid[x][y].Obstacle {
-		return true
-	}
-	return false
+	return x >= 0 && x < room.Width && y >= 0 && y < room.Height && !room.Grid[x][y].Obstacle
 }

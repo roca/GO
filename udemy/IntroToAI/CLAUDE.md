@@ -137,12 +137,14 @@ Files in `ai-search/mazes/` and `ai-search/flooded-mazes/`:
 ### Current Status
 
 - **Complete**: Data structures, CLI parsing, room config loading (`LoadRoomConfig()`), room initialization (`NewRoom()`), robot constructor (`NewRobot()`), display system (`Display()`), furniture placement, main workflow, A* pathfinding in `astar.go`, summary display (`displaySummary()`), random walk core loop with movement, stuck detection, and A* fallback
-- **Implemented helpers** (all in `random.go`): `bresenhamLine(x0, y0, x1, y1) []Point` (Bresenham's line algorithm), `moveAtAngleUntilObstacle(room, robot, dx, dy) int` (moves robot along a vector until hitting obstacle), `Abs(x) int` (integer absolute value), `findNearestDirtyCell(room, position) Point` (scans grid for nearest cell using Manhattan distance — see Known Limitations)
+- **Implemented helpers** (all in `random.go`): `bresenhamLine(x0, y0, x1, y1) []Point` (Bresenham's line algorithm), `moveAtAngleUntilObstacle(room, robot, dx, dy) int` (moves robot along a vector until hitting obstacle), `abs(x) int` (integer absolute value), `findNearestDirtyCell(room, position) Point` (scans grid for nearest cell using Manhattan distance — see Known Limitations)
+- **Robot actions** (in `robot.go`): `Clean(robot, room)` marks cell cleaned and calls `CheckAdjacentObstacles()`, which uses `RecordObstacle()` to track furniture names in `robot.ObstaclesEncountered`
 - **TODO**: Additional cleaning algorithms beyond random walk, cat obstacle behavior, loading robot dock position from JSON config
 
 ### Known Limitations
 
-- `findNearestDirtyCell()` in random.go doesn't check if cells are actually dirty — scans all non-wall, non-obstacle interior cells regardless of `Cleaned` status
+- `findNearestDirtyCell()` in random.go doesn't filter at all — returns the nearest interior cell by Manhattan distance regardless of `Cleaned` status or `Obstacle` flag
+- `RecordObstacle()` in robot.go has off-by-one: uses `y <= room.Height` instead of `y < room.Height`, which could cause index-out-of-bounds on the bottom edge
 - `Display()` switch in world.go has no case for `"bike"` cell type — bike cells would render as blank. Currently not an issue because `NewRoom()` sets all furniture to `Type="furniture"` regardless of JSON `type` field.
 - The JSON `robot` field (dock position, start direction) exists in config files but is not loaded by `RoomConfig` struct
 
@@ -179,7 +181,13 @@ A* implementation for room navigation, separate from the ai-search module's A*. 
 
 ### Cleaning Algorithms
 
-Assigned to robots via function pointers. Currently only `CleanRoomRandomWalk` in `random.go`. The algorithm: generates a random angle, computes a direction vector, uses `moveAtAngleUntilObstacle()` to move along that vector cleaning cells, and tracks a stuck counter — when stuck too many times consecutively, falls back to A* pathfinding toward the nearest dirty cell. All helper functions (`bresenhamLine()`, `moveAtAngleUntilObstacle()`, `Abs()`, `findNearestDirtyCell()`) are in `random.go`.
+Assigned to robots via function pointers. Currently only `CleanRoomRandomWalk` in `random.go`. The algorithm has three phases:
+
+1. **Random walk loop**: Generates random angles, moves along direction vectors via `moveAtAngleUntilObstacle()`, cleans cells. Tracks a stuck counter — when stuck 5+ times consecutively, falls back to A* pathfinding toward the nearest dirty cell.
+2. **Adaptive targeting**: Every 20 moves, 30% chance to use A* to navigate to the nearest dirty cell (periodic course correction).
+3. **Final sweep**: After the main loop exits (max moves reached or all cells cleaned), systematically iterates the entire grid and uses A* to reach any remaining uncleaned, non-obstacle cells.
+
+All helper functions (`bresenhamLine()`, `moveAtAngleUntilObstacle()`, `abs()`, `findNearestDirtyCell()`) are in `random.go`.
 
 ### Execution Flow
 
