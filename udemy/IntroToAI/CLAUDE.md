@@ -137,17 +137,14 @@ Files in `ai-search/mazes/` and `ai-search/flooded-mazes/`:
 ### Current Status
 
 - **Complete**: Data structures, CLI parsing, room config loading (`LoadRoomConfig()`), room initialization (`NewRoom()`), robot constructor (`NewRobot()`), display system (`Display()`), furniture placement, main workflow, A* pathfinding in `astar.go`, summary display (`displaySummary()`), random walk core loop with movement, stuck detection, and A* fallback
-- **Implemented helpers** (all in `random.go`): `bresenhamLine(x0, y0, x1, y1) []Point` (Bresenham's line algorithm), `moveAtAngleUntilObstacle(room, robot, dx, dy) int` (moves robot along a vector until hitting obstacle), `Abs(x) int` (integer absolute value), `findNearestDirtyCell(room, position) Point` (scans grid for nearest cell using Manhattan distance — note: currently doesn't filter by cell dirty status)
+- **Implemented helpers** (all in `random.go`): `bresenhamLine(x0, y0, x1, y1) []Point` (Bresenham's line algorithm), `moveAtAngleUntilObstacle(room, robot, dx, dy) int` (moves robot along a vector until hitting obstacle), `Abs(x) int` (integer absolute value), `findNearestDirtyCell(room, position) Point` (scans grid for nearest cell using Manhattan distance — see Known Limitations)
 - **TODO**: Additional cleaning algorithms beyond random walk, cat obstacle behavior, loading robot dock position from JSON config
 
-### Known Bugs
+### Known Limitations
 
-- `Clean()` in robot.go:33 increments `CleanableCellCount` instead of `CleanedCellCount` — room starts with correct count from `NewRoom()` but cleaning corrupts it
-- `Display()` in world.go handles cell type `"clean"` but `Clean()` sets type to `"cleaned"` — cleaned cells won't render with any character
-- Typo `"furnniture"` in robot.go:51 (should be `"furniture"`) — obstacle recording never matches furniture cells
-- `CleanRoomRandomWalk()` in random.go:25 loop condition is `CleanableCellCount < CleanedCellCount` (inverted — should be `CleanedCellCount < CleanableCellCount`)
-- `Display()` switch in world.go has no case for `"bike"` type — bike furniture cells render as blank
-- `findNearestDirtyCell()` in random.go doesn't check if cells are actually dirty — scans all non-wall interior cells
+- `findNearestDirtyCell()` in random.go doesn't check if cells are actually dirty — scans all non-wall, non-obstacle interior cells regardless of `Cleaned` status
+- `Display()` switch in world.go has no case for `"bike"` cell type — bike cells would render as blank. Currently not an issue because `NewRoom()` sets all furniture to `Type="furniture"` regardless of JSON `type` field.
+- The JSON `robot` field (dock position, start direction) exists in config files but is not loaded by `RoomConfig` struct
 
 ### Constants (world.go)
 
@@ -158,9 +155,11 @@ Files in `ai-search/mazes/` and `ai-search/flooded-mazes/`:
 ### Key Types (world.go, robot.go)
 
 - **Room**: Grid of Cells, dimensions, cleanable/cleaned counts, animate flag
-- **Cell**: Type string ("clean"/"dirty"/"wall"/"furniture"/"bike"), Cleaned/Obstacle booleans
+- **Cell**: Type string ("clean"/"dirty"/"wall"/"furniture"/"bike"), Cleaned/Obstacle booleans, ObstacleName string
+- **Furniture**: JSON-mapped struct with X, Y, Width, Height, Name, Type fields. Name is used for obstacle tracking via `ObstacleName`.
 - **Robot**: Position, Path, Direction (float64), CleanRoom function pointer, ObstaclesEncountered map
 - **RoomConfig**: JSON structure with Width, Height, Furniture array
+- **Room methods**: `Display(robot, showPath)`, `IsValid(x, y) bool` (bounds + obstacle check), `displaySummary(room, robot, moveCount, cleaningTime)`
 
 **Grid convention**: `grid[x][y]` where x is column and y is row (column-major). Display iterates rows (j) then columns (i).
 
@@ -168,13 +167,11 @@ Files in `ai-search/mazes/` and `ai-search/flooded-mazes/`:
 
 ### Display Characters
 
-🔴 Robot, 🟦 Wall, 🪑 Furniture, 🧽 Clean, 🟫 Dirty, 🟢 Path, 🐱 Cat
+🔴 Robot, 🟦 Wall, 🪑 Furniture, 🧼 Clean, 🟫 Dirty, 🟢 Path, 🐱 Cat
 
 ### Room Configuration
 
 JSON files in `vacuum-1/`. Use `empty.json` as template.
-
-The JSON `robot` field (dock position, start direction) exists in config files but is not loaded by `RoomConfig` struct.
 
 ### Pathfinding (astar.go)
 
@@ -190,12 +187,15 @@ Assigned to robots via function pointers. Currently only `CleanRoomRandomWalk` i
 
 ## Dependencies
 
+**ai-search** (external):
 - `github.com/StephaneBunel/bresenham`: Grid line drawing
 - `github.com/kettek/apng`: Animated PNG generation
 - `golang.org/x/image/font`: Text rendering on images
 
+**vacuum-1**: Standard library only
+
 ## Git Notes
 
 - Git LFS tracks `.png` and `.psd` files (see `.gitattributes`)
-- `.gitignore` excludes `tmp/` and `ai-search/*.png` (generated output)
+- `.gitignore` excludes `tmp/`, `ai-search/*.png` (generated output), and compiled binaries (`ai-search/ai-search`, `vacuum-1/vacuum-1`)
 - Main branch: `main`, active development on `staging`
