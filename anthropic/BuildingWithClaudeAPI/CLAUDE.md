@@ -8,202 +8,134 @@ This is a learning repository for the "Building with Claude API" course. It cont
 
 ## Project Structure
 
-The repository uses Go workspaces (`go.work`) with each example as an independent module:
+Go workspace (`go.work`, Go 1.25.3) with each example as an independent module:
 
-- **example1-17**: Progressive examples demonstrating Claude API features
-- **go-agent**: Basic agentic workflow with custom tool definitions
-- **cli_project**: Full MCP (Model Context Protocol) implementation with client/server architecture
+- **example1-17**: Progressive examples (basic API calls → tool use → RAG → vision)
+- **go-agent**: Basic agentic workflow with custom tool definitions (non-streaming, `client.Messages.New()`)
+- **cli_project**: Full MCP (Model Context Protocol) client/server implementation
+- **lucidchart-mcp**: Standalone MCP server for Lucidchart API (OAuth 2.0, read-only document tools)
 - **genkit-intro**: Firebase Genkit integration example
 
-### Key Example Implementations
+### Key Examples
 
-- **example11**: Prompt evaluation framework with JSON dataset generation
-- **example14**: Tool use patterns with custom time manipulation tools
-- **example15**: RAG system with dual search (vector similarity + BM25 lexical search)
-- **example16-17**: Extended streaming and advanced API patterns
+- **example11**: Prompt evaluation framework — three-stage pipeline: generate dataset → run prompts → grade with dual scoring (syntax validation + model-based)
+- **example13-14**: Tool use patterns with time manipulation tools (have unit tests in `tools/`)
+- **example15**: RAG system with dual search (VoyageAI vector embeddings + BM25 lexical search)
+- **example16**: Vision capabilities — satellite image analysis for fire risk assessment
 
 ## Common Development Commands
 
-### Building and Running Examples
-
-Each example is a separate module. Navigate to the example directory and run:
-
 ```bash
-cd example1  # or any example directory
-go run main.go
-```
+# Run any single-file example
+cd example1 && go run main.go
 
-For examples with multiple packages (example14, example15):
+# Run examples with multiple packages
+cd example14 && go run .
 
-```bash
-cd example14
-go run .
-```
+# MCP: start server (terminal 1), then client (terminal 2)
+cd cli_project/server && go run .
+cd cli_project/client && go run .
 
-### Running the MCP Client/Server
+# Tests (example13 and example14 have tests)
+cd example13 && go test ./tools -v
 
-The `cli_project` contains a complete MCP implementation:
+# Lucidchart MCP server (requires OAuth setup, runs on :8081)
+cd lucidchart-mcp && go run .
 
-```bash
-# Terminal 1 - Start MCP server
-cd cli_project/server
-go run .
-
-# Terminal 2 - Run MCP client
-cd cli_project/client
-go run .
-```
-
-### Docker Operations (MCP Server)
-
-Build and run the MCP server in Docker:
-
-```bash
-cd cli_project
-docker build -t mcp-server --platform linux/amd64 .
+# Docker (cli_project MCP server only)
+cd cli_project && docker build -t mcp-server --platform linux/amd64 .
 docker run -p 8080:8080 mcp-server
-```
-
-### Running Tests
-
-For examples with test files (example13, example14):
-
-```bash
-cd example13
-go test ./tools -v
 ```
 
 ## Architecture Patterns
 
-### Agent Implementation Pattern
+### Agent Loop Pattern
 
-Both `go-agent` and `cli_project/client` follow a similar agentic loop pattern:
+Both `go-agent` and `cli_project/client` implement the same core loop:
 
-```go
-type Agent struct {
-    client         *anthropic.Client
-    getUserMessage func() (string, error)
-    tools          []ToolDefinition  // or []*mcp.Tool
-}
+1. Get user input
+2. Call Claude API with conversation history + tool definitions
+3. If response contains `ToolUseBlock`: execute tool, append result as user message, loop back to step 2
+4. If response contains `TextBlock`: display and return to step 1
 
-func (a *Agent) run(ctx context.Context) error {
-    conversation := []anthropic.MessageParam{}
-    for {
-        // 1. Get user input
-        // 2. Run inference with Claude API
-        // 3. Handle tool calls in loop
-        // 4. Display response
-    }
-}
-```
+Conversation history is maintained as `[]anthropic.MessageParam`. Tool results are fed back via `anthropic.NewToolResultBlock()` wrapped in `anthropic.NewUserMessage()`.
 
-The agent maintains conversation history and handles tool use through multiple API round-trips until Claude returns a final response.
-
-### MCP Architecture
-
-The `cli_project` implements a complete MCP system:
-
-- **Server** (`cli_project/server/`):
-  - Exposes tools via `mcp.AddTool()`
-  - Serves resources via `AddListDocIDsResource()` and `AddDocContentResource()`
-  - Provides prompts via `AddReformatToMarkdownPrompt()`
-  - Runs on HTTP with SSE transport at `:8080`
-
-- **Client** (`cli_project/client/`):
-  - Connects to MCP server via SSE transport
-  - Fetches available tools and resources
-  - Interactive CLI with `@` syntax for document references (Ctrl+@ for menu)
-  - Integrates MCP tools with Claude API tool calling
-
-### RAG System Architecture (example15)
-
-Document processing pipeline:
-
-1. **Chunking**: `ChunkBySection()` splits on markdown headers (default strategy)
-2. **Embedding**: VoyageAI generates vector embeddings (`embedder/embedder.go`)
-3. **Indexing**: Dual indexes - `VectorDB` (cosine/euclidean) and `BM25Index` (lexical)
-4. **Search**: Query both indexes and merge results with `MergeIndexDBresults()`
-
-Search interface consistency:
-```go
-type Result struct { Content string; Distance float64 }
-Search(query string, topK int, params...) ([]Result, error)
-```
+**go-agent** uses `client.Messages.New()` (non-streaming) with `ToolDefinition` structs.
+**cli_project/client** uses the same pattern but with MCP `*mcp.Tool` types, connecting to the MCP server via SSE to execute tools with `session.CallTool()`.
 
 ### Tool Definition Pattern
 
-Tools follow a consistent schema across examples:
+In `go-agent`, tools use `invopop/jsonschema` for type-safe schema generation:
 
 ```go
 type ToolDefinition struct {
     Name        string
     Description string
-    Parameters  map[string]interface{}  // JSON schema
-    Execute     func(params map[string]interface{}) (string, error)
+    InputSchema anthropic.ToolInputSchemaParam
+    Function    func(input json.RawMessage) (string, error)
 }
+
+// Generic schema generator from Go structs with jsonschema_description tags
+var schema = GenerateSchema[ReadFileInput]()
 ```
 
-MCP tools use the SDK's `mcp.Tool` type with handlers registered via `mcp.AddTool()`.
+MCP tools (`cli_project`) use the SDK's `mcp.Tool` type with handlers registered via `mcp.AddTool(server, tool, handler)`.
 
-## Environment Requirements
+### MCP Architecture (`cli_project`)
 
-### API Keys
+- **Server** (`server/`): HTTP with SSE transport at `:8080`. Exposes tools (read_doc_contents, edit_document, get_jira_ticket, update_jira_ticket), resources (`docs://documents`, `docs://documents/{doc_id}`), and prompts.
+- **Client** (`client/`): Connects via `mcp.SSEClientTransport`. Interactive CLI with `@` prefix for document references and `Ctrl+@` for document menu. Converts `mcp.Tool` → `anthropic.ToolUnionParam` for Claude API.
 
-Set these environment variables (the SDK looks for them by default):
+### Lucidchart MCP Server (`lucidchart-mcp`)
 
-```bash
-export ANTHROPIC_API_KEY="your-key-here"     # Required for all examples
-export VOYAGE_API_KEY="your-key-here"        # Required for example15 (RAG)
-```
+Standalone MCP server exposing Lucidchart API as read-only tools via OAuth 2.0. Runs on `:8081`.
 
-### Dependencies
+**Files:**
+- `auth.go` — OAuth 2.0 lifecycle: interactive authorization code flow (temp callback server on `:9999`), token refresh (Lucidchart rotates refresh tokens), file-based persistence (`.lucid-tokens.json`, `0600` perms). Thread-safe via `sync.RWMutex` with 5-min refresh buffer.
+- `client.go` — `LucidClient` wraps all Lucidchart REST API calls. Central `doRequest()` adds `Authorization: Bearer` and `Lucid-Api-Version: 1` headers automatically, calls `oauth.GetValidToken()` to auto-refresh expired tokens.
+- `tools.go` — Three MCP tool handlers following `ToolHandlerFor[In, Out]` pattern:
+  - `list_documents` — `POST /documents/search` with keywords/pagination
+  - `get_document` — `GET /documents/{id}` returns metadata
+  - `export_document` — `GET /documents/{id}` with `Accept` header; PNG returns `mcp.ImageContent`, PDF returns base64-encoded text
+- `main.go` — Reads OAuth config from env vars, loads/initiates token flow, registers tools with `ReadOnlyHint: true`, serves SSE on `:8081`
 
-Each example manages its own dependencies through its `go.mod`. The workspace configuration handles version resolution across all modules.
+**OAuth first-run flow:** Server prints an authorization URL → user opens in browser → Lucid redirects to `localhost:9999/callback` → server exchanges code for tokens → persists to `.lucid-tokens.json`. Subsequent runs load tokens from file and auto-refresh.
 
-**Important**: For langchain integrations, this repo uses `github.com/vendasta/langchaingo` (not `tmc/langchaingo`).
+### RAG System (example15)
 
-## Important Code References
+Pipeline: Chunk (`ChunkBySection` splits on `\n## `) → Embed (VoyageAI `voyage-3-large`) → Index (dual: `VectorDB` for cosine/euclidean + `BM25Index` for lexical) → Search both and merge with `MergeIndexDBresults()`.
 
-### Streaming Response Pattern
+### Streaming Pattern
 
-All examples use streaming for real-time responses:
+Most examples use streaming responses:
 
 ```go
 response_stream := client.Messages.NewStreaming(ctx, message_params)
 for response_stream.Next() {
     current := response_stream.Current()
-    switch current.Type {
-    case "content_block_delta":
-        // Process text delta
-    case "tool_use":
-        // Handle tool call
-    }
+    // Handle content_block_delta for text, tool_use for tool calls
 }
 ```
 
-### MCP Resource Retrieval
+## Environment Requirements
 
-Access documents via MCP resources:
-
-```go
-transport := &mcp.SSEClientTransport{Endpoint: "http://localhost:8080/"}
-session, _ := mcpClient.Connect(ctx, transport, nil)
-results, _ := session.ReadResource(ctx, &mcp.ReadResourceParams{
-    URI: "docs://documents",
-})
+```bash
+export ANTHROPIC_API_KEY="..."     # Required for all examples
+export VOYAGE_API_KEY="..."        # Required for example15 (RAG embeddings)
+export JIRA_API_TOKEN="..."        # Required for cli_project Jira tools
+export LUCID_CLIENT_ID="..."       # Required for lucidchart-mcp (OAuth 2.0)
+export LUCID_CLIENT_SECRET="..."   # Required for lucidchart-mcp (OAuth 2.0)
 ```
 
-### Prompt Evaluation Framework (example11)
+Optional `lucidchart-mcp` env vars: `LUCID_REDIRECT_URI` (default `http://localhost:9999/callback`), `LUCID_TOKEN_FILE` (default `.lucid-tokens.json`), `LUCID_MCP_ADDR` (default `:8081`).
 
-Three-stage evaluation:
-1. Generate test dataset with Claude (JSON array of tasks)
-2. Run prompts against each task
-3. Grade with dual scoring: syntax validation + model-based evaluation
+**Important**: For langchain integrations, this repo uses `github.com/vendasta/langchaingo` (not `tmc/langchaingo`).
 
 ## Development Notes
 
-- Each example is self-contained and demonstrates specific API features
+- Each example is self-contained with its own `go.mod`
 - The MCP implementation requires both server and client running simultaneously
-- RAG examples require the VoyageAI API key for embeddings
 - The workspace setup allows running `go mod tidy` at the root to update all modules
 - Docker deployment is configured for the MCP server only
+- The Dockerfile is gitignored (contains org-specific SSL/SSH setup)
+- The `lucidchart-mcp` server requires a Lucid Enterprise plan for API access; OAuth credentials come from registering an app at [developer.lucid.co](https://developer.lucid.co)
