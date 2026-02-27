@@ -57,7 +57,7 @@ No test files exist in the codebase currently.
 - **Maze**: Main game state - grid of Walls, Start/Goal Points, Solution, Explored list, search config
 - **Point**: Row/Col coordinate with `Water` boolean (for flooded cells)
 - **Wall**: Grid cell with `State` (Point) and `wall` boolean (`true` = impassable)
-- **Node**: Search tree node with State, Parent pointer, Action, cost fields (`CostToGoal` for g(n), `EstimatedCostToGoal` for f(n)). Has `ManhattanDistance(goal Point) int` method.
+- **Node**: Search tree node with State, Parent pointer, Action, cost fields (`CostToGoal` for g(n), `EstimatedCostToGoal` for f(n)), and `index` (used internally by priority queues). Has `ManhattanDistance(goal Point) int` method.
 - **Solution**: Result with Actions (direction strings) and Cells (path Points)
 
 Search type constants: `DFS=0, BFS=1, GBFS=2, ASTAR=3, DIJKSTRA=4`
@@ -139,6 +139,7 @@ Files in `ai-search/mazes/` and `ai-search/flooded-mazes/`:
 - **Complete**: Data structures, CLI parsing, room config loading (`LoadRoomConfig()`), room initialization (`NewRoom()`), robot constructor (`NewRobot()`), display system (`Display()`), furniture placement, main workflow, A* pathfinding in `astar.go`, summary display (`displaySummary()`), random walk core loop with movement, stuck detection, and A* fallback
 - **Implemented helpers** (all in `random.go`): `bresenhamLine(x0, y0, x1, y1) []Point` (Bresenham's line algorithm), `moveAtAngleUntilObstacle(room, robot, dx, dy) int` (moves robot along a vector until hitting obstacle), `abs(x) int` (integer absolute value), `findNearestDirtyCell(room, position) Point` (scans grid for nearest cell using Manhattan distance — see Known Limitations)
 - **Robot actions** (in `robot.go`): `Clean(robot, room)` marks cell cleaned and calls `CheckAdjacentObstacles()`, which uses `RecordObstacle()` to track furniture names in `robot.ObstaclesEncountered`
+- **Skeleton**: `slam.go` contains a stub `CleanRoomSlam()` with outlined SLAM algorithm structure (not yet implemented)
 - **TODO**: Additional cleaning algorithms beyond random walk, cat obstacle behavior, loading robot dock position from JSON config
 
 ### Known Limitations
@@ -146,7 +147,7 @@ Files in `ai-search/mazes/` and `ai-search/flooded-mazes/`:
 - `findNearestDirtyCell()` in random.go doesn't filter at all — returns the nearest interior cell by Manhattan distance regardless of `Cleaned` status or `Obstacle` flag
 - `RecordObstacle()` in robot.go has off-by-one: uses `y <= room.Height` instead of `y < room.Height`, which could cause index-out-of-bounds on the bottom edge
 - `Display()` switch in world.go has no case for `"bike"` cell type — bike cells would render as blank. Currently not an issue because `NewRoom()` sets all furniture to `Type="furniture"` regardless of JSON `type` field.
-- The JSON `robot` field (dock position, start direction) exists in config files but is not loaded by `RoomConfig` struct
+- The JSON `robot` field (dock position, start direction) and furniture `id` field exist in config files but are not loaded by `RoomConfig`/`Furniture` structs
 
 ### Constants (world.go)
 
@@ -177,7 +178,7 @@ JSON files in `vacuum-1/`. Use `empty.json` as template.
 
 ### Pathfinding (astar.go)
 
-A* implementation for room navigation, separate from the ai-search module's A*. Uses a `PriorityQueue` of `PGItem` structs with `container/heap`. The `heuristic()` function uses Manhattan distance. Complete implementation: maintains open/closed sets, explores 4-directional neighbors via `directions` (defined in robot.go), tracks g/f scores, and reconstructs path via `cameFrom` map. Called as `Astar(room, start, goal) []Point`.
+A* implementation for room navigation, separate from the ai-search module's A*. Uses a `PriorityQueue` of `PQItem` structs with `container/heap`. The `heuristic()` function uses Manhattan distance. Complete implementation: maintains open/closed sets, explores 4-directional neighbors via `directions` (defined in robot.go), tracks g/f scores, and reconstructs path via `cameFrom` map. Called as `Astar(room, start, goal) []Point`.
 
 ### Cleaning Algorithms
 
