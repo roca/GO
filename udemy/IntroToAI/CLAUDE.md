@@ -139,7 +139,7 @@ Files in `ai-search/mazes/` and `ai-search/flooded-mazes/`:
 - **Complete**: Data structures, CLI parsing, room config loading (`LoadRoomConfig()`), room initialization (`NewRoom()`), robot constructor (`NewRobot()`), display system (`Display()`), furniture placement, main workflow, A* pathfinding in `astar.go`, summary display (`displaySummary()`), random walk core loop with movement, stuck detection, and A* fallback
 - **Implemented helpers** (all in `random.go`): `bresenhamLine(x0, y0, x1, y1) []Point` (Bresenham's line algorithm), `moveAtAngleUntilObstacle(room, robot, dx, dy) int` (moves robot along a vector until hitting obstacle), `abs(x) int` (integer absolute value), `findNearestDirtyCell(room, position) Point` (scans grid for nearest cell using Manhattan distance — see Known Limitations)
 - **Robot actions** (in `robot.go`): `Clean(robot, room)` marks cell cleaned and calls `CheckAdjacentObstacles()`, which uses `RecordObstacle()` to track furniture names in `robot.ObstaclesEncountered`
-- **Skeleton**: `slam.go` contains a stub `CleanRoomSlam()` with outlined SLAM algorithm structure (not yet implemented)
+- **Skeleton**: `slam.go` contains a stub `CleanRoomSlam()` with outlined SLAM algorithm structure (not yet implemented). **Note**: Currently has compilation errors (incorrect `make()` syntax on frontier, unused variables) — must be fixed before vacuum-1 can build.
 - **TODO**: Additional cleaning algorithms beyond random walk, cat obstacle behavior, loading robot dock position from JSON config
 
 ### Known Limitations
@@ -178,7 +178,7 @@ JSON files in `vacuum-1/`. Use `empty.json` as template.
 
 ### Pathfinding (astar.go)
 
-A* implementation for room navigation, separate from the ai-search module's A*. Uses a `PriorityQueue` of `PQItem` structs with `container/heap`. The `heuristic()` function uses Manhattan distance. Complete implementation: maintains open/closed sets, explores 4-directional neighbors via `directions` (defined in robot.go), tracks g/f scores, and reconstructs path via `cameFrom` map. Called as `Astar(room, start, goal) []Point`.
+A* implementation for room navigation, separate from the ai-search module's A*. Uses a `PriorityQueue` of `PQItem` structs with `container/heap`. The `heuristic()` function uses Manhattan distance (unlike ai-search's A* which uses Euclidean distance via `euclideanDist()` in helpers.go). Complete implementation: maintains open/closed sets, explores 4-directional neighbors via `directions` (defined in robot.go), tracks g/f scores, and reconstructs path via `cameFrom` map. Called as `Astar(room, start, goal) []Point`.
 
 ### Cleaning Algorithms
 
