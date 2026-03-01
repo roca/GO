@@ -14,7 +14,7 @@ func CleanRoomSlam(room *Room, robot *Robot) {
 	visited := make(map[Point]bool)
 
 	// Initialize a frontier
-	frontier := make([]Point, bool)
+	frontier := make(map[Point]bool)
 
 	// Mark starting position as visited and update map for the first time
 	visited[robot.Position] = true
@@ -24,8 +24,13 @@ func CleanRoomSlam(room *Room, robot *Robot) {
 	Clean(robot, room)
 
 	// Add neighbors to the frontier
+	addNeighborsToFrontier(robot.Position, robotMap, frontier, visited, room)
 
 	// Display the initial state
+	if room.Animate {
+		room.Display(robot, false)
+		time.Sleep(moveDelay)
+	}
 
 	// for - if the frontier is not empty and the room is not fully cleaned
 	for {
@@ -86,6 +91,21 @@ func updateRobotMap(position Point, robotMap [][]int, room *Room) {
 			} else if room.Grid[newX][newY].Cleaned {
 				robotMap[newX][newY] = 3 // cleaned
 			}
+		}
+	}
+}
+
+func addNeighborsToFrontier(position Point, robotMap [][]int, frontier map[Point]bool, visited map[Point]bool, room *Room) {
+	// Check adjacent cells
+	for _, dir := range directions {
+		newX, newY := position.X+dir[0], position.Y+dir[1]
+		newPoint := Point{X: newX, Y: newY}
+
+		// Check if position is valid, not visited, not an obstacle, and not already in frontier
+		if newX >= 0 && newX <= len(robotMap) && newY >= 0 && newY < len(robotMap[0]) &&
+			!visited[newPoint] && !frontier[newPoint] && room.IsValid(newX, newY) {
+			// Add to frontier
+			frontier[newPoint] = true
 		}
 	}
 }
