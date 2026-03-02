@@ -139,14 +139,16 @@ Files in `ai-search/mazes/` and `ai-search/flooded-mazes/`:
 - **Complete**: Data structures, CLI parsing, room config loading (`LoadRoomConfig()`), room initialization (`NewRoom()`), robot constructor (`NewRobot()`), display system (`Display()`), furniture placement, main workflow, A* pathfinding in `astar.go`, summary display (`displaySummary()`), random walk core loop with movement, stuck detection, and A* fallback
 - **Implemented helpers** (all in `random.go`): `bresenhamLine(x0, y0, x1, y1) []Point` (Bresenham's line algorithm), `moveAtAngleUntilObstacle(room, robot, dx, dy) int` (moves robot along a vector until hitting obstacle), `abs(x) int` (integer absolute value), `findNearestDirtyCell(room, position) Point` (scans grid for nearest cell using Manhattan distance — see Known Limitations)
 - **Robot actions** (in `robot.go`): `Clean(robot, room)` marks cell cleaned and calls `CheckAdjacentObstacles()`, which uses `RecordObstacle()` to track furniture names in `robot.ObstaclesEncountered`
-- **Skeleton**: `slam.go` contains a stub `CleanRoomSlam()` with outlined SLAM algorithm structure. Helper functions (`initializeRobotMap`, `updateRobotMap`, `addNeighborsToFrontier`) are implemented; the main loop body (lines 36-58) is only comments/pseudocode. **Note**: Currently has compilation errors (unused variables `startTime` and `moveCount`) — must be fixed before vacuum-1 can build.
-- **TODO**: Additional cleaning algorithms beyond random walk, cat obstacle behavior, loading robot dock position from JSON config
+- **SLAM algorithm** (`slam.go`): `CleanRoomSlam()` implements frontier-based SLAM cleaning. Maintains an internal `robotMap` (0=unknown, 1=free, 2=obstacle, 3=cleaned), a `visited` set, and a `frontier` set of discovered-but-unvisited cells. Main loop picks the closest frontier point via `getCloesestFrontierPoint()`, uses A* to pathfind there, cleans along the path, and expands the frontier. Helper functions: `initializeRobotMap`, `updateRobotMap`, `addNeighborsToFrontier`, `getCloesestFrontierPoint`. **Note**: Has a compilation error (unused variable `startTime` on line 10) — must be fixed before vacuum-1 can build. Also not yet wired into main.go's algorithm switch (no `"slam"` case).
+- **TODO**: Wire SLAM into main.go dispatch, cat obstacle behavior, loading robot dock position from JSON config
 
 ### Known Limitations
 
+- `slam.go` line 10: unused variable `startTime` causes compilation error — must be fixed or removed before vacuum-1 can build
 - `findNearestDirtyCell()` in random.go doesn't filter at all — returns the nearest interior cell by Manhattan distance regardless of `Cleaned` status or `Obstacle` flag
 - `RecordObstacle()` in robot.go has off-by-one: uses `y <= room.Height` instead of `y < room.Height`, which could cause index-out-of-bounds on the bottom edge
 - `addNeighborsToFrontier()` in slam.go has off-by-one: uses `newX <= len(robotMap)` instead of `newX < len(robotMap)`, which could cause index-out-of-bounds on the right edge
+- `getCloesestFrontierPoint()` in slam.go has a typo in the function name (should be `getClosestFrontierPoint`)
 - `Display()` switch in world.go has no case for `"bike"` cell type — bike cells would render as blank. Currently not an issue because `NewRoom()` sets all furniture to `Type="furniture"` regardless of JSON `type` field.
 - The JSON `robot` field (dock position, start direction) and furniture `id` field exist in config files but are not loaded by `RoomConfig`/`Furniture` structs
 

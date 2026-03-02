@@ -1,6 +1,9 @@
 package main
 
-import "time"
+import (
+	"math"
+	"time"
+)
 
 func CleanRoomSlam(room *Room, robot *Robot) {
 	// Set start time and movecount
@@ -33,23 +36,50 @@ func CleanRoomSlam(room *Room, robot *Robot) {
 	}
 
 	// for - if the frontier is not empty and the room is not fully cleaned
-	for {
-
+	for len(frontier) > 0 && room.CleanedCellCount < room.CleanableCellCount {
 		// Get closest frontier point
+		target := getCloesestFrontierPoint(robot.Position, frontier)
 
 		// If not valid target, break
+		if target.X == -1 && target.Y == -1 {
+			break
+		}
 
 		// remove target from frontier
+		delete(frontier, target)
 
 		// find path to target using A*
+		path := Astar(room, robot.Position, target)
 
 		// If not path found, go to next frontier point (continue)
+		if len(path) <= 1 {
+			continue
+		}
 
 		// Move along the path
-		for {
+		for i := 1; i < len(path); i++ {
+			// Update robot position
+			robot.Position = path[i]
+			robot.Path = append(robot.Path, robot.Position)
 
-			// Update map (internal)
+			// Clean the current position
+			Clean(robot, room)
 
+			// Mark as visited and update map
+			visited[robot.Position] = true
+			// Update map (internal) based on what we can see
+			updateRobotMap(robot.Position, robotMap, room)
+
+			// Updatre frontier with newly discovered cells
+			addNeighborsToFrontier(robot.Position, robotMap, frontier, visited, room)
+
+			// Display the room
+			if room.Animate {
+				room.Display(robot, false)
+				time.Sleep(moveDelay)
+			}
+
+			moveCount++
 		}
 
 		// every 10 minutes, do a more thorough frontier check
@@ -59,6 +89,21 @@ func CleanRoomSlam(room *Room, robot *Robot) {
 
 	// final cleanup phase
 
+}
+
+func getCloesestFrontierPoint(position Point, frontier map[Point]bool) Point {
+	closestPoint := Point{X: -1, Y: -1}
+	minDistance := math.MaxFloat64
+
+	for point := range frontier {
+		distance := heuristic(position, point)
+		if distance < minDistance {
+			minDistance = distance
+			closestPoint = point
+		}
+	}
+
+	return closestPoint
 }
 
 func initializeRobotMap(width, height int) [][]int {
