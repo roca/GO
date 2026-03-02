@@ -83,12 +83,38 @@ func CleanRoomSlam(room *Room, robot *Robot) {
 		}
 
 		// every 10 minutes, do a more thorough frontier check
+		if moveCount%10 == 0 {
+			updateAllFrontiers(robotMap, frontier, visited, room)
+		}
 
 		// check if we have sufficient coverage -- break
+		if float64(room.CleanedCellCount)/float64(room.CleanableCellCount) > 0.95 {
+			break
+		}
 	}
 
 	// final cleanup phase
 
+}
+
+func updateAllFrontiers(robotMap [][]int, frontier map[Point]bool, visited map[Point]bool, room *Room) {
+	for x := 0; x < room.Width-1; x++ {
+		for y := 0; y < room.Height-1; y++ {
+			// If a cell is free but not visited, add to frontier
+			point := Point{X: x, Y: y}
+			if robotMap[x][y] == 1 && !visited[point] && !frontier[point] && room.Grid[x][y].Obstacle {
+				// Check to see if it is accessible (has at least one visited neighbor)
+				for _,dir :=	 range directions {
+					nx,ny := x+dir[0], y+dir[1]
+					neighborPoint := Point{X: nx, Y: ny}
+					if nx >= 0 && nx < room.Width && ny >= 0 && ny < room.Height && visited[neighborPoint] {
+						frontier[point] = true
+						break
+					}
+				}
+
+			}
+	}
 }
 
 func getCloesestFrontierPoint(position Point, frontier map[Point]bool) Point {
