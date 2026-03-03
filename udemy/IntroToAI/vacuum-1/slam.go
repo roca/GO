@@ -94,7 +94,46 @@ func CleanRoomSlam(room *Room, robot *Robot) {
 	}
 
 	// final cleanup phase
+	cleanRemainingCells(room, robot, &moveCount)
 
+	// Calculate cleaning time
+	cleaningTime := time.Since(startTime)
+
+	// Display final statistics
+	displaySummary(room, robot, moveCount, cleaningTime)
+
+}
+
+func cleanRemainingCells(room *Room, robot *Robot, moveCount *int) {
+	// Find all cells that should be ceanable but haven't been cleaned
+	for i := 1; i < room.Width-1; i++ {
+		for j := 1; j < room.Height-1; j++ {
+			// If the cell is not an obstacle, not cleaned, and known to the robot
+			if !room.Grid[i][j].Obstacle && !room.Grid[i][j].Cleaned {
+				path := Astar(room, robot.Position, Point{X: i, Y: j})
+				if len(path) <= 1 {
+					continue
+				}
+
+				// Move along path
+				for k := 1; k < len(path); k++ {
+					// Update robot position
+					robot.Position = path[k]
+					robot.Path = append(robot.Path, robot.Position)
+
+					// Clean the current position
+					Clean(robot, room)
+
+					// Display the room
+					if room.Animate {
+						room.Display(robot, false)
+						time.Sleep(moveDelay)
+					}
+					*moveCount++
+				}
+			}
+		}
+	}
 }
 
 func updateAllFrontiers(robotMap [][]int, frontier map[Point]bool, visited map[Point]bool, room *Room) {
@@ -104,8 +143,8 @@ func updateAllFrontiers(robotMap [][]int, frontier map[Point]bool, visited map[P
 			point := Point{X: x, Y: y}
 			if robotMap[x][y] == 1 && !visited[point] && !frontier[point] && room.Grid[x][y].Obstacle {
 				// Check to see if it is accessible (has at least one visited neighbor)
-				for _,dir :=	 range directions {
-					nx,ny := x+dir[0], y+dir[1]
+				for _, dir := range directions {
+					nx, ny := x+dir[0], y+dir[1]
 					neighborPoint := Point{X: nx, Y: ny}
 					if nx >= 0 && nx < room.Width && ny >= 0 && ny < room.Height && visited[neighborPoint] {
 						frontier[point] = true
@@ -114,6 +153,7 @@ func updateAllFrontiers(robotMap [][]int, frontier map[Point]bool, visited map[P
 				}
 
 			}
+		}
 	}
 }
 

@@ -34,9 +34,12 @@ Algorithms: `dfs`, `bfs`, `dijkstra`, `gbfs`, `astar`
 cd vacuum-1
 go run . -file empty.json -algorithm random -animate
 go run . -file room.json -algorithm random -animate
+go run . -file room.json -algorithm slam -animate
 ```
 
 Flags: `-file <path>`, `-algorithm <name>`, `-animate <bool>`
+
+Algorithms: `random`, `slam`
 
 ### Go Workspace
 
@@ -139,24 +142,19 @@ Files in `ai-search/mazes/` and `ai-search/flooded-mazes/`:
 - **Complete**: Data structures, CLI parsing, room config loading (`LoadRoomConfig()`), room initialization (`NewRoom()`), robot constructor (`NewRobot()`), display system (`Display()`), furniture placement, main workflow, A* pathfinding in `astar.go`, summary display (`displaySummary()`), random walk core loop with movement, stuck detection, and A* fallback
 - **Implemented helpers** (all in `random.go`): `bresenhamLine(x0, y0, x1, y1) []Point` (Bresenham's line algorithm), `moveAtAngleUntilObstacle(room, robot, dx, dy) int` (moves robot along a vector until hitting obstacle), `abs(x) int` (integer absolute value), `findNearestDirtyCell(room, position) Point` (scans grid for nearest cell using Manhattan distance — see Known Limitations)
 - **Robot actions** (in `robot.go`): `Clean(robot, room)` marks cell cleaned and calls `CheckAdjacentObstacles()`, which uses `RecordObstacle()` to track furniture names in `robot.ObstaclesEncountered`
-- **SLAM algorithm** (`slam.go`): `CleanRoomSlam()` implements frontier-based SLAM cleaning. Maintains an internal `robotMap` (0=unknown, 1=free, 2=obstacle, 3=cleaned), a `visited` set, and a `frontier` set of discovered-but-unvisited cells. Main loop picks the closest frontier point via `getCloesestFrontierPoint()`, uses A* to pathfind there, cleans along the path, and expands the frontier. Helper functions: `initializeRobotMap`, `updateRobotMap`, `addNeighborsToFrontier`, `getCloesestFrontierPoint`. **Note**: Has multiple compilation errors (missing brace in `updateAllFrontiers()` line 117, unused variable `startTime` line 10) — must be fixed before vacuum-1 can build. Also not yet wired into main.go's algorithm switch (no `"slam"` case).
-- **TODO**: Fix slam.go compilation errors, wire SLAM into main.go dispatch, cat obstacle behavior, loading robot dock position from JSON config
+- **SLAM algorithm** (`slam.go`): `CleanRoomSlam()` implements frontier-based SLAM cleaning. Maintains an internal `robotMap` (0=unknown, 1=free, 2=obstacle, 3=cleaned), a `visited` set, and a `frontier` set of discovered-but-unvisited cells. Main loop picks the closest frontier point via `getCloesestFrontierPoint()`, uses A* to pathfind there, cleans along the path, and expands the frontier. Helper functions: `initializeRobotMap`, `updateRobotMap`, `addNeighborsToFrontier`, `getCloesestFrontierPoint`, `updateAllFrontiers` (thorough frontier check every 10 moves), `cleanRemainingCells` (final sweep). Wired into main.go dispatch as `"slam"` algorithm.
+- **TODO**: Cat obstacle behavior, loading robot dock position from JSON config
 
 ### Known Limitations
 
-**Build-blocking (vacuum-1 won't compile):**
-- `slam.go` line 117: missing closing brace for the outer `for x` loop in `updateAllFrontiers()` — this causes all subsequent function declarations (`getCloesestFrontierPoint`, `initializeRobotMap`, etc.) to fail with syntax errors
-- `slam.go` line 10: unused variable `startTime` — secondary compilation error once the brace issue is fixed
-
 **Logic bugs:**
-- `updateAllFrontiers()` in slam.go line 105: checks `room.Grid[x][y].Obstacle` (true = IS obstacle) when it should check `!room.Grid[x][y].Obstacle` to find free cells for the frontier
-- `addNeighborsToFrontier()` in slam.go line 176: off-by-one `newX <= len(robotMap)` should be `<`
-- `RecordObstacle()` in robot.go: off-by-one `y <= room.Height` should be `y < room.Height`
+- `updateAllFrontiers()` in slam.go line 144: checks `room.Grid[x][y].Obstacle` (true = IS obstacle) when it should check `!room.Grid[x][y].Obstacle` to find free cells for the frontier
+- `addNeighborsToFrontier()` in slam.go line 216: off-by-one `newX <= len(robotMap)` should be `<`
+- `RecordObstacle()` in robot.go line 49: off-by-one `y <= room.Height` should be `y < room.Height`
 - `findNearestDirtyCell()` in random.go: returns nearest interior cell regardless of `Cleaned` status or `Obstacle` flag
 - `getCloesestFrontierPoint()` in slam.go: typo in function name (should be `getClosestFrontierPoint`)
 
 **Missing features:**
-- SLAM not wired into main.go dispatch (no `"slam"` case in algorithm switch)
 - `Display()` switch in world.go has no case for `"bike"` cell type (currently not an issue since `NewRoom()` sets all furniture to `Type="furniture"`)
 - JSON `robot` field (dock position, start direction) and furniture `id` field not loaded by `RoomConfig`/`Furniture` structs
 - Cat obstacle behavior not implemented
@@ -194,13 +192,22 @@ A* implementation for room navigation, separate from the ai-search module's A*. 
 
 ### Cleaning Algorithms
 
-Assigned to robots via function pointers. Currently only `CleanRoomRandomWalk` in `random.go`. The algorithm has three phases:
+Assigned to robots via function pointers. Two algorithms implemented: `CleanRoomRandomWalk` in `random.go` and `CleanRoomSlam` in `slam.go`.
+
+**Random Walk** (`random.go`) has three phases:
 
 1. **Random walk loop**: Generates random angles, moves along direction vectors via `moveAtAngleUntilObstacle()`, cleans cells. Tracks a stuck counter — when stuck 5+ times consecutively, falls back to A* pathfinding toward the nearest dirty cell.
 2. **Adaptive targeting**: Every 20 moves, 30% chance to use A* to navigate to the nearest dirty cell (periodic course correction).
 3. **Final sweep**: After the main loop exits (max moves reached or all cells cleaned), systematically iterates the entire grid and uses A* to reach any remaining uncleaned, non-obstacle cells.
 
 All helper functions (`bresenhamLine()`, `moveAtAngleUntilObstacle()`, `abs()`, `findNearestDirtyCell()`) are in `random.go`.
+
+**SLAM** (`slam.go`) implements frontier-based exploration:
+
+1. **Exploration loop**: Maintains a frontier of discovered-but-unvisited cells. Each iteration picks the closest frontier point via `getCloesestFrontierPoint()`, pathfinds there with A*, cleans cells along the path, and expands the frontier with newly discovered neighbors.
+2. **Periodic re-scan**: Every 10 moves, `updateAllFrontiers()` does a thorough sweep of all known-free cells to find missed frontier points.
+3. **Early exit**: Breaks at 95% coverage to avoid diminishing returns.
+4. **Final sweep**: `cleanRemainingCells()` iterates the full grid to clean any remaining accessible dirty cells.
 
 ### Execution Flow
 
