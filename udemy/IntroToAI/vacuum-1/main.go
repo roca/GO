@@ -25,6 +25,8 @@ func main() {
 		robot.CleanRoom = CleanRoomRandomWalk
 	case "slam":
 		robot.CleanRoom = CleanRoomSlam
+	case "spiral":
+		robot.CleanRoom = CleanSpiralPattern
 	default:
 		// Do nothing.
 	}
@@ -32,4 +34,3 @@ func main() {
 	// Clean the room.
 	robot.CleanRoom(room, robot)
 }
-

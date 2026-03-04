@@ -39,7 +39,7 @@ go run . -file room.json -algorithm slam -animate
 
 Flags: `-file <path>`, `-algorithm <name>`, `-animate <bool>`
 
-Algorithms: `random`, `slam`
+Algorithms: `random`, `slam`, `spiral`
 
 ### Go Workspace
 
@@ -143,7 +143,8 @@ Files in `ai-search/mazes/` and `ai-search/flooded-mazes/`:
 - **Implemented helpers** (all in `random.go`): `bresenhamLine(x0, y0, x1, y1) []Point` (Bresenham's line algorithm), `moveAtAngleUntilObstacle(room, robot, dx, dy) int` (moves robot along a vector until hitting obstacle), `abs(x) int` (integer absolute value), `findNearestDirtyCell(room, position) Point` (scans grid for nearest cell using Manhattan distance — see Known Limitations)
 - **Robot actions** (in `robot.go`): `Clean(robot, room)` marks cell cleaned and calls `CheckAdjacentObstacles()`, which uses `RecordObstacle()` to track furniture names in `robot.ObstaclesEncountered`
 - **SLAM algorithm** (`slam.go`): `CleanRoomSlam()` implements frontier-based SLAM cleaning. Maintains an internal `robotMap` (0=unknown, 1=free, 2=obstacle, 3=cleaned), a `visited` set, and a `frontier` set of discovered-but-unvisited cells. Main loop picks the closest frontier point via `getCloesestFrontierPoint()`, uses A* to pathfind there, cleans along the path, and expands the frontier. Helper functions: `initializeRobotMap`, `updateRobotMap`, `addNeighborsToFrontier`, `getCloesestFrontierPoint`, `updateAllFrontiers` (thorough frontier check every 10 moves), `cleanRemainingCells` (final sweep). Wired into main.go dispatch as `"slam"` algorithm.
-- **TODO**: Cat obstacle behavior, loading robot dock position from JSON config
+- **Spiral algorithm** (`spiral.go`): `CleanSpiralPattern()` — skeleton/stub for spiral cleaning pattern. Intended to navigate to room center, generate a spiral path, and follow it with A* pathfinding. Currently has the function signature and structure but no logic implemented. Wired into main.go dispatch as `"spiral"` algorithm.
+- **TODO**: Cat obstacle behavior, loading robot dock position from JSON config, spiral algorithm implementation
 
 ### Known Limitations
 
@@ -192,7 +193,7 @@ A* implementation for room navigation, separate from the ai-search module's A*. 
 
 ### Cleaning Algorithms
 
-Assigned to robots via function pointers. Two algorithms implemented: `CleanRoomRandomWalk` in `random.go` and `CleanRoomSlam` in `slam.go`.
+Assigned to robots via function pointers. Three algorithms: `CleanRoomRandomWalk` in `random.go`, `CleanRoomSlam` in `slam.go`, and `CleanSpiralPattern` in `spiral.go` (stub).
 
 **Random Walk** (`random.go`) has three phases:
 
@@ -208,6 +209,13 @@ All helper functions (`bresenhamLine()`, `moveAtAngleUntilObstacle()`, `abs()`, 
 2. **Periodic re-scan**: Every 10 moves, `updateAllFrontiers()` does a thorough sweep of all known-free cells to find missed frontier points.
 3. **Early exit**: Breaks at 95% coverage to avoid diminishing returns.
 4. **Final sweep**: `cleanRemainingCells()` iterates the full grid to clean any remaining accessible dirty cells.
+
+**Spiral** (`spiral.go`) is a stub with the intended flow:
+
+1. Navigate to room center using A*
+2. Generate spiral pattern outward from center
+3. Follow spiral, skipping cleaned/obstacle cells, using A* for pathfinding
+4. Final cleanup of remaining cells
 
 ### Execution Flow
 
