@@ -154,6 +154,8 @@ Files in `ai-search/mazes/` and `ai-search/flooded-mazes/`:
 - `RecordObstacle()` in robot.go line 49: off-by-one `y <= room.Height` should be `y < room.Height`
 - `findNearestDirtyCell()` in random.go: returns nearest interior cell regardless of `Cleaned` status or `Obstacle` flag
 - `getCloesestFrontierPoint()` in slam.go: typo in function name (should be `getClosestFrontierPoint`)
+- `CleanSpiralPattern()` in spiral.go line 15: `centerPoint` is declared but never used (causes compile error)
+- `findNearestCleanablePoint()` in spiral.go line 48: loop condition uses `||` (`radius < room.Width || radius < room.Height`) — should be `&&` so the loop only continues while radius is less than both dimensions
 
 **Missing features:**
 - `Display()` switch in world.go has no case for `"bike"` cell type (currently not an issue since `NewRoom()` sets all furniture to `Type="furniture"`)
