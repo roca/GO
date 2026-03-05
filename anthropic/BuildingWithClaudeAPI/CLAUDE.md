@@ -88,13 +88,16 @@ MCP tools (`cli_project`) use the SDK's `mcp.Tool` type with handlers registered
 
 ### MCP Architecture (`cli_project`)
 
-- **Server** (`server/`): HTTP with SSE transport at `:8080`. Exposes tools (read_doc_contents, edit_document, get_jira_ticket, update_jira_ticket), resources (`docs://documents`, `docs://documents/{doc_id}`), and prompts.
+- **Server** (`server/`): HTTP with SSE transport at `:8080`. Exposes tools (read_doc_contents, edit_document, get_jira_ticket, update_jira_ticket, get_confluence_page), resources (`docs://documents`, `docs://documents/{doc_id}`), and prompts.
 - **Client** (`client/`): Connects via `mcp.SSEClientTransport`. Interactive CLI with `@` prefix for document references and `Ctrl+@` for document menu. Converts `mcp.Tool` → `anthropic.ToolUnionParam` for Claude API.
 
 **Jira Token Override:** The `get_jira_ticket` and `update_jira_ticket` tools accept an optional `token` parameter that overrides the server's `JIRA_API_TOKEN` env var. This allows per-user token injection at call time.
 
+**Confluence Integration:** The `get_confluence_page` tool fetches a Confluence page by ID (`GET /rest/api/content/{id}?expand=body.storage,version,space`). Accepts an optional `token` parameter that overrides the server's `CONFLUENCE_API_TOKEN` env var.
+
 **Prompts:**
 - `set_jira_token` — Takes a `token` argument and returns a message instructing Claude to pass it in the `token` parameter for all subsequent Jira tool calls. Invoke this prompt to configure a user-specific Jira token for the conversation.
+- `set_confluence_token` — Takes a `token` argument and returns a message instructing Claude to pass it in the `token` parameter for all subsequent Confluence tool calls.
 - `reformat_to_markdown_prompt` — Takes a `doc_id` argument and returns a message instructing Claude to reformat the specified document to markdown using the `edit_document` tool.
 
 ### Lucidchart MCP Server (`lucidchart-mcp`)
@@ -134,6 +137,7 @@ for response_stream.Next() {
 export ANTHROPIC_API_KEY="..."     # Required for all examples
 export VOYAGE_API_KEY="..."        # Required for example15 (RAG embeddings)
 export JIRA_API_TOKEN="..."        # Default for cli_project Jira tools (can be overridden per-call via token parameter)
+export CONFLUENCE_API_TOKEN="..."  # Default for cli_project Confluence tools (can be overridden per-call via token parameter)
 export LUCID_CLIENT_ID="..."       # Required for lucidchart-mcp (OAuth 2.0)
 export LUCID_CLIENT_SECRET="..."   # Required for lucidchart-mcp (OAuth 2.0)
 ```

@@ -22,6 +22,13 @@ var docs map[string]string = map[string]string{
 	"spec.txt":        "These specifications define the technical requirements for the equipment.",
 }
 
+type ConfluencePageInput struct {
+	PageID string `json:"page_id" jsonschema:"ID of the Confluence page to retrieve"`
+	Token  string `json:"token,omitempty" jsonschema:"Optional Bearer token to override CONFLUENCE_API_TOKEN env var"`
+}
+
+type ConfluencePage map[string]any
+
 type JiraTicketInput struct {
 	TicketID string `json:"ticket_id" jsonschema:"ID of the Jira ticket to retrieve"`
 	Token    string `json:"token,omitempty" jsonschema:"Optional Bearer token to override JIRA_API_TOKEN env var"`
@@ -202,4 +209,55 @@ func UpdateJiraTicket(ctx context.Context, req *mcp.CallToolRequest, input Updat
 	}
 
 	return nil, commentResponse, nil
+}
+
+func GetConfluencePage(ctx context.Context, req *mcp.CallToolRequest, input ConfluencePageInput) (
+	*mcp.CallToolResult,
+	ConfluencePage,
+	error,
+) {
+
+	if input.PageID == "" {
+		return nil, ConfluencePage{}, fmt.Errorf("PageID cannot be empty")
+	}
+
+	request, err := http.NewRequest("GET", "https://confluence.regeneron.com/rest/api/content/"+input.PageID+"?expand=body.storage,version,space", nil)
+	if err != nil {
+		log.Printf("Failed to create Confluence API request: %v", err)
+		return nil, ConfluencePage{}, fmt.Errorf("Failed to create Confluence API request: %v", err)
+	}
+
+	token := os.Getenv("CONFLUENCE_API_TOKEN")
+	if input.Token != "" {
+		token = input.Token
+	}
+
+	request.Header.Add("Content-Type", "application/json")
+	request.Header.Add("Authorization", "Bearer "+token)
+
+	client := &http.Client{}
+
+	log.Println("Executing:", request.URL)
+	response, err := client.Do(request)
+	if err != nil || response.StatusCode != 200 {
+		log.Printf("Failed to fetch page from Confluence API: %v", err)
+		return nil, ConfluencePage{}, fmt.Errorf("Failed to fetch page from Confluence API: %v", err)
+	}
+	defer response.Body.Close()
+
+	var page ConfluencePage
+
+	bytes, err := io.ReadAll(response.Body)
+	if err != nil {
+		log.Printf("Failed to read Confluence page response body: %v", err)
+		return nil, ConfluencePage{}, fmt.Errorf("Failed to read Confluence page response body: %v", err)
+	}
+
+	err = json.Unmarshal(bytes, &page)
+	if err != nil {
+		log.Printf("Failed to decode Confluence page JSON: %v", err)
+		return nil, ConfluencePage{}, fmt.Errorf("Failed to decode Confluence page JSON: %v", err)
+	}
+
+	return nil, page, nil
 }

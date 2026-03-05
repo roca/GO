@@ -50,6 +50,49 @@ This token overrides the server's default JIRA_API_TOKEN. Use it for all Jira to
 	server.AddPrompt(prompt, promptHandler)
 }
 
+func AddConfluenceTokenPrompt(server *mcp.Server) {
+	arguments := []*mcp.PromptArgument{
+		{
+			Name:        "token",
+			Description: "The user's Confluence API Bearer token",
+			Required:    true,
+		},
+	}
+
+	prompt := &mcp.Prompt{
+		Name:        "set_confluence_token",
+		Description: "Set a Confluence API token to use when calling Confluence tools (get_confluence_page)",
+		Arguments:   arguments,
+	}
+
+	promptHandler := func(ctx context.Context, req *mcp.GetPromptRequest) (*mcp.GetPromptResult, error) {
+		token := req.Params.Arguments["token"]
+
+		tc := &mcp.TextContent{
+			Text: fmt.Sprintf(`The user has provided a Confluence API token. When calling the 'get_confluence_page' tool, always include the following token in the 'token' parameter:
+
+<confluence_token>
+%s
+</confluence_token>
+
+This token overrides the server's default CONFLUENCE_API_TOKEN. Use it for all Confluence tool calls in this conversation unless the user specifies otherwise.`, token),
+		}
+
+		result := &mcp.GetPromptResult{
+			Messages: []*mcp.PromptMessage{
+				{
+					Role:    "user",
+					Content: tc,
+				},
+			},
+		}
+
+		return result, nil
+	}
+
+	server.AddPrompt(prompt, promptHandler)
+}
+
 func AddReformatToMarkdownPrompt(server *mcp.Server) {
 	var argements []*mcp.PromptArgument = []*mcp.PromptArgument{
 		{

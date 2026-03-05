@@ -15,6 +15,7 @@ func main() {
 	AddListDocIDsResource(server)
 	AddDocContentResource(server)
 	AddJiraTokenPrompt(server)
+	AddConfluenceTokenPrompt(server)
 	AddReformatToMarkdownPrompt(server)
 
 	handler := mcp.NewSSEHandler(func(request *http.Request) *mcp.Server {
@@ -43,10 +44,16 @@ func main() {
 		Description: "Update a Jira ticket by adding a comment to it",
 	}
 
+	get_confluence_page_tool := &mcp.Tool{
+		Name:        "get_confluence_page",
+		Description: "Fetch a Confluence page by its page ID, returning the page content, version, and space info",
+	}
+
 	mcp.AddTool(server, read_doc_tool, ReadDocument)
 	mcp.AddTool(server, edit_doc_tool, EditDocument)
 	mcp.AddTool(server, get_jira_ticket_tool, GetJiraTicket)
 	mcp.AddTool(server, update_jira_ticket_tool, UpdateJiraTicket)
+	mcp.AddTool(server, get_confluence_page_tool, GetConfluencePage)
 
 	addr := ":8080"
 
