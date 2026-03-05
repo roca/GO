@@ -24,11 +24,13 @@ var docs map[string]string = map[string]string{
 
 type JiraTicketInput struct {
 	TicketID string `json:"ticket_id" jsonschema:"ID of the Jira ticket to retrieve"`
+	Token    string `json:"token,omitempty" jsonschema:"Optional Bearer token to override JIRA_API_TOKEN env var"`
 }
 
 type UpdateJiraTicketInput struct {
 	TicketID string `json:"ticket_id" jsonschema:"ID of the Jira ticket to update"`
 	Comment  string `json:"comment" jsonschema:"The comment text to add to the ticket"`
+	Token    string `json:"token,omitempty" jsonschema:"Optional Bearer token to override JIRA_API_TOKEN env var"`
 }
 
 type JiraTicket map[string]any
@@ -95,8 +97,13 @@ func GetJiraTicket(ctx context.Context, req *mcp.CallToolRequest, input JiraTick
 		return nil, JiraTicket{}, fmt.Errorf("Failed to create Jira API request: %v", err)
 	}
 
+	token := os.Getenv("JIRA_API_TOKEN")
+	if input.Token != "" {
+		token = input.Token
+	}
+
 	request.Header.Add("Content-Type", "application/json")
-	request.Header.Add("Authorization", "Bearer "+os.Getenv("JIRA_API_TOKEN"))
+	request.Header.Add("Authorization", "Bearer "+token)
 
 	client := &http.Client{}
 
@@ -157,8 +164,13 @@ func UpdateJiraTicket(ctx context.Context, req *mcp.CallToolRequest, input Updat
 		return nil, JiraTicket{}, fmt.Errorf("Failed to create Jira API request: %v", err)
 	}
 
+	token := os.Getenv("JIRA_API_TOKEN")
+	if input.Token != "" {
+		token = input.Token
+	}
+
 	request.Header.Add("Content-Type", "application/json")
-	request.Header.Add("Authorization", "Bearer "+os.Getenv("JIRA_API_TOKEN"))
+	request.Header.Add("Authorization", "Bearer "+token)
 
 	client := &http.Client{}
 

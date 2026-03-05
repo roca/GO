@@ -45,6 +45,11 @@ cd lucidchart-mcp && go run .
 # Docker (cli_project MCP server only)
 cd cli_project && docker build -t mcp-server --platform linux/amd64 .
 docker run -p 8080:8080 mcp-server
+
+# Build and push to ECR (requires AWS_PROFILE=saml)
+AWS_PROFILE=saml aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 154919775133.dkr.ecr.us-east-1.amazonaws.com
+cd cli_project && docker build -t 154919775133.dkr.ecr.us-east-1.amazonaws.com/app_dev/general:mcp-server --platform linux/amd64 .
+docker push 154919775133.dkr.ecr.us-east-1.amazonaws.com/app_dev/general:mcp-server
 ```
 
 ## Architecture Patterns
@@ -86,6 +91,12 @@ MCP tools (`cli_project`) use the SDK's `mcp.Tool` type with handlers registered
 - **Server** (`server/`): HTTP with SSE transport at `:8080`. Exposes tools (read_doc_contents, edit_document, get_jira_ticket, update_jira_ticket), resources (`docs://documents`, `docs://documents/{doc_id}`), and prompts.
 - **Client** (`client/`): Connects via `mcp.SSEClientTransport`. Interactive CLI with `@` prefix for document references and `Ctrl+@` for document menu. Converts `mcp.Tool` → `anthropic.ToolUnionParam` for Claude API.
 
+**Jira Token Override:** The `get_jira_ticket` and `update_jira_ticket` tools accept an optional `token` parameter that overrides the server's `JIRA_API_TOKEN` env var. This allows per-user token injection at call time.
+
+**Prompts:**
+- `set_jira_token` — Takes a `token` argument and returns a message instructing Claude to pass it in the `token` parameter for all subsequent Jira tool calls. Invoke this prompt to configure a user-specific Jira token for the conversation.
+- `reformat_to_markdown_prompt` — Takes a `doc_id` argument and returns a message instructing Claude to reformat the specified document to markdown using the `edit_document` tool.
+
 ### Lucidchart MCP Server (`lucidchart-mcp`)
 
 Standalone MCP server exposing Lucidchart API as read-only tools via OAuth 2.0. Runs on `:8081`.
@@ -122,7 +133,7 @@ for response_stream.Next() {
 ```bash
 export ANTHROPIC_API_KEY="..."     # Required for all examples
 export VOYAGE_API_KEY="..."        # Required for example15 (RAG embeddings)
-export JIRA_API_TOKEN="..."        # Required for cli_project Jira tools
+export JIRA_API_TOKEN="..."        # Default for cli_project Jira tools (can be overridden per-call via token parameter)
 export LUCID_CLIENT_ID="..."       # Required for lucidchart-mcp (OAuth 2.0)
 export LUCID_CLIENT_SECRET="..."   # Required for lucidchart-mcp (OAuth 2.0)
 ```
@@ -137,5 +148,6 @@ Optional `lucidchart-mcp` env vars: `LUCID_REDIRECT_URI` (default `http://localh
 - The MCP implementation requires both server and client running simultaneously
 - The workspace setup allows running `go mod tidy` at the root to update all modules
 - Docker deployment is configured for the MCP server only
+- ECR repository: `154919775133.dkr.ecr.us-east-1.amazonaws.com/app_dev/general:mcp-server` (us-east-1, `AWS_PROFILE=saml`)
 - The Dockerfile is gitignored (contains org-specific SSL/SSH setup)
 - The `lucidchart-mcp` server requires a Lucid Enterprise plan for API access; OAuth credentials come from registering an app at [developer.lucid.co](https://developer.lucid.co)
