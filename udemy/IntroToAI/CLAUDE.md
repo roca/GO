@@ -49,6 +49,13 @@ go work use ./new-module
 go work edit -dropuse ./module
 ```
 
+### Build Verification
+
+```bash
+# From repo root, verify all modules compile:
+cd ai-search && go build . && cd ../vacuum-1 && go build .
+```
+
 ### Testing
 
 No test files exist in the codebase currently.
@@ -126,9 +133,11 @@ Three separate files implementing Go's `heap.Interface` (`Len`, `Less`, `Swap`, 
    - Implement: `Add`, `Remove`, `ContainsState`, `Empty`, `Neighbors`, `Solve`
    - Entry function: `solve<Name>(m *Maze)`
 3. **Update `main.go`**:
-   - Add constant to search type enum (lines 14-19)
-   - Add case to switch statement (lines 97-116)
+   - Add constant to search type enum (see existing `DFS`, `BFS`, etc.)
+   - Add case to algorithm switch statement in `main()`
 4. **Update this CLAUDE.md**
+
+**Note**: When adding or changing any algorithm (search or cleaning), update the relevant CLAUDE.md sections to keep documentation in sync.
 
 ### Maze File Format
 
@@ -142,20 +151,20 @@ Files in `ai-search/mazes/` and `ai-search/flooded-mazes/`:
 - **Complete**: Data structures, CLI parsing, room config loading (`LoadRoomConfig()`), room initialization (`NewRoom()`), robot constructor (`NewRobot()`), display system (`Display()`), furniture placement, main workflow, A* pathfinding in `astar.go`, summary display (`displaySummary()`), random walk core loop with movement, stuck detection, and A* fallback
 - **Implemented helpers** (all in `random.go`): `bresenhamLine(x0, y0, x1, y1) []Point` (Bresenham's line algorithm), `moveAtAngleUntilObstacle(room, robot, dx, dy) int` (moves robot along a vector until hitting obstacle), `abs(x) int` (integer absolute value), `findNearestDirtyCell(room, position) Point` (scans grid for nearest cell using Manhattan distance — see Known Limitations)
 - **Robot actions** (in `robot.go`): `Clean(robot, room)` marks cell cleaned and calls `CheckAdjacentObstacles()`, which uses `RecordObstacle()` to track furniture names in `robot.ObstaclesEncountered`
-- **SLAM algorithm** (`slam.go`): `CleanRoomSlam()` implements frontier-based SLAM cleaning. Maintains an internal `robotMap` (0=unknown, 1=free, 2=obstacle, 3=cleaned), a `visited` set, and a `frontier` set of discovered-but-unvisited cells. Main loop picks the closest frontier point via `getCloesestFrontierPoint()`, uses A* to pathfind there, cleans along the path, and expands the frontier. Helper functions: `initializeRobotMap`, `updateRobotMap`, `addNeighborsToFrontier`, `getCloesestFrontierPoint`, `updateAllFrontiers` (thorough frontier check every 10 moves), `cleanRemainingCells` (final sweep). Wired into main.go dispatch as `"slam"` algorithm.
-- **Spiral algorithm** (`spiral.go`): `CleanSpiralPattern()` — skeleton/stub for spiral cleaning pattern. Intended to navigate to room center, generate a spiral path, and follow it with A* pathfinding. Currently has the function signature and structure but no logic implemented. Wired into main.go dispatch as `"spiral"` algorithm.
+- **SLAM algorithm** (`slam.go`): `CleanRoomSlam()` — frontier-based SLAM cleaning. See Cleaning Algorithms section for details.
+- **Spiral algorithm** (`spiral.go`): `CleanSpiralPattern()` — skeleton/stub, not yet implemented. See Cleaning Algorithms section for intended design.
 - **TODO**: Cat obstacle behavior, loading robot dock position from JSON config, spiral algorithm implementation
 
 ### Known Limitations
 
 **Logic bugs:**
-- `updateAllFrontiers()` in slam.go line 144: checks `room.Grid[x][y].Obstacle` (true = IS obstacle) when it should check `!room.Grid[x][y].Obstacle` to find free cells for the frontier
-- `addNeighborsToFrontier()` in slam.go line 216: off-by-one `newX <= len(robotMap)` should be `<`
-- `RecordObstacle()` in robot.go line 49: off-by-one `y <= room.Height` should be `y < room.Height`
+- `updateAllFrontiers()` in slam.go: checks `room.Grid[x][y].Obstacle` (true = IS obstacle) when it should check `!room.Grid[x][y].Obstacle` to find free cells for the frontier
+- `addNeighborsToFrontier()` in slam.go: off-by-one `newX <= len(robotMap)` should be `<`
+- `RecordObstacle()` in robot.go: off-by-one `y <= room.Height` should be `y < room.Height`
 - `findNearestDirtyCell()` in random.go: returns nearest interior cell regardless of `Cleaned` status or `Obstacle` flag
 - `getCloesestFrontierPoint()` in slam.go: typo in function name (should be `getClosestFrontierPoint`)
-- `CleanSpiralPattern()` in spiral.go line 15: `centerPoint` is declared but never used (causes compile error)
-- `findNearestCleanablePoint()` in spiral.go line 48: loop condition uses `||` (`radius < room.Width || radius < room.Height`) — should be `&&` so the loop only continues while radius is less than both dimensions
+- `CleanSpiralPattern()` in spiral.go: `centerPoint` is declared but never used (causes compile error)
+- `findNearestCleanablePoint()` in spiral.go: loop condition uses `||` (`radius < room.Width || radius < room.Height`) — should be `&&` so the loop only continues while radius is less than both dimensions
 
 **Missing features:**
 - `Display()` switch in world.go has no case for `"bike"` cell type (currently not an issue since `NewRoom()` sets all furniture to `Type="furniture"`)
@@ -205,14 +214,14 @@ Assigned to robots via function pointers. Three algorithms: `CleanRoomRandomWalk
 
 All helper functions (`bresenhamLine()`, `moveAtAngleUntilObstacle()`, `abs()`, `findNearestDirtyCell()`) are in `random.go`.
 
-**SLAM** (`slam.go`) implements frontier-based exploration:
+**SLAM** (`slam.go`) implements frontier-based exploration. Maintains an internal `robotMap` (0=unknown, 1=free, 2=obstacle, 3=cleaned), a `visited` set, and a `frontier` set of discovered-but-unvisited cells. Helper functions: `initializeRobotMap`, `updateRobotMap`, `addNeighborsToFrontier`, `getCloesestFrontierPoint`, `updateAllFrontiers`, `cleanRemainingCells`.
 
-1. **Exploration loop**: Maintains a frontier of discovered-but-unvisited cells. Each iteration picks the closest frontier point via `getCloesestFrontierPoint()`, pathfinds there with A*, cleans cells along the path, and expands the frontier with newly discovered neighbors.
+1. **Exploration loop**: Each iteration picks the closest frontier point via `getCloesestFrontierPoint()`, pathfinds there with A*, cleans cells along the path, and expands the frontier with newly discovered neighbors.
 2. **Periodic re-scan**: Every 10 moves, `updateAllFrontiers()` does a thorough sweep of all known-free cells to find missed frontier points.
 3. **Early exit**: Breaks at 95% coverage to avoid diminishing returns.
 4. **Final sweep**: `cleanRemainingCells()` iterates the full grid to clean any remaining accessible dirty cells.
 
-**Spiral** (`spiral.go`) is a stub with the intended flow:
+**Spiral** (`spiral.go`) is a stub with the intended flow (see also [spiral matrix search reference](https://yarnthen.github.io/yarnthencohosking/how%20to/2019/01/24/simple-spiral-matrix-search-python.html)):
 
 1. Navigate to room center using A*
 2. Generate spiral pattern outward from center

@@ -15,10 +15,25 @@ func CleanSpiralPattern(room *Room, robot *Robot) {
 	centerPoint := findNearestCleanablePoint(room, Point{X: centerX, Y: centerY})
 
 	// Find path to center (using A*).
+	pathToCenter := Astar(room, robot.Position, centerPoint)
 
 	// Move to the center point.
+	if len(pathToCenter) > 1 {
+		for i := 1; i < len(pathToCenter); i++ {
+			robot.Position = pathToCenter[i]
+			robot.Path = append(robot.Path, robot.Position)
+			Clean(robot, room)
+
+			if room.Animate {
+				room.Display(robot, false)
+				time.Sleep(moveDelay)
+			}
+			moveCount++
+		}
+	}
 
 	// Create a spiral pattern.
+	spiralPoints := generateSpiralPattern(room, centerPoint)
 
 	// Follow the spiral pattern (for loop)
 	for {
@@ -37,6 +52,58 @@ func CleanSpiralPattern(room *Room, robot *Robot) {
 
 	// Dispaly final statistics
 	displaySummary(room, robot, moveCount, cleaningTime)
+}
+
+func generateSpiralPattern(room *Room, center Point) []Point {
+	var points []Point
+
+	// Maximum possible spiral size
+	maxSize := max(room.Width, room.Height)
+
+	// Set delta x and delta y
+	dx := []int{1, 0, -1, 0}
+	dy := []int{0, 1, 0, -1}
+
+	// Start at center
+	x, y := center.X, center.Y
+	dir := 0 // Start moving right
+
+	// Set spiral parameters
+	step := 1
+	stepCount := 0
+	dirChanges := 0
+
+	// Generate the spiral pattern
+	for range maxSize * maxSize {
+		// Add current point if valid
+		if room.IsValid(x, y) {
+			points = append(points, Point{X: x, Y: y})
+		}
+
+		// Take a step
+		x += dx[dir]
+		y += dy[dir]
+		stepCount++
+
+		// Check to see if we need to change direction.
+		if stepCount == step {
+			dir = (dir + 1) % 4 // Change direction
+			stepCount = 0
+			dirChanges++
+
+			// Increase step size after very two direction changes
+			if dirChanges == 2 {
+				step++
+				dirChanges = 0
+			}
+		}
+		// Break if we are out of bounds
+		if x < 0 || x >= room.Width || y < 0 || y >= room.Height {
+			break
+		}
+	}
+
+	return points
 }
 
 func findNearestCleanablePoint(room *Room, target Point) Point {
