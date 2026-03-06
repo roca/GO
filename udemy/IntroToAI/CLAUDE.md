@@ -152,8 +152,8 @@ Files in `ai-search/mazes/` and `ai-search/flooded-mazes/`:
 - **Implemented helpers** (all in `random.go`): `bresenhamLine(x0, y0, x1, y1) []Point` (Bresenham's line algorithm), `moveAtAngleUntilObstacle(room, robot, dx, dy) int` (moves robot along a vector until hitting obstacle), `abs(x) int` (integer absolute value), `findNearestDirtyCell(room, position) Point` (scans grid for nearest cell using Manhattan distance — see Known Limitations)
 - **Robot actions** (in `robot.go`): `Clean(robot, room)` marks cell cleaned and calls `CheckAdjacentObstacles()`, which uses `RecordObstacle()` to track furniture names in `robot.ObstaclesEncountered`
 - **SLAM algorithm** (`slam.go`): `CleanRoomSlam()` — frontier-based SLAM cleaning. See Cleaning Algorithms section for details.
-- **Spiral algorithm** (`spiral.go`): `CleanSpiralPattern()` — skeleton/stub, not yet implemented. See Cleaning Algorithms section for intended design.
-- **TODO**: Cat obstacle behavior, loading robot dock position from JSON config, spiral algorithm implementation
+- **Spiral algorithm** (`spiral.go`): `CleanSpiralPattern()` — spiral cleaning from room center outward. See Cleaning Algorithms section for details.
+- **TODO**: Cat obstacle behavior, loading robot dock position from JSON config
 
 ### Known Limitations
 
@@ -163,8 +163,9 @@ Files in `ai-search/mazes/` and `ai-search/flooded-mazes/`:
 - `RecordObstacle()` in robot.go: off-by-one `y <= room.Height` should be `y < room.Height`
 - `findNearestDirtyCell()` in random.go: returns nearest interior cell regardless of `Cleaned` status or `Obstacle` flag
 - `getCloesestFrontierPoint()` in slam.go: typo in function name (should be `getClosestFrontierPoint`)
-- `CleanSpiralPattern()` in spiral.go: `centerPoint` is declared but never used (causes compile error)
 - `findNearestCleanablePoint()` in spiral.go: loop condition uses `||` (`radius < room.Width || radius < room.Height`) — should be `&&` so the loop only continues while radius is less than both dimensions
+- `generateSpiralPattern()` in spiral.go: breaks out of spiral generation when first out-of-bounds point is hit, potentially missing valid points in non-square rooms
+- `finalCleanup()` in spiral.go: off-by-one — uses `room.Width-1` and `room.Height-1` as loop bounds, skipping the last column and row
 
 **Missing features:**
 - `Display()` switch in world.go has no case for `"bike"` cell type (currently not an issue since `NewRoom()` sets all furniture to `Type="furniture"`)
@@ -204,7 +205,7 @@ A* implementation for room navigation, separate from the ai-search module's A*. 
 
 ### Cleaning Algorithms
 
-Assigned to robots via function pointers. Three algorithms: `CleanRoomRandomWalk` in `random.go`, `CleanRoomSlam` in `slam.go`, and `CleanSpiralPattern` in `spiral.go` (stub).
+Assigned to robots via function pointers. Three algorithms: `CleanRoomRandomWalk` in `random.go`, `CleanRoomSlam` in `slam.go`, and `CleanSpiralPattern` in `spiral.go`.
 
 **Random Walk** (`random.go`) has three phases:
 
@@ -221,12 +222,11 @@ All helper functions (`bresenhamLine()`, `moveAtAngleUntilObstacle()`, `abs()`, 
 3. **Early exit**: Breaks at 95% coverage to avoid diminishing returns.
 4. **Final sweep**: `cleanRemainingCells()` iterates the full grid to clean any remaining accessible dirty cells.
 
-**Spiral** (`spiral.go`) is a stub with the intended flow (see also [spiral matrix search reference](https://yarnthen.github.io/yarnthencohosking/how%20to/2019/01/24/simple-spiral-matrix-search-python.html)):
+**Spiral** (`spiral.go`) cleans from the room center outward in a spiral pattern (see also [spiral matrix search reference](https://yarnthen.github.io/yarnthencohosking/how%20to/2019/01/24/simple-spiral-matrix-search-python.html)). Helper functions: `generateSpiralPattern` (creates spiral point sequence using direction vectors), `findNearestCleanablePoint` (finds nearest non-obstacle valid cell), `finalCleanup` (grid sweep for missed cells).
 
-1. Navigate to room center using A*
-2. Generate spiral pattern outward from center
-3. Follow spiral, skipping cleaned/obstacle cells, using A* for pathfinding
-4. Final cleanup of remaining cells
+1. **Navigate to center**: Finds room center, adjusts to nearest valid cell via `findNearestCleanablePoint()`, pathfinds there with A*.
+2. **Spiral traversal**: `generateSpiralPattern()` generates points expanding outward (right→down→left→up, increasing step size every two direction changes). Skips already-cleaned and obstacle cells, uses A* to pathfind to each point.
+3. **Final cleanup**: `finalCleanup()` iterates the full grid to clean any remaining accessible dirty cells.
 
 ### Execution Flow
 
