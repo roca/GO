@@ -35,11 +35,12 @@ cd vacuum-1
 go run . -file empty.json -algorithm random -animate
 go run . -file room.json -algorithm random -animate
 go run . -file room.json -algorithm slam -animate
+go run . -file room.json -algorithm snake -animate
 ```
 
 Flags: `-file <path>`, `-algorithm <name>`, `-animate <bool>`
 
-Algorithms: `random`, `slam`, `spiral`
+Algorithms: `random`, `slam`, `spiral`, `snake` (default)
 
 ### Go Workspace
 
@@ -153,6 +154,7 @@ Files in `ai-search/mazes/` and `ai-search/flooded-mazes/`:
 - **Robot actions** (in `robot.go`): `Clean(robot, room)` marks cell cleaned and calls `CheckAdjacentObstacles()`, which uses `RecordObstacle()` to track furniture names in `robot.ObstaclesEncountered`
 - **SLAM algorithm** (`slam.go`): `CleanRoomSlam()` — frontier-based SLAM cleaning. See Cleaning Algorithms section for details.
 - **Spiral algorithm** (`spiral.go`): `CleanSpiralPattern()` — spiral cleaning from room center outward. See Cleaning Algorithms section for details.
+- **Snake algorithm** (`snake.go`): `CleanRoomSnake()` — boustrophedon (snaking/zigzag) pattern. Wired into main.go as the default algorithm. See Cleaning Algorithms section for details.
 - **TODO**: Cat obstacle behavior, loading robot dock position from JSON config
 
 ### Known Limitations
@@ -166,6 +168,7 @@ Files in `ai-search/mazes/` and `ai-search/flooded-mazes/`:
 - `findNearestCleanablePoint()` in spiral.go: loop condition uses `||` (`radius < room.Width || radius < room.Height`) — should be `&&` so the loop only continues while radius is less than both dimensions
 - `generateSpiralPattern()` in spiral.go: breaks out of spiral generation when first out-of-bounds point is hit, potentially missing valid points in non-square rooms
 - `finalCleanup()` in spiral.go: off-by-one — uses `room.Width-1` and `room.Height-1` as loop bounds, skipping the last column and row
+- `generateSnakingPattern()` in snake.go: variable typo `directiionX` (double 'i')
 
 **Missing features:**
 - `Display()` switch in world.go has no case for `"bike"` cell type (currently not an issue since `NewRoom()` sets all furniture to `Type="furniture"`)
@@ -205,7 +208,7 @@ A* implementation for room navigation, separate from the ai-search module's A*. 
 
 ### Cleaning Algorithms
 
-Assigned to robots via function pointers. Three algorithms: `CleanRoomRandomWalk` in `random.go`, `CleanRoomSlam` in `slam.go`, and `CleanSpiralPattern` in `spiral.go`.
+Assigned to robots via function pointers. Four implemented algorithms: `CleanRoomRandomWalk` in `random.go`, `CleanRoomSlam` in `slam.go`, `CleanSpiralPattern` in `spiral.go`, and `CleanRoomSnake` in `snake.go`.
 
 **Random Walk** (`random.go`) has three phases:
 
@@ -228,9 +231,19 @@ All helper functions (`bresenhamLine()`, `moveAtAngleUntilObstacle()`, `abs()`, 
 2. **Spiral traversal**: `generateSpiralPattern()` generates points expanding outward (right→down→left→up, increasing step size every two direction changes). Skips already-cleaned and obstacle cells, uses A* to pathfind to each point.
 3. **Final cleanup**: `finalCleanup()` iterates the full grid to clean any remaining accessible dirty cells.
 
+**Snake** (`snake.go`) implements boustrophedon (snaking/zigzag) coverage. Default algorithm in main.go. Helper function: `generateSnakingPattern` (creates left-right/right-left alternating row traversal, skipping obstacle cells). Uses `finalCleanup()` from spiral.go for missed cells.
+
+1. **Pattern generation**: `generateSnakingPattern()` iterates interior rows (1 to Height-2), alternating direction each row (left→right, then right→left). Skips obstacle cells.
+2. **Path execution**: For each uncleaned point in the pattern, uses A* to pathfind there, cleans cells along the path.
+3. **Final cleanup**: Reuses `finalCleanup()` from spiral.go to catch any remaining dirty cells.
+
+**Note**: `generateSnakingPattern()` has a typo: `directiionX` (double 'i').
+
 ### Execution Flow
 
-1. Parse flags → 2. `NewRoom(configFile, animate)` → 3. `NewRobot(1, 1)` → 4. Assign algorithm → 5. `robot.CleanRoom(room, robot)`
+1. Parse flags → 2. `NewRoom(configFile, animate)` → 3. `NewRobot(1, 1)` → 4. Assign algorithm (default: snake) → 5. `robot.CleanRoom(room, robot)`
+
+**Cross-file dependencies**: `snake.go` reuses `finalCleanup()` defined in `spiral.go`. The `directions` variable (N/E/S/W offsets) defined in `robot.go` is used by `astar.go`.
 
 ## Dependencies
 
