@@ -50,6 +50,7 @@ type Room struct {
 	CleanableCellCount int
 	CleanedCellCount   int
 	Animate            bool
+	Cat                *Cat
 }
 
 type RoomConfig struct {
@@ -228,4 +229,3 @@ func getEncounteredObstacleList(robot *Robot) []string {
 func (room *Room) IsValid(x, y int) bool {
 	return x >= 0 && x < room.Width && y >= 0 && y < room.Height && !room.Grid[x][y].Obstacle
 }
-

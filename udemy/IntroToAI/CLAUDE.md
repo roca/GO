@@ -36,9 +36,10 @@ go run . -file empty.json -algorithm random -animate
 go run . -file room.json -algorithm random -animate
 go run . -file room.json -algorithm slam -animate
 go run . -file room.json -algorithm snake -animate
+go run . -file room.json -algorithm snake -animate -cat
 ```
 
-Flags: `-file <path>`, `-algorithm <name>`, `-animate <bool>` (default: true)
+Flags: `-file <path>`, `-algorithm <name>`, `-animate <bool>` (default: true), `-cat <bool>` (default: false)
 
 Algorithms: `random`, `slam`, `spiral`, `snake` (default)
 
@@ -155,7 +156,8 @@ Files in `ai-search/mazes/` and `ai-search/flooded-mazes/`:
 - **SLAM algorithm** (`slam.go`): `CleanRoomSlam()` — frontier-based SLAM cleaning. See Cleaning Algorithms section for details.
 - **Spiral algorithm** (`spiral.go`): `CleanSpiralPattern()` — spiral cleaning from room center outward. See Cleaning Algorithms section for details.
 - **Snake algorithm** (`snake.go`): `CleanRoomSnake()` — boustrophedon (snaking/zigzag) pattern. Wired into main.go as the default algorithm. See Cleaning Algorithms section for details.
-- **TODO**: Cat obstacle behavior, loading robot dock position from JSON config
+- **Cat behavior** (`cat.go`): `NewCat(room)` spawns cat at random non-obstacle position, `MoveCat(cat, room)` handles movement/stopping/direction changes and re-dirties cleaned cells, `IsAdjacentToCat(robot, cat)` checks proximity. Wired into main.go via `-cat` flag. However, no cleaning algorithm currently calls `MoveCat()` or `IsAdjacentToCat()`, and `Display()` doesn't render the cat position.
+- **TODO**: Integrate cat movement into cleaning algorithm loops, add cat rendering to `Display()`, loading robot dock position from JSON config
 
 ### Known Limitations
 
@@ -170,25 +172,27 @@ Files in `ai-search/mazes/` and `ai-search/flooded-mazes/`:
 - `finalCleanup()` in spiral.go: off-by-one — uses `room.Width-1` and `room.Height-1` as upper loop bounds (with `i := 0`), skipping the last column and row
 - `updateAllFrontiers()` in slam.go: also has off-by-one — uses `room.Width-1` and `room.Height-1` as upper loop bounds, skipping the last column and row
 - `generateSnakingPattern()` in snake.go: variable typo `directiionX` (double 'i')
+- `MoveCat()` in cat.go: lines 74-78 access `room.Grid[newX][newY]` outside the `room.IsValid()` guard — if the new position is invalid (wall/out-of-bounds), this will panic with an index-out-of-range error. The dirty-cell logic should be inside the `if room.IsValid(newX, newY)` block.
 
 **Missing features:**
-- `Display()` switch in world.go has no case for `"bike"` or `"cat"` cell types (currently not an issue since `NewRoom()` sets all furniture to `Type="furniture"` and cat behavior is unimplemented)
+- `Display()` switch in world.go has no case for `"bike"` or `"cat"` cell types (cat position not rendered despite `charCat` constant being defined)
+- No cleaning algorithm calls `MoveCat()` or `IsAdjacentToCat()` — cat is created but never moves during cleaning
 - JSON `robot` field (dock position, start direction) and furniture `id` field not loaded by `RoomConfig`/`Furniture` structs
-- Cat obstacle behavior not implemented
 
 ### Constants (world.go)
 
 - `cellSize = 10`: Room dimensions (cm) are divided by this to get grid dimensions (e.g., 300cm → 30 cells)
 - `moveDelay = 50ms`: Animation delay between moves
-- `catStopProbability = 0.1`, `catStopDuration = 5`: Cat obstacle behavior (not yet implemented)
+- `catStopProbability = 0.1`, `catStopDuration = 5`: Used by `MoveCat()` in cat.go (cat pauses randomly)
 
 ### Key Types (world.go, robot.go)
 
-- **Room**: Grid of Cells, dimensions, cleanable/cleaned counts, animate flag
+- **Room**: Grid of Cells, dimensions, cleanable/cleaned counts, animate flag, optional `Cat *Cat` pointer
 - **Cell**: Type string ("clean"/"dirty"/"wall"/"furniture"/"bike"), Cleaned/Obstacle booleans, ObstacleName string
 - **Furniture**: JSON-mapped struct with X, Y, Width, Height, Name, Type fields. Name is used for obstacle tracking via `ObstacleName`.
 - **Robot**: Position, Path, Direction (float64), CleanRoom function pointer, ObstaclesEncountered map
 - **RoomConfig**: JSON structure with Width, Height, Furniture array
+- **Cat**: Position, Active bool, StopTimer, Path, DirectionX/DirectionY. Created via `NewCat(room)`, moved via `MoveCat(cat, room)`.
 - **Room methods**: `Display(robot, showPath)`, `IsValid(x, y) bool` (bounds + obstacle check), `displaySummary(room, robot, moveCount, cleaningTime)`
 
 **Grid convention**: `grid[x][y]` where x is column and y is row (column-major). Display iterates rows (j) then columns (i).
@@ -242,9 +246,9 @@ All helper functions (`bresenhamLine()`, `moveAtAngleUntilObstacle()`, `abs()`, 
 
 ### Execution Flow
 
-1. Parse flags → 2. `NewRoom(configFile, animate)` → 3. `NewRobot(1, 1)` → 4. Assign algorithm (default: snake) → 5. `robot.CleanRoom(room, robot)`
+1. Parse flags → 2. `NewRoom(configFile, animate)` → 3. Optionally `NewCat(room)` if `-cat` flag → 4. `NewRobot(1, 1)` → 5. Assign algorithm (default: snake) → 6. `robot.CleanRoom(room, robot)`
 
-**Cross-file dependencies**: `snake.go` reuses `finalCleanup()` defined in `spiral.go`. The `directions` variable (N/E/S/W offsets) defined in `robot.go` is used by `astar.go`.
+**Cross-file dependencies**: `snake.go` reuses `finalCleanup()` defined in `spiral.go`. The `directions` variable (N/E/S/W offsets) defined in `robot.go` is used by `astar.go`. `cat.go` uses `abs()` from `random.go` and constants from `world.go`.
 
 ## Dependencies
 
