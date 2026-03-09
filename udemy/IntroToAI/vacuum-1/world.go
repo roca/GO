@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -89,13 +90,13 @@ func NewRoom(configFile string, animate bool) *Room {
 		grid[gridWidth-1][j] = Cell{Type: "wall", Cleaned: false, Obstacle: true, ObstacleName: "wall"}
 	}
 
-	// Add furniture. 
-	for _, f := range roomConfig.Furniture{
+	// Add furniture.
+	for _, f := range roomConfig.Furniture {
 		x := f.X / cellSize
 		y := f.Y / cellSize
 		width := f.Width / cellSize
 		height := f.Height / cellSize
-		
+
 		for i := x; i < x+width; i++ {
 			for j := y; j < y+height; j++ {
 				grid[i][j] = Cell{Type: "furniture", Cleaned: false, Obstacle: true, ObstacleName: f.Name}
@@ -114,12 +115,12 @@ func NewRoom(configFile string, animate bool) *Room {
 	}
 
 	return &Room{
-		Grid: grid,
-		Width: gridWidth,
-		Height: gridHeight,
+		Grid:               grid,
+		Width:              gridWidth,
+		Height:             gridHeight,
 		CleanableCellCount: cleanableCellCount,
-		CleanedCellCount: 0,
-		Animate: animate,
+		CleanedCellCount:   0,
+		Animate:            animate,
 	}
 }
 
@@ -173,7 +174,6 @@ func (room *Room) Display(robot *Robot, showPath bool) {
 	fmt.Printf("Cleaning Progress: %.2f%% (%d/%d cells cleaned)\n", percentCleaned, room.CleanedCellCount, room.CleanableCellCount)
 }
 
-
 func isInPath(point Point, path []Point) bool {
 	for _, p := range path {
 		if p.X == point.X && p.Y == point.Y {
@@ -189,7 +189,7 @@ func displaySummary(room *Room, robot *Robot, moveCount int, cleaningTime time.D
 	room.Display(robot, true)
 
 	fmt.Println("\n======== Cleaning Summary ========")
-	fmt.Printf("Room size: %d x %d (%d cm x %d cm)\n", room.Width, room.Height, room.Width * cellSize, room.Height * cellSize)
+	fmt.Printf("Room size: %d x %d (%d cm x %d cm)\n", room.Width, room.Height, room.Width*cellSize, room.Height*cellSize)
 
 	// Calculate coverage percentage.
 	percentCleaned := float64(room.CleanedCellCount) / float64(room.CleanableCellCount) * 100
@@ -203,10 +203,29 @@ func displaySummary(room *Room, robot *Robot, moveCount int, cleaningTime time.D
 	efficiency := float64(room.CleanedCellCount) / float64(moveCount)
 	fmt.Printf("Efficiency: %.2f cells cleaned per move\n", efficiency)
 
+	// Display encountered obstacles.
+	obstacles := getEncounteredObstacleList(robot)
+	if len(obstacles) > 0 {
+		fmt.Printf("Obstacles encountered: %s\n", strings.Join(obstacles, ", "))
+	} else {
+		fmt.Println("No obstacles encountered.")
+	}
+
 	fmt.Println()
 	fmt.Println("================================")
+}
+
+func getEncounteredObstacleList(robot *Robot) []string {
+	var obstacles []string
+	for name := range robot.ObstaclesEncountered {
+		if name != "wall" {
+			obstacles = append(obstacles, name)
+		}
+	}
+	return obstacles
 }
 
 func (room *Room) IsValid(x, y int) bool {
 	return x >= 0 && x < room.Width && y >= 0 && y < room.Height && !room.Grid[x][y].Obstacle
 }
+

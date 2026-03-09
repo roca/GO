@@ -24,7 +24,7 @@ go run . -file flooded-mazes/maze-flooded.txt -search astar
 go build  # produces ./ai-search binary
 ```
 
-Flags: `-file <path>`, `-search <algorithm>`, `-debug`, `-animate`
+Flags: `-file <path>`, `-search <algorithm>`, `-debug`, `-animate` (default: false)
 
 Algorithms: `dfs`, `bfs`, `dijkstra`, `gbfs`, `astar`
 
@@ -38,7 +38,7 @@ go run . -file room.json -algorithm slam -animate
 go run . -file room.json -algorithm snake -animate
 ```
 
-Flags: `-file <path>`, `-algorithm <name>`, `-animate <bool>`
+Flags: `-file <path>`, `-algorithm <name>`, `-animate <bool>` (default: true)
 
 Algorithms: `random`, `slam`, `spiral`, `snake` (default)
 
@@ -163,15 +163,16 @@ Files in `ai-search/mazes/` and `ai-search/flooded-mazes/`:
 - `updateAllFrontiers()` in slam.go: checks `room.Grid[x][y].Obstacle` (true = IS obstacle) when it should check `!room.Grid[x][y].Obstacle` to find free cells for the frontier
 - `addNeighborsToFrontier()` in slam.go: off-by-one `newX <= len(robotMap)` should be `<`
 - `RecordObstacle()` in robot.go: off-by-one `y <= room.Height` should be `y < room.Height`
-- `findNearestDirtyCell()` in random.go: returns nearest interior cell regardless of `Cleaned` status or `Obstacle` flag
+- `findNearestDirtyCell()` in random.go: finds nearest interior cell by distance but never checks `Cleaned` or `Obstacle` — always returns the closest cell to position, even if already clean or an obstacle
 - `getCloesestFrontierPoint()` in slam.go: typo in function name (should be `getClosestFrontierPoint`)
 - `findNearestCleanablePoint()` in spiral.go: loop condition uses `||` (`radius < room.Width || radius < room.Height`) — should be `&&` so the loop only continues while radius is less than both dimensions
 - `generateSpiralPattern()` in spiral.go: breaks out of spiral generation when first out-of-bounds point is hit, potentially missing valid points in non-square rooms
-- `finalCleanup()` in spiral.go: off-by-one — uses `room.Width-1` and `room.Height-1` as loop bounds, skipping the last column and row
+- `finalCleanup()` in spiral.go: off-by-one — uses `room.Width-1` and `room.Height-1` as upper loop bounds (with `i := 0`), skipping the last column and row
+- `updateAllFrontiers()` in slam.go: also has off-by-one — uses `room.Width-1` and `room.Height-1` as upper loop bounds, skipping the last column and row
 - `generateSnakingPattern()` in snake.go: variable typo `directiionX` (double 'i')
 
 **Missing features:**
-- `Display()` switch in world.go has no case for `"bike"` cell type (currently not an issue since `NewRoom()` sets all furniture to `Type="furniture"`)
+- `Display()` switch in world.go has no case for `"bike"` or `"cat"` cell types (currently not an issue since `NewRoom()` sets all furniture to `Type="furniture"` and cat behavior is unimplemented)
 - JSON `robot` field (dock position, start direction) and furniture `id` field not loaded by `RoomConfig`/`Furniture` structs
 - Cat obstacle behavior not implemented
 
