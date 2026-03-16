@@ -37,9 +37,10 @@ go run . -file room.json -algorithm random -animate
 go run . -file room.json -algorithm slam -animate
 go run . -file room.json -algorithm snake -animate
 go run . -file room.json -algorithm snake -animate -cat
+go run . -file house.json -algorithm snake -house
 ```
 
-Flags: `-file <path>`, `-algorithm <name>`, `-animate <bool>` (default: true), `-cat <bool>` (default: false)
+Flags: `-file <path>`, `-algorithm <name>`, `-animate <bool>` (default: true), `-cat <bool>` (default: false), `-house <bool>` (default: false), `-logic <bool>` (default: false, not yet implemented)
 
 Algorithms: `random`, `slam`, `spiral`, `snake` (default)
 
@@ -157,7 +158,8 @@ Files in `ai-search/mazes/` and `ai-search/flooded-mazes/`:
 - **Spiral algorithm** (`spiral.go`): `CleanSpiralPattern()` — spiral cleaning from room center outward. See Cleaning Algorithms section for details.
 - **Snake algorithm** (`snake.go`): `CleanRoomSnake()` — boustrophedon (snaking/zigzag) pattern. Wired into main.go as the default algorithm. See Cleaning Algorithms section for details.
 - **Cat behavior** (`cat.go`): `NewCat(room)` spawns cat at random non-obstacle position, `MoveCat(cat, room)` handles movement/stopping/direction changes and re-dirties cleaned cells, `IsAdjacentToCat(robot, cat)` checks proximity. Wired into main.go via `-cat` flag. Snake algorithm calls `MoveCat()` each iteration. `Display()` renders the cat via position check (not cell type switch). `IsAdjacentToCat()` is not called by any algorithm yet.
-- **TODO**: Integrate cat movement into remaining cleaning algorithm loops (random, slam, spiral), call `IsAdjacentToCat()` for cat avoidance behavior, loading robot dock position from JSON config
+- **House mode** (`world.go`): `-house` flag enables multi-room cleaning. `NewHouse(configFile, animate)` loads a JSON array of `RoomConfig` objects via `LoadHouseConfig()`. The robot cleans each room sequentially in a loop.
+- **TODO**: Integrate cat movement into remaining cleaning algorithm loops (random, slam, spiral), call `IsAdjacentToCat()` for cat avoidance behavior, loading robot dock position from JSON config, implement propositional logic cleaning via `-logic` flag
 
 ### Known Limitations
 
@@ -179,6 +181,7 @@ Files in `ai-search/mazes/` and `ai-search/flooded-mazes/`:
 - Only snake algorithm calls `MoveCat()` — random, slam, and spiral do not move the cat during cleaning
 - No cleaning algorithm calls `IsAdjacentToCat()` — no cat avoidance behavior implemented
 - JSON `robot` field (dock position, start direction) and furniture `id` field not loaded by `RoomConfig`/`Furniture` structs
+- `-logic` flag is parsed in main.go but the propositional logic branch is empty (robot constructor `NewRobotWithLogic` is commented out)
 
 ### Constants (world.go)
 
@@ -192,9 +195,10 @@ Files in `ai-search/mazes/` and `ai-search/flooded-mazes/`:
 - **Cell**: Type string ("clean"/"dirty"/"wall"/"furniture"/"bike"), Cleaned/Obstacle booleans, ObstacleName string
 - **Furniture**: JSON-mapped struct with X, Y, Width, Height, Name, Type fields. Name is used for obstacle tracking via `ObstacleName`.
 - **Robot**: Position, Path, Direction (float64), CleanRoom function pointer, ObstaclesEncountered map
-- **RoomConfig**: JSON structure with Width, Height, Furniture array
+- **House**: Contains `Rooms []*Room`. Used in multi-room mode (`-house` flag). Created via `NewHouse(configFile, animate)`.
+- **RoomConfig**: JSON structure with Width, Height, Furniture array. Single room JSON is one object; house JSON is an array of these.
 - **Cat**: Position, Active bool, StopTimer, Path, DirectionX/DirectionY. Created via `NewCat(room)`, moved via `MoveCat(cat, room)`.
-- **Room methods**: `Display(robot, cat, showPath)`, `IsValid(x, y) bool` (bounds + obstacle check), `displaySummary(room, robot, moveCount, cleaningTime)`
+- **Room methods**: `Display(robot, cat, showPath)`, `IsValid(x, y) bool` (bounds + obstacle check), `displaySummary(room, robot, moveCount, cleaningTime)`, `isInPath(point, path) bool`
 
 **Grid convention**: `grid[x][y]` where x is column and y is row (column-major). Display iterates rows (j) then columns (i).
 
@@ -206,7 +210,7 @@ Files in `ai-search/mazes/` and `ai-search/flooded-mazes/`:
 
 ### Room Configuration
 
-JSON files in `vacuum-1/`. Use `empty.json` as template.
+JSON files in `vacuum-1/`. Single-room files (`empty.json`, `room.json`) contain one `RoomConfig` object. Multi-room files (`house.json`) contain a JSON array of `RoomConfig` objects — use with `-house` flag.
 
 ### Pathfinding (astar.go)
 
@@ -247,7 +251,7 @@ All helper functions (`bresenhamLine()`, `moveAtAngleUntilObstacle()`, `abs()`, 
 
 ### Execution Flow
 
-1. Parse flags → 2. `NewRoom(configFile, animate)` → 3. Optionally `NewCat(room)` if `-cat` flag → 4. `NewRobot(1, 1)` → 5. Assign algorithm (default: snake) → 6. `robot.CleanRoom(room, robot)`
+1. Parse flags → 2a. If `-house`: `NewHouse(configFile, animate)` (multi-room) / 2b. Otherwise: `NewRoom(configFile, animate)` wrapped in single-room `House` → 3. For each room: optionally `NewCat(room)` if `-cat` flag → 4. `NewRobot(1, 1)` → 5. Assign algorithm (default: snake) → 6. `robot.CleanRoom(room, robot)`
 
 **Cross-file dependencies**: `snake.go` reuses `finalCleanup()` defined in `spiral.go` and calls `MoveCat()` from `cat.go`. The `directions` variable (N/E/S/W offsets) defined in `robot.go` is used by `astar.go`. `cat.go` uses `abs()` from `random.go` and constants from `world.go`.
 

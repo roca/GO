@@ -34,6 +34,10 @@ type Cell struct {
 	ObstacleName string
 }
 
+type House struct {
+	Rooms []*Room
+}
+
 type Furniture struct {
 	X      int    `json:"x"`
 	Y      int    `json:"y"`
@@ -123,6 +127,95 @@ func NewRoom(configFile string, animate bool) *Room {
 		CleanedCellCount:   0,
 		Animate:            animate,
 	}
+}
+
+func NewHouse(configFile string, animate bool) *House {
+	// Load from JSON config.
+	houseConfig, err := LoadHouseConfig(configFile)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	var house House
+	for _, room := range houseConfig {
+		// convert dimensions to grid cells
+		gridWidth := room.Width / cellSize
+		gridHeight := room.Height / cellSize
+
+		// create grid
+		grid := make([][]Cell, gridWidth)
+		for i := range grid {
+			grid[i] = make([]Cell, gridHeight)
+			for j := range grid[i] {
+				grid[i][j] = Cell{Type: "dirty", Cleaned: false, Obstacle: false}
+			}
+		}
+
+		// add walls
+		for i := 0; i < gridWidth; i++ {
+			grid[i][0] = Cell{Type: "wall", Cleaned: false, Obstacle: true, ObstacleName: "wall"}
+			grid[i][gridHeight-1] = Cell{Type: "wall", Cleaned: false, Obstacle: true, ObstacleName: "wall"}
+		}
+
+		for j := 0; j < gridHeight; j++ {
+			grid[0][j] = Cell{Type: "wall", Cleaned: false, Obstacle: true, ObstacleName: "wall"}
+			grid[gridWidth-1][j] = Cell{Type: "wall", Cleaned: false, Obstacle: true, ObstacleName: "wall"}
+		}
+
+		// add furniture
+		for _, f := range room.Furniture {
+			x := f.X / cellSize
+			y := f.Y / cellSize
+			width := f.Width / cellSize
+			height := f.Height / cellSize
+
+			for i := x; i < x+width; i++ {
+				for j := y; j < y+height; j++ {
+					grid[i][j] = Cell{Type: "furniture", Cleaned: false, Obstacle: true, ObstacleName: f.Name}
+				}
+			}
+		}
+
+		// count cleanable cells
+		cleanableCellCount := 0
+		for i := range gridWidth {
+			for j := range gridHeight {
+				if !grid[i][j].Obstacle {
+					cleanableCellCount++
+				}
+			}
+		}
+
+		r := Room{
+			Grid:               grid,
+			Width:              gridWidth,
+			Height:             gridHeight,
+			CleanableCellCount: cleanableCellCount,
+			CleanedCellCount:   0,
+			Animate:            animate,
+		}
+
+		house.Rooms = append(house.Rooms, &r)
+	}
+
+	return &house
+}
+
+func LoadHouseConfig(filename string) ([]RoomConfig, error) {
+	// Read JSON file.
+	jsonData, err := os.ReadFile(filename)
+	if err != nil {
+		return nil, fmt.Errorf("error reading json file: %v", err)
+	}
+
+	// Parse JSON
+	var roomConfigs []RoomConfig
+	if err := json.Unmarshal(jsonData, &roomConfigs); err != nil {
+		return nil, fmt.Errorf("error parsing JSON: %v", err)
+	}
+
+	return roomConfigs, nil
 }
 
 func LoadRoomConfig(filename string) (*RoomConfig, error) {
