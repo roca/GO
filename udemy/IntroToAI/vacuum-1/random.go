@@ -18,7 +18,7 @@ func CleanRoomRandomWalk(room *Room, robot *Robot) {
 	// Clean Current position
 	Clean(robot, room)
 	if room.Animate {
-		room.Display(robot, false)
+		room.Display(robot, room.Cat, false)
 		time.Sleep(moveDelay)
 	}
 
@@ -51,7 +51,7 @@ func CleanRoomRandomWalk(room *Room, robot *Robot) {
 							robot.Path = append(robot.Path, path[i])
 							Clean(robot, room)
 							if room.Animate {
-								room.Display(robot, false)
+								room.Display(robot, room.Cat, false)
 								time.Sleep(moveDelay)
 							}
 							moveCount++
@@ -76,7 +76,7 @@ func CleanRoomRandomWalk(room *Room, robot *Robot) {
 							robot.Path = append(robot.Path, path[i])
 							Clean(robot, room)
 							if room.Animate {
-								room.Display(robot, false)
+								room.Display(robot, room.Cat, false)
 								time.Sleep(moveDelay)
 							}
 							moveCount++
@@ -96,12 +96,12 @@ func CleanRoomRandomWalk(room *Room, robot *Robot) {
 					continue
 				}
 
-				for k := 1; k < len(path); k++{
+				for k := 1; k < len(path); k++ {
 					robot.Position = path[k]
 					robot.Path = append(robot.Path, path[k])
 					Clean(robot, room)
 					if room.Animate {
-						room.Display(robot, false)
+						room.Display(robot, room.Cat, false)
 						time.Sleep(moveDelay)
 					}
 					moveCount++
@@ -129,7 +129,7 @@ func moveAtAngleUntilObstacle(room *Room, robot *Robot, dx, dy float64) int {
 	// Move along line until hitting an obstacle
 	for i := 1; i < len(points); i++ {
 		x, y := points[i].X, points[i].Y
-		
+
 		if !room.IsValid(x, y) {
 			break
 		}
@@ -142,7 +142,7 @@ func moveAtAngleUntilObstacle(room *Room, robot *Robot, dx, dy float64) int {
 
 		// Animate if appropriate
 		if room.Animate {
-			room.Display(robot, false)
+			room.Display(robot, room.Cat, false)
 			time.Sleep(moveDelay)
 		}
 
@@ -207,14 +207,14 @@ func bresenhamLine(x0, y0, x1, y1 int) []Point {
 			y0 += sy
 		}
 	}
-	
+
 	// return points
 	return points
 }
 
 func abs(x int) int {
 	if x < 0 {
-		return x *-1
+		return x * -1
 	}
 	return x
 }
@@ -223,8 +223,8 @@ func findNearestDirtyCell(room *Room, position Point) Point {
 	var nearestCell Point = Point{X: -1, Y: -1}
 	minDistance := math.MaxFloat64
 
-	for i := 1; i < room.Width -1; i++ {
-		for j := 1; j < room.Height -1; j++ {
+	for i := 1; i < room.Width-1; i++ {
+		for j := 1; j < room.Height-1; j++ {
 			distance := heuristic(position, Point{X: i, Y: j})
 			if distance < minDistance {
 				minDistance = distance
@@ -235,3 +235,4 @@ func findNearestDirtyCell(room *Room, position Point) Point {
 
 	return nearestCell
 }
+

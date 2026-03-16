@@ -156,8 +156,8 @@ Files in `ai-search/mazes/` and `ai-search/flooded-mazes/`:
 - **SLAM algorithm** (`slam.go`): `CleanRoomSlam()` — frontier-based SLAM cleaning. See Cleaning Algorithms section for details.
 - **Spiral algorithm** (`spiral.go`): `CleanSpiralPattern()` — spiral cleaning from room center outward. See Cleaning Algorithms section for details.
 - **Snake algorithm** (`snake.go`): `CleanRoomSnake()` — boustrophedon (snaking/zigzag) pattern. Wired into main.go as the default algorithm. See Cleaning Algorithms section for details.
-- **Cat behavior** (`cat.go`): `NewCat(room)` spawns cat at random non-obstacle position, `MoveCat(cat, room)` handles movement/stopping/direction changes and re-dirties cleaned cells, `IsAdjacentToCat(robot, cat)` checks proximity. Wired into main.go via `-cat` flag. However, no cleaning algorithm currently calls `MoveCat()` or `IsAdjacentToCat()`, and `Display()` doesn't render the cat position.
-- **TODO**: Integrate cat movement into cleaning algorithm loops, add cat rendering to `Display()`, loading robot dock position from JSON config
+- **Cat behavior** (`cat.go`): `NewCat(room)` spawns cat at random non-obstacle position, `MoveCat(cat, room)` handles movement/stopping/direction changes and re-dirties cleaned cells, `IsAdjacentToCat(robot, cat)` checks proximity. Wired into main.go via `-cat` flag. Snake algorithm calls `MoveCat()` each iteration. `Display()` renders the cat via position check (not cell type switch). `IsAdjacentToCat()` is not called by any algorithm yet.
+- **TODO**: Integrate cat movement into remaining cleaning algorithm loops (random, slam, spiral), call `IsAdjacentToCat()` for cat avoidance behavior, loading robot dock position from JSON config
 
 ### Known Limitations
 
@@ -175,8 +175,9 @@ Files in `ai-search/mazes/` and `ai-search/flooded-mazes/`:
 - `MoveCat()` in cat.go: lines 74-78 access `room.Grid[newX][newY]` outside the `room.IsValid()` guard — if the new position is invalid (wall/out-of-bounds), this will panic with an index-out-of-range error. The dirty-cell logic should be inside the `if room.IsValid(newX, newY)` block.
 
 **Missing features:**
-- `Display()` switch in world.go has no case for `"bike"` or `"cat"` cell types (cat position not rendered despite `charCat` constant being defined)
-- No cleaning algorithm calls `MoveCat()` or `IsAdjacentToCat()` — cat is created but never moves during cleaning
+- `Display()` switch in world.go has no case for `"bike"` cell type (bike furniture renders as blank)
+- Only snake algorithm calls `MoveCat()` — random, slam, and spiral do not move the cat during cleaning
+- No cleaning algorithm calls `IsAdjacentToCat()` — no cat avoidance behavior implemented
 - JSON `robot` field (dock position, start direction) and furniture `id` field not loaded by `RoomConfig`/`Furniture` structs
 
 ### Constants (world.go)
@@ -193,7 +194,7 @@ Files in `ai-search/mazes/` and `ai-search/flooded-mazes/`:
 - **Robot**: Position, Path, Direction (float64), CleanRoom function pointer, ObstaclesEncountered map
 - **RoomConfig**: JSON structure with Width, Height, Furniture array
 - **Cat**: Position, Active bool, StopTimer, Path, DirectionX/DirectionY. Created via `NewCat(room)`, moved via `MoveCat(cat, room)`.
-- **Room methods**: `Display(robot, showPath)`, `IsValid(x, y) bool` (bounds + obstacle check), `displaySummary(room, robot, moveCount, cleaningTime)`
+- **Room methods**: `Display(robot, cat, showPath)`, `IsValid(x, y) bool` (bounds + obstacle check), `displaySummary(room, robot, moveCount, cleaningTime)`
 
 **Grid convention**: `grid[x][y]` where x is column and y is row (column-major). Display iterates rows (j) then columns (i).
 
@@ -236,10 +237,10 @@ All helper functions (`bresenhamLine()`, `moveAtAngleUntilObstacle()`, `abs()`, 
 2. **Spiral traversal**: `generateSpiralPattern()` generates points expanding outward (right→down→left→up, increasing step size every two direction changes). Skips already-cleaned and obstacle cells, uses A* to pathfind to each point.
 3. **Final cleanup**: `finalCleanup()` iterates the full grid to clean any remaining accessible dirty cells.
 
-**Snake** (`snake.go`) implements boustrophedon (snaking/zigzag) coverage. Default algorithm in main.go. Helper function: `generateSnakingPattern` (creates left-right/right-left alternating row traversal, skipping obstacle cells). Uses `finalCleanup()` from spiral.go for missed cells.
+**Snake** (`snake.go`) implements boustrophedon (snaking/zigzag) coverage. Default algorithm in main.go. Helper function: `generateSnakingPattern` (creates left-right/right-left alternating row traversal, skipping obstacle cells). Uses `finalCleanup()` from spiral.go for missed cells. Only algorithm that calls `MoveCat()`.
 
 1. **Pattern generation**: `generateSnakingPattern()` iterates interior rows (1 to Height-2), alternating direction each row (left→right, then right→left). Skips obstacle cells.
-2. **Path execution**: For each uncleaned point in the pattern, uses A* to pathfind there, cleans cells along the path.
+2. **Path execution**: For each uncleaned point in the pattern, uses A* to pathfind there, cleans cells along the path. Calls `MoveCat()` before each pattern point and after each path step.
 3. **Final cleanup**: Reuses `finalCleanup()` from spiral.go to catch any remaining dirty cells.
 
 **Note**: `generateSnakingPattern()` has a typo: `directiionX` (double 'i').
@@ -248,7 +249,7 @@ All helper functions (`bresenhamLine()`, `moveAtAngleUntilObstacle()`, `abs()`, 
 
 1. Parse flags → 2. `NewRoom(configFile, animate)` → 3. Optionally `NewCat(room)` if `-cat` flag → 4. `NewRobot(1, 1)` → 5. Assign algorithm (default: snake) → 6. `robot.CleanRoom(room, robot)`
 
-**Cross-file dependencies**: `snake.go` reuses `finalCleanup()` defined in `spiral.go`. The `directions` variable (N/E/S/W offsets) defined in `robot.go` is used by `astar.go`. `cat.go` uses `abs()` from `random.go` and constants from `world.go`.
+**Cross-file dependencies**: `snake.go` reuses `finalCleanup()` defined in `spiral.go` and calls `MoveCat()` from `cat.go`. The `directions` variable (N/E/S/W offsets) defined in `robot.go` is used by `astar.go`. `cat.go` uses `abs()` from `random.go` and constants from `world.go`.
 
 ## Dependencies
 

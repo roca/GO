@@ -141,7 +141,7 @@ func LoadRoomConfig(filename string) (*RoomConfig, error) {
 	return &config, nil
 }
 
-func (room *Room) Display(robot *Robot, showPath bool) {
+func (room *Room) Display(robot *Robot, cat *Cat, showPath bool) {
 	// Windows users can use github.com/inancgumus/screen
 	// call screen.Clear()
 	// Clear the screen.
@@ -151,6 +151,8 @@ func (room *Room) Display(robot *Robot, showPath bool) {
 		for i := range room.Width {
 			if robot.Position.X == i && robot.Position.Y == j {
 				fmt.Print(charRobot)
+			} else if cat != nil && cat.Position.X == i && cat.Position.Y == j {
+				fmt.Print(charCat)
 			} else if showPath && isInPath(Point{X: i, Y: j}, robot.Path) {
 				fmt.Print(charPath)
 			} else {
@@ -173,6 +175,11 @@ func (room *Room) Display(robot *Robot, showPath bool) {
 	// Display cleaning progress
 	percentCleaned := float64(room.CleanedCellCount) / float64(room.CleanableCellCount) * 100
 	fmt.Printf("Cleaning Progress: %.2f%% (%d/%d cells cleaned)\n", percentCleaned, room.CleanedCellCount, room.CleanableCellCount)
+
+	if cat != nil {
+		fmt.Printf("Room position: (%d, %d), Cat position: (%d, %d)\n",
+			robot.Position.X, robot.Position.Y, cat.Position.X, cat.Position.Y)
+	}
 }
 
 func isInPath(point Point, path []Point) bool {
@@ -187,7 +194,7 @@ func isInPath(point Point, path []Point) bool {
 func displaySummary(room *Room, robot *Robot, moveCount int, cleaningTime time.Duration) {
 	// Display the final room state with the robot's path.
 	fmt.Println("\nFinal room state with robot's path:")
-	room.Display(robot, true)
+	room.Display(robot, room.Cat, true)
 
 	fmt.Println("\n======== Cleaning Summary ========")
 	fmt.Printf("Room size: %d x %d (%d cm x %d cm)\n", room.Width, room.Height, room.Width*cellSize, room.Height*cellSize)
