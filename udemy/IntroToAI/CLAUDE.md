@@ -159,7 +159,8 @@ Files in `ai-search/mazes/` and `ai-search/flooded-mazes/`:
 - **Snake algorithm** (`snake.go`): `CleanRoomSnake()` — boustrophedon (snaking/zigzag) pattern. Wired into main.go as the default algorithm. See Cleaning Algorithms section for details.
 - **Cat behavior** (`cat.go`): `NewCat(room)` spawns cat at random non-obstacle position, `MoveCat(cat, room)` handles movement/stopping/direction changes and re-dirties cleaned cells, `IsAdjacentToCat(robot, cat)` checks proximity. Wired into main.go via `-cat` flag. Snake algorithm calls `MoveCat()` each iteration. `Display()` renders the cat via position check (not cell type switch). `IsAdjacentToCat()` is not called by any algorithm yet.
 - **House mode** (`world.go`): `-house` flag enables multi-room cleaning. `NewHouse(configFile, animate)` loads a JSON array of `RoomConfig` objects via `LoadHouseConfig()`. The robot cleans each room sequentially in a loop.
-- **TODO**: Integrate cat movement into remaining cleaning algorithm loops (random, slam, spiral), call `IsAdjacentToCat()` for cat avoidance behavior, loading robot dock position from JSON config, implement propositional logic cleaning via `-logic` flag
+- **Propositional logic** (`logic.go`): `LogicalWorld` tracks household state — three `PersonStatus` structs (Jack, Sarah, Johnny) with IsHome/Room/DoorClosed fields, weekday detection, and object-to-person inference rules. `NewLogicalWorld()` initializes world state. `UpdateObjectFound(objectName)` applies deduction rules: backpack→Jack is home, bicycle→Sarah is home, skateboard→Johnny is home. Not yet wired into cleaning algorithms — the `-logic` branch in main.go still has `NewRobotWithLogic` commented out.
+- **TODO**: Integrate cat movement into remaining cleaning algorithm loops (random, slam, spiral), call `IsAdjacentToCat()` for cat avoidance behavior, loading robot dock position from JSON config, wire `LogicalWorld` into cleaning via `-logic` flag (connect `RecordObstacle`/`CheckAdjacentObstacles` to `UpdateObjectFound`, implement room-skipping logic based on person presence)
 
 ### Known Limitations
 
@@ -181,7 +182,7 @@ Files in `ai-search/mazes/` and `ai-search/flooded-mazes/`:
 - Only snake algorithm calls `MoveCat()` — random, slam, and spiral do not move the cat during cleaning
 - No cleaning algorithm calls `IsAdjacentToCat()` — no cat avoidance behavior implemented
 - JSON `robot` field (dock position, start direction) and furniture `id` field not loaded by `RoomConfig`/`Furniture` structs
-- `-logic` flag is parsed in main.go but the propositional logic branch is empty (robot constructor `NewRobotWithLogic` is commented out)
+- `-logic` flag is parsed in main.go but the propositional logic branch has `NewRobotWithLogic` commented out — `LogicalWorld` types and rules exist in `logic.go` but aren't connected to cleaning algorithms
 
 ### Constants (world.go)
 
@@ -198,6 +199,7 @@ Files in `ai-search/mazes/` and `ai-search/flooded-mazes/`:
 - **House**: Contains `Rooms []*Room`. Used in multi-room mode (`-house` flag). Created via `NewHouse(configFile, animate)`.
 - **RoomConfig**: JSON structure with Width, Height, Furniture array. Single room JSON is one object; house JSON is an array of these.
 - **Cat**: Position, Active bool, StopTimer, Path, DirectionX/DirectionY. Created via `NewCat(room)`, moved via `MoveCat(cat, room)`.
+- **LogicalWorld**: Tracks Jack/Sarah/Johnny `PersonStatus` (IsHome, Room, DoorClosed), weekday flag, Objects map. Created via `NewLogicalWorld()`. `UpdateObjectFound()` applies deduction rules.
 - **Room methods**: `Display(robot, cat, showPath)`, `IsValid(x, y) bool` (bounds + obstacle check), `displaySummary(room, robot, moveCount, cleaningTime)`, `isInPath(point, path) bool`
 
 **Grid convention**: `grid[x][y]` where x is column and y is row (column-major). Display iterates rows (j) then columns (i).
