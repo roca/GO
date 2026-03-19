@@ -128,6 +128,87 @@ func (world *LogicalWorld) DetermineCleaningPriority() []string {
 	return priorityList
 }
 
-// Type for a robot with logic.
+// RobotWithLogic is a specialized robot that has access to the logical world and can make decisions based on it.
+type RobotWithLogic struct {
+	*Robot // Embed the basic Robot struct to inherit its properties and methods.
+	World  *LogicalWorld
+}
 
-// Factory function to create a new robot with logic.
+// NewRobotWithLogic creates a new RobotWithLogic instance with an initialized logical world.
+func NewRobotWithLogic(startX, startY int) *RobotWithLogic {
+	return &RobotWithLogic{
+		Robot: NewRobot(startX, startY),
+		World: NewLogicalWorld(),
+	}
+}
+
+func (robot *RobotWithLogic) ScanHouseWithLogic(house *House) map[string]int {
+	// Create a map which maps room indices to room names.
+	roomNameToIndex := make(map[string]int)
+
+	// Identify all rooms and generate our mapping.
+	for i, room := range house.Rooms {
+		roomName := ""
+
+		for x := range room.Width {
+			for y := range room.Height {
+
+				if room.Grid[x][y].Type == "furniture" {
+					if roomName == "" {
+						switch room.Grid[x][y].ObstacleName {
+						case "bed":
+							if roomName == "" && roomNameToIndex["Jack's Room"] == 0 {
+								roomName = "Jack's Room"
+							} else if roomNameToIndex["Sarah's Room"] == 0 && roomNameToIndex["Johnny's Room"] == 0 {
+								roomName = "Sarah's Room"
+							} else {
+								roomName = "Johnny's Room"
+							}
+						case "desk":
+							if roomName == "" {
+								roomName = "study"
+							}
+						case "sofa", "tv":
+							roomName = "Living Room"
+						case "fridge", "stove", "sink":
+							roomName = "Kitchen"
+						}
+					}
+
+					// Johnny's door
+					if room.Grid[x][y].ObstacleName == "johnny's door" {
+						// change to true to close the door, false to open it.
+						robot.World.UpdateDoorStatus("Johnny's Door", false) // Assume door is open when we see it.
+					}
+				}
+			}
+		}
+
+		// If we can't determine the name of the room, give it a default name.
+		if roomName == "" {
+			roomName = fmt.Sprintf("Room %d", i)
+		}
+
+		roomNameToIndex[roomName] = i
+		fmt.Printf("Identified room %s (index %d)\n", roomName, i)
+	}
+
+	// Scan the house for objects to build out logical world.
+	fmt.Println("Robot is scanning the house for objects....")
+
+	for _, room := range house.Rooms {
+		for x := range room.Width {
+			for y := range room.Height {
+				if room.Grid[x][y].Type == "furniture" && room.Grid[x][y].ObstacleName != "" {
+					robot.World.UpdateObjectFound(room.Grid[x][y].ObstacleName)
+				}
+			}
+		}
+	}
+
+	// Determine cleaning priority based on the logical rules.
+	cleaningPriority := robot.World.DetermineCleaningPriority()
+	fmt.Println("Cleaning priority determined:", cleaningPriority)
+
+	return roomNameToIndex
+}
