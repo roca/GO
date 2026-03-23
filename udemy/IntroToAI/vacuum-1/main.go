@@ -34,34 +34,37 @@ func main() {
 		house = NewHouse(configFile, animate)
 	}
 
+	// Add cats to rooms if nessary.
+	if cat {
+		for _, room := range house.Rooms {
+			room.Cat = NewCat(room)
+		}
+	}
+
 	roomCount := 0
 
 	if useLogic {
 		// Use propositional logic to make cleaning decisions.
-		// robot := NewRobotWithLogic(1, 1)
+		fmt.Println("Using propositional logic for cleaning decisions.")
+		robot := NewRobotWithLogic(1, 1)
+
+		// Assign a cleaning algorithm.
+		setAlgorithm(algorithm, robot.Robot)
+
+		// Scan the house
+		roomNameToIndex := robot.ScanHouseWithLogic(house)
+		fmt.Println(roomNameToIndex)
+
 	} else {
 		// Use the original cleaning approach without propositional logic, and for multiple rooms.
 
 		for _, room := range house.Rooms {
-			if cat {
-				room.Cat = NewCat(room)
-			}
 
 			// Get a robot.
 			robot := NewRobot(1, 1)
 
 			// Assign a cleaning algorithm.
-			switch algorithm {
-			case "random":
-				robot.CleanRoom = CleanRoomRandomWalk
-			case "slam":
-				robot.CleanRoom = CleanRoomSlam
-			case "spiral":
-				robot.CleanRoom = CleanSpiralPattern
-			default:
-				// Default to snaking pattern.
-				robot.CleanRoom = CleanRoomSnake
-			}
+			setAlgorithm(algorithm, robot)
 
 			// Clean the room.
 			robot.CleanRoom(room, robot)
@@ -70,4 +73,19 @@ func main() {
 	}
 
 	fmt.Printf("All done. Cleaned a total of %d room(s)\n", roomCount)
+}
+
+// SetAlgorithm is a helper function to assign a cleaning algorithm to a robot based on the algorithm name.
+func setAlgorithm(algorithm string, robot *Robot) {
+	switch algorithm {
+	case "random":
+		robot.CleanRoom = CleanRoomRandomWalk
+	case "slam":
+		robot.CleanRoom = CleanRoomSlam
+	case "spiral":
+		robot.CleanRoom = CleanSpiralPattern
+	default:
+		// Default to snaking pattern.
+		robot.CleanRoom = CleanRoomSnake
+	}
 }
