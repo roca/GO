@@ -206,9 +206,5 @@ func (robot *RobotWithLogic) ScanHouseWithLogic(house *House) map[string]int {
 		}
 	}
 
-	// Determine cleaning priority based on the logical rules.
-	cleaningPriority := robot.World.DetermineCleaningPriority()
-	fmt.Println("Cleaning priority determined:", cleaningPriority)
-
 	return roomNameToIndex
 }

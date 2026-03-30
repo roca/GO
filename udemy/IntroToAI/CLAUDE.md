@@ -44,19 +44,19 @@ Flags: `-file <path>`, `-algorithm <name>`, `-animate <bool>` (default: true), `
 
 Algorithms: `random`, `slam`, `spiral`, `snake` (default)
 
+### Build Verification
+
+```bash
+# From repo root, verify all modules compile:
+cd ai-search && go build . && cd ../vacuum-1 && go build .
+```
+
 ### Go Workspace
 
 ```bash
 go work sync
 go work use ./new-module
 go work edit -dropuse ./module
-```
-
-### Build Verification
-
-```bash
-# From repo root, verify all modules compile:
-cd ai-search && go build . && cd ../vacuum-1 && go build .
 ```
 
 ### Testing
@@ -121,6 +121,11 @@ Three separate files implementing Go's `heap.Interface` (`Len`, `Less`, `Swap`, 
 - Colors: Black=walls, Dark Green=start, Red=goal, Green=solution, Yellow=explored, Blue=water, White=unvisited, Orange=current node
 - Informed search algorithms (Dijkstra, GBFS, A*) display distance metrics on cells
 
+### Maze File Format
+
+Files in `ai-search/mazes/` and `ai-search/flooded-mazes/`:
+- `A` = start, `B` = goal, `#` = wall, ` ` (space) = open path, `w` = water
+
 ### Implementing a New Search Algorithm
 
 1. **Create priority queue** (if needed): `priority-queue-<name>.go` implementing `heap.Interface`
@@ -132,11 +137,6 @@ Three separate files implementing Go's `heap.Interface` (`Len`, `Less`, `Swap`, 
    - Add constant to search type enum (see existing `DFS`, `BFS`, etc.)
    - Add case to algorithm switch statement in `main()`
 4. **Update this CLAUDE.md**
-
-### Maze File Format
-
-Files in `ai-search/mazes/` and `ai-search/flooded-mazes/`:
-- `A` = start, `B` = goal, `#` = wall, ` ` (space) = open path, `w` = water
 
 ## Architecture: vacuum-1
 
@@ -150,20 +150,17 @@ Files in `ai-search/mazes/` and `ai-search/flooded-mazes/`:
 - **RoomConfig**: JSON structure with Width, Height, Furniture array. Single room JSON is one object; house JSON is an array of these.
 - **Cat**: Position, Active bool, StopTimer, Path, DirectionX/DirectionY. Created via `NewCat(room)`, moved via `MoveCat(cat, room)`.
 - **LogicalWorld**: Tracks Jack/Sarah/Johnny `PersonStatus` (IsHome, Room, DoorClosed), weekday flag, Objects map. Methods: `UpdateObjectFound()`, `UpdateDoorStatus()`, `DetermineCleaningPriority()`.
-- **RobotWithLogic**: Embeds `*Robot`, adds `World *LogicalWorld`. Has `ScanHouseWithLogic(house)` method.
-- **Room methods**: `Display(robot, cat, showPath)`, `IsValid(x, y) bool` (bounds + obstacle check), `displaySummary(room, robot, moveCount, cleaningTime)`, `isInPath(point, path) bool`
+- **RobotWithLogic**: Embeds `*Robot`, adds `World *LogicalWorld`. Has `ScanHouseWithLogic(house)` method that identifies rooms by furniture, scans for objects, triggers deduction rules, and returns room-name-to-index mapping.
 
 **Grid convention**: `grid[x][y]` where x is column and y is row (column-major). Display iterates rows (j) then columns (i).
+
+**Shared state**: The `directions` variable (N/E/S/W offsets) defined in `robot.go` is used by both robot movement and `astar.go` pathfinding.
 
 ### Constants (world.go)
 
 - `cellSize = 10`: Room dimensions (cm) are divided by this to get grid dimensions (e.g., 300cm -> 30 cells)
 - `moveDelay = 50ms`: Animation delay between moves
 - `catStopProbability = 0.1`, `catStopDuration = 5`: Used by `MoveCat()` in cat.go
-
-### Display Characters
-
-Robot, Wall, Furniture, Clean, Dirty, Path, Cat rendered as emoji in terminal.
 
 ### Pathfinding (astar.go)
 
@@ -173,7 +170,7 @@ A* implementation for room navigation, separate from the ai-search module's A*. 
 
 Assigned to robots via function pointers. `setAlgorithm()` in main.go maps names to functions: "random"->`CleanRoomRandomWalk`, "slam"->`CleanRoomSlam`, "spiral"->`CleanSpiralPattern`, default->`CleanRoomSnake`.
 
-**Random Walk** (`random.go`): Random angle movement with stuck detection (5+ consecutive stuck -> A* fallback to nearest dirty cell). Every 20 moves, 30% chance of A* course correction. Final grid sweep for missed cells. Helper functions: `bresenhamLine()`, `moveAtAngleUntilObstacle()`, `findNearestDirtyCell()`.
+**Random Walk** (`random.go`): Random angle movement with stuck detection (5+ consecutive stuck -> A* fallback to nearest dirty cell). Every 20 moves, 30% chance of A* course correction. Final grid sweep for missed cells. Helper functions: `bresenhamLine()`, `moveAtAngleUntilObstacle()`, `findNearestDirtyCell()`, `abs()`.
 
 **SLAM** (`slam.go`): Frontier-based exploration. Internal `robotMap` (0=unknown, 1=free, 2=obstacle, 3=cleaned). Picks closest frontier point, pathfinds with A*, expands frontier. Periodic re-scan every 10 moves. Early exit at 95% coverage. Final sweep via `cleanRemainingCells()`.
 
@@ -183,7 +180,7 @@ Assigned to robots via function pointers. `setAlgorithm()` in main.go maps names
 
 ### Execution Flow
 
-1. Parse flags -> 2a. If `-house`: `NewHouse()` / 2b. Otherwise: `NewRoom()` wrapped in single-room `House` -> 3. Optionally `NewCat(room)` if `-cat` -> 4a. If `-logic`: `NewRobotWithLogic()` -> `ScanHouseWithLogic()` (not yet cleaning) / 4b. Otherwise: for each room -> `NewRobot()` -> `setAlgorithm()` -> `robot.CleanRoom()`
+1. Parse flags -> 2a. If `-house`: `NewHouse()` / 2b. Otherwise: `NewRoom()` wrapped in single-room `House` -> 3. Optionally `NewCat(room)` if `-cat` -> 4a. If `-logic`: `NewRobotWithLogic()` -> `setAlgorithm()` -> `ScanHouseWithLogic()` (scans and prints priority, but does not clean) / 4b. Otherwise: for each room -> `NewRobot()` -> `setAlgorithm()` -> `robot.CleanRoom(room, robot)`
 
 ### Cross-file Dependencies
 
@@ -192,17 +189,23 @@ Assigned to robots via function pointers. `setAlgorithm()` in main.go maps names
 - `cat.go` uses `abs()` from `random.go` and constants from `world.go`
 - `robot.go`: `Clean()` calls `CheckAdjacentObstacles()` which uses `RecordObstacle()` to track furniture names
 
-### Known Bugs (Watch Out For These Patterns)
+### Known Bugs
 
-**Off-by-one errors in grid bounds**: Several functions use `<=` instead of `<` for grid dimensions (`addNeighborsToFrontier` in slam.go, `RecordObstacle` in robot.go). Always use strict `<` for grid boundary checks.
+**Off-by-one errors in grid bounds**:
+- `addNeighborsToFrontier()` in slam.go: `newX <= len(robotMap)` should be `<`
+- `RecordObstacle()` in robot.go: `y <= room.Height` should be `y < room.Height`
+- `finalCleanup()` in spiral.go: uses `room.Width-1`/`room.Height-1` as upper loop bounds, skipping last column and row
+- `updateAllFrontiers()` in slam.go: same off-by-one with `Width-1`/`Height-1`
 
-**Grid sweep loop bounds**: `finalCleanup()` in spiral.go and `updateAllFrontiers()` in slam.go use `Width-1`/`Height-1` as upper bounds, skipping the last column and row. Correct pattern is to iterate `0` to `Width`/`Height` (exclusive).
+**Obstacle polarity**: `updateAllFrontiers()` in slam.go checks `room.Grid[x][y].Obstacle` when it should check `!room.Grid[x][y].Obstacle` to find free cells for the frontier.
 
-**Obstacle polarity**: `updateAllFrontiers()` in slam.go checks `room.Grid[x][y].Obstacle` when it should check `!room.Grid[x][y].Obstacle`. When checking for free cells, negate the obstacle flag.
+**Out-of-bounds access**: `MoveCat()` in cat.go accesses `room.Grid[newX][newY]` outside the `room.IsValid()` guard block — will panic if position is invalid.
 
-**Out-of-bounds access before guard**: `MoveCat()` in cat.go accesses `room.Grid[newX][newY]` before checking `room.IsValid()`. Always validate coordinates before grid access.
+**Incomplete cell checks**: `findNearestDirtyCell()` in random.go finds nearest cell by distance but never checks `Cleaned` or `Obstacle` status — returns any cell, even if already clean or an obstacle.
 
-**Incomplete cell checks**: `findNearestDirtyCell()` in random.go never checks `Cleaned` or `Obstacle` status. When finding target cells, filter by both cleaned state and obstacle state.
+**Typos**: `getCloesestFrontierPoint()` in slam.go (should be `getClosest`), `directiionX` in snake.go (double 'i').
+
+**Logic bugs in spiral.go**: `findNearestCleanablePoint()` loop uses `||` where `&&` is needed. `generateSpiralPattern()` breaks on first out-of-bounds point, potentially missing valid points in non-square rooms.
 
 ### Incomplete Features (TODO)
 
@@ -218,9 +221,7 @@ Assigned to robots via function pointers. `setAlgorithm()` in main.go maps names
 3. If cat support needed, call `MoveCat()` during the cleaning loop
 4. Update this CLAUDE.md
 
-**Note**: When adding or changing any algorithm (search or cleaning), update the relevant CLAUDE.md sections to keep documentation in sync.
-
-## Room Configuration
+### Room Configuration
 
 JSON files in `vacuum-1/`. Single-room files (`empty.json`, `room.json`) contain one `RoomConfig` object. Multi-room files (`house.json`) contain a JSON array of `RoomConfig` objects — use with `-house` flag.
 
@@ -238,3 +239,5 @@ JSON files in `vacuum-1/`. Single-room files (`empty.json`, `room.json`) contain
 - Git LFS tracks `.png` and `.psd` files (see `.gitattributes`)
 - `.gitignore` excludes `tmp/`, `ai-search/*.png` (generated output), and compiled binaries (`ai-search/ai-search`, `vacuum-1/vacuum-1`)
 - Main branch: `main`, active development on `staging`
+
+**Note**: When adding or changing any algorithm (search or cleaning), update the relevant CLAUDE.md sections to keep documentation in sync.
