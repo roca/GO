@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"time"
 )
 
 func main() {
@@ -53,11 +54,34 @@ func main() {
 
 		// Scan the house
 		roomNameToIndex := robot.ScanHouseWithLogic(house)
-		fmt.Println(roomNameToIndex)
+		fmt.Println("\nLogical state after scanning:")
+		fmt.Printf("Today is %s (Weekday: %t)\n", time.Now().Weekday(), robot.World.IsWeekday)
+		fmt.Printf("Jack is home: %t\n", robot.World.Jack.IsHome)
+		fmt.Printf("Sarah is home: %t\n", robot.World.Sarah.IsHome)
+		fmt.Printf("Johnny is home: %t\n", robot.World.Johnny.IsHome)
+		fmt.Printf("Johnny's Door is closed: %t\n", robot.World.Johnny.DoorClosed)
+		if robot.World.Johnny.DoorClosed {
+			fmt.Println("Logic: Will not vacuum Johnny's room because his door is closed.")
+		} else {
+			fmt.Println("Logic: Will vacuum Johnny's room because his door is open.")
+		}
+
+		// Determine cleaning priority based on logical rules
+		cleaningPriority := robot.World.DetermineCleaningPriority()
+		fmt.Println("\nDetermined cleaning priority based on propositional logic:")
+		for i, roomName := range cleaningPriority {
+			fmt.Printf("%d: %s\n", i+1, roomName)
+		}
+
+		for k,  v := range roomNameToIndex {
+			fmt.Println(k, "->", v)
+		}
+
+		fmt.Println("\nPress enter to start cleaning...")
+		fmt.Scanln() // Wait for user input before starting cleaning.
 
 	} else {
 		// Use the original cleaning approach without propositional logic, and for multiple rooms.
-
 		for _, room := range house.Rooms {
 
 			// Get a robot.
