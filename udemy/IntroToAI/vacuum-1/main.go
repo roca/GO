@@ -73,12 +73,20 @@ func main() {
 			fmt.Printf("%d: %s\n", i+1, roomName)
 		}
 
-		for k,  v := range roomNameToIndex {
+		for k, v := range roomNameToIndex {
 			fmt.Println(k, "->", v)
 		}
 
 		fmt.Println("\nPress enter to start cleaning...")
 		fmt.Scanln() // Wait for user input before starting cleaning.
+
+		// Clean the rooms in priority order.
+		for {
+			// check to see if room exists
+			// get the room from house.Rooms
+			// reset robot position to (1, 1)
+			// clean the room
+		}
 
 	} else {
 		// Use the original cleaning approach without propositional logic, and for multiple rooms.
