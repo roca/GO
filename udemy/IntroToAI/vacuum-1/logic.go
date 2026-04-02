@@ -41,22 +41,28 @@ func (world *LogicalWorld) UpdateObjectFound(objectName string) {
 
 	// Apply object to person identification rules.
 
-	// Rule 1: Ifs a backpack is found, then Jack is home.
+	// Rule 1: If a backpack is found, then Jack is home.
 	if objectName == "backpack" {
+		if !world.Jack.IsHome {
+			fmt.Println("Logic: backpack found, deducing Jack is home.")
+		}
 		world.Jack.IsHome = true
-		fmt.Println("Logic: backpack found, deducing Jack is home.")
 	}
 
 	// Rule 2: If a bicycle is found, then Sarah is home.
 	if objectName == "bicycle" {
+		if !world.Sarah.IsHome {
+			fmt.Println("Logic: bicycle found, deducing Sarah is home.")
+		}
 		world.Sarah.IsHome = true
-		fmt.Println("Logic: bicycle found, deducing Sarah is home.")
 	}
 
 	// Rule 3: If a skateboard is found, then Johnny is home.
 	if objectName == "skateboard" {
+		if !world.Johnny.IsHome {
+			fmt.Println("Logic: skateboard found, deducing Johnny is home.")
+		}
 		world.Johnny.IsHome = true
-		fmt.Println("Logic: skateboard found, deducing Johnny is home.")
 	}
 }
 
