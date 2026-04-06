@@ -81,11 +81,24 @@ func main() {
 		fmt.Scanln() // Wait for user input before starting cleaning.
 
 		// Clean the rooms in priority order.
-		for {
+		for _, roomName := range cleaningPriority {
 			// check to see if room exists
+			roomIndex, exists := roomNameToIndex[roomName]
+			if !exists {
+				fmt.Printf("Room '%s' not found in the house. skipping.\n", roomName)
+			}
+
 			// get the room from house.Rooms
+			room := house.Rooms[roomIndex]
+			room.Name = roomName // assign the name to the room struct for display purposes
+
 			// reset robot position to (1, 1)
+			robot.Position = Point{X: 1, Y: 1}
+			robot.Path = []Point{robot.Position} // reset path
+
 			// clean the room
+			robot.Robot.CleanRoom(room, robot.Robot)
+			roomCount++
 		}
 
 	} else {

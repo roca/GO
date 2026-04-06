@@ -40,7 +40,7 @@ go run . -file room.json -algorithm snake -animate -cat
 go run . -file house.json -algorithm snake -house
 ```
 
-Flags: `-file <path>`, `-algorithm <name>`, `-animate <bool>` (default: true), `-cat <bool>` (default: false), `-house <bool>` (default: false), `-logic <bool>` (default: false, not yet fully wired)
+Flags: `-file <path>`, `-algorithm <name>`, `-animate <bool>` (default: true), `-cat <bool>` (default: false), `-house <bool>` (default: false), `-logic <bool>` (default: false, use with `-house`)
 
 Algorithms: `random`, `slam`, `spiral`, `snake` (default)
 
@@ -180,7 +180,7 @@ Assigned to robots via function pointers. `setAlgorithm()` in main.go maps names
 
 ### Execution Flow
 
-1. Parse flags -> 2a. If `-house`: `NewHouse()` / 2b. Otherwise: `NewRoom()` wrapped in single-room `House` -> 3. Optionally `NewCat(room)` if `-cat` -> 4a. If `-logic`: `NewRobotWithLogic()` -> `setAlgorithm()` -> `ScanHouseWithLogic()` (scans and prints priority, but does not clean) / 4b. Otherwise: for each room -> `NewRobot()` -> `setAlgorithm()` -> `robot.CleanRoom(room, robot)`
+1. Parse flags -> 2a. If `-house`: `NewHouse()` / 2b. Otherwise: `NewRoom()` wrapped in single-room `House` -> 3. Optionally `NewCat(room)` if `-cat` -> 4a. If `-logic`: `NewRobotWithLogic()` -> `setAlgorithm()` -> `ScanHouseWithLogic()` -> print logical state and priority -> wait for user input -> clean rooms in priority order / 4b. Otherwise: for each room -> `NewRobot()` -> `setAlgorithm()` -> `robot.CleanRoom(room, robot)`
 
 ### Cross-file Dependencies
 
@@ -207,9 +207,11 @@ Assigned to robots via function pointers. `setAlgorithm()` in main.go maps names
 
 **Logic bugs in spiral.go**: `findNearestCleanablePoint()` loop uses `||` where `&&` is needed. `generateSpiralPattern()` breaks on first out-of-bounds point, potentially missing valid points in non-square rooms.
 
+**Logic branch missing `continue`**: In main.go, when `roomNameToIndex[roomName]` doesn't contain a priority room name, it prints "skipping" but doesn't `continue` — falls through to access `house.Rooms[0]` (zero value of missing map key).
+
 ### Incomplete Features (TODO)
 
-- `-logic` flag: `ScanHouseWithLogic()` and `DetermineCleaningPriority()` work, but the logic branch does not yet clean rooms (no `robot.CleanRoom` call, `roomCount` stays 0). Needs: use priority ordering to drive cleaning loop, connect `RecordObstacle`/`CheckAdjacentObstacles` to `UpdateObjectFound`, connect `UpdateDoorStatus` to door detection.
+- `-logic` flag: Scanning, priority determination, and room cleaning work end-to-end. Still needs: connect `RecordObstacle`/`CheckAdjacentObstacles` to `UpdateObjectFound` during cleaning, connect `UpdateDoorStatus` to door detection during cleaning.
 - Cat integration: Only snake calls `MoveCat()`. Random, slam, and spiral need cat movement added. No algorithm calls `IsAdjacentToCat()` for avoidance.
 - `Display()` switch in world.go has no case for `"bike"` cell type.
 - JSON `robot` field (dock position, start direction) and furniture `id` field not loaded by `RoomConfig`/`Furniture` structs.

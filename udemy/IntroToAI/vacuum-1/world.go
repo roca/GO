@@ -55,6 +55,7 @@ type Room struct {
 	CleanedCellCount   int
 	Animate            bool
 	Cat                *Cat
+	Name               string
 }
 
 type RoomConfig struct {
@@ -267,6 +268,9 @@ func (room *Room) Display(robot *Robot, cat *Cat, showPath bool) {
 
 	// Display cleaning progress
 	percentCleaned := float64(room.CleanedCellCount) / float64(room.CleanableCellCount) * 100
+	if room.Name != "" {
+		fmt.Printf("Room: %s - ", room.Name)
+	}
 	fmt.Printf("Cleaning Progress: %.2f%% (%d/%d cells cleaned)\n", percentCleaned, room.CleanedCellCount, room.CleanableCellCount)
 
 	if cat != nil {

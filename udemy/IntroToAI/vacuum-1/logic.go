@@ -70,7 +70,7 @@ func (world *LogicalWorld) UpdateObjectFound(objectName string) {
 func (world *LogicalWorld) UpdateDoorStatus(doorName string, isClosed bool) {
 	if doorName == "Johnny's Door" {
 		world.Johnny.DoorClosed = isClosed
-		fmt.Printf("Logic: %s is now %s.\n", doorName, map[bool]string{true: "closed", false: "open"}[isClosed])
+		// fmt.Printf("Logic: %s is now %s.\n", doorName, map[bool]string{true: "closed", false: "open"}[isClosed])
 	}
 }
 
