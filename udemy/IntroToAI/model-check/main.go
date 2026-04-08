@@ -25,4 +25,8 @@ type Applicant struct {
 
 // Check verifies if the AI model satisfies the fairness property
 
+// Loading the CSV file
+
+// VerifyModel checks if the model satisfies some property.
+
 func main() {}

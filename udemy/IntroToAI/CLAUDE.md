@@ -6,9 +6,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This repository contains code for a Udemy course: [Introduction to AI and Machine Learning with Go](https://www.udemy.com/course/introduction-to-ai-and-machine-learning-with-go-golang)
 
-The repository uses Go workspaces (`go.work`) with two modules:
+The repository uses Go workspaces (`go.work`) with three modules:
 - `ai-search/` - Pathfinding algorithms for maze solving (complete)
 - `vacuum-1/` - Room cleaning robot simulator (work in progress)
+- `model-check/` - AI model fairness verification (early stage — structs defined, methods stubbed)
 
 **Requirements**: Go 1.25.6 or later
 
@@ -38,17 +39,26 @@ go run . -file room.json -algorithm slam -animate
 go run . -file room.json -algorithm snake -animate
 go run . -file room.json -algorithm snake -animate -cat
 go run . -file house.json -algorithm snake -house
+go run . -file house.json -algorithm snake -house -logic
 ```
 
 Flags: `-file <path>`, `-algorithm <name>`, `-animate <bool>` (default: true), `-cat <bool>` (default: false), `-house <bool>` (default: false), `-logic <bool>` (default: false, use with `-house`)
 
 Algorithms: `random`, `slam`, `spiral`, `snake` (default)
 
+### Model Check
+
+```bash
+cd model-check
+go run .
+go build  # produces ./model-check binary
+```
+
 ### Build Verification
 
 ```bash
 # From repo root, verify all modules compile:
-cd ai-search && go build . && cd ../vacuum-1 && go build .
+cd ai-search && go build . && cd ../vacuum-1 && go build . && cd ../model-check && go build .
 ```
 
 ### Go Workspace
@@ -227,6 +237,10 @@ Assigned to robots via function pointers. `setAlgorithm()` in main.go maps names
 
 JSON files in `vacuum-1/`. Single-room files (`empty.json`, `room.json`) contain one `RoomConfig` object. Multi-room files (`house.json`) contain a JSON array of `RoomConfig` objects — use with `-house` flag.
 
+## Architecture: model-check
+
+Loan approval fairness verification module. Currently has type definitions only (`LoanApprovalAI` with weighted factors and `Applicant` with financial/demographic fields). Stubbed methods: `ApproveLoan`, fairness checking, CSV loading, and `VerifyModel`. Standard library only.
+
 ## Dependencies
 
 **ai-search** (external):
@@ -235,6 +249,8 @@ JSON files in `vacuum-1/`. Single-room files (`empty.json`, `room.json`) contain
 - `golang.org/x/image/font`: Text rendering on images
 
 **vacuum-1**: Standard library only
+
+**model-check**: Standard library only
 
 ## Git Notes
 
