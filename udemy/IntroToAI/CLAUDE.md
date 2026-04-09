@@ -239,7 +239,21 @@ JSON files in `vacuum-1/`. Single-room files (`empty.json`, `room.json`) contain
 
 ## Architecture: model-check
 
-Loan approval fairness verification module. Currently has type definitions only (`LoanApprovalAI` with weighted factors and `Applicant` with financial/demographic fields). Stubbed methods: `ApproveLoan`, fairness checking, CSV loading, and `VerifyModel`. Standard library only.
+Loan approval fairness verification module. Standard library only.
+
+### Core Types (model.go)
+
+- **LoanApprovalAI**: Weighted scoring model with factor weights (income, creditScore, loanAmount, debtRatio, employment) and `approvalThreshold`
+- **Applicant**: Financial/demographic profile — income (thousands), creditScore (normalized 0-1), loanAmount (thousands), debtToIncome (0-1), yearsEmployed, protectedClass boolean
+
+### Implemented
+
+- **CSV loading** (`load-csv.go`): `LoadApplicantsFromCSV` with fuzzy column matching (header substring matching, case-insensitive) and auto-normalization (income/loanAmount to thousands, creditScore from 300-850 to 0-1, debtToIncome from percentage to ratio)
+- **Parsing utilities** (`utils.go`): `parseFloat` (strips `$`, `,`, `%`) and `parseBool` (accepts true/yes/y/1/false/no/n/0)
+
+### Stubbed (TODO)
+
+Methods listed as stub comments in model.go: `ApproveLoan`, fairness checking, risk evaluation, `VerifyModel`. Main currently only loads the CSV.
 
 ## Dependencies
 
