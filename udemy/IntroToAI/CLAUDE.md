@@ -246,6 +246,11 @@ Loan approval fairness verification module. Standard library only.
 - **LoanApprovalAI**: Weighted scoring model with factor weights (income, creditScore, loanAmount, debtRatio, employment) and `approvalThreshold`
 - **Applicant**: Financial/demographic profile — income (thousands), creditScore (normalized 0-1), loanAmount (thousands), debtToIncome (0-1), yearsEmployed, protectedClass boolean
 
+### Property System (property.go)
+
+- **Property**: Interface with `Check(model *LoanApprovalAI, applicants []Applicant) (bool, []Applicant)` and `Name() string`
+- **FairnessProperty**: Implements `Property`, has `maxDisparity float64`. `Check()` is partially implemented — loops through applicants and calls `ApproveLoan` but doesn't yet compute disparity or return results.
+
 ### Implemented
 
 - **CSV loading** (`load-csv.go`): `LoadApplicantsFromCSV` with fuzzy column matching (header substring matching, case-insensitive) and auto-normalization (income/loanAmount to thousands, creditScore from 300-850 to 0-1, debtToIncome from percentage to ratio)
@@ -253,7 +258,11 @@ Loan approval fairness verification module. Standard library only.
 
 ### Stubbed (TODO)
 
-Methods listed as stub comments in model.go: `ApproveLoan`, fairness checking, risk evaluation, `VerifyModel`. Main currently only loads the CSV.
+- `ApproveLoan` method on `LoanApprovalAI` (model.go — stub comment only)
+- `FairnessProperty.Check()` — partially implemented, needs disparity calculation and return values (property.go)
+- Risk evaluation property (not yet started)
+- `VerifyModel` function (model.go — stub comment only)
+- Main flow: define properties, create test models, test models against properties (main.go — comments outline planned steps)
 
 ## Dependencies
 

@@ -14,4 +14,10 @@ func main() {
 		return
 	}
 
+	// Define some properties we want to check (fairness and risk)
+
+	// Create some test models
+
+	// Test each model configuration against both properties
+
 }
