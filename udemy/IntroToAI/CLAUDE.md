@@ -249,20 +249,20 @@ Loan approval fairness verification module. Standard library only.
 ### Property System (property.go)
 
 - **Property**: Interface with `Check(model *LoanApprovalAI, applicants []Applicant) (bool, []Applicant)` and `Name() string`
-- **FairnessProperty**: Implements `Property`, has `maxDisparity float64`. `Check()` is partially implemented — loops through applicants and calls `ApproveLoan` but doesn't yet compute disparity or return results.
+- **FairnessProperty**: Implements `Property`, has `maxDisparity float64`. `Check()` counts approvals per group (protected vs non-protected), computes disparity, flags individually unfair decisions (denied despite strong profile: creditScore > 0.7, debtToIncome < 0.3, income > 60k), returns whether the model is fair and a list of unfair decisions.
 
 ### Implemented
 
+- **`ApproveLoan`** (model.go): Weighted scoring — computes `loanToIncomeRatio`, then `score = income*w1 + creditScore*w2 - loanToIncomeRatio*w3 - debtToIncome*w4 + yearsEmployed*w5`, approves if `score > approvalThreshold`
+- **`FairnessProperty.Check()`** (property.go): Full implementation — approval rate disparity check plus individual unfair-decision detection
 - **CSV loading** (`load-csv.go`): `LoadApplicantsFromCSV` with fuzzy column matching (header substring matching, case-insensitive) and auto-normalization (income/loanAmount to thousands, creditScore from 300-850 to 0-1, debtToIncome from percentage to ratio)
 - **Parsing utilities** (`utils.go`): `parseFloat` (strips `$`, `,`, `%`) and `parseBool` (accepts true/yes/y/1/false/no/n/0)
 
 ### Stubbed (TODO)
 
-- `ApproveLoan` method on `LoanApprovalAI` (model.go — stub comment only)
-- `FairnessProperty.Check()` — partially implemented, needs disparity calculation and return values (property.go)
 - Risk evaluation property (not yet started)
 - `VerifyModel` function (model.go — stub comment only)
-- Main flow: define properties, create test models, test models against properties (main.go — comments outline planned steps)
+- Main flow: create test models and test them against properties (main.go — comments outline planned steps, currently only loads CSV and defines fairness property)
 
 ## Dependencies
 

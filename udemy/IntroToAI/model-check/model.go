@@ -20,6 +20,20 @@ type Applicant struct {
 }
 
 // ApproveLoan determines if the applicant shouild be approved for a loan.
+func (ai *LoanApprovalAI) ApproveLoan(applicant Applicant) bool {
+	loanToIncomeRatio := 0.0
+	if applicant.income > 0 {
+		loanToIncomeRatio = applicant.loanAmount / applicant.income
+	}
+
+	score := applicant.income*ai.incomeWeight +
+		applicant.creditScore*ai.creditScoreWeight -
+		loanToIncomeRatio*ai.loanAmountWeight -
+		applicant.debtToIncome*ai.debtRatioWeight +
+		applicant.yearsEmployed*ai.employmentWeight
+
+	return score > ai.approvalThreshold
+}
 
 // Some means of determining fairness
 
