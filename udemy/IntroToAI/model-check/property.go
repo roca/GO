@@ -54,8 +54,8 @@ func (p *FairnessProperty) Check(model *LoanApprovalAI, applicants []Applicant) 
 	disparity := nonProtectedRate - protectedRate // How much more likely non-protected applicants are to be approved compared to protected applicants
 
 	// Print approval rates and disparity for debugging
-	fmt.Printf("Approval Rate - Protected: %.2f%%, Non-Protected: %2f%%\n", protectedRate*100, nonProtectedRate*100)
-	fmt.Printf("Disparity: %2f%% (Maximum allowed: %2f%%)\n", disparity*100, p.maxDisparity*100)
+	fmt.Printf("Approval Rate - Protected: %.2f%%, Non-Protected: %.2f%%\n", protectedRate*100, nonProtectedRate*100)
+	fmt.Printf("Disparity: %.2f%% (Maximum allowed: %.2f%%)\n", disparity*100, p.maxDisparity*100)
 
 	// Check if the disparity exceeds the maximum allowed threshold
 	isFair := disparity <= p.maxDisparity && len(unfairDecisions) == 0

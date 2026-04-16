@@ -16,6 +16,7 @@ func main() {
 
 	// Define some properties we want to check (fairness and risk)
 	fairnessProperty := &FairnessProperty{maxDisparity: 0.05} // Allow up to 5% disparity in approval rates
+	riskProperty := &RiskProperty{axHighRiskApprovalRate: 0.10} // Allow up to 10% approval rate for high-risk applicants
 
 	// Create some test models
 

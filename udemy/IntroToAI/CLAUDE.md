@@ -246,23 +246,30 @@ Loan approval fairness verification module. Standard library only.
 - **LoanApprovalAI**: Weighted scoring model with factor weights (income, creditScore, loanAmount, debtRatio, employment) and `approvalThreshold`
 - **Applicant**: Financial/demographic profile — income (thousands), creditScore (normalized 0-1), loanAmount (thousands), debtToIncome (0-1), yearsEmployed, protectedClass boolean
 
-### Property System (property.go)
+### Property System (property.go, risk-property.go)
 
 - **Property**: Interface with `Check(model *LoanApprovalAI, applicants []Applicant) (bool, []Applicant)` and `Name() string`
 - **FairnessProperty**: Implements `Property`, has `maxDisparity float64`. `Check()` counts approvals per group (protected vs non-protected), computes disparity, flags individually unfair decisions (denied despite strong profile: creditScore > 0.7, debtToIncome < 0.3, income > 60k), returns whether the model is fair and a list of unfair decisions.
+- **RiskProperty**: Implements `Property`, has `axHighRiskApprovalRate float64` (note: field name missing `m` prefix — should be `maxHighRiskApprovalRate`). `Check()` identifies high-risk applicants (creditScore < 0.5 and debtToIncome > 0.5), computes their approval rate, returns whether it's within the allowed threshold plus the list of risky approvals.
 
 ### Implemented
 
 - **`ApproveLoan`** (model.go): Weighted scoring — computes `loanToIncomeRatio`, then `score = income*w1 + creditScore*w2 - loanToIncomeRatio*w3 - debtToIncome*w4 + yearsEmployed*w5`, approves if `score > approvalThreshold`
 - **`FairnessProperty.Check()`** (property.go): Full implementation — approval rate disparity check plus individual unfair-decision detection
+- **`RiskProperty.Check()`** (risk-property.go): Full implementation — high-risk approval rate check
 - **CSV loading** (`load-csv.go`): `LoadApplicantsFromCSV` with fuzzy column matching (header substring matching, case-insensitive) and auto-normalization (income/loanAmount to thousands, creditScore from 300-850 to 0-1, debtToIncome from percentage to ratio)
-- **Parsing utilities** (`utils.go`): `parseFloat` (strips `$`, `,`, `%`) and `parseBool` (accepts true/yes/y/1/false/no/n/0)
+- **Parsing utilities** (`utils.go`): `parseFloat` (strips `$`, `,`, `%`) and `parseBool` (accepts true/yes/y/1/t/false/no/n/f/0)
+
+### Known Bugs
+
+- `risk-property.go`: Struct field type `float6` should be `float64` (won't compile)
+- `risk-property.go`: Field name `axHighRiskApprovalRate` appears to be missing the `m` prefix (`maxHighRiskApprovalRate`)
+- `risk-property.go`: Variable `isHoighRisk` is a typo (should be `isHighRisk`)
 
 ### Stubbed (TODO)
 
-- Risk evaluation property (not yet started)
 - `VerifyModel` function (model.go — stub comment only)
-- Main flow: create test models and test them against properties (main.go — comments outline planned steps, currently only loads CSV and defines fairness property)
+- Main flow: create test models and test them against properties (main.go — comments outline planned steps, currently loads CSV and defines both fairness and risk properties but doesn't create or test models)
 
 ## Dependencies
 
