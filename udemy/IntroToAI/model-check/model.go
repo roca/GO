@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 type LoanApprovalAI struct {
 	// Weights for different factors used in the decision making process
 	incomeWeight      float64
@@ -33,6 +35,16 @@ func (ai *LoanApprovalAI) ApproveLoan(applicant Applicant) bool {
 		applicant.yearsEmployed*ai.employmentWeight
 
 	return score > ai.approvalThreshold
+}
+
+func PrintModelParams(model *LoanApprovalAI, description string) {
+	fmt.Printf("\n===== %s =====\n", description)
+	fmt.Printf("- Income Weight: %.2f\n", model.incomeWeight)
+	fmt.Printf("- Credit Score Weight: %.2f\n", model.creditScoreWeight)
+	fmt.Printf("- Loan Amount Weight: %.2f\n", model.loanAmountWeight)
+	fmt.Printf("- Debt Ratio Weight: %.2f\n", model.debtRatioWeight)
+	fmt.Printf("- Employment Weight: %.2f\n", model.employmentWeight)
+	fmt.Printf("- Approval Threshold: %.2f\n", model.approvalThreshold)
 }
 
 // Some means of determining fairness

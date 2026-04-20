@@ -9,7 +9,7 @@ This repository contains code for a Udemy course: [Introduction to AI and Machin
 The repository uses Go workspaces (`go.work`) with three modules:
 - `ai-search/` - Pathfinding algorithms for maze solving (complete)
 - `vacuum-1/` - Room cleaning robot simulator (work in progress)
-- `model-check/` - AI model fairness verification (early stage — structs defined, methods stubbed)
+- `model-check/` - AI model fairness verification (properties implemented, main flow partially wired up)
 
 **Requirements**: Go 1.25.6 or later
 
@@ -255,6 +255,7 @@ Loan approval fairness verification module. Standard library only.
 ### Implemented
 
 - **`ApproveLoan`** (model.go): Weighted scoring — computes `loanToIncomeRatio`, then `score = income*w1 + creditScore*w2 - loanToIncomeRatio*w3 - debtToIncome*w4 + yearsEmployed*w5`, approves if `score > approvalThreshold`
+- **`PrintModelParams`** (model.go): Displays model weights and threshold
 - **`FairnessProperty.Check()`** (property.go): Full implementation — approval rate disparity check plus individual unfair-decision detection
 - **`RiskProperty.Check()`** (risk-property.go): Full implementation — high-risk approval rate check
 - **CSV loading** (`load-csv.go`): `LoadApplicantsFromCSV` with fuzzy column matching (header substring matching, case-insensitive) and auto-normalization (income/loanAmount to thousands, creditScore from 300-850 to 0-1, debtToIncome from percentage to ratio)
@@ -268,8 +269,8 @@ Loan approval fairness verification module. Standard library only.
 
 ### Stubbed (TODO)
 
-- `VerifyModel` function (model.go — stub comment only)
-- Main flow: create test models and test them against properties (main.go — comments outline planned steps, currently loads CSV and defines both fairness and risk properties but doesn't create or test models)
+- `VerifyModel` function (verification.go — empty function body, signature exists)
+- Main flow: loads CSV, defines fairness/risk properties, creates 3 test model configurations with descriptions, iterates models but doesn't call `VerifyModel` yet (loop body empty at main.go:40)
 
 ## Dependencies
 
