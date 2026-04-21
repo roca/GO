@@ -37,6 +37,8 @@ func main() {
 		PrintModelParams(model, descriptions[i])
 
 		// Verify the model against both properties
+		VerifyModel(model, fairnessProperty, applicants)
+		VerifyModel(model, riskProperty, applicants)
 
 	}
 

@@ -9,7 +9,7 @@ This repository contains code for a Udemy course: [Introduction to AI and Machin
 The repository uses Go workspaces (`go.work`) with three modules:
 - `ai-search/` - Pathfinding algorithms for maze solving (complete)
 - `vacuum-1/` - Room cleaning robot simulator (work in progress)
-- `model-check/` - AI model fairness verification (properties implemented, main flow partially wired up)
+- `model-check/` - AI model fairness verification (functional — loads CSV, runs 3 model configs against fairness and risk properties)
 
 **Requirements**: Go 1.25.6 or later
 
@@ -261,16 +261,17 @@ Loan approval fairness verification module. Standard library only.
 - **CSV loading** (`load-csv.go`): `LoadApplicantsFromCSV` with fuzzy column matching (header substring matching, case-insensitive) and auto-normalization (income/loanAmount to thousands, creditScore from 300-850 to 0-1, debtToIncome from percentage to ratio)
 - **Parsing utilities** (`utils.go`): `parseFloat` (strips `$`, `,`, `%`) and `parseBool` (accepts true/yes/y/1/t/false/no/n/f/0)
 
+### Verification (verification.go)
+
+- **`VerifyModel`**: Takes model, property, and applicants. Calls `property.Check()`, prints pass/fail result with up to 3 counter-example details (income, credit score, debt ratio, protected class, decision).
+
 ### Known Bugs
 
-- `risk-property.go`: Struct field type `float6` should be `float64` (won't compile)
 - `risk-property.go`: Field name `axHighRiskApprovalRate` appears to be missing the `m` prefix (`maxHighRiskApprovalRate`)
 - `risk-property.go`: Variable `isHoighRisk` is a typo (should be `isHighRisk`)
-
-### Stubbed (TODO)
-
-- `VerifyModel` function (verification.go — empty function body, signature exists)
-- Main flow: loads CSV, defines fairness/risk properties, creates 3 test model configurations with descriptions, iterates models but doesn't call `VerifyModel` yet (loop body empty at main.go:40)
+- `verification.go`: `Dept Ratio` should be `Debt Ratio` in format string
+- `verification.go`: `theere` should be `there` in comment
+- `main.go`: Comment says "Load applicant data from CSBV" — should be "CSV"
 
 ## Dependencies
 

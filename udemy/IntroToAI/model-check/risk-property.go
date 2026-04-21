@@ -3,7 +3,7 @@ package main
 import "fmt"
 
 type RiskProperty struct {
-	axHighRiskApprovalRate float6
+	axHighRiskApprovalRate float64
 }
 
 func (p *RiskProperty) Name() string {
