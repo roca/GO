@@ -20,6 +20,10 @@ const (
 func main() {
 	// Create players
 	human := NewHumanPlayer()
+	ai := NewAIPlayer()
+
+	human.opponent = ai
+	ai.opponent = human
 
 	// Welcome message
 	fmt.Println("\n=== WELCOME TO BATTLESHIPS ===")

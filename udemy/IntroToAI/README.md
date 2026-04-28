@@ -294,7 +294,11 @@ Classic Battleship game — human vs AI, interactive console. Standard library o
 - **Position**: `row`, `col` int pair (0-9)
 - **Ship** (human.go): `ShipName`, `StartPosition`, `EndPosition`
 - **HumanPlayer** (human.go): `board Board`, `ships []Ship`, `opponent *AIPlayer`. Constructor: `NewHumanPlayer()` initializes board with `"."`
-- **AIPlayer** (ai.go): `board Board`, `heatMap [10][10]int`, `hits []Position`, `huntMode bool`, `potentialShips []struct{...}` with size/sunk/hits/shipPos/ships/opponent fields
+- **AIPlayer** (ai.go): `board Board`, `heatMap [10][10]int`, `hits []Position`, `shipsSunk int`, `huntMode bool`, `potentialShips []struct{...}` with size/sunk/hits/shipPos fields, `ships []Ship`, `opponent *HumanPlayer`. Constructor: `NewAIPlayer()` initializes board, heat map, and potentialShips tracking from shipTypes.
+
+### Helpers (helpers.go)
+
+- `abs(x int) int`: Integer absolute value, used by heat map center-distance calculation
 
 ### Ship Registry (board.go)
 
@@ -306,9 +310,15 @@ Classic Battleship game — human vs AI, interactive console. Standard library o
 
 ### AI Strategy Infrastructure
 
-Two-phase hunt architecture defined but not implemented:
-- **Search phase**: `heatMap` for probabilistic targeting
-- **Kill phase**: `huntMode` activates after hit; uses `hits` and `potentialShips` to systematically sink vessels
+Two-phase hunt architecture defined, heat map initialized but targeting not yet implemented:
+- **Search phase**: `heatMap` initialized with checkerboard pattern + center bias via `intializeHeatMap()` (note: typo in method name, missing 'i' — should be `initializeHeatMap`)
+- **Kill phase**: `huntMode` flag and `potentialShips` tracking defined; switches to targeted mode after hit
+
+### Known Bugs
+
+- `ai.go`: Method name `intializeHeatMap` is missing an 'i' (should be `initializeHeatMap`)
+- `ai.go`: Comment says `checkkerboard` (double 'k')
+- `ai.go`: Variable `shipTyper` in range loop (should be `shipType`)
 
 ### Not Yet Implemented
 
