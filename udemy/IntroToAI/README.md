@@ -6,10 +6,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This repository contains code for a Udemy course: [Introduction to AI and Machine Learning with Go](https://www.udemy.com/course/introduction-to-ai-and-machine-learning-with-go-golang)
 
-The repository uses Go workspaces (`go.work`) with three modules:
+The repository uses Go workspaces (`go.work`) with four modules:
 - `ai-search/` - Pathfinding algorithms for maze solving (complete)
 - `vacuum-1/` - Room cleaning robot simulator (work in progress)
 - `model-check/` - AI model fairness verification (functional — loads CSV, runs 3 model configs against fairness and risk properties)
+- `battleships/` - Battleship game: human vs AI (early development — types and UI skeleton defined, game logic not yet implemented)
 
 **Requirements**: Go 1.25.6 or later
 
@@ -54,11 +55,21 @@ go run .
 go build  # produces ./model-check binary
 ```
 
+### Battleships
+
+```bash
+cd battleships
+go run .
+go build  # produces ./battleships binary
+```
+
+No flags — interactive console game (stdin/stdout).
+
 ### Build Verification
 
 ```bash
 # From repo root, verify all modules compile:
-cd ai-search && go build . && cd ../vacuum-1 && go build . && cd ../model-check && go build .
+cd ai-search && go build . && cd ../vacuum-1 && go build . && cd ../model-check && go build . && cd ../battleships && go build .
 ```
 
 ### Go Workspace
@@ -273,6 +284,36 @@ Loan approval fairness verification module. Standard library only.
 - `verification.go`: `theere` should be `there` in comment
 - `main.go`: Comment says "Load applicant data from CSBV" — should be "CSV"
 
+## Architecture: battleships
+
+Classic Battleship game — human vs AI, interactive console. Standard library only. Early development: core types and UI skeleton exist, game logic not yet implemented.
+
+### Core Types
+
+- **Board**: `[10][10]string` — 10x10 grid. Cells: `"."` (empty), `"O"` (ship), `"X"` (hit), `"~"` (miss)
+- **Position**: `row`, `col` int pair (0-9)
+- **Ship** (human.go): `ShipName`, `StartPosition`, `EndPosition`
+- **HumanPlayer** (human.go): `board Board`, `ships []Ship`, `opponent *AIPlayer`. Constructor: `NewHumanPlayer()` initializes board with `"."`
+- **AIPlayer** (ai.go): `board Board`, `heatMap [10][10]int`, `hits []Position`, `huntMode bool`, `potentialShips []struct{...}` with size/sunk/hits/shipPos/ships/opponent fields
+
+### Ship Registry (board.go)
+
+`var shipTypes`: Carrier (5), Battleship (4), Cruiser (3), Submarine (3), Destroyer (2) — 5 ships, 17 total cells
+
+### Constants (main.go)
+
+`boardSize = 10`, display symbols (`empty`, `ship`, `hit`, `miss`, `hiddenShip`), `headerRow = "  A B C D E F G H I J"`, `headerCol = "0123456789"`
+
+### AI Strategy Infrastructure
+
+Two-phase hunt architecture defined but not implemented:
+- **Search phase**: `heatMap` for probabilistic targeting
+- **Kill phase**: `huntMode` activates after hit; uses `hits` and `potentialShips` to systematically sink vessels
+
+### Not Yet Implemented
+
+Ship placement (human interactive + AI random), main game loop, turn management, hit/miss detection, win condition, board display rendering, AI targeting algorithm, input validation.
+
 ## Dependencies
 
 **ai-search** (external):
@@ -283,6 +324,8 @@ Loan approval fairness verification module. Standard library only.
 **vacuum-1**: Standard library only
 
 **model-check**: Standard library only
+
+**battleships**: Standard library only
 
 ## Git Notes
 
