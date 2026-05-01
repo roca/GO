@@ -1,5 +1,7 @@
 package main
 
+import "math/rand"
+
 type AIPlayer struct {
 	board          Board
 	heatMap        [boardSize][boardSize]int
@@ -71,4 +73,24 @@ func (p *AIPlayer) intializeHeatMap() {
 
 func (p *AIPlayer) GetBoard() *Board {
 	return &p.board
+}
+
+func (p *AIPlayer) PlaceShips() {
+	// Place ships in a mix of edge and center clusters.
+
+	// Attempt to place larger ships near the edges.
+	for i, shipType := range shipTypes {
+		placed := false
+		attempts := 0
+
+		// Decide on placement strategy based on ship size
+		var row, col int
+		horizontal := rand.Intn(2) == 0
+
+		if shipType.size >= 4 {
+			if horizontal {
+			} else {
+			}
+		}
+	}
 }

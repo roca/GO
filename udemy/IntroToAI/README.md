@@ -308,21 +308,30 @@ Classic Battleship game — human vs AI, interactive console. Standard library o
 
 `boardSize = 10`, display symbols (`empty`, `ship`, `hit`, `miss`, `hiddenShip`), `headerRow = "  A B C D E F G H I J"`, `headerCol = "0123456789"`
 
+### Game Loop (main.go)
+
+Creates `HumanPlayer` and `AIPlayer`, links opponents, prints welcome/legend, calls `ai.PlaceShips()`, then enters `gameOver` loop (board display, turns, win check — all stubbed with comments). Reads stdin for pacing.
+
 ### AI Strategy Infrastructure
 
 Two-phase hunt architecture defined, heat map initialized but targeting not yet implemented:
 - **Search phase**: `heatMap` initialized with checkerboard pattern + center bias via `intializeHeatMap()` (note: typo in method name, missing 'i' — should be `initializeHeatMap`)
 - **Kill phase**: `huntMode` flag and `potentialShips` tracking defined; switches to targeted mode after hit
 
+### AI Ship Placement (ai.go)
+
+`PlaceShips()` is partially implemented — iterates `shipTypes`, picks random horizontal/vertical orientation, intends edge placement for large ships (size >= 4). The placement loop body (boundary checks, overlap validation, board marking) is not yet filled in.
+
 ### Known Bugs
 
 - `ai.go`: Method name `intializeHeatMap` is missing an 'i' (should be `initializeHeatMap`)
 - `ai.go`: Comment says `checkkerboard` (double 'k')
 - `ai.go`: Variable `shipTyper` in range loop (should be `shipType`)
+- `ai.go`: `PlaceShips()` declares variables (`i`, `placed`, `attempts`, `row`, `col`) that are unused — won't compile until placement logic is filled in
 
 ### Not Yet Implemented
 
-Ship placement (human interactive + AI random), main game loop, turn management, hit/miss detection, win condition, board display rendering, AI targeting algorithm, input validation.
+Ship placement completion (boundary/overlap checks, board marking, human interactive placement), board display rendering, turn management (attack input, hit/miss detection), AI targeting algorithm, win condition, input validation.
 
 ## Dependencies
 
