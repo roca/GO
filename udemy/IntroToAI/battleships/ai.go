@@ -143,7 +143,7 @@ func (p *AIPlayer) PlaceShips() {
 						if nr >= 0 && nr < boardSize && nc >= 0 && nc < boardSize &&
 							p.board[nr][nc] == ship && (dr != 0 || dc != 0) {
 							// Avoid placing ships diagonally or directly adjacent to another ship
-							if i < 2 { Only for larger ships
+							if i < 2 { // Only for larger ships
 								valid = false
 								break
 							}
