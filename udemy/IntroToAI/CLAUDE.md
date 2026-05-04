@@ -320,18 +320,18 @@ Two-phase hunt architecture defined, heat map initialized but targeting not yet 
 
 ### AI Ship Placement (ai.go)
 
-`PlaceShips()` is partially implemented — iterates `shipTypes`, picks random horizontal/vertical orientation, intends edge placement for large ships (size >= 4). The placement loop body (boundary checks, overlap validation, board marking) is not yet filled in.
+`PlaceShips()` is implemented — two-phase strategy: larger ships (size >= 4) placed near edges, smaller ships distributed randomly. Validates boundary, overlap, and adjacency (larger ships avoid diagonal/adjacent neighbors). Falls back to random valid placement after 100 failed attempts.
 
 ### Known Bugs
 
 - `ai.go`: Method name `intializeHeatMap` is missing an 'i' (should be `initializeHeatMap`)
 - `ai.go`: Comment says `checkkerboard` (double 'k')
 - `ai.go`: Variable `shipTyper` in range loop (should be `shipType`)
-- `ai.go`: `PlaceShips()` declares variables (`i`, `placed`, `attempts`, `row`, `col`) that are unused — won't compile until placement logic is filled in
+- `ai.go:146`: Missing comment prefix — `if i < 2 { Only for larger ships` should be `if i < 2 { // Only for larger ships` (won't compile)
 
 ### Not Yet Implemented
 
-Ship placement completion (boundary/overlap checks, board marking, human interactive placement), board display rendering, turn management (attack input, hit/miss detection), AI targeting algorithm, win condition, input validation.
+Human interactive ship placement, board display rendering, turn management (attack input, hit/miss detection), AI targeting algorithm, win condition, input validation.
 
 ## Dependencies
 
