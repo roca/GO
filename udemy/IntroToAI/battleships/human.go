@@ -21,3 +21,7 @@ func NewHumanPlayer() *HumanPlayer {
 	}
 	return p
 }
+
+func (p *HumanPlayer) PlaceShips() {
+
+}

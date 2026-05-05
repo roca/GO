@@ -84,6 +84,7 @@ func (p *AIPlayer) PlaceShips() {
 		attempts := 0
 
 		for !placed && attempts < 100 {
+			attempts++
 
 			// Decide on placement strategy based on ship size
 			var row, col int

@@ -322,16 +322,20 @@ Two-phase hunt architecture defined, heat map initialized but targeting not yet 
 
 `PlaceShips()` is implemented — two-phase strategy: larger ships (size >= 4) placed near edges, smaller ships distributed randomly. Validates boundary, overlap, and adjacency (larger ships avoid diagonal/adjacent neighbors). Falls back to random valid placement after 100 failed attempts.
 
+### Board Display (board.go)
+
+`printBoards(playerBoard, opponentBoard *Board)`: Clears terminal, prints both boards side-by-side. Hides opponent's ships (shows `hiddenShip` instead of `ship`), reveals hits and misses. Player's own board shows all information.
+
 ### Known Bugs
 
 - `ai.go`: Method name `intializeHeatMap` is missing an 'i' (should be `initializeHeatMap`)
 - `ai.go`: Comment says `checkkerboard` (double 'k')
 - `ai.go`: Variable `shipTyper` in range loop (should be `shipType`)
-- `ai.go:146`: Missing comment prefix — `if i < 2 { Only for larger ships` should be `if i < 2 { // Only for larger ships` (won't compile)
+- `board.go`: Comment typos — `pacakage` (should be `package`), `opponewnt's` (should be `opponent's`), `shouild` (should be `should`)
 
 ### Not Yet Implemented
 
-Human interactive ship placement, board display rendering, turn management (attack input, hit/miss detection), AI targeting algorithm, win condition, input validation.
+Human interactive ship placement, turn management (attack input, hit/miss detection), AI targeting algorithm, win condition, input validation.
 
 ## Dependencies
 
