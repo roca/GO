@@ -333,9 +333,13 @@ Two-phase hunt architecture defined, heat map initialized but targeting not yet 
 - `ai.go`: Variable `shipTyper` in range loop (should be `shipType`)
 - `board.go`: Comment typos — `pacakage` (should be `package`), `opponewnt's` (should be `opponent's`), `shouild` (should be `should`)
 
+### Human Ship Placement (human.go)
+
+`PlaceShips()` is partially implemented — prompts user with format "A0 H" (column letter + row number + direction), validates input format and direction (H/V), loops per ship type. Not yet implemented: coordinate-to-position conversion, boundary/overlap/adjacency checking, board cell marking, placement confirmation display.
+
 ### Not Yet Implemented
 
-Human interactive ship placement, turn management (attack input, hit/miss detection), AI targeting algorithm, win condition, input validation.
+Turn management (attack input, hit/miss detection), AI targeting algorithm, win condition, completion of human ship placement validation.
 
 ## Dependencies
 
