@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -63,6 +64,74 @@ func (p *HumanPlayer) PlaceShips() {
 				continue
 			}
 
+			// Extracting column (letter)
+			if pos[0] < 'A' || pos[0] > 'J' {
+				fmt.Println("Invalid column. Please enter a letter between A and J.")
+				time.Sleep(2 * time.Second)
+				continue
+			}
+			col := int(pos[0] - 'A')
+
+			// Extractinmg row (number)
+			rowStr := pos[1:]
+			row, err := strconv.Atoi(rowStr)
+			if err != nil || row < 0 || row >= boardSize {
+				fmt.Println("Invalid row. Please enter a number between 0 and 9.")
+				time.Sleep(2 * time.Second)
+				continue
+			}
+
+			// Check if placement is valid
+			valid := true
+			positions := []Position{}
+
+			for i := range shipType.size {
+				var r, c int
+				if dir == "H" {
+					r, c = row, col+i // Horizontal placement increases column index
+				} else {
+					r, c = row+i, col // Vertical placement increases row index
+				}
+
+				// Check if ship would goo off of board
+				if r >= boardSize || c >= boardSize {
+					valid = false
+					fmt.Printf("Ship wouild go off of the board! (Attemped to place at position %c%d)\n", 'A'+c, r)
+					time.Sleep(2 * time.Second)
+					break
+				}
+
+				//Check if position ovetrlaps with another ship
+				if p.board[r][c] == ship {
+					valid = false
+					fmt.Printf("Ship overlaps with another ship at position %c%d! Please choose a different location.\n", 'A'+c, r)
+					time.Sleep(2 * time.Second)
+					break
+				}
+
+				positions = append(positions, Position{row: r, col: c})
+			}
+
+			if valid {
+				// Place ship on board
+				newShip := Ship{
+					StartPosition: positions[0],
+				}
+
+				for _, pos := range positions {
+					p.board[pos.row][pos.col] = ship
+				}
+
+				newShip.EndPosition = positions[len(positions)-1]
+				newShip.ShipName = shipType.name
+				p.ships = append(p.ships, newShip)
+				break
+			}
 		}
 	}
+
+	//Show final placement
+	printBoards(&p.board, &Board{})
+	fmt.Println("All ships placed! Press Enter to start the game...")
+	reader.ReadString('\n')
 }

@@ -310,7 +310,7 @@ Classic Battleship game — human vs AI, interactive console. Standard library o
 
 ### Game Loop (main.go)
 
-Creates `HumanPlayer` and `AIPlayer`, links opponents, prints welcome/legend, calls `ai.PlaceShips()`, then enters `gameOver` loop (board display, turns, win check — all stubbed with comments). Reads stdin for pacing.
+Creates `HumanPlayer` and `AIPlayer`, links opponents, prints welcome/legend, calls `ai.PlaceShips()` then `human.PlaceShips()`, then enters `gameOver` loop (board display, turns, win check — all stubbed with comments). Reads stdin for pacing.
 
 ### AI Strategy Infrastructure
 
@@ -332,14 +332,15 @@ Two-phase hunt architecture defined, heat map initialized but targeting not yet 
 - `ai.go`: Comment says `checkkerboard` (double 'k')
 - `ai.go`: Variable `shipTyper` in range loop (should be `shipType`)
 - `board.go`: Comment typos — `pacakage` (should be `package`), `opponewnt's` (should be `opponent's`), `shouild` (should be `should`)
+- `human.go`: Comment typo `Extractinmg` (should be `Extracting`), `goo` (should be `go`), `wouild` (should be `would`), `Attemped` (should be `Attempted`), `ovetrlaps` (should be `overlaps`)
 
 ### Human Ship Placement (human.go)
 
-`PlaceShips()` is partially implemented — prompts user with format "A0 H" (column letter + row number + direction), validates input format and direction (H/V), loops per ship type. Not yet implemented: coordinate-to-position conversion, boundary/overlap/adjacency checking, board cell marking, placement confirmation display.
+`PlaceShips()` is mostly implemented — prompts user with format "A0 H" (column letter + row number + direction), validates input format and direction (H/V), converts coordinates to Position (col from letter A-J, row from number 0-9), checks boundary and overlap, marks board cells, stores Ship with start/end positions, and displays final placement. Not yet implemented: adjacency checking (ships can be placed touching each other).
 
 ### Not Yet Implemented
 
-Turn management (attack input, hit/miss detection), AI targeting algorithm, win condition, completion of human ship placement validation.
+Turn management (attack input, hit/miss detection), AI targeting algorithm, win condition, adjacency validation in human ship placement.
 
 ## Dependencies
 
