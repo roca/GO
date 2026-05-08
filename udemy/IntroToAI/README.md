@@ -286,7 +286,7 @@ Loan approval fairness verification module. Standard library only.
 
 ## Architecture: battleships
 
-Classic Battleship game — human vs AI, interactive console. Standard library only. Early development: core types and UI skeleton exist, game logic not yet implemented.
+Classic Battleship game — human vs AI, interactive console. Standard library only. In progress: ship placement complete, human turn-taking functional, game loop partially working (AI turn not yet implemented).
 
 ### Core Types
 
@@ -299,6 +299,8 @@ Classic Battleship game — human vs AI, interactive console. Standard library o
 ### Helpers (helpers.go)
 
 - `abs(x int) int`: Integer absolute value, used by heat map center-distance calculation
+- `checkWinCondition(board *Board) bool`: Returns true when no `ship` cells remain on the board (all ships sunk)
+- `isShipSunk(board *Board, row, col int, player *HumanPlayer, ai *AIPlayer) (bool, string)`: Stub — always returns `false, ""`
 
 ### Ship Registry (board.go)
 
@@ -310,7 +312,7 @@ Classic Battleship game — human vs AI, interactive console. Standard library o
 
 ### Game Loop (main.go)
 
-Creates `HumanPlayer` and `AIPlayer`, links opponents, prints welcome/legend, calls `ai.PlaceShips()` then `human.PlaceShips()`, then enters `gameOver` loop (board display, turns, win check — all stubbed with comments). Reads stdin for pacing.
+Creates `HumanPlayer` and `AIPlayer`, links opponents, prints welcome/legend, calls `ai.PlaceShips()` then `human.PlaceShips()`, then enters alternating-turn `gameOver` loop. Human turn calls `human.TakeTurn(ai.GetBoard())` and checks win condition. AI turn block exists but is empty. Final message on game end.
 
 ### AI Strategy Infrastructure
 
@@ -334,13 +336,17 @@ Two-phase hunt architecture defined, heat map initialized but targeting not yet 
 - `board.go`: Comment typos — `pacakage` (should be `package`), `opponewnt's` (should be `opponent's`), `shouild` (should be `should`)
 - `human.go`: Comment typo `Extractinmg` (should be `Extracting`), `goo` (should be `go`), `wouild` (should be `would`), `Attemped` (should be `Attempted`), `ovetrlaps` (should be `overlaps`)
 
-### Human Ship Placement (human.go)
+### Human Player (human.go)
 
-`PlaceShips()` is mostly implemented — prompts user with format "A0 H" (column letter + row number + direction), validates input format and direction (H/V), converts coordinates to Position (col from letter A-J, row from number 0-9), checks boundary and overlap, marks board cells, stores Ship with start/end positions, and displays final placement. Not yet implemented: adjacency checking (ships can be placed touching each other).
+`PlaceShips()` — prompts user with format "A0 H" (column letter + row number + direction), validates input format and direction (H/V), converts coordinates to Position (col from letter A-J, row from number 0-9), checks boundary and overlap, marks board cells, stores Ship with start/end positions, and displays final placement. Not yet implemented: adjacency checking (ships can be placed touching each other).
+
+`TakeTurn(opponentBoard *Board) (Position, bool)` — prompts for target position (e.g., "A0"), validates input, checks for already-targeted cells, determines hit/miss, updates board, calls `isShipSunk` on hits. Returns the targeted position.
+
+`GetBoard() *Board` — returns pointer to player's board.
 
 ### Not Yet Implemented
 
-Turn management (attack input, hit/miss detection), AI targeting algorithm, win condition, adjacency validation in human ship placement.
+AI targeting/turn-taking (`TakeTurn` method), `isShipSunk` logic (stub returns false), adjacency validation in human ship placement.
 
 ## Dependencies
 

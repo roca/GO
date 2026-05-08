@@ -31,6 +31,64 @@ func NewHumanPlayer() *HumanPlayer {
 	return p
 }
 
+func (p *HumanPlayer) TakeTurn(opponentBoard *Board) (Position, bool) {
+	reader := bufio.NewReader(os.Stdin)
+
+	for {
+		fmt.Print("\nEnter target position (e.g., A0): ")
+		input, _ := reader.ReadString('\n')
+
+		input = strings.TrimSpace(strings.ToUpper(input))
+
+		if len(input) < 2 {
+			fmt.Println("Invalid input format. Please enter a letter (A-J) followed by a number (0-9).")
+			continue
+		}
+
+		if input[0] < 'A' || input[0] > 'J' {
+			fmt.Println("Invalid column. Please enter a letter between A and J.")
+			continue
+		}
+		col := int(input[0] - 'A')
+
+		rowStr := input[1:]
+		row, err := strconv.Atoi(rowStr)
+		if err != nil || row < 0 || row >= boardSize {
+			fmt.Println("Invalid row. Please enter a number between 0 and 9.")
+			continue
+		}
+
+		if opponentBoard[row][col] == hit || opponentBoard[row][col] == miss {
+			fmt.Printf("You have already targeted position %c%d. Please choose a different target.\n", 'A'+col, row)
+			continue
+		}
+
+		// Determine if it's a hit or miss
+		isHit := opponentBoard[row][col] == ship
+
+		if isHit {
+			opponentBoard[row][col] = hit
+			fmt.Printf("Hit at %c%d!\n", 'A'+col, row)
+
+			// Check if ship is sunk
+			sunk, shipName := isShipSunk(opponentBoard, row, col, p, nil)
+			if sunk {
+				fmt.Printf("You sunk the opponent's %s!\n", shipName)
+			}
+		} else {
+			opponentBoard[row][col] = miss
+			fmt.Printf("Miss at %c%d.\n", 'A'+col, row)
+		}
+
+		time.Sleep(1 * time.Second)
+		return Position{row: row, col: col}, true
+	}
+}
+
+func (p *HumanPlayer) GetBoard() *Board {
+	return &p.board
+}
+
 func (p *HumanPlayer) PlaceShips() {
 	reader := bufio.NewReader(os.Stdin)
 
@@ -38,6 +96,8 @@ func (p *HumanPlayer) PlaceShips() {
 	fmt.Println("Place your ships on the board.")
 	fmt.Println("Format: A0 H (A0 starting position, H=horizontal or V=vertical)")
 	fmt.Println("Positions are given as letter (A-J) for column and number (0-9) for row.")
+	fmt.Println("Press Enter to continue...")
+	reader.ReadString('\n')
 
 	for _, shipType := range shipTypes {
 		for {
