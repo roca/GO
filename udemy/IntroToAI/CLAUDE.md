@@ -286,7 +286,7 @@ Loan approval fairness verification module. Standard library only.
 
 ## Architecture: battleships
 
-Classic Battleship game — human vs AI, interactive console. Standard library only. In progress: ship placement complete, human turn-taking functional, game loop partially working (AI turn not yet implemented).
+Classic Battleship game — human vs AI, interactive console. Standard library only. In progress: ship placement complete, human turn-taking functional, game loop calls both players with win conditions, AI `TakeTurn` skeleton exists but targeting logic not yet implemented.
 
 ### Core Types
 
@@ -312,13 +312,15 @@ Classic Battleship game — human vs AI, interactive console. Standard library o
 
 ### Game Loop (main.go)
 
-Creates `HumanPlayer` and `AIPlayer`, links opponents, prints welcome/legend, calls `ai.PlaceShips()` then `human.PlaceShips()`, then enters alternating-turn `gameOver` loop. Human turn calls `human.TakeTurn(ai.GetBoard())` and checks win condition. AI turn block exists but is empty. Final message on game end.
+Creates `HumanPlayer` and `AIPlayer`, links opponents, prints welcome/legend, calls `ai.PlaceShips()` then `human.PlaceShips()`, then enters alternating-turn `gameOver` loop. Both turns call `TakeTurn` and `checkWinCondition`. AI turn calls `ai.TakeTurn(human.GetBoard())` — structurally complete but AI targeting returns empty position. Final message on game end.
 
 ### AI Strategy Infrastructure
 
 Two-phase hunt architecture defined, heat map initialized but targeting not yet implemented:
-- **Search phase**: `heatMap` initialized with checkerboard pattern + center bias via `intializeHeatMap()` (note: typo in method name, missing 'i' — should be `initializeHeatMap`)
+- **Search phase**: `heatMap` initialized with checkerboard pattern + center bias via `initializeHeatMap()`. Constants: `baseProbability=1`, `checkerboardBonus=1`, `centerProximityBonus=2`, `maxCenterDistance=3`, `huntModeBoost=100`, `shipFitBonus=2`
 - **Kill phase**: `huntMode` flag and `potentialShips` tracking defined; switches to targeted mode after hit
+- **`TakeTurn`**: Skeleton implemented — prints hunt/probability mode, has branching structure for hunt mode vs probability targeting, but no actual targeting logic yet (returns empty Position)
+- **`updateHeatMap`**: Method signature exists with empty body
 
 ### AI Ship Placement (ai.go)
 
@@ -330,8 +332,7 @@ Two-phase hunt architecture defined, heat map initialized but targeting not yet 
 
 ### Known Bugs
 
-- `ai.go`: Method name `intializeHeatMap` is missing an 'i' (should be `initializeHeatMap`)
-- `ai.go`: Comment says `checkkerboard` (double 'k')
+- `ai.go`: Comment says `checkkerboard` (double 'k'), `likeley` (should be `likely`), `Sigificant` (should be `Significant`), `potenial` (should be `potential`), `hightest` (should be `highest`), `randowm` (should be `random`)
 - `ai.go`: Variable `shipTyper` in range loop (should be `shipType`)
 - `board.go`: Comment typos — `pacakage` (should be `package`), `opponewnt's` (should be `opponent's`), `shouild` (should be `should`)
 - `human.go`: Comment typo `Extractinmg` (should be `Extracting`), `goo` (should be `go`), `wouild` (should be `would`), `Attemped` (should be `Attempted`), `ovetrlaps` (should be `overlaps`)
@@ -346,7 +347,7 @@ Two-phase hunt architecture defined, heat map initialized but targeting not yet 
 
 ### Not Yet Implemented
 
-AI targeting/turn-taking (`TakeTurn` method), `isShipSunk` logic (stub returns false), adjacency validation in human ship placement.
+AI targeting logic inside `TakeTurn` (method exists but returns empty Position), `updateHeatMap` body (empty), `isShipSunk` logic (stub returns false), adjacency validation in human ship placement.
 
 ## Dependencies
 

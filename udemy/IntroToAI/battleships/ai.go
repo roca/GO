@@ -1,6 +1,19 @@
 package main
 
-import "math/rand"
+import (
+	"fmt"
+	"math/rand"
+)
+
+const (
+	// Heatmap Weights
+	baseProbability      = 1   // Starting probability for valid cells
+	checkerboardBonus    = 1   // Bonus for checkerboard pattern (less likeley adjacent placements)
+	centerProximityBonus = 2   // Bonus for being closer to the center of the board (where players often place ships)
+	maxCenterDistance    = 3   // How far from the center qualifies for the center proximity bonus
+	huntModeBoost        = 100 // Sigificant boost for cells adjacent to hits in hunt mode
+	shipFitBonus         = 2   // Base bonus multiplier for fitting a ship
+)
 
 type AIPlayer struct {
 	board          Board
@@ -30,7 +43,7 @@ func NewAIPlayer() *AIPlayer {
 		}
 	}
 
-	p.intializeHeatMap()
+	p.initializeHeatMap()
 
 	// Initialize potential ships tracking
 	p.potentialShips = make([]struct {
@@ -50,25 +63,54 @@ func NewAIPlayer() *AIPlayer {
 	return p
 }
 
-func (p *AIPlayer) intializeHeatMap() {
+func (p *AIPlayer) initializeHeatMap() {
 	for i := range boardSize {
 		for j := range boardSize {
 			//Start with base probability
-			p.heatMap[i][j] = 1
+			p.heatMap[i][j] = baseProbability
 
 			// Increase probability in a checkkerboard pattern
 			if (i+j)%2 == 0 {
-				p.heatMap[i][j] += 1
+				p.heatMap[i][j] += checkerboardBonus
 			}
 
 			// Higher probability in the center of the board
 			centerX, centerY := boardSize/2, boardSize/2
 			centerDistance := abs(i-centerX) + abs(j-centerY)
-			if centerDistance <= 3 {
-				p.heatMap[i][j] += 2
+			if centerDistance <= maxCenterDistance {
+				p.heatMap[i][j] += centerProximityBonus
 			}
 		}
 	}
+}
+
+// updateHeatMap recalculates the heatmap probabilities based on the current game state.
+// It considers potenial ship placements and prioritizes targets during hunt mode.
+func (p *AIPlayer) updateHeatMap(opponentBoard *Board) {
+	// Reset heatmap to base probabilities
+}
+
+func (p *AIPlayer) TakeTurn(opponentBoard *Board) (Position, bool) {
+	fmt.Println("\nAI is taking its turn...")
+	if p.huntMode {
+		fmt.Println("AI is in HUNT MODE: Prioritizing targets around hits!")
+	} else {
+		fmt.Println("AI is in probability target mode!")
+	}
+
+	// Update heat map based on game state
+
+	// Select a target based on strategy (hunt mode vs probability mode)
+
+	if p.huntMode {
+		// If in hunt mode ...
+		// find the hightest probability cell(s)
+		// select a randowm target from highest probability cells
+	} else {
+		// ... else, do something else
+	}
+
+	return Position{}, false
 }
 
 func (p *AIPlayer) GetBoard() *Board {
