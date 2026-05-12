@@ -88,6 +88,12 @@ func (p *AIPlayer) initializeHeatMap() {
 // It considers potenial ship placements and prioritizes targets during hunt mode.
 func (p *AIPlayer) updateHeatMap(opponentBoard *Board) {
 	// Reset heatmap to base probabilities
+
+	// 1. Reset heat map (clear prveious probabilities)
+
+	// 2. Calculate base probabilities & ship fit probabilities
+
+	// 3. Apply hunt mode boost if applicable
 }
 
 func (p *AIPlayer) TakeTurn(opponentBoard *Board) (Position, bool) {
@@ -106,9 +112,17 @@ func (p *AIPlayer) TakeTurn(opponentBoard *Board) (Position, bool) {
 		// If in hunt mode ...
 		// find the hightest probability cell(s)
 		// select a randowm target from highest probability cells
+		// if can't find one, fallback to random targeting
 	} else {
 		// ... else, do something else
+		// find the hightest probability cell(s)
+		// select a random target from highest probability cells
 	}
+
+	// Perform the attack
+	// check to see if we hit a ship
+	// if we hit, enter hunt mode
+	// check to see if ship was sunk
 
 	return Position{}, false
 }
