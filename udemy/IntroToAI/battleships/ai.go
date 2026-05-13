@@ -87,13 +87,77 @@ func (p *AIPlayer) initializeHeatMap() {
 // updateHeatMap recalculates the heatmap probabilities based on the current game state.
 // It considers potenial ship placements and prioritizes targets during hunt mode.
 func (p *AIPlayer) updateHeatMap(opponentBoard *Board) {
-	// Reset heatmap to base probabilities
-
 	// 1. Reset heat map (clear prveious probabilities)
+	for i := range boardSize {
+		for j := range boardSize {
+			p.heatMap[i][j] = 0
+		}
+	}
 
 	// 2. Calculate base probabilities & ship fit probabilities
+	for r := range boardSize {
+		for c := range boardSize {
+			// Skip cells that have already been targeted.
+			if opponentBoard[r][c] == hit || opponentBoard[r][c] == miss {
+				continue
+			}
+
+			// Assign base probability to valid untargeted cells
+			p.heatMap[r][c] = baseProbability
+
+			// Interate through opponents ships that have not been sunk yet.
+			for _, shipData := range p.potentialShips {
+				if shipData.sunk {
+					continue
+				}
+
+				shipSize := shipData.size
+
+				// Check horizontal fit: can and unsunk ship of this size fit horizontally starting here?
+				if c+shipSize <= boardSize {
+					canFitHorizontal := true
+					for k := range shipSize {
+						// Check if any cell needed for the ship is already a miss or a hit
+						if opponentBoard[r][c+k] == miss || opponentBoard[r][c+k] == hit {
+							canFitHorizontal = false
+							break
+						}
+						if canFitHorizontal {
+							// Increase probability based on ship size if it fits
+							p.heatMap[r][c] += shipFitBonus * shipSize
+						}
+					}
+				}
+
+				// Check vertical fit
+				if r+shipSize <= boardSize {
+					canFitVertical := true
+					for k := range shipSize {
+						// Check if any cell needed for the ship is already a miss or a hit
+						if opponentBoard[r+k][c] == miss || opponentBoard[r+k][c] == hit {
+							canFitVertical = false
+							break
+						}
+						if canFitVertical {
+							// Increase probability based on ship size if it fits
+							p.heatMap[r][c] += shipFitBonus * shipSize
+						}
+					}
+				}
+
+			}
+		}
+	}
 
 	// 3. Apply hunt mode boost if applicable
+	if p.huntMode && len(p.hits) > 0 {
+		p.applyHuntModeBoosts(opponentBoard)
+	}
+
+}
+
+func (p *AIPlayer) applyHuntModeBoosts(opponentBoard *Board) {
+
 }
 
 func (p *AIPlayer) TakeTurn(opponentBoard *Board) (Position, bool) {

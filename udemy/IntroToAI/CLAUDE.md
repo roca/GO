@@ -316,11 +316,12 @@ Creates `HumanPlayer` and `AIPlayer`, links opponents, prints welcome/legend, ca
 
 ### AI Strategy Infrastructure
 
-Two-phase hunt architecture defined, heat map initialized but targeting not yet implemented:
+Two-phase hunt architecture with probability-based targeting:
 - **Search phase**: `heatMap` initialized with checkerboard pattern + center bias via `initializeHeatMap()`. Constants: `baseProbability=1`, `checkerboardBonus=1`, `centerProximityBonus=2`, `maxCenterDistance=3`, `huntModeBoost=100`, `shipFitBonus=2`
 - **Kill phase**: `huntMode` flag and `potentialShips` tracking defined; switches to targeted mode after hit
-- **`TakeTurn`**: Skeleton implemented — prints hunt/probability mode, has branching structure for hunt mode vs probability targeting, but no actual targeting logic yet (returns empty Position)
-- **`updateHeatMap`**: Method signature exists with empty body
+- **`updateHeatMap`**: Implemented — resets heat map, calculates base probabilities for untargeted cells, adds ship-fit bonuses (checks if unsunk ships can fit horizontally/vertically from each cell), calls `applyHuntModeBoosts()` when in hunt mode
+- **`applyHuntModeBoosts`**: Method signature exists with empty body — intended to boost cells adjacent to hits
+- **`TakeTurn`**: Skeleton with pseudocode comments — prints hunt/probability mode, has branching structure for both modes, but no actual target selection or attack logic yet (returns empty Position)
 
 ### AI Ship Placement (ai.go)
 
@@ -347,7 +348,10 @@ Two-phase hunt architecture defined, heat map initialized but targeting not yet 
 
 ### Not Yet Implemented
 
-AI targeting logic inside `TakeTurn` (method exists but returns empty Position), `updateHeatMap` body (empty), `isShipSunk` logic (stub returns false), adjacency validation in human ship placement.
+- `applyHuntModeBoosts` body (empty) — should boost cells adjacent to hits during hunt mode
+- `TakeTurn` targeting logic — method exists with pseudocode comments but returns empty Position without selecting/attacking a target
+- `isShipSunk` logic (stub returns false)
+- Adjacency validation in human ship placement
 
 ## Dependencies
 
