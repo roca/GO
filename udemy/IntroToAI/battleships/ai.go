@@ -88,11 +88,7 @@ func (p *AIPlayer) initializeHeatMap() {
 // It considers potenial ship placements and prioritizes targets during hunt mode.
 func (p *AIPlayer) updateHeatMap(opponentBoard *Board) {
 	// 1. Reset heat map (clear prveious probabilities)
-	for i := range boardSize {
-		for j := range boardSize {
-			p.heatMap[i][j] = 0
-		}
-	}
+	p.initializeHeatMap()
 
 	// 2. Calculate base probabilities & ship fit probabilities
 	for r := range boardSize {
@@ -157,6 +153,76 @@ func (p *AIPlayer) updateHeatMap(opponentBoard *Board) {
 }
 
 func (p *AIPlayer) applyHuntModeBoosts(opponentBoard *Board) {
+	// Determine the hit pattern: single hit, horizontal line, or vertical line
+	isSingleHit := len(p.hits) == 1
+	isHorizontal := false
+	isVertical := false
+
+	if !isSingleHit {
+		firstHit := p.hits[0]
+		isHorizontal = true
+		isVertical = true
+
+		for i := 1; i < len(p.hits); i++ {
+			if p.hits[i].row != firstHit.row {
+				isHorizontal = false
+			}
+			if p.hits[i].col != firstHit.col {
+				isVertical = false
+			}
+		}
+
+		// If hits are not aligned horizontally or vertically, treat as multiple single points
+		// for adjacent checks.
+		if !isHorizontal && !isVertical {
+			isSingleHit = true // fall back to checking adjacent cells for all hits if not clearly aligned
+		}
+	}
+
+	boostCell := func(r, c int) {
+		if r >= 0 && r < boardSize && c >= 0 && c < boardSize &&
+			opponentBoard[r][c] != hit && opponentBoard[r][c] != miss {
+			p.heatMap[r][c] += huntModeBoost
+		}
+	}
+
+	if isSingleHit {
+		// Boost all valid neighbors if the hits(s)
+		for _, hitPos := range p.hits {
+			boostCell(hitPos.row-1, hitPos.col) // Up
+			boostCell(hitPos.row+1, hitPos.col) // Down
+			boostCell(hitPos.row, hitPos.col-1) // Left
+			boostCell(hitPos.row, hitPos.col+1) // Right
+		}
+	} else if isHorizontal {
+		// Boost cells to the left and right of the horizontal line of hits
+		row := p.hits[0].row
+		minCol, maxCol := p.hits[0].col, p.hits[0].col
+		for _, hitPos := range p.hits {
+			if hitPos.col < minCol {
+				minCol = hitPos.col
+			}
+			if hitPos.col > maxCol {
+				maxCol = hitPos.col
+			}
+		}
+		boostCell(row, minCol-1) // Left of the line
+		boostCell(row, maxCol+1) // Right of the line
+	} else if isVertical {
+		// Boost cells above and below the vertical line of hits
+		col := p.hits[0].col
+		minRow, maxRow := p.hits[0].row, p.hits[0].row
+		for _, hitPos := range p.hits {
+			if hitPos.row < minRow {
+				minRow = hitPos.row
+			}
+			if hitPos.row > maxRow {
+				maxRow = hitPos.row
+			}
+		}
+		boostCell(minRow-1, col) // Above the line
+		boostCell(maxRow+1, col) // Below the line
+	}
 
 }
 

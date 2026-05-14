@@ -320,7 +320,7 @@ Two-phase hunt architecture with probability-based targeting:
 - **Search phase**: `heatMap` initialized with checkerboard pattern + center bias via `initializeHeatMap()`. Constants: `baseProbability=1`, `checkerboardBonus=1`, `centerProximityBonus=2`, `maxCenterDistance=3`, `huntModeBoost=100`, `shipFitBonus=2`
 - **Kill phase**: `huntMode` flag and `potentialShips` tracking defined; switches to targeted mode after hit
 - **`updateHeatMap`**: Implemented — resets heat map, calculates base probabilities for untargeted cells, adds ship-fit bonuses (checks if unsunk ships can fit horizontally/vertically from each cell), calls `applyHuntModeBoosts()` when in hunt mode
-- **`applyHuntModeBoosts`**: Method signature exists with empty body — intended to boost cells adjacent to hits
+- **`applyHuntModeBoosts`**: Implemented — detects hit pattern (single, horizontal line, or vertical line), boosts adjacent cells accordingly. Single hits boost all 4 neighbors; aligned hits boost only the endpoints of the line.
 - **`TakeTurn`**: Skeleton with pseudocode comments — prints hunt/probability mode, has branching structure for both modes, but no actual target selection or attack logic yet (returns empty Position)
 
 ### AI Ship Placement (ai.go)
@@ -348,7 +348,6 @@ Two-phase hunt architecture with probability-based targeting:
 
 ### Not Yet Implemented
 
-- `applyHuntModeBoosts` body (empty) — should boost cells adjacent to hits during hunt mode
 - `TakeTurn` targeting logic — method exists with pseudocode comments but returns empty Position without selecting/attacking a target
 - `isShipSunk` logic (stub returns false)
 - Adjacency validation in human ship placement
