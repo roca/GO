@@ -321,7 +321,7 @@ Two-phase hunt architecture with probability-based targeting:
 - **Kill phase**: `huntMode` flag and `potentialShips` tracking defined; switches to targeted mode after hit
 - **`updateHeatMap`**: Implemented — resets heat map, calculates base probabilities for untargeted cells, adds ship-fit bonuses (checks if unsunk ships can fit horizontally/vertically from each cell), calls `applyHuntModeBoosts()` when in hunt mode
 - **`applyHuntModeBoosts`**: Implemented — detects hit pattern (single, horizontal line, or vertical line), boosts adjacent cells accordingly. Single hits boost all 4 neighbors; aligned hits boost only the endpoints of the line.
-- **`TakeTurn`**: Skeleton with pseudocode comments — prints hunt/probability mode, has branching structure for both modes, but no actual target selection or attack logic yet (returns empty Position)
+- **`TakeTurn`**: Target selection implemented — calls `updateHeatMap`, finds highest probability cell(s), randomly selects among ties, falls back to random if no candidates. Attack execution not yet implemented (returns empty Position without checking hit/miss, updating hunt mode, or sinking ships)
 
 ### AI Ship Placement (ai.go)
 
@@ -348,7 +348,7 @@ Two-phase hunt architecture with probability-based targeting:
 
 ### Not Yet Implemented
 
-- `TakeTurn` targeting logic — method exists with pseudocode comments but returns empty Position without selecting/attacking a target
+- `TakeTurn` attack execution — target selection works, but method returns empty Position without performing the attack (hit/miss check, hunt mode entry on hit, ship sinking detection)
 - `isShipSunk` logic (stub returns false)
 - Adjacency validation in human ship placement
 

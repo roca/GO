@@ -235,18 +235,71 @@ func (p *AIPlayer) TakeTurn(opponentBoard *Board) (Position, bool) {
 	}
 
 	// Update heat map based on game state
+	p.updateHeatMap(opponentBoard)
 
 	// Select a target based on strategy (hunt mode vs probability mode)
+	var targetRow, targetCol int
 
 	if p.huntMode {
-		// If in hunt mode ...
 		// find the hightest probability cell(s)
+		maxProb := 0
+		candidates := []Position{}
+
+		for i := 0; i < boardSize; i++ {
+			for j := 0; j < boardSize; j++ {
+				if p.heatMap[i][j] > maxProb && opponentBoard[i][j] != hit && opponentBoard[i][j] != miss {
+					maxProb = p.heatMap[i][j]
+					candidates = []Position{{i, j}}
+				} else if p.heatMap[i][j] == maxProb && opponentBoard[i][j] != hit && opponentBoard[i][j] != miss {
+					candidates = append(candidates, Position{i, j})
+				}
+			}
+		}
+
 		// select a randowm target from highest probability cells
-		// if can't find one, fallback to random targeting
+		if len(candidates) > 0 {
+			selected := candidates[rand.Intn(len(candidates))]
+			targetRow, targetCol = selected.row, selected.col
+		} else {
+			// if can't find one, fallback to random targeting
+			for {
+				targetRow = rand.Intn(boardSize)
+				targetCol = rand.Intn(boardSize)
+				if opponentBoard[targetRow][targetCol] != hit && opponentBoard[targetRow][targetCol] != miss {
+					break
+				}
+			}
+		}
 	} else {
-		// ... else, do something else
 		// find the hightest probability cell(s)
+		maxProb := 0
+		candidates := []Position{}
+
+		for i := 0; i < boardSize; i++ {
+			for j := 0; j < boardSize; j++ {
+				if p.heatMap[i][j] > maxProb && opponentBoard[i][j] != hit && opponentBoard[i][j] != miss {
+					maxProb = p.heatMap[i][j]
+					candidates = []Position{{i, j}}
+				} else if p.heatMap[i][j] == maxProb && opponentBoard[i][j] != hit && opponentBoard[i][j] != miss {
+					candidates = append(candidates, Position{i, j})
+				}
+			}
+		}
 		// select a random target from highest probability cells
+		if len(candidates) > 0 {
+			selected := candidates[rand.Intn(len(candidates))]
+			targetRow, targetCol = selected.row, selected.col
+		} else {
+			// if can't find one, fallback to random targeting
+			for {
+				targetRow = rand.Intn(boardSize)
+				targetCol = rand.Intn(boardSize)
+				if opponentBoard[targetRow][targetCol] != hit && opponentBoard[targetRow][targetCol] != miss {
+					break
+				}
+			}
+		}
+
 	}
 
 	// Perform the attack
