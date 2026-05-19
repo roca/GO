@@ -303,11 +303,33 @@ func (p *AIPlayer) TakeTurn(opponentBoard *Board) (Position, bool) {
 	}
 
 	// Perform the attack
-	// check to see if we hit a ship
-	// if we hit, enter hunt mode
-	// check to see if ship was sunk
+	isHit := opponentBoard[targetRow][targetCol] == ship
 
-	return Position{}, false
+	// check to see if we hit a ship
+	if isHit {
+		opponentBoard[targetRow][targetCol] = hit
+		fmt.Printf("AI targets %c%d... HIT!\n", 'A'+targetCol, targetRow)
+
+		// Update hit tracking
+		p.hits = append(p.hits, Position{targetRow, targetCol})
+
+		// if we hit, enter hunt mode
+		p.huntMode = true
+
+		// check to see if ship was sunk
+		sunk, shipName := isShipSunk(opponentBoard, targetRow, targetCol, p.opponent.ships)
+		if sunk {
+			fmt.Printf("AI sunk your %s!\n", shipName)
+			p.shipsSunk++
+			p.huntMode = false    // exit hunt mode when a ship is shipsSunk
+			p.hits = []Position{} // reset hits tracking for next hunt
+		}
+	} else {
+		opponentBoard[targetRow][targetCol] = miss
+		fmt.Printf("AI targets %c%d... Miss.\n", 'A'+targetCol, targetRow)
+	}
+
+	return Position{targetRow, targetCol}, isHit
 }
 
 func (p *AIPlayer) GetBoard() *Board {

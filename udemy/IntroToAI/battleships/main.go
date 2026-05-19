@@ -12,7 +12,7 @@ const (
 	ship       = "O"
 	hit        = "X"
 	miss       = "~"
-	hiddenShip = "."
+	hiddenShip = "E"
 	headerRow  = "  A B C D E F G H I J"
 	headerCol  = "0123456789"
 )
@@ -64,9 +64,21 @@ func main() {
 				fmt.Println("\nCongratulations! You win! You sank all enemy ships.")
 			}
 		} else {
+			// Print heatmap
+			fmt.Println("Heat map:")
+			for i := range boardSize {
+				for j := range boardSize {
+					fmt.Printf("%3d ", ai.heatMap[i][j])
+				}
+				fmt.Println()
+			}
+
 			fmt.Println("\n=== AI'S TURN ===")
 			// let AI take turn
 			_, _ = ai.TakeTurn(human.GetBoard())
+
+			fmt.Println("\nAI has taken its turn. Press enter to continue...")
+			reader.ReadString('\n')
 
 			// Check for win condition
 			if checkWinCondition(human.GetBoard()) {

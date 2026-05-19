@@ -18,6 +18,6 @@ func checkWinCondition(board *Board) bool {
 	return true
 }
 
-func isShipSunk(board *Board, row, col int, player *HumanPlayer, ai *AIPlayer) (bool, string) {
+func isShipSunk(board *Board, row, col int, opponentShips []Ship) (bool, string) {
 	return false, ""
 }
