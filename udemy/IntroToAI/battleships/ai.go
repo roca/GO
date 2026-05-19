@@ -7,12 +7,12 @@ import (
 
 const (
 	// Heatmap Weights
-	baseProbability      = 1   // Starting probability for valid cells
-	checkerboardBonus    = 1   // Bonus for checkerboard pattern (less likeley adjacent placements)
-	centerProximityBonus = 2   // Bonus for being closer to the center of the board (where players often place ships)
-	maxCenterDistance    = 3   // How far from the center qualifies for the center proximity bonus
-	huntModeBoost        = 100 // Sigificant boost for cells adjacent to hits in hunt mode
-	shipFitBonus         = 2   // Base bonus multiplier for fitting a ship
+	baseProbability      = 1  // Starting probability for valid cells
+	checkerboardBonus    = 1  // Bonus for checkerboard pattern (less likeley adjacent placements)
+	centerProximityBonus = 2  // Bonus for being closer to the center of the board (where players often place ships)
+	maxCenterDistance    = 3  // How far from the center qualifies for the center proximity bonus
+	huntModeBoost        = 15 // Sigificant boost for cells adjacent to hits in hunt mode
+	shipFitBonus         = 2  // Base bonus multiplier for fitting a ship
 )
 
 type AIPlayer struct {
@@ -118,9 +118,11 @@ func (p *AIPlayer) updateHeatMap(opponentBoard *Board) {
 							canFitHorizontal = false
 							break
 						}
-						if canFitHorizontal {
-							// Increase probability based on ship size if it fits
-							p.heatMap[r][c] += shipFitBonus * shipSize
+					}
+					if canFitHorizontal {
+						// Increase probability based on ship size if it fits
+						for k := range shipSize {
+							p.heatMap[r][c+k] += shipFitBonus
 						}
 					}
 				}
@@ -134,9 +136,11 @@ func (p *AIPlayer) updateHeatMap(opponentBoard *Board) {
 							canFitVertical = false
 							break
 						}
-						if canFitVertical {
-							// Increase probability based on ship size if it fits
-							p.heatMap[r][c] += shipFitBonus * shipSize
+					}
+					if canFitVertical {
+						// Increase probability based on ship size if it fits
+						for k := range shipSize {
+							p.heatMap[r+k][c] += shipFitBonus
 						}
 					}
 				}
