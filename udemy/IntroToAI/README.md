@@ -10,7 +10,7 @@ The repository uses Go workspaces (`go.work`) with four modules:
 - `ai-search/` - Pathfinding algorithms for maze solving (complete)
 - `vacuum-1/` - Room cleaning robot simulator (work in progress)
 - `model-check/` - AI model fairness verification (functional — loads CSV, runs 3 model configs against fairness and risk properties)
-- `battleships/` - Battleship game: human vs AI (in progress — ship placement, both players' turns, and AI targeting/attack execution functional; ship-sunk detection still stubbed)
+- `battleships/` - Battleship game: human vs AI (in progress — ship placement, both players' turns, AI targeting/attack execution, and ship-sunk detection functional)
 
 **Requirements**: Go 1.25.6 or later
 
@@ -286,7 +286,7 @@ Loan approval fairness verification module. Standard library only.
 
 ## Architecture: battleships
 
-Classic Battleship game — human vs AI, interactive console. Standard library only. In progress: ship placement complete, both players' turns functional, AI targeting and attack execution implemented (hit/miss, hunt mode entry, sunk handling). `isShipSunk` is still a stub — sunk events fire only when stub is replaced.
+Classic Battleship game — human vs AI, interactive console. Standard library only. In progress: ship placement complete, both players' turns functional, AI targeting and attack execution implemented (hit/miss, hunt mode entry, sunk handling). `isShipSunk` is fully implemented; remaining gap is adjacency validation in human ship placement.
 
 ### Core Types
 
@@ -300,7 +300,7 @@ Classic Battleship game — human vs AI, interactive console. Standard library o
 
 - `abs(x int) int`: Integer absolute value, used by heat map center-distance calculation
 - `checkWinCondition(board *Board) bool`: Returns true when no `ship` cells remain on the board (all ships sunk)
-- `isShipSunk(board *Board, row, col int, opponentShips []Ship) (bool, string)`: Stub — always returns `false, ""`. Called by both `HumanPlayer.TakeTurn` and `AIPlayer.TakeTurn` after a hit, passing the opponent's ship list.
+- `isShipSunk(board *Board, row, col int, opponentShips []Ship) (bool, string)`: Locates the ship covering `(row, col)` by checking each opponent ship's `StartPosition`/`EndPosition` span (horizontal or vertical), counts `hit` cells along that span, and returns `(true, ShipName)` when the hit count equals the ship length, otherwise `(false, "")`. Called by both `HumanPlayer.TakeTurn` and `AIPlayer.TakeTurn` after a hit.
 
 ### Ship Registry (board.go)
 
@@ -308,11 +308,11 @@ Classic Battleship game — human vs AI, interactive console. Standard library o
 
 ### Constants (main.go)
 
-`boardSize = 10`, display symbols (`empty="."`, `ship="O"`, `hit="X"`, `miss="~"`, `hiddenShip="E"`), `headerRow = "  A B C D E F G H I J"`, `headerCol = "0123456789"`
+`boardSize = 10`, display symbols (`empty="."`, `ship="O"`, `hit="X"`, `miss="~"`, `hiddenShip="."` — same glyph as empty so AI ships are indistinguishable from empty cells in the player's view), `headerRow = "  A B C D E F G H I J"`, `headerCol = "0123456789"`
 
 ### Game Loop (main.go)
 
-Creates `HumanPlayer` and `AIPlayer`, links opponents, prints welcome/legend, calls `ai.PlaceShips()` then `human.PlaceShips()`, then enters alternating-turn `gameOver` loop. Before each AI turn, the loop prints the AI's `heatMap` as a 10×10 grid for debugging, then calls `ai.TakeTurn(human.GetBoard())` and waits for user to press Enter before continuing. Both turns call `checkWinCondition`. Final message on game end.
+Creates `HumanPlayer` and `AIPlayer`, links opponents, prints welcome/legend, calls `ai.PlaceShips()` then `human.PlaceShips()`, then enters alternating-turn `gameOver` loop. Before each AI turn, the loop prints the AI's `heatMap` as a 10×10 grid for debugging, then calls `ai.TakeTurn(human.GetBoard())`. The pause-for-Enter prompt lives inside `AIPlayer.TakeTurn` itself, not in the loop. Both turns call `checkWinCondition`. Final message on game end.
 
 ### AI Strategy Infrastructure
 
@@ -321,7 +321,7 @@ Two-phase hunt architecture with probability-based targeting:
 - **Kill phase**: `huntMode` flag and `potentialShips` tracking defined; switches to targeted mode after hit
 - **`updateHeatMap`**: Implemented — resets heat map, calculates base probabilities for untargeted cells, adds ship-fit bonuses (checks if unsunk ships can fit horizontally/vertically from each cell), calls `applyHuntModeBoosts()` when in hunt mode
 - **`applyHuntModeBoosts`**: Implemented — detects hit pattern (single, horizontal line, or vertical line), boosts adjacent cells accordingly. Single hits boost all 4 neighbors; aligned hits boost only the endpoints of the line.
-- **`TakeTurn`**: Implemented — calls `updateHeatMap`, finds highest probability cell(s), randomly selects among ties, falls back to random if no candidates. Resolves the attack: marks `hit`/`miss` on the opponent board, appends to `p.hits` and sets `huntMode = true` on a hit, calls `isShipSunk` and on a sunk ship increments `shipsSunk`, exits hunt mode, and clears `p.hits`. Returns the targeted `Position` and a `bool` indicating hit. Note: `isShipSunk` currently always returns `false`, so the sunk branch never fires in practice yet.
+- **`TakeTurn`**: Implemented — calls `updateHeatMap`, finds highest probability cell(s), randomly selects among ties, falls back to random if no candidates. Resolves the attack: marks `hit`/`miss` on the opponent board, appends to `p.hits` and sets `huntMode = true` on a hit, calls `isShipSunk` and on a sunk ship increments `shipsSunk`, exits hunt mode, and clears `p.hits`. After printing the result, blocks on a "Press enter to continue..." prompt via `bufio.NewReader(os.Stdin)`. Returns the targeted `Position` and a `bool` indicating hit.
 
 ### AI Ship Placement (ai.go)
 
@@ -348,7 +348,6 @@ Two-phase hunt architecture with probability-based targeting:
 
 ### Not Yet Implemented
 
-- `isShipSunk` logic (stub always returns `false, ""`) — without it, sunk-ship handling in both `HumanPlayer.TakeTurn` and `AIPlayer.TakeTurn` never triggers, and the AI never exits hunt mode after sinking a ship
 - Adjacency validation in human ship placement
 
 ## Dependencies

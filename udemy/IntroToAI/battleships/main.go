@@ -12,7 +12,7 @@ const (
 	ship       = "O"
 	hit        = "X"
 	miss       = "~"
-	hiddenShip = "E"
+	hiddenShip = "."
 	headerRow  = "  A B C D E F G H I J"
 	headerCol  = "0123456789"
 )
@@ -90,8 +90,6 @@ func main() {
 
 		// Switch turns
 		playerTurn = !playerTurn
-
-		// Check win condition
 	}
 
 	fmt.Println("\nThanks for playing Battleships! Press enter to exit...")

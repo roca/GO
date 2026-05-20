@@ -1,8 +1,10 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"math/rand"
+	"os"
 )
 
 const (
@@ -332,6 +334,10 @@ func (p *AIPlayer) TakeTurn(opponentBoard *Board) (Position, bool) {
 		opponentBoard[targetRow][targetCol] = miss
 		fmt.Printf("AI targets %c%d... Miss.\n", 'A'+targetCol, targetRow)
 	}
+
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Println("\nPress enter to continue...")
+	reader.ReadString('\n')
 
 	return Position{targetRow, targetCol}, isHit
 }
