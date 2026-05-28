@@ -6,13 +6,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This repository contains code for a Udemy course: [Introduction to AI and Machine Learning with Go](https://www.udemy.com/course/introduction-to-ai-and-machine-learning-with-go-golang)
 
-The repository uses Go workspaces (`go.work`) with four modules:
+The repository uses Go workspaces (`go.work`) with five modules:
 - `ai-search/` - Pathfinding algorithms for maze solving (complete)
 - `vacuum-1/` - Room cleaning robot simulator (work in progress)
 - `model-check/` - AI model fairness verification (functional — loads CSV, runs 3 model configs against fairness and risk properties)
 - `battleships/` - Battleship game: human vs AI (in progress — ship placement, both players' turns, AI targeting/attack execution, and ship-sunk detection functional)
+- `blackjack/` - Blackjack game with AI card counter (in progress — `Card`/`Deck` types and shuffle implemented; `main.go` round loop still placeholder comments)
 
-**Requirements**: Go 1.25.6 or later
+**Requirements**: Go 1.25.6 or later (workspace declares 1.26.3 in `go.work`)
 
 ## Commands
 
@@ -65,11 +66,21 @@ go build  # produces ./battleships binary
 
 No flags — interactive console game (stdin/stdout).
 
+### Blackjack
+
+```bash
+cd blackjack
+go run .
+go build  # produces ./blackjack binary
+```
+
+No flags — interactive console game. `main()` builds a shuffled deck and prints all 52 cards; the round loop is still placeholder comments.
+
 ### Build Verification
 
 ```bash
 # From repo root, verify all modules compile:
-cd ai-search && go build . && cd ../vacuum-1 && go build . && cd ../model-check && go build . && cd ../battleships && go build .
+cd ai-search && go build . && cd ../vacuum-1 && go build . && cd ../model-check && go build . && cd ../battleships && go build . && cd ../blackjack && go build .
 ```
 
 ### Go Workspace
@@ -350,6 +361,29 @@ Two-phase hunt architecture with probability-based targeting:
 
 - Adjacency validation in human ship placement
 
+## Architecture: blackjack
+
+Console blackjack vs. an AI card counter. Partially implemented.
+
+### Core Types
+
+- **Card** (`card.go`): `Suit` (Unicode glyph constant — `Hearts`, `Diamonds`, `Clubs`, `Spades`), `Value` (`"A"`, `"2"`–`"10"`, `"J"`, `"Q"`, `"K"`), `Score` int. `String()` renders as `value+suit` (e.g., `A♠`). Ace is hard-coded to score 11 in `NewDeck` — no soft/hard-ace handling yet.
+- **Deck** (`deck.go`): `[]Card`. `NewDeck()` builds a 52-card deck (suits × values, parallel `scores` slice). `Shuffle()` returns a Fisher-Yates-shuffled copy (does not mutate the receiver). `Draw()` is a pointer receiver that auto-reshuffles when empty — but **returns the top card without removing it**, so repeated calls yield the same card.
+
+### Helpers (`helpers.go`)
+
+- `clearScreen()`: On Windows uses `github.com/inancgumus/screen`; elsewhere writes the ANSI escape `\033[H\033[2J`.
+
+### Game Loop (`main.go`)
+
+`main()` clears the screen, prints a welcome banner, calls `NewDeck().Shuffle()`, and prints every card in the shuffled deck. The `for {}` loop body is still placeholder comments — no round logic, no card counter, no exit condition (loop is currently infinite).
+
+### Known Bugs
+
+- `Deck.Draw()` returns `(*d)[0]` but never slices it off, so the deck is never consumed and `Draw` always returns the same card.
+- `NewDeck` assigns Ace `Score: 11` unconditionally; soft/hard-ace logic isn't implemented.
+- `main` loop has no exit, so `go run .` will never return after printing the deck.
+
 ## Dependencies
 
 **ai-search** (external):
@@ -362,6 +396,9 @@ Two-phase hunt architecture with probability-based targeting:
 **model-check**: Standard library only
 
 **battleships**: Standard library only
+
+**blackjack** (external):
+- `github.com/inancgumus/screen`: Terminal clearing on Windows (non-Windows uses ANSI escapes directly)
 
 ## Git Notes
 

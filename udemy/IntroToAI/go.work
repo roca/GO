@@ -1,8 +1,9 @@
-go 1.25.6
+go 1.26.3
 
 use (
 	./ai-search
 	./battleships
+	./blackjack
 	./model-check
 	./vacuum-1
 )
