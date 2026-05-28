@@ -11,7 +11,7 @@ The repository uses Go workspaces (`go.work`) with five modules:
 - `vacuum-1/` - Room cleaning robot simulator (work in progress)
 - `model-check/` - AI model fairness verification (functional — loads CSV, runs 3 model configs against fairness and risk properties)
 - `battleships/` - Battleship game: human vs AI (in progress — ship placement, both players' turns, AI targeting/attack execution, and ship-sunk detection functional)
-- `blackjack/` - Blackjack game with AI card counter (in progress — `Card`/`Deck` types and shuffle implemented; `main.go` round loop still placeholder comments)
+- `blackjack/` - Blackjack game with AI card counter (in progress — `Card`/`Deck`/`CardCounter` types and hi-lo card-counting helpers implemented; `main.go` round loop still placeholder comments)
 
 **Requirements**: Go 1.25.6 or later (workspace declares 1.26.3 in `go.work`)
 
@@ -74,7 +74,7 @@ go run .
 go build  # produces ./blackjack binary
 ```
 
-No flags — interactive console game. `main()` builds a shuffled deck and prints all 52 cards; the round loop is still placeholder comments.
+No flags — interactive console game. `main()` clears the screen, prints a welcome banner, builds a shuffled deck, and instantiates a `CardCounter`; the `for {}` round loop body is still placeholder comments.
 
 ### Build Verification
 
@@ -369,6 +369,15 @@ Console blackjack vs. an AI card counter. Partially implemented.
 
 - **Card** (`card.go`): `Suit` (Unicode glyph constant — `Hearts`, `Diamonds`, `Clubs`, `Spades`), `Value` (`"A"`, `"2"`–`"10"`, `"J"`, `"Q"`, `"K"`), `Score` int. `String()` renders as `value+suit` (e.g., `A♠`). Ace is hard-coded to score 11 in `NewDeck` — no soft/hard-ace handling yet.
 - **Deck** (`deck.go`): `[]Card`. `NewDeck()` builds a 52-card deck (suits × values, parallel `scores` slice). `Shuffle()` returns a Fisher-Yates-shuffled copy (does not mutate the receiver). `Draw()` is a pointer receiver that auto-reshuffles when empty — but **returns the top card without removing it**, so repeated calls yield the same card.
+- **CardCounter** (`card-counter.go`): Tracks hi-lo card counting state. Fields: `SeenCards map[string]int` (per-value counts), `RunningCount int`, `TrueCount float64`, `DecksRemaining float64`. Constant `DeckSize = 52`.
+
+### Card Counter API (`card-counter.go`)
+
+- `NewCardCounter()`: Initializes counts (all values to 0), running/true counts to 0, decks remaining to 1.0.
+- `Reset()`: Restores the counter to a fresh-deck state.
+- `TrackCard(card Card)`: Increments per-value count, updates running count via hi-lo (low cards 2–6: `+1`; high cards 10/J/Q/K/A: `-1`; 7–9 unchanged), recomputes `DecksRemaining` (clamped to ≥ 0.1) and `TrueCount = RunningCount / DecksRemaining`.
+- `ChanceOfBusting(playerScore int) float64`: Walks every card value, treats face cards as 10 and Ace as 11, counts unseen cards (4 per value minus seen, clamped to ≥ 0), tallies which would push the player over 21, returns the bust ratio. Returns `1.0` when `playerScore >= 21`, `0.5` when no unseen cards remain.
+- `DealerChanceOfBusting(dealerUpCard Card) float64`: Looks up a base bust probability per dealer up-card, then adjusts by `TrueCount * 0.02`.
 
 ### Helpers (`helpers.go`)
 
@@ -376,13 +385,14 @@ Console blackjack vs. an AI card counter. Partially implemented.
 
 ### Game Loop (`main.go`)
 
-`main()` clears the screen, prints a welcome banner, calls `NewDeck().Shuffle()`, and prints every card in the shuffled deck. The `for {}` loop body is still placeholder comments — no round logic, no card counter, no exit condition (loop is currently infinite).
+`main()` clears the screen, prints a welcome banner, calls `NewDeck().Shuffle()`, and creates a `CardCounter` via `NewCardCounter()`. The `for {}` loop body is still placeholder comments — round play, shuffle-trigger, replay prompt, and exit condition are all unimplemented (loop is currently infinite).
 
 ### Known Bugs
 
 - `Deck.Draw()` returns `(*d)[0]` but never slices it off, so the deck is never consumed and `Draw` always returns the same card.
 - `NewDeck` assigns Ace `Score: 11` unconditionally; soft/hard-ace logic isn't implemented.
-- `main` loop has no exit, so `go run .` will never return after printing the deck.
+- `main` loop has no exit, so `go run .` will never return.
+- `card-counter.go`: `pontsUntilBust` is a typo (should be `pointsUntilBust`); comments contain `caust` (should be `cause`), `somehowq` (should be `somehow`), `This  card` (double space).
 
 ## Dependencies
 
