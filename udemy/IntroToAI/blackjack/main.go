@@ -19,8 +19,15 @@ func main() {
 
 	for {
 		// Check to see if we need to shuffle the deck
+		if len(deck) < 10 {
+			fmt.Println("\n=== Deck is running low. Reshuffling... ===")
+			deck = NewDeck().Shuffle()
+			cardCounter.Reset()
+			fmt.Println("Deck reshuffled. Card counter reset.")
+		}
 
 		// Play a round
+		PlayeRound(&deck, cardCounter)
 
 		// Ask if the player wants to play another round
 

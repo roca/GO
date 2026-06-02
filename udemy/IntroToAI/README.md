@@ -11,7 +11,7 @@ The repository uses Go workspaces (`go.work`) with five modules:
 - `vacuum-1/` - Room cleaning robot simulator (work in progress)
 - `model-check/` - AI model fairness verification (functional — loads CSV, runs 3 model configs against fairness and risk properties)
 - `battleships/` - Battleship game: human vs AI (in progress — ship placement, both players' turns, AI targeting/attack execution, and ship-sunk detection functional)
-- `blackjack/` - Blackjack game with AI card counter (in progress — `Card`/`Deck`/`CardCounter` types and hi-lo card-counting helpers implemented; `main.go` round loop still placeholder comments)
+- `blackjack/` - Blackjack game with AI card counter (in progress — `Card`/`Deck`/`CardCounter`/`Player` types and hi-lo card-counting helpers implemented; `main.go` runs an infinite round loop that reshuffles when the deck dips below 10 cards and calls `PlayeRound`; `PlayeRound` body is still placeholder comments)
 
 **Requirements**: Go 1.25.6 or later (workspace declares 1.26.3 in `go.work`)
 
@@ -74,7 +74,7 @@ go run .
 go build  # produces ./blackjack binary
 ```
 
-No flags — interactive console game. `main()` clears the screen, prints a welcome banner, builds a shuffled deck, and instantiates a `CardCounter`; the `for {}` round loop body is still placeholder comments.
+No flags — interactive console game. `main()` clears the screen, prints a welcome banner, builds a shuffled deck, and instantiates a `CardCounter`. The `for {}` loop reshuffles + resets the counter when `len(deck) < 10`, then calls `PlayeRound(&deck, cardCounter)`. Replay prompt and exit condition are still placeholder comments, so the loop never terminates.
 
 ### Build Verification
 
@@ -370,6 +370,7 @@ Console blackjack vs. an AI card counter. Partially implemented.
 - **Card** (`card.go`): `Suit` (Unicode glyph constant — `Hearts`, `Diamonds`, `Clubs`, `Spades`), `Value` (`"A"`, `"2"`–`"10"`, `"J"`, `"Q"`, `"K"`), `Score` int. `String()` renders as `value+suit` (e.g., `A♠`). Ace is hard-coded to score 11 in `NewDeck` — no soft/hard-ace handling yet.
 - **Deck** (`deck.go`): `[]Card`. `NewDeck()` builds a 52-card deck (suits × values, parallel `scores` slice). `Shuffle()` returns a Fisher-Yates-shuffled copy (does not mutate the receiver). `Draw()` is a pointer receiver that auto-reshuffles when empty — but **returns the top card without removing it**, so repeated calls yield the same card.
 - **CardCounter** (`card-counter.go`): Tracks hi-lo card counting state. Fields: `SeenCards map[string]int` (per-value counts), `RunningCount int`, `TrueCount float64`, `DecksRemaining float64`. Constant `DeckSize = 52`.
+- **Player** (`player.go`): `Name string`, `Hand []Card`, `Score int`, `IsAI bool`, `IsBust bool`. `NewPlayer(name string, isAI bool) Player` returns a value (not a pointer) with an empty hand and zeroed score/bust flags.
 
 ### Card Counter API (`card-counter.go`)
 
@@ -383,15 +384,20 @@ Console blackjack vs. an AI card counter. Partially implemented.
 
 - `clearScreen()`: On Windows uses `github.com/inancgumus/screen`; elsewhere writes the ANSI escape `\033[H\033[2J`.
 
+### Round Driver (`game.go`)
+
+`PlayeRound(deck *Deck, cardCounter *CardCounter)` (note: function name is misspelled — should be `PlayRound`) prints a round banner with cards remaining, then constructs three players via `NewPlayer`: `dealer` (not AI), `human` (not AI), `ai` (AI). It currently only prints the players' names — initial deal, hand display, per-player turn logic, results, and card-counting stats are all placeholder comments.
+
 ### Game Loop (`main.go`)
 
-`main()` clears the screen, prints a welcome banner, calls `NewDeck().Shuffle()`, and creates a `CardCounter` via `NewCardCounter()`. The `for {}` loop body is still placeholder comments — round play, shuffle-trigger, replay prompt, and exit condition are all unimplemented (loop is currently infinite).
+`main()` clears the screen, prints a welcome banner, calls `NewDeck().Shuffle()`, and creates a `CardCounter` via `NewCardCounter()`. The `for {}` loop reshuffles + resets the counter when `len(deck) < 10`, calls `PlayeRound(&deck, cardCounter)`, and is missing the replay prompt, quit branch, and screen-clear that the placeholder comments call out — so the loop never exits.
 
 ### Known Bugs
 
 - `Deck.Draw()` returns `(*d)[0]` but never slices it off, so the deck is never consumed and `Draw` always returns the same card.
 - `NewDeck` assigns Ace `Score: 11` unconditionally; soft/hard-ace logic isn't implemented.
 - `main` loop has no exit, so `go run .` will never return.
+- `game.go`: function name `PlayeRound` is a typo (should be `PlayRound`); also has a stray `(` in the comment `Initial deal: two cards per PlayeRound(`.
 - `card-counter.go`: `pontsUntilBust` is a typo (should be `pointsUntilBust`); comments contain `caust` (should be `cause`), `somehowq` (should be `somehow`), `This  card` (double space).
 
 ## Dependencies
