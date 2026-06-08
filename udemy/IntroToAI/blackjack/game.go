@@ -13,7 +13,12 @@ func PlayeRound(deck *Deck, cardCounter *CardCounter) {
 
 	fmt.Println("Players:", dealer.Name, human.Name, ai.Name)
 
-	// Initial deal: two cards per PlayeRound(
+	// Initial deal: two cards per PlayeRound
+	for range 2 {
+		human.AddCard(deck.Draw(), cardCounter)
+		ai.AddCard(deck.Draw(), cardCounter)
+		dealer.AddCard(deck.Draw(), cardCounter)
+	}
 
 	// Show initial hands
 
