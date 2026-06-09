@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -22,13 +21,7 @@ type HumanPlayer struct {
 }
 
 func NewHumanPlayer() *HumanPlayer {
-	p := &HumanPlayer{}
-	for i := range boardSize {
-		for j := range boardSize {
-			p.board[i][j] = empty
-		}
-	}
-	return p
+	return &HumanPlayer{board: *newBoard()}
 }
 
 func (p *HumanPlayer) TakeTurn(opponentBoard *Board) (Position, bool) {
@@ -40,23 +33,12 @@ func (p *HumanPlayer) TakeTurn(opponentBoard *Board) (Position, bool) {
 
 		input = strings.TrimSpace(strings.ToUpper(input))
 
-		if len(input) < 2 {
-			fmt.Println("Invalid input format. Please enter a letter (A-J) followed by a number (0-9).")
+		pos, err := parseCoord(input)
+		if err != nil {
+			fmt.Println(err)
 			continue
 		}
-
-		if input[0] < 'A' || input[0] > 'J' {
-			fmt.Println("Invalid column. Please enter a letter between A and J.")
-			continue
-		}
-		col := int(input[0] - 'A')
-
-		rowStr := input[1:]
-		row, err := strconv.Atoi(rowStr)
-		if err != nil || row < 0 || row >= boardSize {
-			fmt.Println("Invalid row. Please enter a number between 0 and 9.")
-			continue
-		}
+		row, col := pos.row, pos.col
 
 		if opponentBoard[row][col] == hit || opponentBoard[row][col] == miss {
 			fmt.Printf("You have already targeted position %c%d. Please choose a different target.\n", 'A'+col, row)
@@ -115,53 +97,39 @@ func (p *HumanPlayer) PlaceShips() {
 				continue
 			}
 
-			pos := parts[0]
+			posStr := parts[0]
 			dir := parts[1]
 
-			if len(pos) < 2 || (dir != "H" && dir != "V") {
+			if dir != "H" && dir != "V" {
 				fmt.Println("Invalid input format. Use format like 'A0 H'. Please try again.")
 				time.Sleep(2 * time.Second)
 				continue
 			}
 
-			// Extracting column (letter)
-			if pos[0] < 'A' || pos[0] > 'J' {
-				fmt.Println("Invalid column. Please enter a letter between A and J.")
+			pos, err := parseCoord(posStr)
+			if err != nil {
+				fmt.Println(err)
 				time.Sleep(2 * time.Second)
 				continue
 			}
-			col := int(pos[0] - 'A')
-
-			// Extractinmg row (number)
-			rowStr := pos[1:]
-			row, err := strconv.Atoi(rowStr)
-			if err != nil || row < 0 || row >= boardSize {
-				fmt.Println("Invalid row. Please enter a number between 0 and 9.")
-				time.Sleep(2 * time.Second)
-				continue
-			}
+			row, col := pos.row, pos.col
 
 			// Check if placement is valid
 			valid := true
 			positions := []Position{}
 
-			for i := range shipType.size {
-				var r, c int
-				if dir == "H" {
-					r, c = row, col+i // Horizontal placement increases column index
-				} else {
-					r, c = row+i, col // Vertical placement increases row index
-				}
+			for _, pos := range shipCells(Position{row: row, col: col}, shipType.size, dir == "H") {
+				r, c := pos.row, pos.col
 
-				// Check if ship would goo off of board
+				// Check if ship would go off of board
 				if r >= boardSize || c >= boardSize {
 					valid = false
-					fmt.Printf("Ship wouild go off of the board! (Attemped to place at position %c%d)\n", 'A'+c, r)
+					fmt.Printf("Ship would go off of the board! (Attempted to place at position %c%d)\n", 'A'+c, r)
 					time.Sleep(2 * time.Second)
 					break
 				}
 
-				//Check if position ovetrlaps with another ship
+				// Check if position overlaps with another ship
 				if p.board[r][c] == ship {
 					valid = false
 					fmt.Printf("Ship overlaps with another ship at position %c%d! Please choose a different location.\n", 'A'+c, r)
@@ -169,7 +137,7 @@ func (p *HumanPlayer) PlaceShips() {
 					break
 				}
 
-				positions = append(positions, Position{row: r, col: c})
+				positions = append(positions, pos)
 			}
 
 			if valid {

@@ -17,46 +17,38 @@ const (
 	shipFitBonus         = 2  // Base bonus multiplier for fitting a ship
 )
 
+type shipTracker struct {
+	size    int
+	sunk    bool
+	hits    int
+	shipPos []Position
+}
+
 type AIPlayer struct {
 	board          Board
 	heatMap        [boardSize][boardSize]int
 	hits           []Position
 	shipsSunk      int
 	huntMode       bool
-	potentialShips []struct {
-		size    int
-		sunk    bool
-		hits    int
-		shipPos []Position
-	}
-	ships    []Ship
-	opponent *HumanPlayer
+	potentialShips []shipTracker
+	ships          []Ship
+	opponent       *HumanPlayer
 }
 
 func NewAIPlayer() *AIPlayer {
 	p := &AIPlayer{
 		shipsSunk: 0,
 		huntMode:  false,
-	}
-
-	for i := range boardSize {
-		for j := range boardSize {
-			p.board[i][j] = empty
-		}
+		board:     *newBoard(),
 	}
 
 	p.initializeHeatMap()
 
 	// Initialize potential ships tracking
-	p.potentialShips = make([]struct {
-		size    int
-		sunk    bool
-		hits    int
-		shipPos []Position
-	}, len(shipTypes))
+	p.potentialShips = make([]shipTracker, len(shipTypes))
 
-	for i, shipTyper := range shipTypes {
-		p.potentialShips[i].size = shipTyper.size
+	for i, shipType := range shipTypes {
+		p.potentialShips[i].size = shipType.size
 		p.potentialShips[i].sunk = false
 		p.potentialShips[i].hits = 0
 		p.potentialShips[i].shipPos = make([]Position, 0)
@@ -232,6 +224,40 @@ func (p *AIPlayer) applyHuntModeBoosts(opponentBoard *Board) {
 
 }
 
+// bestTarget returns the highest-probability untargeted cell on the heat map,
+// breaking ties at random. If no untargeted cell carries a positive
+// probability, it falls back to a random untargeted cell.
+func (p *AIPlayer) bestTarget(opponentBoard *Board) Position {
+	maxProb := 0
+	candidates := []Position{}
+
+	for i := range boardSize {
+		for j := range boardSize {
+			if opponentBoard[i][j] == hit || opponentBoard[i][j] == miss {
+				continue
+			}
+			if p.heatMap[i][j] > maxProb {
+				maxProb = p.heatMap[i][j]
+				candidates = []Position{{i, j}}
+			} else if p.heatMap[i][j] == maxProb {
+				candidates = append(candidates, Position{i, j})
+			}
+		}
+	}
+
+	if len(candidates) > 0 {
+		return candidates[rand.Intn(len(candidates))]
+	}
+
+	// Fallback: random untargeted cell.
+	for {
+		r, c := rand.Intn(boardSize), rand.Intn(boardSize)
+		if opponentBoard[r][c] != hit && opponentBoard[r][c] != miss {
+			return Position{r, c}
+		}
+	}
+}
+
 func (p *AIPlayer) TakeTurn(opponentBoard *Board) (Position, bool) {
 	fmt.Println("\nAI is taking its turn...")
 	if p.huntMode {
@@ -243,70 +269,11 @@ func (p *AIPlayer) TakeTurn(opponentBoard *Board) (Position, bool) {
 	// Update heat map based on game state
 	p.updateHeatMap(opponentBoard)
 
-	// Select a target based on strategy (hunt mode vs probability mode)
-	var targetRow, targetCol int
-
-	if p.huntMode {
-		// find the hightest probability cell(s)
-		maxProb := 0
-		candidates := []Position{}
-
-		for i := 0; i < boardSize; i++ {
-			for j := 0; j < boardSize; j++ {
-				if p.heatMap[i][j] > maxProb && opponentBoard[i][j] != hit && opponentBoard[i][j] != miss {
-					maxProb = p.heatMap[i][j]
-					candidates = []Position{{i, j}}
-				} else if p.heatMap[i][j] == maxProb && opponentBoard[i][j] != hit && opponentBoard[i][j] != miss {
-					candidates = append(candidates, Position{i, j})
-				}
-			}
-		}
-
-		// select a randowm target from highest probability cells
-		if len(candidates) > 0 {
-			selected := candidates[rand.Intn(len(candidates))]
-			targetRow, targetCol = selected.row, selected.col
-		} else {
-			// if can't find one, fallback to random targeting
-			for {
-				targetRow = rand.Intn(boardSize)
-				targetCol = rand.Intn(boardSize)
-				if opponentBoard[targetRow][targetCol] != hit && opponentBoard[targetRow][targetCol] != miss {
-					break
-				}
-			}
-		}
-	} else {
-		// find the hightest probability cell(s)
-		maxProb := 0
-		candidates := []Position{}
-
-		for i := 0; i < boardSize; i++ {
-			for j := 0; j < boardSize; j++ {
-				if p.heatMap[i][j] > maxProb && opponentBoard[i][j] != hit && opponentBoard[i][j] != miss {
-					maxProb = p.heatMap[i][j]
-					candidates = []Position{{i, j}}
-				} else if p.heatMap[i][j] == maxProb && opponentBoard[i][j] != hit && opponentBoard[i][j] != miss {
-					candidates = append(candidates, Position{i, j})
-				}
-			}
-		}
-		// select a random target from highest probability cells
-		if len(candidates) > 0 {
-			selected := candidates[rand.Intn(len(candidates))]
-			targetRow, targetCol = selected.row, selected.col
-		} else {
-			// if can't find one, fallback to random targeting
-			for {
-				targetRow = rand.Intn(boardSize)
-				targetCol = rand.Intn(boardSize)
-				if opponentBoard[targetRow][targetCol] != hit && opponentBoard[targetRow][targetCol] != miss {
-					break
-				}
-			}
-		}
-
-	}
+	// Select a target. Hunt mode already influences the heat map upstream via
+	// applyHuntModeBoosts, so the selection itself is identical in both modes:
+	// pick the highest-probability untargeted cell.
+	target := p.bestTarget(opponentBoard)
+	targetRow, targetCol := target.row, target.col
 
 	// Perform the attack
 	isHit := opponentBoard[targetRow][targetCol] == ship
@@ -394,13 +361,8 @@ func (p *AIPlayer) PlaceShips() {
 			positions := []Position{}
 			valid := true
 
-			for j := range shipType.size {
-				var r, c int
-				if horizontal {
-					r, c = row, col+j
-				} else {
-					r, c = row+j, col
-				}
+			for _, pos := range shipCells(Position{row: row, col: col}, shipType.size, horizontal) {
+				r, c := pos.row, pos.col
 
 				// Check validity of position
 				if r < 0 || r >= boardSize || c < 0 || c >= boardSize || p.board[r][c] == ship {
@@ -430,7 +392,7 @@ func (p *AIPlayer) PlaceShips() {
 					break
 				}
 
-				positions = append(positions, Position{r, c})
+				positions = append(positions, pos)
 			}
 
 			if valid {
@@ -468,20 +430,13 @@ func (p *AIPlayer) PlaceShips() {
 				valid := true
 				positions := []Position{}
 
-				for i := range shipType.size {
-					var r, c int
-					if horizontal {
-						r, c = row, col+i
-					} else {
-						r, c = row+i, col
-					}
-
-					if p.board[r][c] == ship {
+				for _, pos := range shipCells(Position{row: row, col: col}, shipType.size, horizontal) {
+					if p.board[pos.row][pos.col] == ship {
 						valid = false
 						break
 					}
 
-					positions = append(positions, Position{r, c})
+					positions = append(positions, pos)
 				}
 
 				if valid {

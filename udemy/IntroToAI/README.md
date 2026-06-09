@@ -10,7 +10,7 @@ The repository uses Go workspaces (`go.work`) with five modules:
 - `ai-search/` - Pathfinding algorithms for maze solving (complete)
 - `vacuum-1/` - Room cleaning robot simulator (work in progress)
 - `model-check/` - AI model fairness verification (functional — loads CSV, runs 3 model configs against fairness and risk properties)
-- `battleships/` - Battleship game: human vs AI (in progress — ship placement, both players' turns, AI targeting/attack execution, and ship-sunk detection functional)
+- `battleships/` - Battleship game: human vs AI (in progress — ship placement, both players' turns, AI targeting/attack execution, and ship-sunk detection functional; the only module with tests — a baseline suite over its pure logic)
 - `blackjack/` - Blackjack game with AI card counter (in progress — `Card`/`Deck`/`CardCounter`/`Player` types, hi-lo card-counting helpers, and `Player.CalculateScore`/`AddCard` (with soft/hard ace handling) implemented; `main.go` runs an infinite round loop that reshuffles when the deck dips below 10 cards and calls `PlayeRound`; `PlayeRound` deals two cards each to dealer/human/AI but the rest of the round (display, turns, results, stats) is still placeholder comments)
 
 **Requirements**: Go 1.25.6 or later (workspace declares 1.26.3 in `go.work`)
@@ -93,7 +93,22 @@ go work edit -dropuse ./module
 
 ### Testing
 
-No test files exist in the codebase currently.
+Only the `battleships` module has tests (`battleships/ai_test.go`, `battleships/helpers_test.go`) — a baseline/characterization suite covering pure logic (`isShipSunk`, `checkWinCondition`, `abs`, `parseCoord`, heat-map calculation, and AI `PlaceShips` invariants). No other module has tests yet.
+
+```bash
+cd battleships
+go test ./...                              # run all battleships tests
+go test -v ./...                           # verbose (shows subtests)
+go test -run TestIsShipSunkHorizontal ./.  # run a single test
+go test -run TestPlaceShipsInvariants ./.  # placement invariants (100 runs)
+```
+
+Notes for working with the suite:
+- `emptyBoard()` (helpers_test.go) and `newTestAIPlayer()` (ai_test.go) are shared test helpers that build state without touching stdin.
+- The interactive paths (`TakeTurn`, `PlaceShips` prompts, `time.Sleep`/Enter-to-continue blocks) are deliberately **not** tested — they need logic/I/O separation first.
+- AI placement/targeting use the global `math/rand`, so tests assert invariants (in bounds, no overlap, correct length) rather than exact coordinates.
+- `TestUpdateHeatMapSkipsTargetedCells` is a characterization test: `updateHeatMap` skips already-targeted cells with `continue`, so they keep their `initializeHeatMap` value rather than being reset to `baseProbability`. The test pins the actual behavior, not idealized behavior.
+- `isShipSunk` prints "No ship found at the hit location" to stdout on its not-found path, so that line appears during test runs (see Known Bugs).
 
 ## Architecture: ai-search
 
@@ -304,8 +319,8 @@ Classic Battleship game — human vs AI, interactive console. Standard library o
 - **Board**: `[10][10]string` — 10x10 grid. Cells: `"."` (empty), `"O"` (ship), `"X"` (hit), `"~"` (miss)
 - **Position**: `row`, `col` int pair (0-9)
 - **Ship** (human.go): `ShipName`, `StartPosition`, `EndPosition`
-- **HumanPlayer** (human.go): `board Board`, `ships []Ship`, `opponent *AIPlayer`. Constructor: `NewHumanPlayer()` initializes board with `"."`
-- **AIPlayer** (ai.go): `board Board`, `heatMap [10][10]int`, `hits []Position`, `shipsSunk int`, `huntMode bool`, `potentialShips []struct{...}` with size/sunk/hits/shipPos fields, `ships []Ship`, `opponent *HumanPlayer`. Constructor: `NewAIPlayer()` initializes board, heat map, and potentialShips tracking from shipTypes.
+- **HumanPlayer** (human.go): `board Board`, `ships []Ship`, `opponent *AIPlayer`. Constructor: `NewHumanPlayer()` initializes the board via `newBoard()`.
+- **AIPlayer** (ai.go): `board Board`, `heatMap [10][10]int`, `hits []Position`, `shipsSunk int`, `huntMode bool`, `potentialShips []shipTracker` (named struct with `size`/`sunk`/`hits`/`shipPos` fields), `ships []Ship`, `opponent *HumanPlayer`. Constructor: `NewAIPlayer()` initializes the board via `newBoard()`, builds the heat map, and seeds potentialShips tracking from shipTypes.
 
 ### Helpers (helpers.go)
 
@@ -313,9 +328,12 @@ Classic Battleship game — human vs AI, interactive console. Standard library o
 - `checkWinCondition(board *Board) bool`: Returns true when no `ship` cells remain on the board (all ships sunk)
 - `isShipSunk(board *Board, row, col int, opponentShips []Ship) (bool, string)`: Locates the ship covering `(row, col)` by checking each opponent ship's `StartPosition`/`EndPosition` span (horizontal or vertical), counts `hit` cells along that span, and returns `(true, ShipName)` when the hit count equals the ship length, otherwise `(false, "")`. Called by both `HumanPlayer.TakeTurn` and `AIPlayer.TakeTurn` after a hit.
 
-### Ship Registry (board.go)
+### Ship Registry & Board Helpers (board.go)
 
-`var shipTypes`: Carrier (5), Battleship (4), Cruiser (3), Submarine (3), Destroyer (2) — 5 ships, 17 total cells
+- `type shipSpec struct { name string; size int }`; `var shipTypes []shipSpec`: Carrier (5), Battleship (4), Cruiser (3), Submarine (3), Destroyer (2) — 5 ships, 17 total cells
+- `newBoard() *Board`: Returns a board with every cell set to `empty`. Used by both player constructors.
+- `shipCells(start Position, size int, horizontal bool) []Position`: Returns the positions a ship occupies from `start`, extending right (horizontal) or down (vertical). Does not validate bounds — callers check each returned position. Used by `HumanPlayer.PlaceShips` and both `AIPlayer.PlaceShips` paths.
+- `parseCoord(s string) (Position, error)`: Parses a coordinate like `"A0"` (column letter A-J + row number 0-9) into a Position, expecting trimmed/upper-cased input. Returns a descriptive error on the first validation failure. Used by `HumanPlayer.TakeTurn` and `HumanPlayer.PlaceShips`.
 
 ### Constants (main.go)
 
@@ -336,7 +354,7 @@ Two-phase hunt architecture with probability-based targeting:
 
 ### AI Ship Placement (ai.go)
 
-`PlaceShips()` is implemented — two-phase strategy: larger ships (size >= 4) placed near edges, smaller ships distributed randomly. Validates boundary, overlap, and adjacency (larger ships avoid diagonal/adjacent neighbors). Falls back to random valid placement after 100 failed attempts.
+`PlaceShips()` is implemented — two-phase strategy: larger ships (size >= 4) placed near edges, smaller ships distributed randomly. Both the edge path and the random fallback expand the ship footprint with `shipCells`, then validate boundary, overlap, and adjacency (larger ships avoid diagonal/adjacent neighbors). Falls back to random valid placement after 100 failed attempts.
 
 ### Board Display (board.go)
 
@@ -344,16 +362,15 @@ Two-phase hunt architecture with probability-based targeting:
 
 ### Known Bugs
 
-- `ai.go`: Comment says `checkkerboard` (double 'k'), `likeley` (should be `likely`), `Sigificant` (should be `Significant`), `potenial` (should be `potential`), `hightest` (should be `highest`), `randowm` (should be `random`)
-- `ai.go`: Variable `shipTyper` in range loop (should be `shipType`)
+- `ai.go`: Comment typos — `checkkerboard` (double 'k'), `likeley` (should be `likely`), `Sigificant` (should be `Significant`), `potenial` (should be `potential`)
 - `board.go`: Comment typos — `pacakage` (should be `package`), `opponewnt's` (should be `opponent's`), `shouild` (should be `should`)
-- `human.go`: Comment typo `Extractinmg` (should be `Extracting`), `goo` (should be `go`), `wouild` (should be `would`), `Attemped` (should be `Attempted`), `ovetrlaps` (should be `overlaps`)
+- `helpers.go`: `isShipSunk` writes to stdout (`fmt.Println` on the "No ship found" path) — a logic helper doing I/O. Harmless but surfaces during test runs; should return the result and let the caller report.
 
 ### Human Player (human.go)
 
-`PlaceShips()` — prompts user with format "A0 H" (column letter + row number + direction), validates input format and direction (H/V), converts coordinates to Position (col from letter A-J, row from number 0-9), checks boundary and overlap, marks board cells, stores Ship with start/end positions, and displays final placement. Not yet implemented: adjacency checking (ships can be placed touching each other).
+`PlaceShips()` — prompts user with format "A0 H" (position + direction), validates direction (H/V), parses the position via `parseCoord`, expands the ship footprint with `shipCells`, checks boundary and overlap, marks board cells, stores Ship with start/end positions, and displays final placement. Not yet implemented: adjacency checking (ships can be placed touching each other).
 
-`TakeTurn(opponentBoard *Board) (Position, bool)` — prompts for target position (e.g., "A0"), validates input, checks for already-targeted cells, determines hit/miss, updates board, calls `isShipSunk` on hits. Returns the targeted position.
+`TakeTurn(opponentBoard *Board) (Position, bool)` — prompts for target position (e.g., "A0"), parses it via `parseCoord`, checks for already-targeted cells, determines hit/miss, updates board, calls `isShipSunk` on hits. Returns the targeted position.
 
 `GetBoard() *Board` — returns pointer to player's board.
 
@@ -370,7 +387,7 @@ Console blackjack vs. an AI card counter. Partially implemented.
 - **Card** (`card.go`): `Suit` (Unicode glyph constant — `Hearts`, `Diamonds`, `Clubs`, `Spades`), `Value` (`"A"`, `"2"`–`"10"`, `"J"`, `"Q"`, `"K"`), `Score` int. `String()` renders as `value+suit` (e.g., `A♠`). Ace is hard-coded to score 11 in `NewDeck` — no soft/hard-ace handling yet.
 - **Deck** (`deck.go`): `[]Card`. `NewDeck()` builds a 52-card deck (suits × values, parallel `scores` slice). `Shuffle()` returns a Fisher-Yates-shuffled copy (does not mutate the receiver). `Draw()` is a pointer receiver that auto-reshuffles when empty — but **returns the top card without removing it**, so repeated calls yield the same card.
 - **CardCounter** (`card-counter.go`): Tracks hi-lo card counting state. Fields: `SeenCards map[string]int` (per-value counts), `RunningCount int`, `TrueCount float64`, `DecksRemaining float64`. Constant `DeckSize = 52`.
-- **Player** (`player.go`): `Name string`, `Hand []Card`, `Score int`, `IsAI bool`, `IsBust bool`. `NewPlayer(name string, isAI bool) Player` returns a value (not a pointer) with an empty hand and zeroed score/bust flags. Methods (pointer receivers): `CalculateScore() int` sums non-ace card scores then adds aces one-by-one as 11 when the running total stays ≤ 21, otherwise as 1 (handles soft/hard aces despite `NewDeck` hard-coding ace `Score: 11`); `AddCard(card Card, cardCounter *CardCounter)` appends the card to `Hand`, refreshes `Score` via `CalculateScore`, and forwards the card to `cardCounter.TrackCard` when the counter is non-nil.
+- **Player** (`player.go`): `Name string`, `Hand []Card`, `Score int`, `IsAI bool`, `IsBust bool`. `NewPlayer(name string, isAI bool) Player` returns a value (not a pointer) with an empty hand and zeroed score/bust flags. Methods (pointer receivers): `CalculateScore() int` sums non-ace card scores then adds aces one-by-one as 11 when the running total stays ≤ 21, otherwise as 1 (handles soft/hard aces despite `NewDeck` hard-coding ace `Score: 11`); `AddCard(card Card, cardCounter *CardCounter)` appends the card to `Hand`, refreshes `Score` via `CalculateScore`, and forwards the card to `cardCounter.TrackCard` when the counter is non-nil; `DisplayHand(hideSecoindCard bool)` prints `Name's hand: <cards> (Score: N)` — when `hideSecoindCard` is true, every card after the first renders as `??` and the score prints as `?` (used to conceal the dealer's hole card).
 
 ### Card Counter API (`card-counter.go`)
 
@@ -386,7 +403,7 @@ Console blackjack vs. an AI card counter. Partially implemented.
 
 ### Round Driver (`game.go`)
 
-`PlayeRound(deck *Deck, cardCounter *CardCounter)` (note: function name is misspelled — should be `PlayRound`) prints a round banner with cards remaining, then constructs three players via `NewPlayer`: `dealer` (not AI), `human` (not AI), `ai` (AI). It deals two cards each to human/AI/dealer via `Player.AddCard` (which also updates `cardCounter`). Hand display, per-player turn logic, results, and card-counting stats are still placeholder comments. Note: because `Deck.Draw()` does not actually consume cards, every `AddCard` here currently receives the same top card, so all three players end up with two copies of the same card.
+`PlayeRound(deck *Deck, cardCounter *CardCounter)` (note: function name is misspelled — should be `PlayRound`) prints a round banner with cards remaining, then constructs three players via `NewPlayer`: `dealer` (not AI), `human` (not AI), `ai` (AI). It deals two cards each to human/AI/dealer via `Player.AddCard` (which also updates `cardCounter`), then prints the initial deal via `Player.DisplayHand` (dealer with hole card hidden, human and AI fully shown). Per-player turn logic, results, and card-counting stats are still placeholder comments. Note: because `Deck.Draw()` does not actually consume cards, every `AddCard` here currently receives the same top card, so all three players end up with two copies of the same card.
 
 ### Game Loop (`main.go`)
 
@@ -399,6 +416,8 @@ Console blackjack vs. an AI card counter. Partially implemented.
 - `main` loop has no exit, so `go run .` will never return.
 - `game.go`: function name `PlayeRound` is a typo (should be `PlayRound`); also has a stray `(` in the comment `Initial deal: two cards per PlayeRound(`.
 - `card-counter.go`: `pontsUntilBust` is a typo (should be `pointsUntilBust`); comments contain `caust` (should be `cause`), `somehowq` (should be `somehow`), `This  card` (double space).
+- `player.go`: `DisplayHand` parameter `hideSecoindCard` is a typo (should be `hideSecondCard`); comments contain `hidding` (should be `hiding`) and `insted` (should be `instead`).
+- `game.go`: `Intial Deal:` is a typo (should be `Initial Deal:`).
 
 ## Dependencies
 

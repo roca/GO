@@ -1,5 +1,10 @@
 package main
 
+import (
+	"fmt"
+	"strings"
+)
+
 type Player struct {
 	Name   string
 	Hand   []Card
@@ -60,5 +65,30 @@ func (p *Player) AddCard(card Card, cardCounter *CardCounter) {
 	// If we are keeping track of cards, update the card cardCounter
 	if cardCounter != nil {
 		cardCounter.TrackCard(card)
+	}
+}
+
+// DisplayHand displays the player's hand and score.
+func (p *Player) DisplayHand(hideSecoindCard bool) {
+	cards := []string{}
+
+	// Go through each card in the player's hand
+	for i, card := range p.Hand {
+		if hideSecoindCard && i > 0 {
+			// If we're hidding the second card, show ?? insted
+			cards = append(cards, "??")
+		} else {
+			cards = append(cards, card.String())
+		}
+	}
+
+	// Print the player's name, hand and all their cards
+	fmt.Printf("%s's hand: %s", p.Name, strings.Join(cards, " "))
+
+	// Show their score (or ? if we're hiding cards)
+	if hideSecoindCard {
+		fmt.Printf(" (Score: ?)\n")
+	} else {
+		fmt.Printf(" (Score: %d)\n", p.Score)
 	}
 }

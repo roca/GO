@@ -21,6 +21,10 @@ func PlayeRound(deck *Deck, cardCounter *CardCounter) {
 	}
 
 	// Show initial hands
+	fmt.Println("\nIntial Deal:")
+	dealer.DisplayHand(true) // Hiding dealer's second card
+	human.DisplayHand(false)
+	ai.DisplayHand(false)
 
 	// Play each player's turn
 
