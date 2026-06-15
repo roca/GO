@@ -3,6 +3,14 @@ package main
 import (
 	"fmt"
 	"strings"
+	"time"
+)
+
+const (
+	Hit            = "h"
+	Stand          = "s"
+	Quit           = "q"
+	MinDealerStand = 17
 )
 
 type Player struct {
@@ -91,4 +99,29 @@ func (p *Player) DisplayHand(hideSecoindCard bool) {
 	} else {
 		fmt.Printf(" (Score: %d)\n", p.Score)
 	}
+}
+
+// handleHit
+func (p *Player) handleHit(deck *Deck, cardCounter *CardCounter) bool {
+	// Draw a card and add it to the player's hand
+	card := deck.Draw()
+	p.AddCard(card, cardCounter)
+
+	// Show the card that they got
+	fmt.Printf("%s drew: %s\n", p.Name, card.String())
+	p.DisplayHand(false)
+
+	// Check to see if they went over 21
+	if p.Score > 21 {
+		fmt.Printf("%s busts with a score over 21!\n", p.Name)
+		p.IsBust = true
+		return true
+	}
+
+	// If it's the AI's turn, add a small delay to make it easier to follow
+	if p.IsAI {
+		time.Sleep(1 * time.Second)
+	}
+
+	return false
 }
