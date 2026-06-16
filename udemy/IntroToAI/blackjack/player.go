@@ -125,3 +125,42 @@ func (p *Player) handleHit(deck *Deck, cardCounter *CardCounter) bool {
 
 	return false
 }
+
+// PlayTurn handles the player's turn, allowing them to hit or stand.
+func (p *Player) PlayTurn(deck *Deck, cardCounter *CardCounter, dealerUpCard Card) {
+	if p.IsAI {
+	} else {
+		// If it's a human, let them choose what to do
+		p.playHumanTurn(deck, cardCounter)
+	}
+}
+
+func (p *Player) playHumanTurn(deck *Deck, cardCounter *CardCounter) {
+	fmt.Printf("\n--- %s's Turn ---\n", p.Name)
+
+	// Keep asking them what they want to do? (h)it, (s)tand or (q)uit
+	for {
+		fmt.Printf("What would you like to do? (h)it, (s)tand or (q)uit: ")
+		var choice string
+		fmt.Scanln(&choice)
+		choice = strings.ToLower(choice)
+
+		switch choice {
+		case Quit:
+			// They want to quit the game
+			fmt.Println("Thanks for playing! Goodbye!")
+			return
+		case Hit:
+			// Player wants to hit
+			if p.handleHit(deck, cardCounter) {
+				return
+			}
+		case Stand:
+			// They're happy with their cards
+			fmt.Printf("%s chose to stand.\n", p.Name)
+			return
+		default:
+			fmt.Println("Invalid choice. Please enter 'h' to hit, 's' to stand, or 'q' to quit.")
+		}
+	}
+}
