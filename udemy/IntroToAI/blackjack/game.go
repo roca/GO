@@ -27,6 +27,7 @@ func PlayeRound(deck *Deck, cardCounter *CardCounter) {
 	ai.DisplayHand(false)
 
 	// Play each player's turn
+	human.PlayTurn(deck, cardCounter, dealer.Hand[0]) // Show dealer's up card
 
 	// Show results
 
