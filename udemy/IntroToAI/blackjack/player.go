@@ -129,6 +129,7 @@ func (p *Player) handleHit(deck *Deck, cardCounter *CardCounter) bool {
 // PlayTurn handles the player's turn, allowing them to hit or stand.
 func (p *Player) PlayTurn(deck *Deck, cardCounter *CardCounter, dealerUpCard Card) {
 	if p.IsAI {
+		p.playAITurn(deck, cardCounter, dealerUpCard)
 	} else {
 		// If it's a human, let them choose what to do
 		p.playHumanTurn(deck, cardCounter)
@@ -163,4 +164,7 @@ func (p *Player) playHumanTurn(deck *Deck, cardCounter *CardCounter) {
 			fmt.Println("Invalid choice. Please enter 'h' to hit, 's' to stand, or 'q' to quit.")
 		}
 	}
+}
+
+func (p *Player) playAITurn(deck *Deck, cardCounter *CardCounter, dealerUpCard Card) {
 }

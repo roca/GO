@@ -28,6 +28,11 @@ func PlayeRound(deck *Deck, cardCounter *CardCounter) {
 
 	// Play each player's turn
 	human.PlayTurn(deck, cardCounter, dealer.Hand[0]) // Show dealer's up card
+	if !human.IsBust {
+		// let ai player play
+		ai.PlayTurn(deck, cardCounter, dealer.Hand[0]) // Show dealer's up card
+		// let dealer play
+	}
 
 	// Show results
 
