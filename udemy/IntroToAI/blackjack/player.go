@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 	"strings"
 	"time"
 )
@@ -167,4 +169,31 @@ func (p *Player) playHumanTurn(deck *Deck, cardCounter *CardCounter) {
 }
 
 func (p *Player) playAITurn(deck *Deck, cardCounter *CardCounter, dealerUpCard Card) {
+	fmt.Printf("\n--- %s's Turn ---\n", p.Name)
+
+	// Keep going until the AI decides to stand or busts
+	for !p.IsBust {
+		//Ask the AI what it wants to do
+		choice := AdvancedAIDecision(*p, dealerUpCard, cardCounter)
+
+		if choice == Stand {
+			fmt.Printf("%s chose to stand.\n", p.Name)
+			break
+		}
+
+		if choice == Hit {
+			if p.handleHit(deck, cardCounter) {
+				break // AI busts, end their turn
+			}
+		}
+
+		if len(p.Hand) > 10 {
+			fmt.Printf("%s has too many cards, automatically standing.\n", p.Name)
+			break
+		}
+	}
+
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Println("Press Enter to continue...")
+	reader.ReadString('\n')
 }
