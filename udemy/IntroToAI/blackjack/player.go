@@ -197,3 +197,40 @@ func (p *Player) playAITurn(deck *Deck, cardCounter *CardCounter, dealerUpCard C
 	fmt.Println("Press Enter to continue...")
 	reader.ReadString('\n')
 }
+
+func (p *Player) playDealerTurn(deck *Deck, cardCounter *CardCounter) {
+	if p.Name != "Dealer" {
+		return
+	}
+
+	fmt.Println("\n--- Dealer's Turn ---")
+	fmt.Println("Dealer reveals second card:")
+
+	cardCounter.TrackCard(p.Hand[1]) // Track the dealer's second card
+
+	for p.Score < 17 {
+		if p.handleHit(deck, cardCounter) {
+			break // Dealer went bust
+		}
+	}
+
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Println("Press Enter to continue...")
+	reader.ReadString('\n')
+}
+
+func (p *Player) DetermineResult(dealer Player) string {
+	var result string
+
+	if p.IsBust {
+		result = fmt.Sprintf("%s loses (bust).", p.Name)
+	} else if dealer.IsBust || p.Score > dealer.Score {
+		result = fmt.Sprintf("%s wins!", p.Name)
+	} else if p.Score == dealer.Score {
+		result = fmt.Sprintf("%s pushes (tie).", p.Name)
+	} else {
+		result = fmt.Sprintf("%s loses.", p.Name)
+	}
+
+	return result
+}

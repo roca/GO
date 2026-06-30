@@ -32,11 +32,28 @@ func PlayeRound(deck *Deck, cardCounter *CardCounter) {
 		// let ai player play
 		ai.PlayTurn(deck, cardCounter, dealer.Hand[0]) // Show dealer's up card
 		// let dealer play
+		dealer.playDealerTurn(deck, cardCounter)
 	}
 
 	// Show results
+	fmt.Println("\n=== Results ===")
+	fmt.Printf("Dealer: %d\n", dealer.Score)
+	fmt.Printf("Human: %d\n", human.Score)
+	fmt.Printf("AI: %d\n", ai.Score)
 
 	// Display results
+	fmt.Println(human.DetermineResult(dealer))
+	fmt.Println(ai.DetermineResult(dealer))
 
 	// Display card counting statistics
+	displayCardCountingStats(cardCounter, deck)
+}
+
+func displayCardCountingStats(cardCounter *CardCounter, deck *Deck) {
+	fmt.Println("\n=== Card Counting Statistics ===")
+	fmt.Printf("Final Running Count: %d\n", cardCounter.RunningCount)
+	fmt.Printf("Final True Count: %.2f\n", cardCounter.TrueCount)
+	fmt.Printf("Cards Remaining in Deck: %d\n", len(*deck))
+
+	fmt.Println("\nCard Distribution ")
 }
