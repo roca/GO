@@ -55,5 +55,14 @@ func displayCardCountingStats(cardCounter *CardCounter, deck *Deck) {
 	fmt.Printf("Final True Count: %.2f\n", cardCounter.TrueCount)
 	fmt.Printf("Cards Remaining in Deck: %d\n", len(*deck))
 
-	fmt.Println("\nCard Distribution ")
+	fmt.Println("\nCard Distribution Seen:")
+	values := []string{"A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"}
+
+	for _, value := range values {
+		fmt.Printf("%s: %d   ", value, cardCounter.SeenCards[value])
+		if value == "6" {
+			fmt.Println() // Put in a line break for readability
+		}
+	}
+	fmt.Println()
 }
