@@ -6,14 +6,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This repository contains code for a Udemy course: [Introduction to AI and Machine Learning with Go](https://www.udemy.com/course/introduction-to-ai-and-machine-learning-with-go-golang)
 
-The repository uses Go workspaces (`go.work`) with five modules:
+The repository uses Go workspaces (`go.work`) with five Go modules, plus one standalone Python module:
 - `ai-search/` - Pathfinding algorithms for maze solving (complete)
 - `vacuum-1/` - Room cleaning robot simulator (work in progress)
 - `model-check/` - AI model fairness verification (functional — loads CSV, runs 3 model configs against fairness and risk properties)
 - `battleships/` - Battleship game: human vs AI (in progress — ship placement, both players' turns, AI targeting/attack execution, and ship-sunk detection functional; the only module with tests — a baseline suite over its pure logic)
 - `blackjack/` - Blackjack game with AI card counter (in progress — `Card`/`Deck`/`CardCounter`/`Player` types, hi-lo card-counting helpers, and `Player.CalculateScore`/`AddCard` (with soft/hard ace handling) implemented; `main.go` runs a round loop that reshuffles when the deck dips below 10 cards, calls `PlayeRound`, and prompts to play again (exits on "n"); `PlayeRound` deals two cards each to dealer/human/AI, runs the human turn, then (when the human hasn't busted) the AI turn driven by `AdvancedAIDecision` (card-counting hit/stand strategy in `ai.go`) followed by the dealer turn (`playDealerTurn`, hits below 17), then prints each player's result via `DetermineResult` and card-counting stats via `displayCardCountingStats`)
+- `LINEAR-REGRESSION-PYTHON/` - Python linear-regression exercise (skeleton — `app.py` imports `argparse`/`logging`/`numpy`/`pandas` and defines an empty `main()` with only comment stubs; not part of the Go workspace)
 
-**Requirements**: Go 1.25.6 or later (workspace declares 1.26.3 in `go.work`)
+**Requirements**: Go 1.25.6 or later (workspace declares 1.26.3 in `go.work`); Python 3.13 for `LINEAR-REGRESSION-PYTHON/`
 
 ## Commands
 
@@ -75,6 +76,18 @@ go build  # produces ./blackjack binary
 ```
 
 No flags — interactive console game. `main()` clears the screen, prints a welcome banner, builds a shuffled deck, and instantiates a `CardCounter`. The `for {}` loop reshuffles + resets the counter when `len(deck) < 10`, calls `PlayeRound(&deck, cardCounter)`, then prompts "Play another round? (y/n)" and exits on "n".
+
+### Linear Regression (Python)
+
+```bash
+cd LINEAR-REGRESSION-PYTHON
+python3 -m venv venv          # first-time setup (a venv/ already exists in the tree)
+source venv/bin/activate
+pip install -r requirements.txt
+python app.py                 # currently a no-op — main() has only comment stubs
+```
+
+Not part of the Go workspace — run independently. `app.py` is a skeleton awaiting implementation.
 
 ### Build Verification
 
@@ -424,6 +437,15 @@ Console blackjack vs. an AI card counter. Partially implemented.
 - `player.go`: `DisplayHand` parameter `hideSecoindCard` is a typo (should be `hideSecondCard`); comments contain `hidding` (should be `hiding`) and `insted` (should be `instead`).
 - `game.go`: `Intial Deal:` is a typo (should be `Initial Deal:`).
 
+## Architecture: LINEAR-REGRESSION-PYTHON
+
+Standalone Python exercise, independent of the Go workspace. Skeleton only.
+
+- `app.py`: Entry point. Imports `argparse`, `logging`, `os`, `sys`, `numpy`, `pandas`. Configures a module-level `logger` (INFO level, timestamped format) and a `CONFIG` dict with `"default_csv": "house_data.csv"`. `main()` is empty save for comment stubs ("parsing command line arguments", "load and preprocess the data"); guarded by `if __name__ == "__main__"`.
+- `requirements.txt`: Pins the full dependency tree — headline packages are `matplotlib`, `numpy`, `pandas`, `scikit-learn` (below the `#` separator); the rest are transitive pins.
+- `venv/`: A committed virtualenv (Python 3.13). **Not gitignored** — see Git Notes.
+- `house_data.csv`: Referenced by `CONFIG["default_csv"]` but not yet present in the tree.
+
 ## Dependencies
 
 **ai-search** (external):
@@ -440,10 +462,13 @@ Console blackjack vs. an AI card counter. Partially implemented.
 **blackjack** (external):
 - `github.com/inancgumus/screen`: Terminal clearing on Windows (non-Windows uses ANSI escapes directly)
 
+**LINEAR-REGRESSION-PYTHON** (external, Python): `matplotlib`, `numpy`, `pandas`, `scikit-learn` (plus transitive deps) — see `requirements.txt`
+
 ## Git Notes
 
 - Git LFS tracks `.png` and `.psd` files (see `.gitattributes`)
-- `.gitignore` excludes `tmp/`, `ai-search/*.png` (generated output), and compiled binaries (`ai-search/ai-search`, `vacuum-1/vacuum-1`)
+- `.gitignore` excludes `tmp/`, `ai-search/*.png` (generated output), and compiled binaries (`ai-search/ai-search`, `vacuum-1/vacuum-1`, `battleships/battleships`, `blackjack/blackjack`)
+- `LINEAR-REGRESSION-PYTHON/venv/` is currently **not** gitignored — consider adding `LINEAR-REGRESSION-PYTHON/venv/` (and `__pycache__/`) to `.gitignore` before committing the Python module
 - Main branch: `main`, active development on `staging`
 
 **Note**: When adding or changing any algorithm (search or cleaning), update the relevant CLAUDE.md sections to keep documentation in sync.
