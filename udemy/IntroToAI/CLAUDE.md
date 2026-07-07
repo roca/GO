@@ -12,7 +12,7 @@ The repository uses Go workspaces (`go.work`) with five Go modules, plus one sta
 - `model-check/` - AI model fairness verification (functional — loads CSV, runs 3 model configs against fairness and risk properties)
 - `battleships/` - Battleship game: human vs AI (in progress — ship placement, both players' turns, AI targeting/attack execution, and ship-sunk detection functional; the only module with tests — a baseline suite over its pure logic)
 - `blackjack/` - Blackjack game with AI card counter (in progress — `Card`/`Deck`/`CardCounter`/`Player` types, hi-lo card-counting helpers, and `Player.CalculateScore`/`AddCard` (with soft/hard ace handling) implemented; `main.go` runs a round loop that reshuffles when the deck dips below 10 cards, calls `PlayeRound`, and prompts to play again (exits on "n"); `PlayeRound` deals two cards each to dealer/human/AI, runs the human turn, then (when the human hasn't busted) the AI turn driven by `AdvancedAIDecision` (card-counting hit/stand strategy in `ai.go`) followed by the dealer turn (`playDealerTurn`, hits below 17), then prints each player's result via `DetermineResult` and card-counting stats via `displayCardCountingStats`)
-- `LINEAR-REGRESSION-PYTHON/` - Python linear-regression exercise (skeleton — `app.py` imports `argparse`/`logging`/`numpy`/`pandas` and defines an empty `main()` with only comment stubs; not part of the Go workspace)
+- `LINEAR-REGRESSION-PYTHON/` - Python linear-regression exercise (in progress — `app.py` implements CLI arg parsing, CSV loading with required-column validation, and preprocessing (missing-value drop); `main()` wires arg parsing → load → preprocess, with the modeling/training/visualization steps still comment stubs; not part of the Go workspace)
 
 **Requirements**: Go 1.25.6 or later (workspace declares 1.26.3 in `go.work`); Python 3.13 for `LINEAR-REGRESSION-PYTHON/`
 
@@ -84,10 +84,11 @@ cd LINEAR-REGRESSION-PYTHON
 python3 -m venv venv          # first-time setup (a venv/ already exists in the tree)
 source venv/bin/activate
 pip install -r requirements.txt
-python app.py                 # currently a no-op — main() has only comment stubs
+python app.py                 # runs on house_data.csv by default
+python app.py -f other.csv    # override the input CSV (-f / --file)
 ```
 
-Not part of the Go workspace — run independently. `app.py` is a skeleton awaiting implementation.
+Not part of the Go workspace — run independently. `main()` currently loads and preprocesses the data; modeling, training, evaluation, and visualization steps are still comment stubs.
 
 ### Build Verification
 
@@ -439,12 +440,16 @@ Console blackjack vs. an AI card counter. Partially implemented.
 
 ## Architecture: LINEAR-REGRESSION-PYTHON
 
-Standalone Python exercise, independent of the Go workspace. Skeleton only.
+Standalone Python exercise, independent of the Go workspace. In progress — data loading/preprocessing implemented, modeling not yet.
 
-- `app.py`: Entry point. Imports `argparse`, `logging`, `os`, `sys`, `numpy`, `pandas`. Configures a module-level `logger` (INFO level, timestamped format) and a `CONFIG` dict with `"default_csv": "house_data.csv"`. `main()` is empty save for comment stubs ("parsing command line arguments", "load and preprocess the data"); guarded by `if __name__ == "__main__"`.
+- `app.py`: Entry point. Imports `argparse`, `logging`, `os`, `sys`, `numpy`, `pandas`. Configures a module-level `logger` (INFO level, timestamped format) and a `CONFIG` dict with `"default_csv": "house_data.csv"`. Functions:
+  - `parse_arguments()`: Builds an `ArgumentParser` with a single `-f`/`--file` option (defaults to `CONFIG["default_csv"]`).
+  - `load_data(file_path)`: Exits (via `sys.exit(1)`) if the file is missing; reads the CSV with pandas; validates the required columns `square_footage` and `price_thousands` are present (exits if not); returns the DataFrame.
+  - `preprocess_data(df)`: Copies the frame, drops rows with missing values in the required columns (logs a warning). Outlier handling and dtype coercion are comment stubs, and the function currently returns `None` (no explicit return).
+  - `main()`: Wires `parse_arguments` → `load_data` → `preprocess_data`. The remaining steps (prepare/split data, train, evaluate, print results, visualize, predict) are comment stubs. Guarded by `if __name__ == "__main__"`.
 - `requirements.txt`: Pins the full dependency tree — headline packages are `matplotlib`, `numpy`, `pandas`, `scikit-learn` (below the `#` separator); the rest are transitive pins.
-- `venv/`: A committed virtualenv (Python 3.13). **Not gitignored** — see Git Notes.
-- `house_data.csv`: Referenced by `CONFIG["default_csv"]` but not yet present in the tree.
+- `venv/`: A local virtualenv (Python 3.13), gitignored via `LINEAR-REGRESSION-PYTHON/venv/`.
+- `house_data.csv`: The default dataset — 1000 rows with `square_footage,price_thousands` columns.
 
 ## Dependencies
 
@@ -468,7 +473,7 @@ Standalone Python exercise, independent of the Go workspace. Skeleton only.
 
 - Git LFS tracks `.png` and `.psd` files (see `.gitattributes`)
 - `.gitignore` excludes `tmp/`, `ai-search/*.png` (generated output), and compiled binaries (`ai-search/ai-search`, `vacuum-1/vacuum-1`, `battleships/battleships`, `blackjack/blackjack`)
-- `LINEAR-REGRESSION-PYTHON/venv/` is currently **not** gitignored — consider adding `LINEAR-REGRESSION-PYTHON/venv/` (and `__pycache__/`) to `.gitignore` before committing the Python module
+- `.gitignore` also excludes `LINEAR-REGRESSION-PYTHON/venv/` and `__pycache__/` for the Python module
 - Main branch: `main`, active development on `staging`
 
 **Note**: When adding or changing any algorithm (search or cleaning), update the relevant CLAUDE.md sections to keep documentation in sync.
