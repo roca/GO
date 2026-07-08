@@ -1,13 +1,48 @@
+"""
+Housing Price Linear Regression Analysis
+
+This script performs linear regression analysis on housing data,
+predicting prices based on square footage. It includes data validation,
+preprocessing, model training/testing, visualization, and the ability to
+predict the price of a new house given its square footage after training.
+
+What is Linear Regression?
+-------------------------
+Linear regression is a statistical method that attempts to find a linear relationship
+between input variables (features) and an output variable (target).
+
+In this case, we're trying to find the relationship between:
+- Input/Feature: Square footage of a house
+- Output/Target: Price of the house (in thousands of dollars)
+
+The goal is to find the line that best fits the data points, represented by the equation:
+    y = mx + b
+which in this case is:
+    Price = m × Square Footage + b
+where:
+- m is the slope (how much price increases when square footage increases by 1)
+- b is the intercept (the theoretical price of a house with 0 square footage)
+
+This "line of best fit" allows us to make predictions for new houses based on their square footage.
+"""
+
 import argparse
 import logging
 import os
 import sys
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 
 CONFIG = {
     "default_csv": "house_data.csv",
+    "test_size": 0.2,  # 20% of data used for testing, 80% for training
+    "random_state": 42,  # Seed for random operations, ensures reproducibility
 }
 
 logging.basicConfig(
@@ -63,9 +98,44 @@ def preprocess_data(df):
         logger.warning("Missing values found. Dropping rows with missing values.")
         processed_df = processed_df.dropna(subset=["square_footage", "price_thousands"])
 
-    # handle outliers
+    # filter out outliers
+    for col in ["square_footage", "price_thousands"]:
+        mean = processed_df[col].mean()
+        std = processed_df[col].std()
+        lower_bound = mean - 3 * std
+        upper_bound = mean + 3 * std
+
+        outliers = (processed_df[col] < lower_bound) | (processed_df[col] > upper_bound)
+        if outliers.any():
+            logger.warning(
+                f"Outliers detected in {col}. Removing {outliers.sum()} outliers."
+            )
+            processed_df = processed_df[~outliers]
 
     # ensure numeric data types for modeling
+    processed_df["square_footage"] = pd.to_numeric(
+        processed_df["square_footage"], errors="coerce"
+    )
+    processed_df["price_thousands"] = pd.to_numeric(
+        processed_df["price_thousands"], errors="coerce"
+    )
+
+    processed_df = processed_df.dropna(subset=["square_footage", "price_thousands"])
+
+    return processed_df
+
+
+def train_model(X, y):
+    logger.info("Training linear regression model")
+    # scale the features for better model performance
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(X)
+
+    # train the linear regression model
+    model = LinearRegression()
+    model.fit(X_scaled, y)
+
+    return model, scaler
 
 
 def main():
@@ -77,10 +147,16 @@ def main():
     processed_df = preprocess_data(df)
 
     # prepare data for modeling
+    X = processed_df["square_footage"].values.reshape(-1, 1)  # 2D array for sklearn
+    y = processed_df["price_thousands"].values
 
     # split data into traning and testing sets
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=CONFIG["test_size"], random_state=CONFIG["random_state"]
+    )
 
     # train a model
+    model, scaler = train_model(X_train, y_train)
 
     # evaluate the model on both training and testing sets
 
