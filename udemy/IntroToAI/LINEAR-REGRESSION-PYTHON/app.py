@@ -138,6 +138,20 @@ def train_model(X, y):
     return model, scaler
 
 
+def evaluate_model(model, X, y, scaler):
+    # scale the features for evaluation
+    X_scaled = scaler.transform(X)
+
+    # make predictions
+    predictions = model.predict(X_scaled)
+
+    # calculate R-squared and RMSE
+    r2 = r2_score(y, predictions)
+    rmse = np.sqrt(mean_squared_error(y, predictions))
+
+    return predictions, r2, rmse
+
+
 def main():
     # parsing command line arguments
     args = parse_arguments()
@@ -154,11 +168,24 @@ def main():
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=CONFIG["test_size"], random_state=CONFIG["random_state"]
     )
+    logger.info(
+        f"Data split into training and testing sets: "
+        f"{len(X_train)} training samples, {len(X_test)} testing samples"
+    )
 
     # train a model
     model, scaler = train_model(X_train, y_train)
+    logger.info("Model training completed")
 
     # evaluate the model on both training and testing sets
+    train_predictions, train_r2, train_rmse = evaluate_model(
+        model, X_train, y_train, scaler
+    )
+    test_predictions, test_r2, test_rmse = evaluate_model(model, X_test, y_test, scaler)
+
+    logger.info(
+        f"Model evaluation complete. R-squared (train): {train_r2:.4f}, R-squared (test): {test_r2:.4f}"
+    )
 
     # print results
 

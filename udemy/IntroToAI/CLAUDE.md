@@ -12,7 +12,7 @@ The repository uses Go workspaces (`go.work`) with five Go modules, plus one sta
 - `model-check/` - AI model fairness verification (functional — loads CSV, runs 3 model configs against fairness and risk properties)
 - `battleships/` - Battleship game: human vs AI (in progress — ship placement, both players' turns, AI targeting/attack execution, and ship-sunk detection functional; the only module with tests — a baseline suite over its pure logic)
 - `blackjack/` - Blackjack game with AI card counter (in progress — `Card`/`Deck`/`CardCounter`/`Player` types, hi-lo card-counting helpers, and `Player.CalculateScore`/`AddCard` (with soft/hard ace handling) implemented; `main.go` runs a round loop that reshuffles when the deck dips below 10 cards, calls `PlayeRound`, and prompts to play again (exits on "n"); `PlayeRound` deals two cards each to dealer/human/AI, runs the human turn, then (when the human hasn't busted) the AI turn driven by `AdvancedAIDecision` (card-counting hit/stand strategy in `ai.go`) followed by the dealer turn (`playDealerTurn`, hits below 17), then prints each player's result via `DetermineResult` and card-counting stats via `displayCardCountingStats`)
-- `LINEAR-REGRESSION-PYTHON/` - Python linear-regression exercise (in progress — `app.py` implements CLI arg parsing, CSV loading with required-column validation, preprocessing (missing-value drop, 3-sigma outlier removal, numeric coercion), and model training (StandardScaler + scikit-learn `LinearRegression`); `main()` wires arg parsing → load → preprocess → prepare X/y → train/test split → train, with the evaluation/print/visualization/prediction steps still comment stubs; not part of the Go workspace)
+- `LINEAR-REGRESSION-PYTHON/` - Python linear-regression exercise (in progress — `app.py` implements CLI arg parsing, CSV loading with required-column validation, preprocessing (missing-value drop, 3-sigma outlier removal, numeric coercion), model training (StandardScaler + scikit-learn `LinearRegression`), and model evaluation (R²/RMSE on train and test sets); `main()` wires arg parsing → load → preprocess → prepare X/y → train/test split → train → evaluate, with the print/visualization/prediction steps still comment stubs; not part of the Go workspace)
 
 **Requirements**: Go 1.25.6 or later (workspace declares 1.26.3 in `go.work`); Python 3.13 for `LINEAR-REGRESSION-PYTHON/`
 
@@ -88,7 +88,7 @@ python app.py                 # runs on house_data.csv by default
 python app.py -f other.csv    # override the input CSV (-f / --file)
 ```
 
-Not part of the Go workspace — run independently. `main()` currently loads, preprocesses, splits, and trains the model; evaluation, results printing, visualization, and prediction steps are still comment stubs.
+Not part of the Go workspace — run independently. `main()` currently loads, preprocesses, splits, trains, and evaluates the model (R²/RMSE on train and test sets); results printing, visualization, and prediction steps are still comment stubs.
 
 ### Build Verification
 
@@ -440,14 +440,15 @@ Console blackjack vs. an AI card counter. Partially implemented.
 
 ## Architecture: LINEAR-REGRESSION-PYTHON
 
-Standalone Python exercise, independent of the Go workspace. In progress — data loading, preprocessing, and model training implemented; evaluation/visualization/prediction not yet.
+Standalone Python exercise, independent of the Go workspace. In progress — data loading, preprocessing, model training, and evaluation implemented; results printing/visualization/prediction not yet.
 
 - `app.py`: Entry point. Imports `argparse`, `logging`, `os`, `sys`, `numpy`, `pandas`, `matplotlib.pyplot`, and scikit-learn (`LinearRegression`, `mean_squared_error`, `r2_score`, `train_test_split`, `StandardScaler`). Configures a module-level `logger` (INFO level, timestamped format) and a `CONFIG` dict with `"default_csv": "house_data.csv"`, `"test_size": 0.2`, `"random_state": 42`. Functions:
   - `parse_arguments()`: Builds an `ArgumentParser` with a single `-f`/`--file` option (defaults to `CONFIG["default_csv"]`).
   - `load_data(file_path)`: Exits (via `sys.exit(1)`) if the file is missing; reads the CSV with pandas; validates the required columns `square_footage` and `price_thousands` are present (exits if not); returns the DataFrame.
   - `preprocess_data(df)`: Copies the frame, drops rows with missing values in the required columns (logs a warning), removes 3-sigma outliers per column (mean ± 3×std, logs the count), coerces both columns to numeric (`pd.to_numeric` with `errors="coerce"`), drops any resulting NaNs, and returns the processed frame.
   - `train_model(X, y)`: Scales features with `StandardScaler`, fits a scikit-learn `LinearRegression`, and returns `(model, scaler)`.
-  - `main()`: Wires `parse_arguments` → `load_data` → `preprocess_data` → prepare `X`/`y` (reshapes `square_footage` to a 2D array) → `train_test_split` (using `CONFIG` test size/seed) → `train_model`. The remaining steps (evaluate, print results, visualize, predict) are comment stubs. Guarded by `if __name__ == "__main__"`.
+  - `evaluate_model(model, X, y, scaler)`: Scales the features with the passed scaler, predicts, and returns `(predictions, r2, rmse)` (R² via `r2_score`, RMSE via `sqrt(mean_squared_error)`).
+  - `main()`: Wires `parse_arguments` → `load_data` → `preprocess_data` → prepare `X`/`y` (reshapes `square_footage` to a 2D array) → `train_test_split` (using `CONFIG` test size/seed) → `train_model` → `evaluate_model` on both train and test sets (logging sample counts and R² scores). The remaining steps (print results, visualize, predict) are comment stubs. Guarded by `if __name__ == "__main__"`.
 - `requirements.txt`: Pins the full dependency tree — headline packages are `matplotlib`, `numpy`, `pandas`, `scikit-learn` (below the `#` separator); the rest are transitive pins.
 - `venv/`: A local virtualenv (Python 3.13), gitignored via `LINEAR-REGRESSION-PYTHON/venv/`.
 - `house_data.csv`: The default dataset — 500 rows with `square_footage,price_thousands` columns.
