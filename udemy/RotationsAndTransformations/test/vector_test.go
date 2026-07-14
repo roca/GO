@@ -8,239 +8,137 @@ import (
 	"udemy.com/aml/vector"
 )
 
-// Case 01: Default valuses for Vector should be 0.0
+// Case 01: Default values for Vector should be 0.0
 func TestCase01(t *testing.T) {
 	v := vector.Vector{}
 
 	expected := []float64{0.0, 0.0, 0.0}
 	actual := []float64{v.X, v.Y, v.Z}
 
-	assert.Equal(t, actual, expected, "Default valuses for Vector should be 0.0 float64")
+	assert.Equal(t, expected, actual, "Default values for Vector should be 0.0 float64")
 }
 
-// Case 02: Should initialize with scalar value
+// Case 02: Splat should initialize every component with a scalar value
 func TestCase02(t *testing.T) {
-	v, _ := vector.New(3.0)
+	v := vector.Splat(3.0)
 
 	expected := []float64{3.0, 3.0, 3.0}
 	actual := []float64{v.X, v.Y, v.Z}
 
-	assert.Equal(t, actual, expected, "Should initialize with scalar value")
+	assert.Equal(t, expected, actual, "Splat should initialize with scalar value")
 }
 
-// Case 03: Should initialize with three values
+// Case 03: New should initialize with three values
 func TestCase03(t *testing.T) {
-	v, _ := vector.New(1.0, 2.0, 3.0)
+	v := vector.New(1.0, 2.0, 3.0)
 
 	expected := []float64{1.0, 2.0, 3.0}
 	actual := []float64{v.X, v.Y, v.Z}
 
-	assert.Equal(t, actual, expected, "Should initialize with three values")
+	assert.Equal(t, expected, actual, "New should initialize with three values")
 }
 
-// Case 03: Should initialize with slice of three values
+// Case 04: FromSlice should initialize with a slice of three values
 func TestCase04(t *testing.T) {
-	v, _ := vector.New([]float64{3.0, 2.0, 1.0})
+	v, err := vector.FromSlice([]float64{3.0, 2.0, 1.0})
+	assert.NoError(t, err)
 
 	expected := []float64{3.0, 2.0, 1.0}
 	actual := []float64{v.X, v.Y, v.Z}
 
-	assert.Equal(t, actual, expected, "Should initialize with slice of three values")
+	assert.Equal(t, expected, actual, "FromSlice should initialize with slice of three values")
+
+	// Wrong length should error
+	_, err = vector.FromSlice([]float64{1.0, 2.0})
+	assert.Error(t, err, "FromSlice with wrong length should error")
 }
 
-/*
-	Destructive scalar operations (Sop). nothing return
-	(v *Vector) Sop(operation string, value float64) (*Vector, error)
-*/
+// Case 05: Scalar operations return new vectors (value semantics)
 func TestCase05(t *testing.T) {
 	s := 3.0
+	v := vector.New(1.0, 2.0, 3.0)
 
-	// 	v += s
-	v, _ := vector.New(1.0, 2.0, 3.0)
-	expected := []float64{v.X + s, v.Y + s, v.Z + s}
-	v.Sop("+=", s)
-	actual := []float64{v.X, v.Y, v.Z}
-	assert.Equal(t, actual, expected, "Vector should be altered with scalar added to each axis")
+	// Scale
+	scaled := v.Scale(s)
+	assert.Equal(t, []float64{v.X * s, v.Y * s, v.Z * s}, []float64{scaled.X, scaled.Y, scaled.Z}, "Scale multiplies each axis")
 
-	// 	v + s
-	expected = []float64{v.X + s, v.Y + s, v.Z + s}
-	u, _ := v.Sop("+", s)
-	actual = []float64{u.X, u.Y, u.Z}
-	assert.Equal(t, actual, expected, "Vector should be altered with scalar added to each axis")
+	// receiver is unchanged (value semantics)
+	assert.Equal(t, []float64{1.0, 2.0, 3.0}, []float64{v.X, v.Y, v.Z}, "Scale must not mutate the receiver")
 
-	// 	v -= s
-	expected = []float64{v.X - s, v.Y - s, v.Z - s}
-	v.Sop("-=", s)
-	actual = []float64{v.X, v.Y, v.Z}
-	assert.Equal(t, actual, expected, "Vector should be altered with scalar subtracted from each axis")
+	// Neg
+	neg := v.Neg()
+	assert.Equal(t, []float64{-v.X, -v.Y, -v.Z}, []float64{neg.X, neg.Y, neg.Z}, "Neg negates each axis")
 
-	// 	v - s
-	expected = []float64{v.X - s, v.Y - s, v.Z - s}
-	w, _ := v.Sop("-", s)
-	actual = []float64{w.X, w.Y, w.Z}
-	assert.Equal(t, actual, expected, "Vector should be altered with scalar subtracted from each axis")
+	// Mag
+	expectedMag := math.Sqrt(v.X*v.X + v.Y*v.Y + v.Z*v.Z)
+	assert.Equal(t, expectedMag, v.Mag(), "Mag is sqrt of the sum of squares")
 
-	// 	v *= s
-	expected = []float64{v.X * s, v.Y * s, v.Z * s}
-	v.Sop("*=", s)
-	actual = []float64{v.X, v.Y, v.Z}
-	assert.Equal(t, actual, expected, "Vector should be altered with scalar multiplied by each axis")
-
-	// 	v * s
-	expected = []float64{v.X * s, v.Y * s, v.Z * s}
-	x, _ := v.Sop("*", s)
-	actual = []float64{x.X, x.Y, x.Z}
-	assert.Equal(t, actual, expected, "Vector should be altered with scalar multiplied by each axis")
-
-	// 	v /= s
-	expected = []float64{v.X / s, v.Y / s, v.Z / s}
-	v.Sop("/=", s)
-	actual = []float64{v.X, v.Y, v.Z}
-	assert.Equal(t, actual, expected, "Vector should be altered with each axis divided by scalar")
-
-	// 	v / s
-	expected = []float64{v.X / s, v.Y / s, v.Z / s}
-	y, _ := v.Sop("/", s)
-	actual = []float64{y.X, y.Y, y.Z}
-	assert.Equal(t, actual, expected, "Vector should be altered with each axis divided by scalar")
-
-	// 	v ? s
-	expected = []float64{0.0, 0.0, 0.0}
-	z, e := v.Sop("?", s)
-	actual = []float64{z.X, z.Y, z.Z}
-	assert.Equal(t, actual, expected, "Vector should a nil object for its typ")
-	assert.NotNil(t, e, "This unknown operations should raise error")
-
-	// 	v.Mag()
-	expectedScalar := math.Sqrt(math.Pow(v.X, 2.0) + math.Pow(v.Y, 2.0) + math.Pow(v.Z, 2.0))
-	actualScalar := v.Mag()
-	assert.Equal(t, expectedScalar, actualScalar, "Magnitude of a vector should be the sqrt of the sum of the squares of each axis")
-
-	// 	v.Normalize()
+	// Normalize
+	unit, err := v.Normalize()
+	assert.NoError(t, err)
 	mag := v.Mag()
-	expected = []float64{v.X / mag, v.Y / mag, v.Z / mag}
-	v.Normalize()
-	actual = []float64{v.X, v.Y, v.Z}
-	assert.Equal(t, actual, expected, "Vector should be altered with scalar subtracting to each axis")
+	assert.Equal(t, []float64{v.X / mag, v.Y / mag, v.Z / mag}, []float64{unit.X, unit.Y, unit.Z}, "Normalize divides each axis by the magnitude")
 
-	// 	v.Negative()
-	expected = []float64{v.X * -1.0, v.Y * -1.0, v.Z * -1.0}
-	minusV, _ := v.Negative()
-	actual = []float64{minusV.X, minusV.Y, minusV.Z}
-	assert.Equal(t, actual, expected, "Vector should be altered with each axis times by -1")
+	// Normalize of zero vector errors
+	_, err = vector.Vector{}.Normalize()
+	assert.Error(t, err, "Normalizing a zero-magnitude vector should error")
 }
 
-/*
- 	Destructive vector operations (Vop). nothing returned
-	(v *Vector) Vop(operation string, u Vector) (*Vector, error)
-*/
+// Case 06: Vector-to-vector operations return new vectors
 func TestCase06(t *testing.T) {
-	v1, _ := vector.New(1.0, 2.0, 3.0)
-	v2, _ := vector.New(1.0, 2.0, 3.0)
+	v1 := vector.New(1.0, 2.0, 3.0)
+	v2 := vector.New(4.0, 5.0, 6.0)
 
-	//  v1 += v2
-	expected := []float64{v1.X + v2.X, v1.Y + v2.Y, v1.Z + v2.Z}
-	v1.Vop("+=", v2)
-	actual := []float64{v1.X, v1.Y, v1.Z}
-	assert.Equal(t, actual, expected, "Vector should be altered with added vectors axis added to each axis")
+	add := v1.Add(v2)
+	assert.Equal(t, []float64{v1.X + v2.X, v1.Y + v2.Y, v1.Z + v2.Z}, []float64{add.X, add.Y, add.Z}, "Add sums each axis")
 
-	//  v1 + v2
-	expected = []float64{v1.X + v2.X, v1.Y + v2.Y, v1.Z + v2.Z}
-	v1.Vop("+=", v2)
-	actual = []float64{v1.X, v1.Y, v1.Z}
-	assert.Equal(t, actual, expected, "Vector should be altered with added vectors axis added to each axis")
+	sub := v1.Sub(v2)
+	assert.Equal(t, []float64{v1.X - v2.X, v1.Y - v2.Y, v1.Z - v2.Z}, []float64{sub.X, sub.Y, sub.Z}, "Sub subtracts each axis")
 
-	//  v1 -= v2
-	expected = []float64{v1.X - v2.X, v1.Y - v2.Y, v1.Z - v2.Z}
-	v1.Vop("-=", v2)
-	actual = []float64{v1.X, v1.Y, v1.Z}
-	assert.Equal(t, actual, expected, "Vector should be altered with substracted vectors axis substracted from each axis")
+	mul := v1.Mul(v2)
+	assert.Equal(t, []float64{v1.X * v2.X, v1.Y * v2.Y, v1.Z * v2.Z}, []float64{mul.X, mul.Y, mul.Z}, "Mul multiplies each axis")
 
-	//  v1 - v2
-	expected = []float64{v1.X - v2.X, v1.Y - v2.Y, v1.Z - v2.Z}
-	v1.Vop("-=", v2)
-	actual = []float64{v1.X, v1.Y, v1.Z}
-	assert.Equal(t, actual, expected, "Vector should be altered with substracted vectors axis substracted from each axis")
+	div := v1.Div(v2)
+	assert.Equal(t, []float64{v1.X / v2.X, v1.Y / v2.Y, v1.Z / v2.Z}, []float64{div.X, div.Y, div.Z}, "Div divides each axis")
 
-	//  v1 *= v2
-	expected = []float64{v1.X * v2.X, v1.Y * v2.Y, v1.Z * v2.Z}
-	v1.Vop("*=", v2)
-	actual = []float64{v1.X, v1.Y, v1.Z}
-	assert.Equal(t, actual, expected, "Vector should be altered with the second vectors axis multipled by each axis")
-
-	//  v1 * v2
-	expected = []float64{v1.X * v2.X, v1.Y * v2.Y, v1.Z * v2.Z}
-	v1.Vop("*=", v2)
-	actual = []float64{v1.X, v1.Y, v1.Z}
-	assert.Equal(t, actual, expected, "Vector should be altered with the second vectors axis multipled by each axis")
-
-	//  v1 /= v2
-	expected = []float64{v1.X / v2.X, v1.Y / v2.Y, v1.Z / v2.Z}
-	v1.Vop("/=", v2)
-	actual = []float64{v1.X, v1.Y, v1.Z}
-	assert.Equal(t, actual, expected, "Vector should be altered with the second vectors axis divided by each axis")
-
-	//  v1 / v2
-	expected = []float64{v1.X / v2.X, v1.Y / v2.Y, v1.Z / v2.Z}
-	v1.Vop("/=", v2)
-	actual = []float64{v1.X, v1.Y, v1.Z}
-	assert.Equal(t, actual, expected, "Vector should be altered with the second vectors axis divided by each axis")
-
-	// 	v ? s
-	expected = []float64{0.0, 0.0, 0.0}
-	z, e := v1.Vop("?", v2)
-	actual = []float64{z.X, z.Y, z.Z}
-	assert.Equal(t, actual, expected, "Vector should a nil object for its type")
-	assert.NotNil(t, e, "This unknown operations should raise error")
+	// receiver unchanged
+	assert.Equal(t, []float64{1.0, 2.0, 3.0}, []float64{v1.X, v1.Y, v1.Z}, "operations must not mutate the receiver")
 }
 
-// Special Object creation
+// Case 07: Axis unit vectors
 func TestCase07(t *testing.T) {
+	x := vector.UnitX()
+	assert.Equal(t, []float64{1.0, 0.0, 0.0}, []float64{x.X, x.Y, x.Z}, "UnitX() should return 1,0,0")
 
-	// NewX() should return 1,0,0
-	expected := []float64{1.0, 0.0, 0.0}
-	v := vector.NewX()
-	actual := []float64{v.X, v.Y, v.Z}
-	assert.Equal(t, actual, expected, "NewX() should return 1,0,0")
+	y := vector.UnitY()
+	assert.Equal(t, []float64{0.0, 1.0, 0.0}, []float64{y.X, y.Y, y.Z}, "UnitY() should return 0,1,0")
 
-	// NewY() should return 0,1,0
-	expected = []float64{0.0, 1.0, 0.0}
-	v = vector.NewY()
-	actual = []float64{v.X, v.Y, v.Z}
-	assert.Equal(t, actual, expected, "NewY() should return 0,1,0")
-
-	// NewZ() should return 0,0,1
-	expected = []float64{0.0, 0.0, 1.0}
-	v = vector.NewZ()
-	actual = []float64{v.X, v.Y, v.Z}
-	assert.Equal(t, actual, expected, "NewZ() should return 0,0,1")
+	z := vector.UnitZ()
+	assert.Equal(t, []float64{0.0, 0.0, 1.0}, []float64{z.X, z.Y, z.Z}, "UnitZ() should return 0,0,1")
 }
 
-// Vector to Vector nondestructive operations which creates a new vector
-// Cross
+// Case 08: Cross product
 func TestCase08(t *testing.T) {
-	v1, _ := vector.New(2.0, -5.0, 4.0)
-	v2, _ := vector.New(6.0, 2.0, -8.0)
+	v1 := vector.New(2.0, -5.0, 4.0)
+	v2 := vector.New(6.0, 2.0, -8.0)
 	expected := []float64{32.0, 40.0, 34.0}
 	v := vector.Cross(v1, v2)
-	actual := []float64{v.X, v.Y, v.Z}
-	assert.Equal(t, actual, expected, "Cross(v1,v2) is inccorrect")
+	assert.Equal(t, expected, []float64{v.X, v.Y, v.Z}, "Cross(v1,v2) is incorrect")
 }
 
-// Dot
+// Case 09: Dot product
 func TestCase09(t *testing.T) {
-	v1, _ := vector.New(2.0, -5.0, 4.0)
-	v2, _ := vector.New(6.0, 2.0, -8.0)
+	v1 := vector.New(2.0, -5.0, 4.0)
+	v2 := vector.New(6.0, 2.0, -8.0)
 	expected := -30.0
-	actual := vector.Dot(v1, v2)
-	assert.Equal(t, actual, expected, "Dot(v1,v2) is inccorrect")
+	assert.Equal(t, expected, vector.Dot(v1, v2), "Dot(v1,v2) is incorrect")
 }
 
-// Unit
+// Case 10: Unit vector
 func TestCase10(t *testing.T) {
-	v, _ := vector.New(2.0, -5.0, 4.0)
-	expected := []float64{v.X / v.Norm(), v.Y / v.Norm(), v.Z / v.Norm()}
+	v := vector.New(2.0, -5.0, 4.0)
+	mag := v.Norm()
+	expected := []float64{v.X / mag, v.Y / mag, v.Z / mag}
 	u := vector.Unit(v)
-	actual := []float64{u.X, u.Y, u.Z}
-	assert.Equal(t, actual, expected, "Unit(v) is inccorrect")
+	assert.Equal(t, expected, []float64{u.X, u.Y, u.Z}, "Unit(v) is incorrect")
 }

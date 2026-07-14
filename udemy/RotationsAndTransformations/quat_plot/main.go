@@ -17,7 +17,7 @@ func main() {
 		dcm.DegreesToRadians(0.0),
 		dcm.DegreesToRadians(0.0),
 	)
-	omega_body, _ := vector.New(
+	omega_body := vector.New(
 		dcm.DegreesToRadians(-1.),
 		dcm.DegreesToRadians(15.),
 		dcm.DegreesToRadians(-2.),
@@ -32,9 +32,8 @@ func main() {
 	q, _ := quaternion.Angles2Quat(attitude_xyz)
 
 	for t := 0.; t < 20.+dt; t += dt {
-		q_dot, _ := quaternion.KinematicRates_BodyRates(q, omega_body)
-		q, _ = quaternion.Integrate(q, q_dot, dt)
-		q.Normalize()
+		q_dot := quaternion.KinematicRatesBodyRates(q, omega_body)
+		q = quaternion.Integrate(q, q_dot, dt).Normalize()
 		attitude_new, _ := q.ToAngles("XYZ")
 		timeValues = append(timeValues, t)
 		phiValues = append(phiValues, dcm.RadiansToDegrees(attitude_new.Phi))

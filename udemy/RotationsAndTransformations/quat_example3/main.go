@@ -17,13 +17,13 @@ func main() {
 		dcm.DegreesToRadians(0.0),
 		dcm.DegreesToRadians(0.0),
 	)
-	vector_xyz, _ := vector.New(
+	vector_xyz := vector.New(
 		dcm.DegreesToRadians(0.0),
 		dcm.DegreesToRadians(0.0),
 		dcm.DegreesToRadians(0.0),
 	)
 
-	omega_body, _ := vector.New(
+	omega_body := vector.New(
 		dcm.DegreesToRadians(0.01),
 		dcm.DegreesToRadians(10.),
 		dcm.DegreesToRadians(0.),
@@ -44,13 +44,12 @@ func main() {
 
 	for t := 0.; t < 20.+dt; t += dt {
 
-		q_dot, _ := quaternion.KinematicRates_BodyRates(q, omega_body)
-		q, _ = quaternion.Integrate(q, q_dot, dt)
-		q.Normalize()
+		q_dot := quaternion.KinematicRatesBodyRates(q, omega_body)
+		q = quaternion.Integrate(q, q_dot, dt).Normalize()
 		attitude_new, _ := q.ToAngles("XYZ")
 
-		e_Dot, _ := dcm.XYZEulerAngleRates(vector_xyz.X, vector_xyz.Y, vector_xyz.Z, omega_body)
-		vector_xyz, _ = dcm.EulerIntergration(vector_xyz, e_Dot, dt)
+		e_Dot := dcm.XYZEulerAngleRates(vector_xyz.X, vector_xyz.Y, vector_xyz.Z, omega_body)
+		vector_xyz = dcm.EulerIntegration(vector_xyz, e_Dot, dt)
 
 		timeValues = append(timeValues, t)
 		phiValues = append(phiValues, dcm.RadiansToDegrees(attitude_new.Phi))

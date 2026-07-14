@@ -25,25 +25,17 @@ func TestToXYZDCM(t *testing.T) {
 	}
 
 	actual := R.Data()
-	for i := 0; i < 3; i++ {
-		b := assert.InDeltaSlice(t, expected[i], actual[i], .00000001)
-		assert.Equal(t, true, b, "RotationZ Matrix values incorrect")
+	for i := range 3 {
+		assert.InDeltaSlice(t, expected[i][:], actual[i][:], 1e-8, "XYZ DCM values incorrect")
 	}
 	phiActual := math.Atan2(R.M23, R.M33)
 	thetaActual := -1.0 * math.Asin(R.M13)
 	siActual := math.Atan2(R.M12, R.M11)
-	assert.InDeltaf(t, phi, phiActual, .0000000001, "phi Values %f != %f", phi, phiActual)
-	assert.InDeltaf(t, theta, thetaActual, .0000000001, "theta Values %f != %f", theta, thetaActual)
-	assert.InDeltaf(t, si, siActual, .0000000001, "si Values %f != %f", si, siActual)
+	assert.InDeltaf(t, phi, phiActual, 1e-10, "phi Values %f != %f", phi, phiActual)
+	assert.InDeltaf(t, theta, thetaActual, 1e-10, "theta Values %f != %f", theta, thetaActual)
+	assert.InDeltaf(t, si, siActual, 1e-10, "si Values %f != %f", si, siActual)
 
-	x_a, _ := vector.New(0.7, 1.2, -0.3)
-	x_b, _ := R.Vop("*", x_a)
-
+	xB := R.MulVec(vector.New(0.7, 1.2, -0.3))
 	expectedV := []float64{0.05168617940094594, 0.6482734800319445, -1.2637523625877838}
-	actualV := x_b.Data()
-	for i := 0; i < 3; i++ {
-		b := assert.InDelta(t, expectedV[i], actualV[i], .00000001)
-		assert.Equal(t, true, b, "RotationX * V values incorrect")
-	}
-
+	assert.InDeltaSlice(t, expectedV, xB.Data(), 1e-8, "R * V values incorrect")
 }

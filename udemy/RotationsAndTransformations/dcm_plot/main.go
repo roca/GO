@@ -10,12 +10,12 @@ import (
 )
 
 func main() {
-	attitude, _ := vector.New(
+	attitude := vector.New(
 		dcm.DegreesToRadians(0.0), // phi(Role Rate)
 		dcm.DegreesToRadians(0.0), // theta(Pitch Rate)
 		dcm.DegreesToRadians(0.0), // si(Yaw Rate)
 	)
-	omegaBody, _ := vector.New( // Angular Rates
+	omegaBody := vector.New( // Angular Rates
 		dcm.DegreesToRadians(-1.0), // phiDot
 		dcm.DegreesToRadians(15.0), // thetaDot
 		dcm.DegreesToRadians(-2.0), // siDot
@@ -27,8 +27,8 @@ func main() {
 	thetaValues := []float64{}
 	siValues := []float64{}
 	for t := 0.; t < 20.+dt; t += dt {
-		attitudeDot, _ := dcm.XYZEulerAngleRates(attitude.X, attitude.Y, attitude.Z, omegaBody)
-		attitude, _ = dcm.EulerIntergration(attitude, attitudeDot, dt)
+		attitudeDot := dcm.XYZEulerAngleRates(attitude.X, attitude.Y, attitude.Z, omegaBody)
+		attitude = dcm.EulerIntegration(attitude, attitudeDot, dt)
 
 		timeValues = append(timeValues, t)
 		phiValues = append(phiValues, dcm.RadiansToDegrees(attitude.X))

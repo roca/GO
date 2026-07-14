@@ -19,15 +19,15 @@ func main() {
 		dcm.DegreesToRadians(0.0),
 	}
 
-	aw, _ := euler.New(attitudeAW[0], attitudeAW[1], attitudeAW[2], "XYZ")
-	ca, _ := euler.New(attitudeCA[0], attitudeCA[1], attitudeCA[2], "XYZ")
+	aw := euler.New(attitudeAW[0], attitudeAW[1], attitudeAW[2], "XYZ")
+	ca := euler.New(attitudeCA[0], attitudeCA[1], attitudeCA[2], "XYZ")
 
 	Raw, _ := aw.ToDCM()
 	Rca, _ := ca.ToDCM()
 
-	Rcw, _ := Rca.Mop("*", Raw)
-	phi, theta, si := dcm.EulerAnglesFromRxyz(*Rcw)
+	Rcw := Rca.Mul(Raw)
+	phi, theta, si := dcm.EulerAnglesFromRxyz(Rcw)
 
-	fmt.Printf("IsOrthogonal: %t\n", dcm.IsOrthogonal(*Rcw))
+	fmt.Printf("IsOrthogonal: %t\n", dcm.IsOrthogonal(Rcw))
 	fmt.Printf("Euler Angles: [%f, %f, %f] degrees\n", dcm.RadiansToDegrees(phi), dcm.RadiansToDegrees(theta), dcm.RadiansToDegrees(si))
 }

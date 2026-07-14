@@ -14,17 +14,17 @@ type Seq string
 
 const (
 	ZXZ Seq = "ZXZ"
-	XYX     = "XYX"
-	YZY     = "YZY"
-	ZYZ     = "ZYZ"
-	XZX     = "XZX"
-	YXY     = "YXY"
-	XYZ     = "XYZ"
-	YZX     = "YZX"
-	ZXY     = "ZXY"
-	XZY     = "XZY"
-	ZYX     = "ZYX"
-	YXZ     = "YXZ"
+	XYX Seq = "XYX"
+	YZY Seq = "YZY"
+	ZYZ Seq = "ZYZ"
+	XZX Seq = "XZX"
+	YXY Seq = "YXY"
+	XYZ Seq = "XYZ"
+	YZX Seq = "YZX"
+	ZXY Seq = "ZXY"
+	XZY Seq = "XZY"
+	ZYX Seq = "ZYX"
+	YXZ Seq = "YXZ"
 )
 
 type IAngles interface {
@@ -46,21 +46,18 @@ func New(phi, theta, si float64, sequence ...Seq) Angles {
 	return Angles{Phi: phi, Theta: theta, Si: si, Sequence: XYZ}
 }
 func (a Angles) ToDCM() (matrix.Matrix, error) {
-	rotations := map[string]func(float64) (matrix.Matrix, error){
+	rotations := map[string]func(float64) matrix.Matrix{
 		"X": dcm.RotationX,
 		"Y": dcm.RotationY,
 		"Z": dcm.RotationZ,
 	}
 	axises := strings.Split(string(a.Sequence), "")
 
-	R1, _ := rotations[axises[0]](a.Phi)
-	R2, _ := rotations[axises[1]](a.Theta)
-	R3, _ := rotations[axises[2]](a.Si)
+	R1 := rotations[axises[0]](a.Phi)
+	R2 := rotations[axises[1]](a.Theta)
+	R3 := rotations[axises[2]](a.Si)
 
-	R23, _ := R2.Mop("*", R3)
-	R123, _ := R1.Mop("*", *R23)
-
-	return *R123, nil
+	return R1.Mul(R2.Mul(R3)), nil
 }
 func (a *Angles) Convert(angles Angles, sequence Seq) (Angles, error) {
 	dcm, _ := angles.ToDCM()
@@ -90,7 +87,7 @@ func (angles Angles) KinematicRates(bodyRates vector.Vector) (Angles, error) {
 }
 func DcmToAngles(m matrix.Matrix, sequence Seq) (Angles, error) {
 	if !dcm.IsOrthogonal(m) {
-		return Angles{}, fmt.Errorf("This Matrix is not orthoganal %g", m)
+		return Angles{}, fmt.Errorf("euler: matrix is not orthogonal %g", m)
 	}
 
 	anglesMap := map[Seq]func(matrix.Matrix) (Angles, error){
@@ -114,7 +111,7 @@ func DcmToAngles(m matrix.Matrix, sequence Seq) (Angles, error) {
 }
 func Integrate(angles Angles, angleRates Angles, dt float64) (Angles, error) {
 	if angles.Sequence != angleRates.Sequence {
-		return Angles{}, fmt.Errorf("Can not integrate: %s != %s", angles.Sequence, angleRates.Sequence)
+		return Angles{}, fmt.Errorf("euler: cannot integrate: %s != %s", angles.Sequence, angleRates.Sequence)
 	}
 	phiNew := angles.Phi + (angleRates.Phi * dt)
 	thetaNew := angles.Theta + (angleRates.Theta * dt)
@@ -124,7 +121,7 @@ func Integrate(angles Angles, angleRates Angles, dt float64) (Angles, error) {
 }
 func LinearInterpolate(startAngles, endAngles Angles, t float64) (Angles, error) {
 	if startAngles.Sequence != endAngles.Sequence {
-		return Angles{}, fmt.Errorf("Sequence %s != %s", startAngles.Sequence, endAngles.Sequence)
+		return Angles{}, fmt.Errorf("euler: sequence %s != %s", startAngles.Sequence, endAngles.Sequence)
 	}
 	if t < 0.0 {
 		return startAngles, nil
@@ -141,7 +138,7 @@ func LinearInterpolate(startAngles, endAngles Angles, t float64) (Angles, error)
 
 func SmoothInterpolate(startAngles, endAngles Angles, t float64) (Angles, error) {
 	if startAngles.Sequence != endAngles.Sequence {
-		return Angles{}, fmt.Errorf("Sequence %s != %s", startAngles.Sequence, endAngles.Sequence)
+		return Angles{}, fmt.Errorf("euler: sequence %s != %s", startAngles.Sequence, endAngles.Sequence)
 	}
 	if t < 0.0 {
 		return startAngles, nil
@@ -255,13 +252,12 @@ func (angles Angles) ratesMatrixXYZ(bodyRates vector.Vector) (Angles, error) {
 	tanTheta := math.Tan(angles.Theta)
 	secTheta := 1.0 / cosTheta
 
-	data := [][]float64{
+	data := [3][3]float64{
 		{1.0, sinPhi * tanTheta, cosPhi * tanTheta},
 		{0.0, cosPhi, -sinPhi},
 		{0.0, sinPhi * secTheta, cosPhi * secTheta},
 	}
-	m, _ := matrix.New(data)
-	rates, _ := m.Vop("*", bodyRates)
+	rates := matrix.New(data).MulVec(bodyRates)
 
 	return Angles{Phi: rates.X, Theta: rates.Y, Si: rates.Z, Sequence: angles.Sequence}, nil
 }
@@ -273,14 +269,13 @@ func (angles Angles) ratesMatrixZXZ(bodyRates vector.Vector) (Angles, error) {
 	sinTheta := math.Sin(angles.Theta)
 	cscTheta := 1.0 / sinTheta
 
-	data := [][]float64{
+	data := [3][3]float64{
 		{-sinPhi * cosTheta * cscTheta, -cosPhi * cosTheta * cscTheta, sinTheta * cscTheta},
 		{cosPhi * sinTheta * cscTheta, -sinPhi * sinTheta * cscTheta, 0.0},
 		{sinPhi * cscTheta, cosPhi * cscTheta, 0.0},
 	}
 
-	m, _ := matrix.New(data)
-	rates, _ := m.Vop("*", bodyRates)
+	rates := matrix.New(data).MulVec(bodyRates)
 
 	return Angles{Phi: rates.X, Theta: rates.Y, Si: rates.Z, Sequence: angles.Sequence}, nil
 }
@@ -292,14 +287,13 @@ func (angles Angles) ratesMatrixYZY(bodyRates vector.Vector) (Angles, error) {
 	sinTheta := math.Sin(angles.Theta)
 	cscTheta := 1.0 / sinTheta
 
-	data := [][]float64{
+	data := [3][3]float64{
 		{-cosPhi * cosTheta * cscTheta, sinTheta * cscTheta, -sinPhi * cosTheta * cscTheta},
 		{-sinPhi * sinTheta * cscTheta, 0.0, cosPhi * sinTheta * cscTheta},
 		{cosPhi * cscTheta, 0.0, sinPhi * cscTheta},
 	}
 
-	m, _ := matrix.New(data)
-	rates, _ := m.Vop("*", bodyRates)
+	rates := matrix.New(data).MulVec(bodyRates)
 
 	return Angles{Phi: rates.X, Theta: rates.Y, Si: rates.Z, Sequence: angles.Sequence}, nil
 }
@@ -311,14 +305,13 @@ func (angles Angles) ratesMatrixZYZ(bodyRates vector.Vector) (Angles, error) {
 	sinTheta := math.Sin(angles.Theta)
 	cscTheta := 1.0 / sinTheta
 
-	data := [][]float64{
+	data := [3][3]float64{
 		{cosPhi * cosTheta * cscTheta, -sinPhi * cosTheta * cscTheta, sinTheta},
 		{sinPhi * sinTheta * cscTheta, cosPhi * sinTheta * cscTheta, 0.0},
 		{-cosPhi * cscTheta, sinPhi * cscTheta, 0.0},
 	}
 
-	m, _ := matrix.New(data)
-	rates, _ := m.Vop("*", bodyRates)
+	rates := matrix.New(data).MulVec(bodyRates)
 
 	return Angles{Phi: rates.X, Theta: rates.Y, Si: rates.Z, Sequence: angles.Sequence}, nil
 }
@@ -330,14 +323,13 @@ func (angles Angles) ratesMatrixXYX(bodyRates vector.Vector) (Angles, error) {
 	sinTheta := math.Sin(angles.Theta)
 	cscTheta := 1.0 / sinTheta
 
-	data := [][]float64{
+	data := [3][3]float64{
 		{sinTheta * cscTheta, -sinPhi * cosTheta * cscTheta, -cosPhi * cosTheta * cscTheta},
 		{0.0, cosPhi * sinTheta * cscTheta, -sinPhi * sinTheta * cscTheta},
 		{0.0, sinPhi * cscTheta, cosPhi * cscTheta},
 	}
 
-	m, _ := matrix.New(data)
-	rates, _ := m.Vop("*", bodyRates)
+	rates := matrix.New(data).MulVec(bodyRates)
 
 	return Angles{Phi: rates.X, Theta: rates.Y, Si: rates.Z, Sequence: angles.Sequence}, nil
 }
@@ -349,14 +341,13 @@ func (angles Angles) ratesMatrixXZX(bodyRates vector.Vector) (Angles, error) {
 	sinTheta := math.Sin(angles.Theta)
 	cscTheta := 1.0 / sinTheta
 
-	data := [][]float64{
+	data := [3][3]float64{
 		{sinTheta * cscTheta, cosPhi * cosTheta * cscTheta, -sinPhi * cosTheta * cscTheta},
 		{0.0, sinPhi * sinTheta * cscTheta, cosPhi * sinTheta * cscTheta},
 		{0.0, -cosPhi * cscTheta, sinPhi * cscTheta},
 	}
 
-	m, _ := matrix.New(data)
-	rates, _ := m.Vop("*", bodyRates)
+	rates := matrix.New(data).MulVec(bodyRates)
 
 	return Angles{Phi: rates.X, Theta: rates.Y, Si: rates.Z, Sequence: angles.Sequence}, nil
 }
@@ -368,14 +359,13 @@ func (angles Angles) ratesMatrixYXY(bodyRates vector.Vector) (Angles, error) {
 	sinTheta := math.Sin(angles.Theta)
 	cscTheta := 1.0 / sinTheta
 
-	data := [][]float64{
+	data := [3][3]float64{
 		{-sinPhi * cosTheta * cscTheta, sinTheta * cscTheta, cosPhi * cosTheta * cscTheta},
 		{sinTheta * cosPhi * cscTheta, 0.0, sinTheta * sinPhi * cscTheta},
 		{sinPhi * cscTheta, 0.0, -cosPhi * cscTheta},
 	}
 
-	m, _ := matrix.New(data)
-	rates, _ := m.Vop("*", bodyRates)
+	rates := matrix.New(data).MulVec(bodyRates)
 
 	return Angles{Phi: rates.X, Theta: rates.Y, Si: rates.Z, Sequence: angles.Sequence}, nil
 }
@@ -387,14 +377,13 @@ func (angles Angles) ratesMatrixYZX(bodyRates vector.Vector) (Angles, error) {
 	sinTheta := math.Sin(angles.Theta)
 	secTheta := 1.0 / cosTheta
 
-	data := [][]float64{
+	data := [3][3]float64{
 		{cosPhi * sinTheta * secTheta, cosTheta * secTheta, sinPhi * sinTheta * secTheta},
 		{-sinPhi * cosTheta * secTheta, 0.0, cosPhi * cosTheta * secTheta},
 		{cosPhi * secTheta, 0.0, sinPhi * secTheta},
 	}
 
-	m, _ := matrix.New(data)
-	rates, _ := m.Vop("*", bodyRates)
+	rates := matrix.New(data).MulVec(bodyRates)
 
 	return Angles{Phi: rates.X, Theta: rates.Y, Si: rates.Z, Sequence: angles.Sequence}, nil
 }
@@ -406,14 +395,13 @@ func (angles Angles) ratesMatrixZXY(bodyRates vector.Vector) (Angles, error) {
 	sinTheta := math.Sin(angles.Theta)
 	secTheta := 1.0 / cosTheta
 
-	data := [][]float64{
+	data := [3][3]float64{
 		{sinPhi * sinTheta * secTheta, cosPhi * sinTheta * secTheta, cosTheta * secTheta},
 		{cosTheta * cosPhi * secTheta, -sinPhi * cosTheta * secTheta, 0.0},
 		{sinPhi * secTheta, cosPhi * secTheta, 0.0},
 	}
 
-	m, _ := matrix.New(data)
-	rates, _ := m.Vop("*", bodyRates)
+	rates := matrix.New(data).MulVec(bodyRates)
 
 	return Angles{Phi: rates.X, Theta: rates.Y, Si: rates.Z, Sequence: angles.Sequence}, nil
 }
@@ -425,14 +413,13 @@ func (angles Angles) ratesMatrixXZY(bodyRates vector.Vector) (Angles, error) {
 	sinTheta := math.Sin(angles.Theta)
 	secTheta := 1.0 / cosTheta
 
-	data := [][]float64{
+	data := [3][3]float64{
 		{cosTheta * secTheta, -cosPhi * sinTheta * secTheta, sinPhi * sinTheta * secTheta},
 		{0.0, sinPhi * cosTheta * secTheta, cosPhi * cosTheta * secTheta},
 		{0.0, cosPhi * secTheta, -sinPhi * secTheta},
 	}
 
-	m, _ := matrix.New(data)
-	rates, _ := m.Vop("*", bodyRates)
+	rates := matrix.New(data).MulVec(bodyRates)
 
 	return Angles{Phi: rates.X, Theta: rates.Y, Si: rates.Z, Sequence: angles.Sequence}, nil
 }
@@ -444,14 +431,13 @@ func (angles Angles) ratesMatrixZYX(bodyRates vector.Vector) (Angles, error) {
 	sinTheta := math.Sin(angles.Theta)
 	secTheta := 1.0 / cosTheta
 
-	data := [][]float64{
+	data := [3][3]float64{
 		{-cosPhi * sinTheta * secTheta, sinPhi * sinTheta * secTheta, cosTheta * secTheta},
 		{sinPhi * cosTheta * secTheta, cosPhi * cosTheta * secTheta, 0.0},
 		{cosPhi * secTheta, -sinPhi * secTheta, 0.0},
 	}
 
-	m, _ := matrix.New(data)
-	rates, _ := m.Vop("*", bodyRates)
+	rates := matrix.New(data).MulVec(bodyRates)
 
 	return Angles{Phi: rates.X, Theta: rates.Y, Si: rates.Z, Sequence: angles.Sequence}, nil
 }
@@ -463,14 +449,13 @@ func (angles Angles) ratesMatrixYXZ(bodyRates vector.Vector) (Angles, error) {
 	sinTheta := math.Sin(angles.Theta)
 	secTheta := 1.0 / cosTheta
 
-	data := [][]float64{
+	data := [3][3]float64{
 		{sinPhi * sinTheta * secTheta, cosTheta * secTheta, -cosPhi * sinTheta * secTheta},
 		{cosPhi * cosTheta * secTheta, 0.0, sinPhi * cosTheta * secTheta},
 		{-sinPhi * secTheta, 0.0, cosPhi * secTheta},
 	}
 
-	m, _ := matrix.New(data)
-	rates, _ := m.Vop("*", bodyRates)
+	rates := matrix.New(data).MulVec(bodyRates)
 
 	return Angles{Phi: rates.X, Theta: rates.Y, Si: rates.Z, Sequence: angles.Sequence}, nil
 }

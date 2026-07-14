@@ -32,7 +32,7 @@ func main() {
 	siValues := []float64{}
 
 	for t := 0.; t < 1.; t += dt {
-		q, _ := quaternion.SlerpInterpolate(startQuat, endQuat, t)
+		q := quaternion.SlerpInterpolate(startQuat, endQuat, t)
 
 		attitude_new, _ := q.ToAngles("XYZ")
 		timeValues = append(timeValues, t)

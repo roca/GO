@@ -3,493 +3,208 @@ package matrix
 import (
 	"fmt"
 	"math"
-	"strings"
 
 	"udemy.com/aml/vector"
 )
 
-type IMatrix interface {
-	New(values ...interface{}) (Matrix, error)
-	Negate() (Matrix, error)
-	Copy() (Matrix, error)
-	CopyPointer() (*Matrix, error)
-	Data() [][]float64
-	Mop(operation string, u Matrix) (*Matrix, error)
-	Sop(operation string, value float64) (*Matrix, error)
-	Inverse() (Matrix, error)
-	Mutate()
-	change(values ...interface{}) error
-}
-
+// Matrix is a 3x3 matrix with value semantics: all methods return new
+// Matrices and never mutate the receiver.
 type Matrix struct {
 	M11, M12, M13 float64
 	M21, M22, M23 float64
 	M31, M32, M33 float64
 }
 
-func New(values ...interface{}) (Matrix, error) {
-	switch values[0].(type) {
-	case float64:
-		switch l := len(values); l {
-		case 1:
-			return Matrix{
-				values[0].(float64),
-				values[0].(float64),
-				values[0].(float64),
-				values[0].(float64),
-				values[0].(float64),
-				values[0].(float64),
-				values[0].(float64),
-				values[0].(float64),
-				values[0].(float64),
-			}, nil
-		case 9:
-			return Matrix{
-				values[0].(float64), values[1].(float64), values[2].(float64),
-				values[3].(float64), values[4].(float64), values[5].(float64),
-				values[6].(float64), values[7].(float64), values[8].(float64),
-			}, nil
-		default:
-			return Matrix{}, fmt.Errorf("Could not create Vector type")
-		}
-	case []float64:
-		a := values[0].([]float64)
-		switch l := len(a); l {
-		case 9:
-			return Matrix{
-				a[0], a[1], a[2],
-				a[3], a[4], a[5],
-				a[6], a[7], a[8],
-			}, nil
-		default:
-			return Matrix{}, fmt.Errorf("Could not create Matrixtype")
-		}
-	case [][]float64:
-		a := values[0].([][]float64)
-		switch l := len(a[0]) + len(a[1]) + len(a[2]); l {
-		case 9:
-			return Matrix{
-				a[0][0], a[0][1], a[0][2],
-				a[1][0], a[1][1], a[1][2],
-				a[2][0], a[2][1], a[2][2],
-			}, nil
-		default:
-			return Matrix{}, fmt.Errorf("Could not create Matrixtype")
-		}
-	case vector.Vector:
-		switch l := len(values); l {
-		case 3:
-			u1 := values[0].(vector.Vector)
-			u2 := values[1].(vector.Vector)
-			u3 := values[2].(vector.Vector)
-			return Matrix{
-				u1.X, u1.Y, u1.Z,
-				u2.X, u2.Y, u2.Z,
-				u3.X, u3.Y, u3.Z,
-			}, nil
-		default:
-			return Matrix{}, fmt.Errorf("Could not create Vector type")
-		}
-	case []vector.Vector:
-		a := values[0].([]vector.Vector)
-		switch l := len(a); l {
-		case 3:
-			return Matrix{
-				a[0].X, a[0].Y, a[0].Z,
-				a[1].X, a[1].Y, a[1].Z,
-				a[2].X, a[2].Y, a[2].Z,
-			}, nil
-		default:
-			return Matrix{}, fmt.Errorf("Could not create Matrix type")
-		}
-	default:
-		return Matrix{}, nil
+// New returns a Matrix from a 3x3 array of rows.
+func New(rows [3][3]float64) Matrix {
+	return Matrix{
+		rows[0][0], rows[0][1], rows[0][2],
+		rows[1][0], rows[1][1], rows[1][2],
+		rows[2][0], rows[2][1], rows[2][2],
 	}
 }
 
-// Special Type creation
+// FromRows returns a Matrix whose rows are the given vectors.
+func FromRows(r0, r1, r2 vector.Vector) Matrix {
+	return Matrix{
+		r0.X, r0.Y, r0.Z,
+		r1.X, r1.Y, r1.Z,
+		r2.X, r2.Y, r2.Z,
+	}
+}
+
+// Splat returns a Matrix with every element set to s.
+func Splat(s float64) Matrix {
+	return Matrix{s, s, s, s, s, s, s, s, s}
+}
+
+// Identity returns the 3x3 identity matrix.
 func Identity() Matrix {
-	m, _ := New([][]float64{
-		{1., 0., 0.},
-		{0., 1., 0.},
-		{0., 0., 1.},
-	})
-	return m
-}
-
-func (m *Matrix) Negate() (Matrix, error) {
-	u := m
-	_, _ = u.Sop("*=", -1.0)
-	return *u, nil
-}
-
-func (m *Matrix) Copy() (Matrix, error) {
-	u := m
-	return *u, nil
-}
-func (m *Matrix) CopyPointer() (*Matrix, error) {
-	var new *Matrix
-	x, _ := m.Copy()
-	new = &x
-	return new, nil
-}
-
-func (m *Matrix) Mutate(values ...interface{}) {
- _ = m.change(values)
-}
-
-func (m *Matrix) change(values ...interface{}) error {
-	switch values[0].(type) {
-	case float64:
-		switch l := len(values); l {
-		case 1:
-			m.M11 = values[0].(float64)
-			m.M12 = values[0].(float64)
-			m.M13 = values[0].(float64)
-			m.M21 = values[0].(float64)
-			m.M22 = values[0].(float64)
-			m.M23 = values[0].(float64)
-			m.M31 = values[0].(float64)
-			m.M32 = values[0].(float64)
-			m.M33 = values[0].(float64)
-			return nil
-		case 9:
-			m.M11 = values[0].(float64)
-			m.M12 = values[1].(float64)
-			m.M13 = values[2].(float64)
-			m.M21 = values[3].(float64)
-			m.M22 = values[4].(float64)
-			m.M23 = values[5].(float64)
-			m.M31 = values[6].(float64)
-			m.M32 = values[7].(float64)
-			m.M33 = values[8].(float64)
-			return nil
-		default:
-			return fmt.Errorf("Could not create Vector type")
-		}
-	case []float64:
-		a := values[0].([]float64)
-		switch l := len(a); l {
-		case 9:
-			m.M11 = a[0]
-			m.M12 = a[1]
-			m.M13 = a[2]
-			m.M21 = a[3]
-			m.M22 = a[4]
-			m.M23 = a[5]
-			m.M31 = a[6]
-			m.M32 = a[7]
-			m.M33 = a[8]
-			return nil
-		default:
-			return fmt.Errorf("Could not create Matrixtype")
-		}
-	case [][]float64:
-		a := values[0].([][]float64)
-		switch l := len(a[0]) + len(a[1]) + len(a[2]); l {
-		case 9:
-			m.M11 = a[0][0]
-			m.M12 = a[0][1]
-			m.M13 = a[0][2]
-			m.M21 = a[1][0]
-			m.M22 = a[1][1]
-			m.M23 = a[1][2]
-			m.M31 = a[2][0]
-			m.M32 = a[2][1]
-			m.M33 = a[2][2]
-			return nil
-		default:
-			return fmt.Errorf("Could not create Matrixtype")
-		}
-	case vector.Vector:
-		switch l := len(values); l {
-		case 3:
-			u1 := values[0].(vector.Vector)
-			u2 := values[1].(vector.Vector)
-			u3 := values[2].(vector.Vector)
-			m.M11 = u1.X
-			m.M12 = u1.Y
-			m.M13 = u1.Z
-			m.M21 = u2.X
-			m.M22 = u2.Y
-			m.M23 = u2.Z
-			m.M31 = u3.X
-			m.M32 = u3.Y
-			m.M33 = u3.Z
-			return nil
-		default:
-			return fmt.Errorf("Could not create Vector type")
-		}
-	case []vector.Vector:
-		a := values[0].([]vector.Vector)
-		switch l := len(a); l {
-		case 3:
-			m.M11 = a[0].X
-			m.M12 = a[0].Y
-			m.M13 = a[0].Z
-			m.M21 = a[1].X
-			m.M22 = a[1].Y
-			m.M23 = a[1].Z
-			m.M31 = a[2].X
-			m.M32 = a[2].Y
-			m.M33 = a[2].Z
-			return nil
-		default:
-			return fmt.Errorf("Could not create Matrix type")
-		}
-	default:
-		return nil
+	return Matrix{
+		1, 0, 0,
+		0, 1, 0,
+		0, 0, 1,
 	}
 }
 
-func (m *Matrix) Data() [][]float64 {
-	return [][]float64{
+// Data returns the matrix as rows of a 3x3 array.
+func (m Matrix) Data() [3][3]float64 {
+	return [3][3]float64{
 		{m.M11, m.M12, m.M13},
 		{m.M21, m.M22, m.M23},
 		{m.M31, m.M32, m.M33},
 	}
 }
 
-// Operator Assignments (Matrix)
-// +=, -=, *=, /=
-func (m *Matrix) Mop(operation string, u Matrix) (*Matrix, error) {
-	var new *Matrix
-	if !strings.Contains(operation, "=") {
-		new, _ = m.CopyPointer()
-	} else {
-		new = m
-	}
-
-	switch o := operation; {
-	case o == "+=" || o == "+":
-		new.M11 += u.M11
-		new.M12 += u.M12
-		new.M13 += u.M13
-		new.M21 += u.M21
-		new.M22 += u.M22
-		new.M23 += u.M23
-		new.M31 += u.M31
-		new.M32 += u.M32
-		new.M33 += u.M33
-		return new, nil
-	case o == "-=" || o == "-":
-		new.M11 -= u.M11
-		new.M12 -= u.M12
-		new.M13 -= u.M13
-		new.M21 -= u.M21
-		new.M22 -= u.M22
-		new.M23 -= u.M23
-		new.M31 -= u.M31
-		new.M32 -= u.M32
-		new.M33 -= u.M33
-		return new, nil
-	case o == "*=" || o == "*":
-		dataM := new.Data()
-		dataU := u.Data()
-		z := Matrix{}
-		data := z.Data()
-
-		for i := 0; i < 3; i++ {
-			for j := 0; j < 3; j++ {
-				for k := 0; k < 3; k++ {
-					data[i][j] += dataM[i][k] * dataU[k][j]
-				}
-			}
-		}
-		_ = new.change(data)
-		return new, nil
-	case o == "/=" || o == "/":
-		inverse, _ := u.Inverse()
-		_, _ = new.Mop("*=", inverse)
-		return new, nil
+// Row returns the i-th row (0-based) as a vector.
+func (m Matrix) Row(i int) vector.Vector {
+	switch i {
+	case 0:
+		return vector.New(m.M11, m.M12, m.M13)
+	case 1:
+		return vector.New(m.M21, m.M22, m.M23)
 	default:
-		return &Matrix{}, fmt.Errorf("Matrix has no such operation '%s'", o)
+		return vector.New(m.M31, m.M32, m.M33)
 	}
 }
 
-func (m *Matrix) Vop(operation string, v vector.Vector) (vector.Vector, error) {
-	var new *Matrix
-	if !strings.Contains(operation, "=") {
-		new, _ = m.CopyPointer()
-	} else {
-		new = m
-	}
-
-	switch o := operation; {
-	case o == "*":
-		u, _ := vector.New([]float64{
-			new.M11*v.X + new.M12*v.Y + new.M13*v.Z,
-			new.M21*v.X + new.M22*v.Y + new.M23*v.Z,
-			new.M31*v.X + new.M32*v.Y + new.M33*v.Z,
-		})
-		return u, nil
-	default:
-		return vector.Vector{}, fmt.Errorf("Matrix has no such operation '%s'", o)
+// Add returns m + n.
+func (m Matrix) Add(n Matrix) Matrix {
+	return Matrix{
+		m.M11 + n.M11, m.M12 + n.M12, m.M13 + n.M13,
+		m.M21 + n.M21, m.M22 + n.M22, m.M23 + n.M23,
+		m.M31 + n.M31, m.M32 + n.M32, m.M33 + n.M33,
 	}
 }
 
-// Operator Assignments (Scalar)
-// +=, -=, *=, /=
-func (m *Matrix) Sop(operation string, value float64) (*Matrix, error) {
-	var new *Matrix
-	if !strings.Contains(operation, "=") {
-		new, _ = m.CopyPointer()
-	} else {
-		new = m
-	}
-
-	dataM := new.Data()
-	switch o := operation; {
-	case o == "+=" || o == "+":
-		for i, row := range dataM {
-			for j, _ := range row {
-				dataM[i][j] += value
-			}
-		}
-		new.change(dataM)
-		return new, nil
-	case o == "-=" || o == "-":
-		for i, row := range dataM {
-			for j, _ := range row {
-				dataM[i][j] -= value
-			}
-		}
-		new.change(dataM)
-		return new, nil
-	case o == "*=" || o == "*":
-		for i, row := range dataM {
-			for j, _ := range row {
-				dataM[i][j] *= value
-			}
-		}
-		new.change(dataM)
-		return new, nil
-	case o == "/=" || o == "/":
-		for i, row := range dataM {
-			for j, _ := range row {
-				dataM[i][j] /= value
-			}
-		}
-		new.change(dataM)
-		return new, nil
-	default:
-		return &Matrix{}, fmt.Errorf("Vector has no such operation '%s'", o)
+// Sub returns m - n.
+func (m Matrix) Sub(n Matrix) Matrix {
+	return Matrix{
+		m.M11 - n.M11, m.M12 - n.M12, m.M13 - n.M13,
+		m.M21 - n.M21, m.M22 - n.M22, m.M23 - n.M23,
+		m.M31 - n.M31, m.M32 - n.M32, m.M33 - n.M33,
 	}
 }
 
-// Matrix / Vector Operations
-// M * V = V
-// Matrix / Scalar Operations
-// M * S, M + S, M - S , M / S
-// S * M, S + M, S - M , S / M
-// Matrix Operations
+// Scale returns m scaled by s.
+func (m Matrix) Scale(s float64) Matrix {
+	return Matrix{
+		m.M11 * s, m.M12 * s, m.M13 * s,
+		m.M21 * s, m.M22 * s, m.M23 * s,
+		m.M31 * s, m.M32 * s, m.M33 * s,
+	}
+}
 
-func Transpose(m Matrix) (Matrix, error) {
-	dataM := m.Data()
-	u := m
-	dataU := u.Data()
-	for i, row := range dataM {
-		for j, _ := range row {
-			for k := 0; k < 3; k++ {
-				dataU[i][j] = dataM[j][i]
+// Neg returns -m.
+func (m Matrix) Neg() Matrix { return m.Scale(-1) }
+
+// Mul returns the matrix product m * n.
+func (m Matrix) Mul(n Matrix) Matrix {
+	a := m.Data()
+	b := n.Data()
+	var c [3][3]float64
+	for i := range 3 {
+		for j := range 3 {
+			for k := range 3 {
+				c[i][j] += a[i][k] * b[k][j]
 			}
 		}
 	}
-	_ = u.change(dataU)
-	return u, nil
+	return New(c)
 }
-func Determinant(m Matrix) (float64, error) {
-	// det1 := m.M11 * ((m.M22 * m.M33) - (m.M32 * m.M23))
-	// det2 := m.M12 * ((m.M21 * m.M33) - (m.M23 * m.M31))
-	// det3 := m.M13 * ((m.M21 * m.M32) - (m.M22 * m.M31))
-	// det := det1 - det2 + det3
-	det := 0.0
+
+// MulVec returns the matrix-vector product m * v.
+func (m Matrix) MulVec(v vector.Vector) vector.Vector {
+	return vector.New(
+		m.M11*v.X+m.M12*v.Y+m.M13*v.Z,
+		m.M21*v.X+m.M22*v.Y+m.M23*v.Z,
+		m.M31*v.X+m.M32*v.Y+m.M33*v.Z,
+	)
+}
+
+// Transpose returns the transpose of m.
+func (m Matrix) Transpose() Matrix {
+	return Matrix{
+		m.M11, m.M21, m.M31,
+		m.M12, m.M22, m.M32,
+		m.M13, m.M23, m.M33,
+	}
+}
+
+// Determinant returns the determinant of m via the Levi-Civita symbol.
+func (m Matrix) Determinant() float64 {
 	data := m.Data()
-	for i := 0; i < 3; i++ {
-		for j := 0; j < 3; j++ {
-			for k := 0; k < 3; k++ {
-				q := []int{i, j, k}
+	det := 0.0
+	for i := range 3 {
+		for j := range 3 {
+			for k := range 3 {
+				q := [3]int{i, j, k}
 				s := 1.0
-				for l := 0; l < 3; l++ {
+				for l := range 3 {
 					s *= data[l][q[l]]
 				}
-				det += float64(Epsilon(i+1, j+1, k+1)) * s
+				det += float64(epsilon(i+1, j+1, k+1)) * s
 			}
 		}
 	}
-
-	return det, nil
+	return det
 }
 
-// fmt.Printf("%s %d\n", p, e[p])
-func Diag(v interface{}) (Matrix, error) {
-	switch v.(type) {
-	case vector.Vector:
-		u := v.(vector.Vector)
-		m := Matrix{}
-		m.M11 = u.X
-		m.M22 = u.Y
-		m.M33 = u.Z
-		return m, nil
-	case Matrix:
-		m := v.(Matrix)
-		u := Matrix{}
-		u.M11 = m.M11
-		u.M22 = m.M22
-		u.M33 = m.M33
-		return u, nil
-	default:
-		return Matrix{}, fmt.Errorf("Matrix has no such operation")
+// Inverse returns the inverse of m. It returns an error if m is singular.
+func (m Matrix) Inverse() (Matrix, error) {
+	det := m.Determinant()
+	if math.Abs(det) == 0.0 {
+		return Matrix{}, fmt.Errorf("matrix: cannot invert singular matrix")
+	}
+	return Matrix{
+		(m.M22*m.M33 - m.M32*m.M23) / det,
+		(m.M13*m.M32 - m.M33*m.M12) / det,
+		(m.M12*m.M23 - m.M22*m.M13) / det,
 
+		(m.M23*m.M31 - m.M33*m.M21) / det,
+		(m.M11*m.M33 - m.M31*m.M13) / det,
+		(m.M13*m.M21 - m.M23*m.M11) / det,
+
+		(m.M21*m.M32 - m.M31*m.M22) / det,
+		(m.M12*m.M31 - m.M32*m.M11) / det,
+		(m.M11*m.M22 - m.M21*m.M12) / det,
+	}, nil
+}
+
+// Diag returns a diagonal matrix from the components of v.
+func Diag(v vector.Vector) Matrix {
+	return Matrix{
+		v.X, 0, 0,
+		0, v.Y, 0,
+		0, 0, v.Z,
 	}
 }
-func DiagV(v interface{}) (vector.Vector, error) {
-	m, e := Diag(v)
-	u, _ := vector.New([]float64{m.M11, m.M22, m.M33})
-	return u, e
-}
-func (m *Matrix) Inverse() (Matrix, error) {
-	det, _ := Determinant(*m)
-	dataM := m.Data()
-	if math.Abs(det) > 0.0 {
-		dataM[0][0] = (m.M22*m.M33 - m.M32*m.M23) / det
-		dataM[0][1] = (m.M13*m.M32 - m.M33*m.M12) / det
-		dataM[0][2] = (m.M12*m.M23 - m.M22*m.M13) / det
 
-		dataM[1][0] = (m.M23*m.M31 - m.M33*m.M21) / det
-		dataM[1][1] = (m.M11*m.M33 - m.M31*m.M13) / det
-		dataM[1][2] = (m.M13*m.M21 - m.M23*m.M11) / det
-
-		dataM[2][0] = (m.M21*m.M32 - m.M31*m.M22) / det
-		dataM[2][1] = (m.M12*m.M31 - m.M32*m.M11) / det
-		dataM[2][2] = (m.M11*m.M22 - m.M21*m.M12) / det
-
-	}
-	u, _ := New(dataM)
-	return u, nil
+// DiagV returns the diagonal of m as a vector.
+func (m Matrix) DiagV() vector.Vector {
+	return vector.New(m.M11, m.M22, m.M33)
 }
 
-func Epsilon(values ...int) int {
-	m := make(map[int]int)
+// epsilon is the Levi-Civita permutation symbol for the given indices.
+func epsilon(values ...int) int {
+	seen := make(map[int]bool)
 	for _, v := range values {
-		m[v] = v
+		if seen[v] {
+			return 0
+		}
+		seen[v] = true
 	}
-	if len(m) < len(values) {
-		return 0.0
-	}
-
 	ep := 1
 	for l, v1 := range values {
 		for n, v2 := range values {
-
-			if (v1 != v2) && (l > n) {
+			if v1 != v2 && l > n {
 				ep *= sign(v1 - v2)
 			}
 		}
 	}
-
 	return ep
 }
+
 func sign(i int) int {
 	if i < 0 {
 		return -1
