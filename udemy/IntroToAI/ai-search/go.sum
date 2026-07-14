@@ -1,0 +1,6 @@
+github.com/StephaneBunel/bresenham v0.0.0-20211027152503-ec76d7b8e923 h1:tiBl/Mvf7sSO5y3OVK7wznaQkLOCfHhX9KReDeN9WjE=
+github.com/StephaneBunel/bresenham v0.0.0-20211027152503-ec76d7b8e923/go.mod h1:IEPPVq1llBFm+OeVCgoAyFiTqK5aE2c2tH4QEsjnQCM=
+github.com/kettek/apng v0.0.0-20250827064933-2bb5f5fcf253 h1:ar6YqPcuumkcWgAJHkmda6Q35V3OnpxeTej4iU/QFLA=
+github.com/kettek/apng v0.0.0-20250827064933-2bb5f5fcf253/go.mod h1:x78/VRQYKuCftMWS0uK5e+F5RJ7S4gSlESRWI0Prl6Q=
+golang.org/x/image v0.35.0 h1:LKjiHdgMtO8z7Fh18nGY6KDcoEtVfsgLDPeLyguqb7I=
+golang.org/x/image v0.35.0/go.mod h1:MwPLTVgvxSASsxdLzKrl8BRFuyqMyGhLwmC+TO1Sybk=

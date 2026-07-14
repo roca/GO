@@ -1,0 +1,19 @@
+services:
+  apple-silicon:
+    image: "ghcr.io/asahilinux/mkdocs-asahi:latest"
+    container_name: "apple-silicon"
+    privileged: true
+    environment:
+      - TZ=US/America/New_York
+    volumes:
+      - .:/docs:z
+      - /etc/ssl/rds-combined-ca-bundle.pem:/etc/ssl/rds-combined-ca-bundle.pem:z
+      - ./yum.conf:/etc/yum.conf:z
+    ports:
+      - "8000:8000"
+
+
+# docker run -it --pull=always -p=8000:8000 -v=$(pwd)/:/docs:z ghcr.io/asahilinux/mkdocs-asahi:latest
+# yum -y update --config /etc/yum.conf
+# yum -y install rr --config /etc/yum.conf
+# yum -y install perf --config /etc/yum.conf

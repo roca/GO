@@ -1,0 +1,31 @@
+service: alexa-serverless
+frameworkVersion: '>=1.28.0 <2.0.0'
+
+plugins:
+  - serverless-offline
+  - serverless-dotenv-plugin
+  # - serverless-domain-manager
+  # - serverless-dynamodb-ttl
+
+provider:
+  name: aws
+  runtime: go1.x
+  stage: prod
+  region: us-east-1
+  memorySize: 128
+  timeout: 5
+  environment:
+    ALEXA_SKILL_ID: amzn1.ask.skill.4d0f5b69-42f8-404d-ad20-0e7313a1d7b1
+
+package:
+  exclude:
+    - ./**
+  include:
+    - ./build/**
+
+functions:
+  alexa:
+    handler: build/alexa
+    name: ${self:service}-${self:provider.stage}
+    events:
+      - alexaSkill: ${self:provider.environment.ALEXA_SKILL_ID}

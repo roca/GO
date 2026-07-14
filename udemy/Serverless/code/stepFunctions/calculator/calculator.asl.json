@@ -1,0 +1,12 @@
+{
+  "StartAt": "calculate",
+  "States": {
+    "calculate": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:132172135366:function:calculator",
+      "InputPath": "$.lambda",
+      "ResultPath": "$",
+      "End": true
+    }
+  }
+}

@@ -1,0 +1,1106 @@
+{
+  "service": {
+    "service": "state-machine-image-processor",
+    "serviceObject": {
+      "name": "state-machine-image-processor"
+    },
+    "provider": {
+      "stage": "dev",
+      "variableSyntax": "\\${([ ~:a-zA-Z0-9._@'\",\\-\\/\\(\\)*?]+?)}",
+      "name": "aws",
+      "runtime": "go1.x",
+      "memorySize": 128,
+      "timeout": 5,
+      "region": "us-east-1",
+      "endpointType": "regional",
+      "environment": {
+        "IMAGE_UPLOAD_BUCKET_NAME": "romel-images",
+        "IMAGE_TABLE_NAME": "thumbnails"
+      },
+      "iamRoleStatements": [
+        {
+          "Effect": "Allow",
+          "Action": [
+            "states:StartExecution"
+          ],
+          "Resource": {
+            "Ref": "ImageProcessor"
+          }
+        },
+        {
+          "Effect": "Allow",
+          "Action": [
+            "s3:*"
+          ],
+          "Resource": "*"
+        },
+        {
+          "Effect": "Allow",
+          "Action": [
+            "dynamodb:DescribeStream",
+            "dynamodb:GetRecords",
+            "dynamodb:GetShardIterator",
+            "dynamodb:ListStreams",
+            "dynamodb:BatchWriteItem",
+            "dynamodb:Query",
+            "dynamodb:PutItem",
+            "dynamodb:DeleteItem"
+          ],
+          "Resource": "arn:aws:dynamodb:us-east-1:*:table/thumbnails"
+        }
+      ],
+      "versionFunctions": true,
+      "remoteFunctionData": null,
+      "compiledCloudFormationTemplate": {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "The AWS CloudFormation template for this Serverless application",
+        "Resources": {
+          "ServerlessDeploymentBucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+              "BucketEncryption": {
+                "ServerSideEncryptionConfiguration": [
+                  {
+                    "ServerSideEncryptionByDefault": {
+                      "SSEAlgorithm": "AES256"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "ServerlessDeploymentBucketPolicy": {
+            "Type": "AWS::S3::BucketPolicy",
+            "Properties": {
+              "Bucket": {
+                "Ref": "ServerlessDeploymentBucket"
+              },
+              "PolicyDocument": {
+                "Statement": [
+                  {
+                    "Action": "s3:*",
+                    "Effect": "Deny",
+                    "Principal": "*",
+                    "Resource": [
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":s3:::",
+                            {
+                              "Ref": "ServerlessDeploymentBucket"
+                            },
+                            "/*"
+                          ]
+                        ]
+                      }
+                    ],
+                    "Condition": {
+                      "Bool": {
+                        "aws:SecureTransport": false
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "InvokeImageProcessorLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/state-machine-image-processor-dev-invokeImageProcessor"
+            }
+          },
+          "GetFileTypeLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/state-machine-image-processor-dev-getFileType"
+            }
+          },
+          "DeleteFileLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/state-machine-image-processor-dev-deleteFile"
+            }
+          },
+          "CopyFileLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/state-machine-image-processor-dev-copyFile"
+            }
+          },
+          "ResizeImageLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/state-machine-image-processor-dev-resizeImage"
+            }
+          },
+          "WriteToDynamoDBLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/state-machine-image-processor-dev-writeToDynamoDB"
+            }
+          },
+          "IamRoleLambdaExecution": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+              "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": {
+                      "Service": [
+                        "lambda.amazonaws.com"
+                      ]
+                    },
+                    "Action": [
+                      "sts:AssumeRole"
+                    ]
+                  }
+                ]
+              },
+              "Policies": [
+                {
+                  "PolicyName": {
+                    "Fn::Join": [
+                      "-",
+                      [
+                        "dev",
+                        "state-machine-image-processor",
+                        "lambda"
+                      ]
+                    ]
+                  },
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:CreateLogStream",
+                          "logs:CreateLogGroup"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/state-machine-image-processor-dev*:*"
+                          }
+                        ]
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:PutLogEvents"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/state-machine-image-processor-dev*:*:*"
+                          }
+                        ]
+                      },
+                      {
+                        "$ref": "$[\"service\"][\"provider\"][\"iamRoleStatements\"][0]"
+                      },
+                      {
+                        "$ref": "$[\"service\"][\"provider\"][\"iamRoleStatements\"][1]"
+                      },
+                      {
+                        "$ref": "$[\"service\"][\"provider\"][\"iamRoleStatements\"][2]"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "Path": "/",
+              "RoleName": {
+                "Fn::Join": [
+                  "-",
+                  [
+                    "state-machine-image-processor",
+                    "dev",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    "lambdaRole"
+                  ]
+                ]
+              }
+            }
+          },
+          "InvokeImageProcessorLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/state-machine-image-processor/dev/1591256984521-2020-06-04T07:49:44.521Z/state-machine-image-processor.zip"
+              },
+              "FunctionName": "state-machine-image-processor-dev-invokeImageProcessor",
+              "Handler": "build/invokeImageProcessor",
+              "MemorySize": 128,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              },
+              "Runtime": "go1.x",
+              "Timeout": 5,
+              "Description": "This lambda invokes a image processor state machine",
+              "Environment": {
+                "Variables": {
+                  "IMAGE_UPLOAD_BUCKET_NAME": "romel-images",
+                  "IMAGE_TABLE_NAME": "thumbnails",
+                  "STATE_MACHINE_ARN": {
+                    "Ref": "ImageProcessor"
+                  }
+                }
+              }
+            },
+            "DependsOn": [
+              "InvokeImageProcessorLogGroup",
+              "IamRoleLambdaExecution"
+            ]
+          },
+          "InvokeImageProcessorLambdaVersionRA3Jtbojp11TQN0tEbWf3OPXnEb5aX3TT3JnPfg": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "InvokeImageProcessorLambdaFunction"
+              },
+              "CodeSha256": "ozYvLeHQVAald3z51i+pwE1c2d8yuolXe+BDu1HlxuU=",
+              "Description": "This lambda invokes a image processor state machine"
+            }
+          },
+          "GetFileTypeLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/state-machine-image-processor/dev/1591256984521-2020-06-04T07:49:44.521Z/state-machine-image-processor.zip"
+              },
+              "FunctionName": "state-machine-image-processor-dev-getFileType",
+              "Handler": "build/getFileType",
+              "MemorySize": 128,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              },
+              "Runtime": "go1.x",
+              "Timeout": 5,
+              "Description": "This lambda gets the type of a file from its extension suffix",
+              "Environment": {
+                "Variables": {
+                  "IMAGE_UPLOAD_BUCKET_NAME": "romel-images",
+                  "IMAGE_TABLE_NAME": "thumbnails"
+                }
+              }
+            },
+            "DependsOn": [
+              "GetFileTypeLogGroup",
+              "IamRoleLambdaExecution"
+            ]
+          },
+          "GetFileTypeLambdaVersionEZCrfCXJfA7dnZ8eMB6ff6pLBGcKXmbq0a1A6XA2iDU": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "GetFileTypeLambdaFunction"
+              },
+              "CodeSha256": "ozYvLeHQVAald3z51i+pwE1c2d8yuolXe+BDu1HlxuU=",
+              "Description": "This lambda gets the type of a file from its extension suffix"
+            }
+          },
+          "DeleteFileLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/state-machine-image-processor/dev/1591256984521-2020-06-04T07:49:44.521Z/state-machine-image-processor.zip"
+              },
+              "FunctionName": "state-machine-image-processor-dev-deleteFile",
+              "Handler": "build/deleteFile",
+              "MemorySize": 128,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              },
+              "Runtime": "go1.x",
+              "Timeout": 5,
+              "Description": "This lambda deletes a file on s3",
+              "Environment": {
+                "Variables": {
+                  "IMAGE_UPLOAD_BUCKET_NAME": "romel-images",
+                  "IMAGE_TABLE_NAME": "thumbnails"
+                }
+              }
+            },
+            "DependsOn": [
+              "DeleteFileLogGroup",
+              "IamRoleLambdaExecution"
+            ]
+          },
+          "DeleteFileLambdaVersiontSgcPiIzo9cD3Y8xuW7yG3ZCqVDhPvEpfuTnXstw": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "DeleteFileLambdaFunction"
+              },
+              "CodeSha256": "ozYvLeHQVAald3z51i+pwE1c2d8yuolXe+BDu1HlxuU=",
+              "Description": "This lambda deletes a file on s3"
+            }
+          },
+          "CopyFileLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/state-machine-image-processor/dev/1591256984521-2020-06-04T07:49:44.521Z/state-machine-image-processor.zip"
+              },
+              "FunctionName": "state-machine-image-processor-dev-copyFile",
+              "Handler": "build/copyFile",
+              "MemorySize": 128,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              },
+              "Runtime": "go1.x",
+              "Timeout": 5,
+              "Description": "This lambda copies a file to a new bucket",
+              "Environment": {
+                "Variables": {
+                  "IMAGE_UPLOAD_BUCKET_NAME": "romel-images",
+                  "IMAGE_TABLE_NAME": "thumbnails",
+                  "DESTINATION_BUCKET": "romel-images-dest"
+                }
+              }
+            },
+            "DependsOn": [
+              "CopyFileLogGroup",
+              "IamRoleLambdaExecution"
+            ]
+          },
+          "CopyFileLambdaVersionRiu7qk3OdeDWqznuSFy3MJwxQL0RUXEzmA7oCsWFX8": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "CopyFileLambdaFunction"
+              },
+              "CodeSha256": "ozYvLeHQVAald3z51i+pwE1c2d8yuolXe+BDu1HlxuU=",
+              "Description": "This lambda copies a file to a new bucket"
+            }
+          },
+          "ResizeImageLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/state-machine-image-processor/dev/1591256984521-2020-06-04T07:49:44.521Z/state-machine-image-processor.zip"
+              },
+              "FunctionName": "state-machine-image-processor-dev-resizeImage",
+              "Handler": "build/resizeImage",
+              "MemorySize": 128,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              },
+              "Runtime": "go1.x",
+              "Timeout": 5,
+              "Description": "This lambda resizes image in dest bucket",
+              "Environment": {
+                "Variables": {
+                  "IMAGE_UPLOAD_BUCKET_NAME": "romel-images",
+                  "IMAGE_TABLE_NAME": "thumbnails",
+                  "DESTINATION_BUCKET": "romel-images-dest",
+                  "IMAGE_WIDTH_PX": 123
+                }
+              }
+            },
+            "DependsOn": [
+              "ResizeImageLogGroup",
+              "IamRoleLambdaExecution"
+            ]
+          },
+          "ResizeImageLambdaVersion2fiM7smfyq3il6mHgPD5te6NwqII9YsHaX3IhKfnzU": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "ResizeImageLambdaFunction"
+              },
+              "CodeSha256": "ozYvLeHQVAald3z51i+pwE1c2d8yuolXe+BDu1HlxuU=",
+              "Description": "This lambda resizes image in dest bucket"
+            }
+          },
+          "WriteToDynamoDBLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/state-machine-image-processor/dev/1591256984521-2020-06-04T07:49:44.521Z/state-machine-image-processor.zip"
+              },
+              "FunctionName": "state-machine-image-processor-dev-writeToDynamoDB",
+              "Handler": "build/writeToDynamoDB",
+              "MemorySize": 128,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              },
+              "Runtime": "go1.x",
+              "Timeout": 5,
+              "Description": "This lambda writes to DynamoDB",
+              "Environment": {
+                "Variables": {
+                  "IMAGE_UPLOAD_BUCKET_NAME": "romel-images",
+                  "IMAGE_TABLE_NAME": "thumbnails"
+                }
+              }
+            },
+            "DependsOn": [
+              "WriteToDynamoDBLogGroup",
+              "IamRoleLambdaExecution"
+            ]
+          },
+          "WriteToDynamoDBLambdaVersionaKNECaFE2bl16NXr9VbUeKqGfBPADu82fNVC6Wu8": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "WriteToDynamoDBLambdaFunction"
+              },
+              "CodeSha256": "ozYvLeHQVAald3z51i+pwE1c2d8yuolXe+BDu1HlxuU=",
+              "Description": "This lambda writes to DynamoDB"
+            }
+          },
+          "ImageProcessorRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+              "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": {
+                      "Service": "states.us-east-1.amazonaws.com"
+                    },
+                    "Action": "sts:AssumeRole"
+                  }
+                ]
+              },
+              "Policies": [
+                {
+                  "PolicyName": "dev-us-east-1-state-machine-image-processor-statemachine",
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "lambda:InvokeFunction"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:aws:lambda:us-east-1:${AWS::AccountId}:function:state-machine-image-processor-dev-getFileType"
+                          },
+                          {
+                            "Fn::Sub": [
+                              "${functionArn}:*",
+                              {
+                                "functionArn": {
+                                  "Fn::Sub": "arn:aws:lambda:us-east-1:${AWS::AccountId}:function:state-machine-image-processor-dev-getFileType"
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "Fn::Sub": "arn:aws:lambda:us-east-1:${AWS::AccountId}:function:state-machine-image-processor-dev-deleteFile"
+                          },
+                          {
+                            "Fn::Sub": [
+                              "${functionArn}:*",
+                              {
+                                "functionArn": {
+                                  "Fn::Sub": "arn:aws:lambda:us-east-1:${AWS::AccountId}:function:state-machine-image-processor-dev-deleteFile"
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "Fn::Sub": "arn:aws:lambda:us-east-1:${AWS::AccountId}:function:state-machine-image-processor-dev-copyFile"
+                          },
+                          {
+                            "Fn::Sub": [
+                              "${functionArn}:*",
+                              {
+                                "functionArn": {
+                                  "Fn::Sub": "arn:aws:lambda:us-east-1:${AWS::AccountId}:function:state-machine-image-processor-dev-copyFile"
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "Fn::Sub": "arn:aws:lambda:us-east-1:${AWS::AccountId}:function:state-machine-image-processor-dev-resizeImage"
+                          },
+                          {
+                            "Fn::Sub": [
+                              "${functionArn}:*",
+                              {
+                                "functionArn": {
+                                  "Fn::Sub": "arn:aws:lambda:us-east-1:${AWS::AccountId}:function:state-machine-image-processor-dev-resizeImage"
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "Fn::Sub": "arn:aws:lambda:us-east-1:${AWS::AccountId}:function:state-machine-image-processor-dev-writeToDynamoDB"
+                          },
+                          {
+                            "Fn::Sub": [
+                              "${functionArn}:*",
+                              {
+                                "functionArn": {
+                                  "Fn::Sub": "arn:aws:lambda:us-east-1:${AWS::AccountId}:function:state-machine-image-processor-dev-writeToDynamoDB"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          "ImageProcessor": {
+            "Type": "AWS::StepFunctions::StateMachine",
+            "Properties": {
+              "DefinitionString": {
+                "Fn::Sub": "{\n  \"Comment\": \"ImageProcessor\",\n  \"StartAt\": \"GetFileType\",\n  \"States\": {\n    \"GetFileType\": {\n      \"Comment\": \"GetFileType\",\n      \"Type\": \"Task\",\n      \"Resource\": \"arn:aws:lambda:us-east-1:${AWS::AccountId}:function:state-machine-image-processor-dev-getFileType\",\n      \"TimeoutSeconds\": 3,\n      \"ResultPath\": \"$.results.fileType\",\n      \"Next\": \"CheckFileType\",\n      \"Catch\": [\n        {\n          \"ErrorEquals\": [\n            \"States.All\"\n          ],\n          \"Next\": \"QuitMain\"\n        }\n      ]\n    },\n    \"CheckFileType\": {\n      \"Comment\": \"CheckFileType\",\n      \"Type\": \"Choice\",\n      \"Choices\": [\n        {\n          \"Variable\": \"$.results.fileType\",\n          \"StringEquals\": \"jpg\",\n          \"Next\": \"ProcessFile\"\n        }\n      ],\n      \"Default\": \"DeleteSourceFile\"\n    },\n    \"DeleteSourceFile\": {\n      \"Comment\": \"DeleteSourceFile\",\n      \"Type\": \"Task\",\n      \"Resource\": \"arn:aws:lambda:us-east-1:${AWS::AccountId}:function:state-machine-image-processor-dev-deleteFile\",\n      \"TimeoutSeconds\": 3,\n      \"ResultPath\": \"$.results.deletionStatus\",\n      \"OutputPath\": \"$.results\",\n      \"End\": true,\n      \"Catch\": [\n        {\n          \"ErrorEquals\": [\n            \"States.All\"\n          ],\n          \"Next\": \"QuitMain\"\n        }\n      ]\n    },\n    \"ProcessFile\": {\n      \"Comment\": \"ProcessFile\",\n      \"Type\": \"Parallel\",\n      \"ResultPath\": \"$.results.images\",\n      \"Next\": \"WriteToDynamoDB\",\n      \"Branches\": [\n        {\n          \"StartAt\": \"CopyToDestination\",\n          \"States\": {\n            \"CopyToDestination\": {\n              \"Type\": \"Task\",\n              \"Resource\": \"arn:aws:lambda:us-east-1:${AWS::AccountId}:function:state-machine-image-processor-dev-copyFile\",\n              \"TimeoutSeconds\": 3,\n              \"ResultPath\": \"$.image.original\",\n              \"OutputPath\": \"$.image\",\n              \"End\": true,\n              \"Retry\": [\n                {\n                  \"ErrorEquals\": [\n                    \"States.TaskFailed\",\n                    \"States.Timeout\"\n                  ],\n                  \"IntervalSeconds\": 5,\n                  \"MaxAttempts\": 2,\n                  \"BackoffRate\": 2\n                },\n                {\n                  \"ErrorEquals\": [\n                    \"States.All\"\n                  ],\n                  \"IntervalSeconds\": 2,\n                  \"MaxAttempts\": 2,\n                  \"BackoffRate\": 2\n                }\n              ],\n              \"Catch\": [\n                {\n                  \"ErrorEquals\": [\n                    \"States.All\"\n                  ],\n                  \"Next\": \"QuitCopy\"\n                }\n              ]\n            },\n            \"QuitCopy\": {\n              \"Type\": \"Fail\",\n              \"Error\": \"CopyError\",\n              \"Cause\": \"An error occurred while executing the CopyToDestination task\"\n            }\n          }\n        },\n        {\n          \"StartAt\": \"ResizeImage\",\n          \"States\": {\n            \"ResizeImage\": {\n              \"Type\": \"Task\",\n              \"Resource\": \"arn:aws:lambda:us-east-1:${AWS::AccountId}:function:state-machine-image-processor-dev-resizeImage\",\n              \"TimeoutSeconds\": 3,\n              \"ResultPath\": \"$.image.resized\",\n              \"OutputPath\": \"$.image\",\n              \"End\": true,\n              \"Retry\": [\n                {\n                  \"ErrorEquals\": [\n                    \"States.TaskFailed\",\n                    \"States.Timeout\"\n                  ],\n                  \"IntervalSeconds\": 5,\n                  \"MaxAttempts\": 2,\n                  \"BackoffRate\": 2\n                },\n                {\n                  \"ErrorEquals\": [\n                    \"States.All\"\n                  ],\n                  \"IntervalSeconds\": 2,\n                  \"MaxAttempts\": 2,\n                  \"BackoffRate\": 2\n                }\n              ],\n              \"Catch\": [\n                {\n                  \"ErrorEquals\": [\n                    \"States.All\"\n                  ],\n                  \"Next\": \"QuitResize\"\n                }\n              ]\n            },\n            \"QuitResize\": {\n              \"Type\": \"Fail\",\n              \"Error\": \"ResizeError\",\n              \"Cause\": \"An error occurred while executing the ResizeImage task\"\n            }\n          }\n        }\n      ]\n    },\n    \"WriteToDynamoDB\": {\n      \"Type\": \"Task\",\n      \"Resource\": \"arn:aws:lambda:us-east-1:${AWS::AccountId}:function:state-machine-image-processor-dev-writeToDynamoDB\",\n      \"TimeoutSeconds\": 3,\n      \"ResultPath\": \"$.results.writeStatus\",\n      \"Next\": \"DeleteSourceFile\",\n      \"Catch\": [\n        {\n          \"ErrorEquals\": [\n            \"States.All\"\n          ],\n          \"Next\": \"QuitMain\"\n        }\n      ]\n    },\n    \"QuitMain\": {\n      \"Type\": \"Fail\",\n      \"Error\": \"GenericError\",\n      \"Cause\": \"An error occurred while executing the state machine\"\n    }\n  }\n}"
+              },
+              "RoleArn": {
+                "Fn::GetAtt": [
+                  "ImageProcessorRole",
+                  "Arn"
+                ]
+              },
+              "StateMachineName": "ImageProcessor"
+            },
+            "DependsOn": [
+              "ImageProcessorRole"
+            ]
+          },
+          "ThumbnailsTable": {
+            "Type": "AWS::DynamoDB::Table",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "TableName": "thumbnails",
+              "AttributeDefinitions": [
+                {
+                  "AttributeName": "original",
+                  "AttributeType": "S"
+                },
+                {
+                  "AttributeName": "timestamp",
+                  "AttributeType": "N"
+                }
+              ],
+              "KeySchema": [
+                {
+                  "AttributeName": "original",
+                  "KeyType": "HASH"
+                },
+                {
+                  "AttributeName": "timestamp",
+                  "KeyType": "RANGE"
+                }
+              ],
+              "ProvisionedThroughput": {
+                "ReadCapacityUnits": 1,
+                "WriteCapacityUnits": 1
+              }
+            }
+          }
+        },
+        "Outputs": {
+          "ServerlessDeploymentBucketName": {
+            "Value": {
+              "Ref": "ServerlessDeploymentBucket"
+            }
+          },
+          "InvokeImageProcessorLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "InvokeImageProcessorLambdaVersionRA3Jtbojp11TQN0tEbWf3OPXnEb5aX3TT3JnPfg"
+            }
+          },
+          "GetFileTypeLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "GetFileTypeLambdaVersionEZCrfCXJfA7dnZ8eMB6ff6pLBGcKXmbq0a1A6XA2iDU"
+            }
+          },
+          "DeleteFileLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "DeleteFileLambdaVersiontSgcPiIzo9cD3Y8xuW7yG3ZCqVDhPvEpfuTnXstw"
+            }
+          },
+          "CopyFileLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "CopyFileLambdaVersionRiu7qk3OdeDWqznuSFy3MJwxQL0RUXEzmA7oCsWFX8"
+            }
+          },
+          "ResizeImageLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "ResizeImageLambdaVersion2fiM7smfyq3il6mHgPD5te6NwqII9YsHaX3IhKfnzU"
+            }
+          },
+          "WriteToDynamoDBLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "WriteToDynamoDBLambdaVersionaKNECaFE2bl16NXr9VbUeKqGfBPADu82fNVC6Wu8"
+            }
+          },
+          "ImageProcessorArn": {
+            "Description": "Current StateMachine Arn",
+            "Value": {
+              "Ref": "ImageProcessor"
+            }
+          },
+          "ImageProcessor": {
+            "Description": "The ARN of the ImageProcessor state machine",
+            "Value": {
+              "Ref": "ImageProcessor"
+            }
+          }
+        }
+      },
+      "coreCloudFormationTemplate": {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "The AWS CloudFormation template for this Serverless application",
+        "Resources": {
+          "ServerlessDeploymentBucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+              "BucketEncryption": {
+                "ServerSideEncryptionConfiguration": [
+                  {
+                    "ServerSideEncryptionByDefault": {
+                      "SSEAlgorithm": "AES256"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "ServerlessDeploymentBucketPolicy": {
+            "Type": "AWS::S3::BucketPolicy",
+            "Properties": {
+              "Bucket": {
+                "Ref": "ServerlessDeploymentBucket"
+              },
+              "PolicyDocument": {
+                "Statement": [
+                  {
+                    "Action": "s3:*",
+                    "Effect": "Deny",
+                    "Principal": "*",
+                    "Resource": [
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":s3:::",
+                            {
+                              "Ref": "ServerlessDeploymentBucket"
+                            },
+                            "/*"
+                          ]
+                        ]
+                      }
+                    ],
+                    "Condition": {
+                      "Bool": {
+                        "aws:SecureTransport": false
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "Outputs": {
+          "ServerlessDeploymentBucketName": {
+            "Value": {
+              "Ref": "ServerlessDeploymentBucket"
+            }
+          }
+        }
+      },
+      "vpc": {}
+    },
+    "plugins": [
+      "serverless-step-functions",
+      "serverless-pseudo-parameters"
+    ],
+    "pluginsData": {},
+    "functions": {
+      "invokeImageProcessor": {
+        "handler": "build/invokeImageProcessor",
+        "environment": {
+          "STATE_MACHINE_ARN": {
+            "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"InvokeImageProcessorLambdaFunction\"][\"Properties\"][\"Environment\"][\"Variables\"][\"STATE_MACHINE_ARN\"]"
+          }
+        },
+        "description": "This lambda invokes a image processor state machine",
+        "events": [
+          {
+            "s3": null,
+            "bucket": "romel-images",
+            "event": "s3:ObjectCreated:*",
+            "existing": true
+          }
+        ],
+        "name": "state-machine-image-processor-dev-invokeImageProcessor",
+        "package": {},
+        "memory": 128,
+        "timeout": 5,
+        "runtime": "go1.x",
+        "vpc": {},
+        "versionLogicalId": "InvokeImageProcessorLambdaVersionRA3Jtbojp11TQN0tEbWf3OPXnEb5aX3TT3JnPfg"
+      },
+      "getFileType": {
+        "handler": "build/getFileType",
+        "description": "This lambda gets the type of a file from its extension suffix",
+        "events": [],
+        "name": "state-machine-image-processor-dev-getFileType",
+        "package": {},
+        "memory": 128,
+        "timeout": 5,
+        "runtime": "go1.x",
+        "vpc": {},
+        "versionLogicalId": "GetFileTypeLambdaVersionEZCrfCXJfA7dnZ8eMB6ff6pLBGcKXmbq0a1A6XA2iDU"
+      },
+      "deleteFile": {
+        "handler": "build/deleteFile",
+        "description": "This lambda deletes a file on s3",
+        "events": [],
+        "name": "state-machine-image-processor-dev-deleteFile",
+        "package": {},
+        "memory": 128,
+        "timeout": 5,
+        "runtime": "go1.x",
+        "vpc": {},
+        "versionLogicalId": "DeleteFileLambdaVersiontSgcPiIzo9cD3Y8xuW7yG3ZCqVDhPvEpfuTnXstw"
+      },
+      "copyFile": {
+        "handler": "build/copyFile",
+        "environment": {
+          "DESTINATION_BUCKET": "romel-images-dest"
+        },
+        "description": "This lambda copies a file to a new bucket",
+        "events": [],
+        "name": "state-machine-image-processor-dev-copyFile",
+        "package": {},
+        "memory": 128,
+        "timeout": 5,
+        "runtime": "go1.x",
+        "vpc": {},
+        "versionLogicalId": "CopyFileLambdaVersionRiu7qk3OdeDWqznuSFy3MJwxQL0RUXEzmA7oCsWFX8"
+      },
+      "resizeImage": {
+        "handler": "build/resizeImage",
+        "environment": {
+          "DESTINATION_BUCKET": "romel-images-dest",
+          "IMAGE_WIDTH_PX": 123
+        },
+        "description": "This lambda resizes image in dest bucket",
+        "events": [],
+        "name": "state-machine-image-processor-dev-resizeImage",
+        "package": {},
+        "memory": 128,
+        "timeout": 5,
+        "runtime": "go1.x",
+        "vpc": {},
+        "versionLogicalId": "ResizeImageLambdaVersion2fiM7smfyq3il6mHgPD5te6NwqII9YsHaX3IhKfnzU"
+      },
+      "writeToDynamoDB": {
+        "handler": "build/writeToDynamoDB",
+        "description": "This lambda writes to DynamoDB",
+        "events": [],
+        "name": "state-machine-image-processor-dev-writeToDynamoDB",
+        "package": {},
+        "memory": 128,
+        "timeout": 5,
+        "runtime": "go1.x",
+        "vpc": {},
+        "versionLogicalId": "WriteToDynamoDBLambdaVersionaKNECaFE2bl16NXr9VbUeKqGfBPADu82fNVC6Wu8"
+      }
+    },
+    "resources": {
+      "Resources": {
+        "ThumbnailsTable": {
+          "Type": "AWS::DynamoDB::Table",
+          "DeletionPolicy": "Retain",
+          "Properties": {
+            "TableName": "thumbnails",
+            "AttributeDefinitions": [
+              {
+                "AttributeName": "original",
+                "AttributeType": "S"
+              },
+              {
+                "AttributeName": "timestamp",
+                "AttributeType": "N"
+              }
+            ],
+            "KeySchema": [
+              {
+                "AttributeName": "original",
+                "KeyType": "HASH"
+              },
+              {
+                "AttributeName": "timestamp",
+                "KeyType": "RANGE"
+              }
+            ],
+            "ProvisionedThroughput": {
+              "ReadCapacityUnits": 1,
+              "WriteCapacityUnits": 1
+            }
+          }
+        }
+      },
+      "Outputs": {
+        "ImageProcessor": {
+          "Description": "The ARN of the ImageProcessor state machine",
+          "Value": {
+            "$ref": "$[\"service\"][\"provider\"][\"iamRoleStatements\"][0][\"Resource\"]"
+          }
+        }
+      }
+    },
+    "serviceFilename": "serverless.yml",
+    "layers": {},
+    "isDashboardMonitoringPreconfigured": false,
+    "stepFunctions": {
+      "stateMachines": {
+        "ImageProcessor": {
+          "name": "ImageProcessor",
+          "definition": {
+            "Comment": "ImageProcessor",
+            "StartAt": "GetFileType",
+            "States": {
+              "GetFileType": {
+                "Comment": "GetFileType",
+                "Type": "Task",
+                "Resource": "arn:aws:lambda:us-east-1:#{AWS::AccountId}:function:state-machine-image-processor-dev-getFileType",
+                "TimeoutSeconds": 3,
+                "ResultPath": "$.results.fileType",
+                "Next": "CheckFileType",
+                "Catch": [
+                  {
+                    "ErrorEquals": [
+                      "States.All"
+                    ],
+                    "Next": "QuitMain"
+                  }
+                ]
+              },
+              "CheckFileType": {
+                "Comment": "CheckFileType",
+                "Type": "Choice",
+                "Choices": [
+                  {
+                    "Variable": "$.results.fileType",
+                    "StringEquals": "jpg",
+                    "Next": "ProcessFile"
+                  }
+                ],
+                "Default": "DeleteSourceFile"
+              },
+              "DeleteSourceFile": {
+                "Comment": "DeleteSourceFile",
+                "Type": "Task",
+                "Resource": "arn:aws:lambda:us-east-1:#{AWS::AccountId}:function:state-machine-image-processor-dev-deleteFile",
+                "TimeoutSeconds": 3,
+                "ResultPath": "$.results.deletionStatus",
+                "OutputPath": "$.results",
+                "End": true,
+                "Catch": [
+                  {
+                    "ErrorEquals": [
+                      "States.All"
+                    ],
+                    "Next": "QuitMain"
+                  }
+                ]
+              },
+              "ProcessFile": {
+                "Comment": "ProcessFile",
+                "Type": "Parallel",
+                "ResultPath": "$.results.images",
+                "Next": "WriteToDynamoDB",
+                "Branches": [
+                  {
+                    "StartAt": "CopyToDestination",
+                    "States": {
+                      "CopyToDestination": {
+                        "Type": "Task",
+                        "Resource": "arn:aws:lambda:us-east-1:#{AWS::AccountId}:function:state-machine-image-processor-dev-copyFile",
+                        "TimeoutSeconds": 3,
+                        "ResultPath": "$.image.original",
+                        "OutputPath": "$.image",
+                        "End": true,
+                        "Retry": [
+                          {
+                            "ErrorEquals": [
+                              "States.TaskFailed",
+                              "States.Timeout"
+                            ],
+                            "IntervalSeconds": 5,
+                            "MaxAttempts": 2,
+                            "BackoffRate": 2
+                          },
+                          {
+                            "ErrorEquals": [
+                              "States.All"
+                            ],
+                            "IntervalSeconds": 2,
+                            "MaxAttempts": 2,
+                            "BackoffRate": 2
+                          }
+                        ],
+                        "Catch": [
+                          {
+                            "ErrorEquals": [
+                              "States.All"
+                            ],
+                            "Next": "QuitCopy"
+                          }
+                        ]
+                      },
+                      "QuitCopy": {
+                        "Type": "Fail",
+                        "Error": "CopyError",
+                        "Cause": "An error occurred while executing the CopyToDestination task"
+                      }
+                    }
+                  },
+                  {
+                    "StartAt": "ResizeImage",
+                    "States": {
+                      "ResizeImage": {
+                        "Type": "Task",
+                        "Resource": "arn:aws:lambda:us-east-1:#{AWS::AccountId}:function:state-machine-image-processor-dev-resizeImage",
+                        "TimeoutSeconds": 3,
+                        "ResultPath": "$.image.resized",
+                        "OutputPath": "$.image",
+                        "End": true,
+                        "Retry": [
+                          {
+                            "ErrorEquals": [
+                              "States.TaskFailed",
+                              "States.Timeout"
+                            ],
+                            "IntervalSeconds": 5,
+                            "MaxAttempts": 2,
+                            "BackoffRate": 2
+                          },
+                          {
+                            "ErrorEquals": [
+                              "States.All"
+                            ],
+                            "IntervalSeconds": 2,
+                            "MaxAttempts": 2,
+                            "BackoffRate": 2
+                          }
+                        ],
+                        "Catch": [
+                          {
+                            "ErrorEquals": [
+                              "States.All"
+                            ],
+                            "Next": "QuitResize"
+                          }
+                        ]
+                      },
+                      "QuitResize": {
+                        "Type": "Fail",
+                        "Error": "ResizeError",
+                        "Cause": "An error occurred while executing the ResizeImage task"
+                      }
+                    }
+                  }
+                ]
+              },
+              "WriteToDynamoDB": {
+                "Type": "Task",
+                "Resource": "arn:aws:lambda:us-east-1:#{AWS::AccountId}:function:state-machine-image-processor-dev-writeToDynamoDB",
+                "TimeoutSeconds": 3,
+                "ResultPath": "$.results.writeStatus",
+                "Next": "DeleteSourceFile",
+                "Catch": [
+                  {
+                    "ErrorEquals": [
+                      "States.All"
+                    ],
+                    "Next": "QuitMain"
+                  }
+                ]
+              },
+              "QuitMain": {
+                "Type": "Fail",
+                "Error": "GenericError",
+                "Cause": "An error occurred while executing the state machine"
+              }
+            }
+          }
+        }
+      },
+      "activities": []
+    },
+    "artifact": "/Users/romelcampbell/GOCODE/udemy/Serverless/code/stepFunctions/imageProcessor/.serverless/state-machine-image-processor.zip"
+  },
+  "package": {
+    "artifactDirectoryName": "serverless/state-machine-image-processor/dev/1591256984521-2020-06-04T07:49:44.521Z",
+    "artifact": "state-machine-image-processor.zip"
+  }
+}

@@ -1,0 +1,55 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Globals:
+  Function:
+    Environment:
+      Variables:
+        TABLE_NAME:
+          Ref: Table
+    Handler: main
+    MemorySize: 128
+    Runtime: go1.x
+    Timeout: 5
+Resources:
+  DeleteUser:
+    Properties:
+      CodeUri: s3://romel-sam/cf1a1228fe1866924a447068e3a3535b
+      Events:
+        GetUser:
+          Properties:
+            Method: delete
+            Path: /user/{userid}
+          Type: Api
+      Policies: AmazonDynamoDBFullAccess
+    Type: AWS::Serverless::Function
+  GetUser:
+    Properties:
+      CodeUri: s3://romel-sam/6a2bd054456382325a9d3e0b67d56096
+      Events:
+        GetUser:
+          Properties:
+            Method: get
+            Path: /user/{userid}
+          Type: Api
+      Policies: AmazonDynamoDBReadOnlyAccess
+    Type: AWS::Serverless::Function
+  PostUser:
+    Properties:
+      CodeUri: s3://romel-sam/8fd3a3880797bc07b29888c31fc8bb0c
+      Events:
+        GetUser:
+          Properties:
+            Method: post
+            Path: /user/{userid}
+          Type: Api
+      Policies: AmazonDynamoDBFullAccess
+    Type: AWS::Serverless::Function
+  Table:
+    Properties:
+      PrimaryKey:
+        Name: userid
+        Type: String
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+    Type: AWS::Serverless::SimpleTable
+Transform: AWS::Serverless-2016-10-31

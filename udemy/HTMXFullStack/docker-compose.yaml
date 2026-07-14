@@ -1,0 +1,36 @@
+services:
+  testdb:
+    image: mysql
+    container_name: testdb
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: testdb
+      MYSQL_USER: test
+      MYSQL_PASSWORD: test
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql:/var/lib/mysql
+  mysql:
+    image: mysql
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: usermanagement
+      MYSQL_USER: test
+      MYSQL_PASSWORD: test
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql:/var/lib/mysql
+  node:
+    image: node:12
+    container_name: node
+    working_dir: /app
+    volumes:
+      - ./htmx-course:/app
+    command: tail -f /dev/null
+    ports:
+      - "1330:1330"
+      - "5050:5000"
+      - "8080:8080"

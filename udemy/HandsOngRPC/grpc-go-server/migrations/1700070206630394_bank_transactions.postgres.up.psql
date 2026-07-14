@@ -1,0 +1,26 @@
+CREATE TABLE bank_transactions (
+    transaction_uuid uuid PRIMARY KEY,
+    account_uuid uuid NOT NULL,
+    transaction_timestamp TIMESTAMPTZ NOT NULL,
+    amount NUMERIC(15,2) NOT NULL,
+    transaction_type VARCHAR(25) NOT NULL,
+    notes TEXT,
+    created_at TIMESTAMPTZ,
+    updated_at TIMESTAMPTZ,
+    CONSTRAINT fk_account_uuid FOREIGN KEY (account_uuid) REFERENCES bank_accounts(account_uuid) ON DELETE NO ACTION
+);
+
+-- add auto update of updated_at. If you already have this trigger
+-- you can delete the next 7 lines
+CREATE OR REPLACE FUNCTION trigger_set_timestamp()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = NOW();
+RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER set_timestamp
+    BEFORE UPDATE ON bank_transactions
+    FOR EACH ROW
+    EXECUTE PROCEDURE trigger_set_timestamp();

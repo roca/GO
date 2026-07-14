@@ -1,0 +1,59 @@
+
+syntax = "proto3";
+
+import "basic/communication.proto";
+import "google/protobuf/any.proto";
+import "google/protobuf/timestamp.proto";
+import "google/type/date.proto";
+import "google/type/latlng.proto";
+
+option go_package = "project01/proto/basic";
+
+enum Gender {
+  GENDER_UNSPECIFIED = 0;
+  GENDER_FEMALE = 1;
+  GENDER_MALE = 2;
+}
+
+message User {
+  uint32 id = 1;
+  string username = 2;
+  bool is_active = 3 [json_name = "is_active"];
+  bytes password = 4;
+  repeated string emails = 16;
+  Gender gender = 17;
+  Address address = 18;
+  google.protobuf.Any communication_channel = 19 [
+    json_name = "communication_channel"
+  ];
+  oneof electronic_comm_channel {
+    SocialMedia social_media = 20 [json_name = "social_media"];
+    InstantMessaging instant_messaging = 21 [
+      json_name = "instant_messaging"
+    ];
+  }
+  map<string, uint32> skill_rating = 22 [json_name = "skill_rating"];
+
+  google.protobuf.Timestamp last_login_timestamp = 23 [
+    json_name = "last_login_timestamp"
+  ];
+
+  google.type.Date birth_date = 24 [json_name = "birth_date"];
+  google.type.LatLng last_known_location = 25 [
+    json_name = "last_known_location"
+  ];
+}
+
+message  Address {
+  string street = 1;
+  string city = 2;
+  string country = 3;
+
+  Coordinate coordinate = 16;
+
+  message Coordinate {
+    double latitude = 1;
+    double longitude = 2;
+  }
+}
+

@@ -1,0 +1,108 @@
+{
+    "words": {
+        "bought": {
+            "Count": [
+                0,
+                1
+            ],
+            "Seen": 1
+        },
+        "bugs": {
+            "Count": [
+                2,
+                0
+            ],
+            "Seen": 2
+        },
+        "code": {
+            "Count": [
+                3,
+                0
+            ],
+            "Seen": 3
+        },
+        "computer": {
+            "Count": [
+                0,
+                2
+            ],
+            "Seen": 2
+        },
+        "found": {
+            "Count": [
+                1,
+                0
+            ],
+            "Seen": 1
+        },
+        "memory": {
+            "Count": [
+                0,
+                4
+            ],
+            "Seen": 4
+        },
+        "more": {
+            "Count": [
+                0,
+                1
+            ],
+            "Seen": 1
+        },
+        "needs": {
+            "Count": [
+                0,
+                1
+            ],
+            "Seen": 1
+        },
+        "some": {
+            "Count": [
+                1,
+                1
+            ],
+            "Seen": 2
+        },
+        "swapped": {
+            "Count": [
+                0,
+                1
+            ],
+            "Seen": 1
+        },
+        "tested": {
+            "Count": [
+                1,
+                0
+            ],
+            "Seen": 1
+        },
+        "the": {
+            "Count": [
+                2,
+                1
+            ],
+            "Seen": 3
+        },
+        "with": {
+            "Count": [
+                0,
+                1
+            ],
+            "Seen": 1
+        }
+    },
+    "count": [
+        4,
+        5
+    ],
+    "probabilities": [
+        0.4444444444444444,
+        0.5555555555555556
+    ],
+    "document_count": 9,
+    "vocabulary_size": 13,
+    "tokenizer": {
+        "SplitOn": " "
+    }
+}

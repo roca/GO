@@ -1,0 +1,73 @@
+service: sls-state-machine
+frameworkVersion: '>=1.28.0 <2.0.0'
+
+plugins:
+  - serverless-step-functions
+provider:
+  name: aws
+  runtime: go1.x
+  memorySize: 128
+  timeout: 5
+  stage: dev 
+  region: us-east-1
+  endpointType: regional
+  iamRoleStatements:
+    - Effect: Allow 
+      Action: 
+        - states:StartExecution
+      Resource: arn:aws:states:us-east-1:132172135366:stateMachine:HelloStepFunc
+
+package:
+  exclude:
+    - ./**
+  include:
+    - ./build/**
+
+functions:
+  stateInvoke:
+    handler: build/stateInvoke
+    environment:
+      STATE_MACHINE_ARN: ${self:resources.Outputs.HelloStepFunc.Value}
+    description: "This lambda invokes a state machine"
+
+stepFunctions:
+  stateMachines:
+    HelloStepFunc:
+        name: HelloStepFunc
+        events:
+          - http:
+              path: /math/square
+              method: POST
+          - schedule:
+              rate: rate(5 minutes)
+              enabled: false
+              input:
+                Comment: "CloudWatch Event"
+                Number: 12
+                WaitTime: 5
+        definition:
+          Comment: "HelloWorld example"
+          StartAt: WaitFormSomeTime
+          States:
+            WaitFormSomeTime:
+              Comment: "Wait state"
+              Type: Wait
+              SecondsPath: $.WaitTime
+              Next: SquareNumber
+            SquareNumber:
+              Comment: "return square of the number"
+              Type: Task
+              Resource: arn:aws:lambda:us-east-1:132172135366:function:calculateSquare
+              TimeoutSeconds: 10
+              Next: HelloWorld
+            HelloWorld:
+              Comment: "Hello World Step"
+              Type: Pass
+              # InputPath: $.answer
+              End: true
+resources:
+  Outputs:
+    HelloStepFunc:
+      Description: The ARN of the example state machine
+      Value:
+        Ref: HelloStepFunc

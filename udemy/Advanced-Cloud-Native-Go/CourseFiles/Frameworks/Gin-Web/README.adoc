@@ -1,0 +1,56 @@
+= Gin Web Framework Example
+
+This repository contains the sources for the Gin Web Framework example.
+
+== Building the Go microservices
+
+```bash
+$ go build
+$ ./Gin-Web.exe
+```
+
+== Containerization with Docker
+
+```bash
+$ docker build -t gin-web:1.0.1 .
+$ docker images
+```
+
+== Running Docker image locally
+
+```bash
+$ docker run --name=gin-web -d -e "PORT=9090" -p 9090:9090 gin-web:1.0.1
+$ docker ps
+
+$ docker stop
+$ docker start
+```
+
+== Containerization and Run with Docker Compose
+
+```bash
+$ docker-compose build
+$ docker images
+$ docker-compose up -d
+$ docker-compose kill
+$ docker-compose rm
+```
+
+== Orchestration with Kubernetes
+
+```bash
+$ minikube dashboard
+$ kubectl cluster-info
+
+$ kubectl get deployments,pods,services,ingress
+$ kubectl apply -f kubernetes/
+
+$ kubectl get deployments,pods
+$ kubectl scale deployment gin-web --replicas=4
+
+$ kubectl get services
+$ kubectl describe service gin-web
+$ minikube service gin-web
+
+$ kubectl delete -f kubernetes/
+```

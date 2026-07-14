@@ -1,0 +1,25 @@
+CREATE TABLE bank_exchange_rates (
+    exchange_rate_uuid uuid PRIMARY KEY,
+    from_currency VARCHAR(5) NOT NULL,
+    to_currency VARCHAR(5) NOT NULL,
+    rate NUMERIC(20, 10) NOT NULL,
+    valid_from_timestamp TIMESTAMPTZ NOT NULL,
+    valid_to_timestamp TIMESTAMPTZ NOT NULL,
+    created_at TIMESTAMPTZ,
+    updated_at TIMESTAMPTZ
+);
+
+-- add auto update of updated_at. If you already have this trigger
+-- you can delete the next 7 lines
+CREATE OR REPLACE FUNCTION trigger_set_timestamp()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = NOW();
+RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER set_timestamp
+    BEFORE UPDATE ON bank_exchange_rates
+    FOR EACH ROW
+    EXECUTE PROCEDURE trigger_set_timestamp();

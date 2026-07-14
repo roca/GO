@@ -1,0 +1,47 @@
+version: '3'
+
+tasks:
+
+  run:
+    aliases:
+      - start
+      - go
+      - run
+
+    cmds:
+      - go run .
+
+  build:
+    cmds:
+      - go build -o dist/asteroids .
+
+  dmg:
+    cmds:
+      - task appify
+      - rm -rf dist/Asteroids.app/
+      - mv Asteroids.app dist
+      - rm -f dist/asteroids
+      - hdiutil create -volname Asteroids -srcfolder dist -ov -format UDZO Asteroids.dmg
+
+  build-wasm:
+    cmds:
+      - env GOOS=js GOARCH=wasm go build -o wasm/asteroids.wasm .
+
+  serve:
+    deps: [build-wasm]
+    cmds:
+      - cd wasm && python3 -m http.server 4000
+
+  appify:
+    - task: build
+    - appify -author "Romel Campbell" -version "v1.0.0" -name "Asteroids" -icon ./assets/images/icon.png ./dist/asteroids
+
+  clean:
+    cmds:
+      - go clean
+      - rm -rf dist/*
+      - rm -f Asteroids.dmg
+      - rm -rf Asteroids.app
+
+
+      

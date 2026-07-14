@@ -1,0 +1,6 @@
+go 1.21
+
+use (
+	./Example-509995
+	./Example-510541
+)

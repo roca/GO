@@ -1,0 +1,5 @@
+{
+    "Name":     "Chatter",
+    "Bucket":   "lamdba.storyfeet.com",
+    "Role":     "chatter"
+}

@@ -1,0 +1,13 @@
+go 1.22.2
+
+use (
+	./abstract
+	./adapter
+	./factory
+	./fluent
+	./go-breeders
+	./go-breeders-remote
+	./worker-pool
+	./wp/app
+	./wp/streamer
+)

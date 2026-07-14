@@ -1,0 +1,18 @@
+
+[
+    {
+        "task": "Create a regular expression to validate an AWS IAM username, which must be between 1-64 characters, can only contain alphanumeric characters, underscores, and hyphens",
+        "format": "regex",
+        "solution_criteria": "Regex should enforce length between 1-64 characters, only allow alphanumeric, underscore, and hyphen characters, and prevent leading/trailing whitespace"
+    },
+    {
+        "task": "Write a Go function to extract the AWS region from an EC2 instance ARN",
+        "format": "go", 
+        "solution_criteria": "Function should correctly parse region from standard AWS ARN format, handle potential edge cases, return clean region string"
+    },
+    {
+        "task": "Create a JSON object representing the minimum configuration for an AWS Lambda function event mapping",
+        "format": "json",
+        "solution_criteria": "JSON should include required fields like FunctionName, EventSourceArn, and have valid structure for Lambda event source mapping configuration"
+    }
+]

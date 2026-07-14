@@ -1,0 +1,269 @@
+" Hack to get :py3 working
+" https://robertbasic.com/blog/force-python-version-in-vim/
+if has('python3')
+endif
+
+call plug#begin('~/.vim/plugged')
+
+Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'
+Plug 'SpaceVim/vim-swig'
+Plug 'cespare/vim-toml'
+Plug 'chr4/nginx.vim'
+Plug 'davidhalter/jedi-vim'
+Plug 'easymotion/vim-easymotion'
+Plug 'elixir-editors/vim-elixir'
+Plug 'fatih/vim-go' , { 'tag': '*' }
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'junegunn/fzf.vim'
+Plug 'racer-rust/vim-racer'
+Plug 'raimon49/requirements.txt.vim'
+Plug 'rhysd/vim-grammarous'
+Plug 'rust-lang/rust.vim'
+Plug 'scrooloose/nerdcommenter'
+Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
+Plug 'segeljakt/vim-isotope'
+Plug 'slashmili/alchemist.vim'
+Plug 'tmhedberg/matchit'
+Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-markdown'
+Plug 'tpope/vim-speeddating'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+Plug 'vim-scripts/a.vim'
+Plug 'w0rp/ale'
+Plug 'xavierd/clang_complete'
+Plug 'zchee/vim-flatbuffers'
+
+" Initialize plugin system
+call plug#end()
+
+" Search & display
+set ignorecase
+set incsearch
+set nohls
+set number
+set showmatch
+set smartcase
+
+" Enable vim: ... directives
+set modeline
+
+" Tab stuff
+set tabstop=8
+set softtabstop=4
+set shiftwidth=4
+
+" Use system clipboard
+set clipboard=unnamedplus
+
+" Make no noise
+set visualbell t_vb=
+set noerrorbells
+
+" Vertical diff
+set diffopt=filler,vertical
+
+" Use hidden (allow buffer switch when modified)
+au BufNewFile,BufRead * set hidden
+
+" Abbriviations
+abb _3me_ Miki Tebeka <miki@353solutions.com>
+abb _date_ <C-R>=strftime("%Y-%m-%d")<CR>
+abb _gme_ Miki Tebeka <miki.tebeka@gmail.com>
+abb _py_ #!/usr/bin/env python
+abb _sh_ #!/bin/bash
+abb _pyc_ 
+\<CR>[source,python]
+\<CR>----
+\<CR>----
+
+" Make file executable
+func! MakeExecutable()
+    w
+    !chmod +x %
+    e
+endfunc
+comm! MX silent call MakeExecutable()
+
+" Clean non ascii
+func! ASCII_Clean()
+    silent %! iconv -c -t ASCII
+endfunc
+comm! AC call ASCII_Clean()
+
+" Edit in perforce
+func! P4Edit()
+    !p4 edit %
+    e
+endfunc
+comm! P4 silent call P4Edit()
+
+" Run black Python formatter
+func! Black()
+    w
+    silent !black %
+    e
+endfunc
+comm! Black call Black()
+
+
+func! GoRun()
+    :GoImports
+    !go run %
+endfunc
+
+comm! Gr call GoRun()
+comm! Pr ! python %
+comm! Pr2 ! python2 %
+
+" YAML
+au FileType yaml setl ts=2
+au FileType yaml setl sw=2
+
+" YAML
+au FileType html setl ts=2
+au FileType html setl sw=2
+
+" PML
+au BufNewFile,BufRead *.pml setl ts=2
+au BufNewFile,BufRead *.pml setl sw=2
+au BufNewFile,BufRead *.pml setl ft=markdown
+au BufNewFile,BufRead *.pml setl spell
+
+" Go
+au BufNewFile,BufRead *.go setl noet
+au BufNewFile,BufRead *.go setl ts=4
+au BufNewFile,BufRead *.go setl tw=0
+au FileType go nmap <leader>gt :GoDeclsDir<cr>
+" let g:go_auto_sameids = 1
+let g:go_auto_type_info = 1
+let g:go_list_height = 0
+let g:go_metalinter_command = 'golangci-lint'
+let g:go_decls_mode = 'fzf'
+"let g:go_fmt_experimental = 1
+" let g:go_template_autocreate = 0
+let g:go_template_file = expand('$HOME/.vim-go-template.go')
+
+augroup go
+  autocmd!
+  autocmd Filetype go
+    \  command! -bang A call go#alternate#Switch(<bang>0, 'edit')
+    \| command! -bang AV call go#alternate#Switch(<bang>0, 'vsplit')
+    \| command! -bang AS call go#alternate#Switch(<bang>0, 'split')
+augroup END
+
+set completeopt-=preview
+
+" rust
+let g:rustfmt_autosave = 1 
+
+" .envrc
+au BufNewFile,BufRead .envrc set ft=zsh
+
+" swig
+au BufNewFile,BufRead *.i set ft=swig
+au BufNewFile,BufRead *.swig set ft=swig
+au BufNewFile,BufRead *.swigcxx set ft=swig
+
+" Space for page up/down
+noremap <SPACE> <C-F>
+
+" Explorer to show full info
+let g:explDetailedList=1
+
+" Ale
+let g:ale_sign_error = '✗'
+let g:ale_sign_warning = '❗'
+let g:ale_linters = {
+\   'python': ['flake8'],
+\   'go': ['gopls'],
+\}
+nmap <silent> <C-n> <Plug>(ale_next_wrap)
+let g:ale_go_langserver_executable = 'gopls'
+let g:ale_hover_cursor = 0
+
+" Airline
+let g:airline#extensions#ale#enabled = 1
+let g:airline#extensions#branch#enabled = 1
+let g:airline#extensions#ctrlp#enabled = 1
+let g:airline_theme = 'minimalist'
+" let g:airline_powerline_fonts = 1
+
+" CTRL-P
+noremap <C-P> :FZF<CR>
+let g:ctrlp_custom_ignore = {
+  \ 'dir':  '\.venv$\|\.vendor$',
+  \ }
+
+" Python
+let g:jedi#goto_command = "<C-]>"
+
+au BufNewFile,BufRead *.py setl tw=78
+au BufNewFile,BufRead *.py setl spell
+
+func! Isort()
+    w
+    silent !isort -q -m6 %
+    e
+endfunc
+comm! Isort call Isort()
+
+" FIXME: We get "import a:name" in the file
+func! PyImport(name)
+    w
+    silent execute('!isort -q -a ' . a:name . ' ' . expand("%:p"))
+    e
+endfunc
+comm! -nargs=1 PyImport call PyImport(<f-args>)
+   
+
+func! ClangFormat()
+    w
+    silent !clang-format %
+    e
+endfunc
+comm! ClangFormat call ClangFormat()
+
+" NERDTree
+let NERDTreeIgnore = ['\.py[co]$', '__pycache__']
+comm! NT NERDTreeToggle
+let g:NERDTreeWinSize = 18 
+
+" ultisnips
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<c-b>"
+let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+
+" Wheels are zip files
+au BufReadCmd *.whl call zip#Browse(expand("<amatch>"))
+
+" Allow project specific .vimrc
+if !empty($ALLOW_EXRC)
+    set exrc
+endif
+
+" netrw settings
+let g:netrw_banner=0
+let g:netrw_altv=1
+" open URLs
+let g:netrw_browsex_viewer="setsid exo-open"
+
+" C/C++
+let g:clang_library_path='/usr/lib/libclang.so'
+au FileType c,cpp setl sw=2 ts=2
+
+" Markdown
+let g:markdown_fenced_languages = ['go', 'python', 'bash=sh', 'yaml']
+let g:markdown_syntax_conceal = 0
+au FileType markdown set spell
+
+" Asciidoc
+au FileType asciidoc set spell
+
+
+if has("gui_running")
+    " No toolbar or menu
+    set guioptions=aAce
+    colorscheme koehler
+    set guifont=Iosevka\ Term\ \Medium\ 20
+endif

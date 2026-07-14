@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: simple-k8s-server
+  labels:
+    io.kompose.service: simple-k8s-server
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      io.kompose.service: simple-k8s-server
+  template:
+    metadata:
+      labels:
+        io.kompose.service: simple-k8s-server
+    spec:
+      containers:
+      - name: simple-k8s-server
+        image: "rcampbell/simple-k8s-server:1.0.1"
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 9090
+        env:
+        - name: PORT
+          value: "9090"
+
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "125m"
+          limits:
+            memory: "128Mi"
+            cpu: "250m"
+
+        readinessProbe:
+          httpGet:
+            path: /info
+            port: 9090
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /info
+            port: 9090
+          initialDelaySeconds: 10
+          timeoutSeconds: 5

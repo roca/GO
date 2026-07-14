@@ -1,0 +1,10 @@
+go 1.21.4
+
+use (
+	./grpc-go-client
+	./grpc-go-server
+	./grpc-rest-gateway
+	./project01
+	./proto
+	./proto/protogen
+)

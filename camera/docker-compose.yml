@@ -1,9 +1,19 @@
 version: "2"
 services:
+    golang:
+      container_name: golang
+      build:
+        context: ./rpi/golang/
+        dockerfile: go.dockerfile
+    gobot:
+      container_name: gobot
+      build:
+        context: ./rpi/gobot/
+        dockerfile: gobot.dockerfile
     gocv:
       container_name: gocv
       build:
-        context: .
+        context: ./rpi/gocv/
         dockerfile: gocv.dockerfile
     camera:
       container_name: camera

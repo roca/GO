@@ -1,0 +1,25 @@
+{
+        "page": "assignment1",
+        "words": [
+                "eigth",
+                "two",
+                "two",
+                "two",
+                "five"
+        ],
+        "percentages": {
+                "eigth": 0.5,
+                "five": 1,
+                "two": 0.66
+        },
+        "special": [
+                "one",
+                "two",
+                null
+        ],
+        "extraSpecial": [
+                1,
+                2,
+                "3"
+        ]
+}

@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+import "basic/application.proto";
+import "dummy/application.proto";
+
+option go_package = "project01/proto/jobsearch";
+
+message JobCandidate {
+  uint32 job_candidate_id = 1 [json_name = "job_candidate_id"];
+  the.dummy.Application application = 2;
+}
+
+message JobSoftware {
+  uint32 job_software_id = 1 [json_name = "job_software_id"];
+  the.basic.Application application = 2;
+}

@@ -1,0 +1,481 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Overview
+
+This repository contains code for a Udemy course: [Introduction to AI and Machine Learning with Go](https://www.udemy.com/course/introduction-to-ai-and-machine-learning-with-go-golang)
+
+The repository uses Go workspaces (`go.work`) with five Go modules, plus one standalone Python module:
+- `ai-search/` - Pathfinding algorithms for maze solving (complete)
+- `vacuum-1/` - Room cleaning robot simulator (work in progress)
+- `model-check/` - AI model fairness verification (functional — loads CSV, runs 3 model configs against fairness and risk properties)
+- `battleships/` - Battleship game: human vs AI (in progress — ship placement, both players' turns, AI targeting/attack execution, and ship-sunk detection functional; the only module with tests — a baseline suite over its pure logic)
+- `blackjack/` - Blackjack game with AI card counter (in progress — `Card`/`Deck`/`CardCounter`/`Player` types, hi-lo card-counting helpers, and `Player.CalculateScore`/`AddCard` (with soft/hard ace handling) implemented; `main.go` runs a round loop that reshuffles when the deck dips below 10 cards, calls `PlayeRound`, and prompts to play again (exits on "n"); `PlayeRound` deals two cards each to dealer/human/AI, runs the human turn, then (when the human hasn't busted) the AI turn driven by `AdvancedAIDecision` (card-counting hit/stand strategy in `ai.go`) followed by the dealer turn (`playDealerTurn`, hits below 17), then prints each player's result via `DetermineResult` and card-counting stats via `displayCardCountingStats`)
+- `LINEAR-REGRESSION-PYTHON/` - Python linear-regression exercise (in progress — `app.py` implements CLI arg parsing, CSV loading with required-column validation, preprocessing (missing-value drop, 3-sigma outlier removal, numeric coercion), model training (StandardScaler + scikit-learn `LinearRegression`), and model evaluation (R²/RMSE on train and test sets); `main()` wires arg parsing → load → preprocess → prepare X/y → train/test split → train → evaluate, with the print/visualization/prediction steps still comment stubs; not part of the Go workspace)
+
+**Requirements**: Go 1.25.6 or later (workspace declares 1.26.3 in `go.work`); Python 3.13 for `LINEAR-REGRESSION-PYTHON/`
+
+## Commands
+
+### AI Search
+
+```bash
+cd ai-search
+go run . -file mazes/maze.txt -search dfs
+go run . -file mazes/maze-100-steps.txt -search astar -animate
+go run . -file flooded-mazes/maze-flooded.txt -search astar
+go build  # produces ./ai-search binary
+```
+
+Flags: `-file <path>`, `-search <algorithm>`, `-debug`, `-animate` (default: false)
+
+Algorithms: `dfs`, `bfs`, `dijkstra`, `gbfs`, `astar`
+
+### Vacuum-1
+
+```bash
+cd vacuum-1
+go run . -file empty.json -algorithm random -animate
+go run . -file room.json -algorithm random -animate
+go run . -file room.json -algorithm slam -animate
+go run . -file room.json -algorithm snake -animate
+go run . -file room.json -algorithm snake -animate -cat
+go run . -file house.json -algorithm snake -house
+go run . -file house.json -algorithm snake -house -logic
+```
+
+Flags: `-file <path>`, `-algorithm <name>`, `-animate <bool>` (default: true), `-cat <bool>` (default: false), `-house <bool>` (default: false), `-logic <bool>` (default: false, use with `-house`)
+
+Algorithms: `random`, `slam`, `spiral`, `snake` (default)
+
+### Model Check
+
+```bash
+cd model-check
+go run .
+go build  # produces ./model-check binary
+```
+
+### Battleships
+
+```bash
+cd battleships
+go run .
+go build  # produces ./battleships binary
+```
+
+No flags — interactive console game (stdin/stdout).
+
+### Blackjack
+
+```bash
+cd blackjack
+go run .
+go build  # produces ./blackjack binary
+```
+
+No flags — interactive console game. `main()` clears the screen, prints a welcome banner, builds a shuffled deck, and instantiates a `CardCounter`. The `for {}` loop reshuffles + resets the counter when `len(deck) < 10`, calls `PlayeRound(&deck, cardCounter)`, then prompts "Play another round? (y/n)" and exits on "n".
+
+### Linear Regression (Python)
+
+```bash
+cd LINEAR-REGRESSION-PYTHON
+python3 -m venv venv          # first-time setup (a venv/ already exists in the tree)
+source venv/bin/activate
+pip install -r requirements.txt
+python app.py                 # runs on house_data.csv by default
+python app.py -f other.csv    # override the input CSV (-f / --file)
+```
+
+Not part of the Go workspace — run independently. `main()` currently loads, preprocesses, splits, trains, and evaluates the model (R²/RMSE on train and test sets); results printing, visualization, and prediction steps are still comment stubs.
+
+### Build Verification
+
+```bash
+# From repo root, verify all modules compile:
+cd ai-search && go build . && cd ../vacuum-1 && go build . && cd ../model-check && go build . && cd ../battleships && go build . && cd ../blackjack && go build .
+```
+
+### Go Workspace
+
+```bash
+go work sync
+go work use ./new-module
+go work edit -dropuse ./module
+```
+
+### Testing
+
+Only the `battleships` module has tests (`battleships/ai_test.go`, `battleships/helpers_test.go`) — a baseline/characterization suite covering pure logic (`isShipSunk`, `checkWinCondition`, `abs`, `parseCoord`, heat-map calculation, and AI `PlaceShips` invariants). No other module has tests yet.
+
+```bash
+cd battleships
+go test ./...                              # run all battleships tests
+go test -v ./...                           # verbose (shows subtests)
+go test -run TestIsShipSunkHorizontal ./.  # run a single test
+go test -run TestPlaceShipsInvariants ./.  # placement invariants (100 runs)
+```
+
+Notes for working with the suite:
+- `emptyBoard()` (helpers_test.go) and `newTestAIPlayer()` (ai_test.go) are shared test helpers that build state without touching stdin.
+- The interactive paths (`TakeTurn`, `PlaceShips` prompts, `time.Sleep`/Enter-to-continue blocks) are deliberately **not** tested — they need logic/I/O separation first.
+- AI placement/targeting use the global `math/rand`, so tests assert invariants (in bounds, no overlap, correct length) rather than exact coordinates.
+- `TestUpdateHeatMapSkipsTargetedCells` is a characterization test: `updateHeatMap` skips already-targeted cells with `continue`, so they keep their `initializeHeatMap` value rather than being reset to `baseProbability`. The test pins the actual behavior, not idealized behavior.
+- `isShipSunk` prints "No ship found at the hit location" to stdout on its not-found path, so that line appears during test runs (see Known Bugs).
+
+## Architecture: ai-search
+
+### Core Types (main.go)
+
+- **Maze**: Main game state - grid of Walls, Start/Goal Points, Solution, Explored list, search config
+- **Point**: Row/Col coordinate with `Water` boolean (for flooded cells)
+- **Wall**: Grid cell with `State` (Point) and `wall` boolean (`true` = impassable)
+- **Node**: Search tree node with State, Parent pointer, Action, cost fields (`CostToGoal` for g(n), `EstimatedCostToGoal` for f(n)), and `index` (used internally by priority queues). Has `ManhattanDistance(goal Point) int` method.
+- **Solution**: Result with Actions (direction strings) and Cells (path Points)
+
+Search type constants: `DFS=0, BFS=1, GBFS=2, ASTAR=3, DIJKSTRA=4`
+
+### Search Algorithm Pattern
+
+Each algorithm follows the same structure (see `dfs.go` as reference):
+
+1. **Struct** with `Frontier` (slice or priority queue) and `Game *Maze`
+2. **Methods**: `Add(node)`, `Remove() (*Node, error)`, `ContainsState(node) bool`, `Empty() bool`, `Neighbors(node) []*Node`, `Solve()`
+3. **Entry function**: `solve<Name>(m *Maze)` called from main.go dispatch
+
+**Search logic**: Initialize frontier with start node -> loop: remove node, check if goal, add unexplored neighbors -> backtrack through parent pointers to build solution.
+
+**IMPORTANT**: In `Neighbors()`, traversable cells have `wall == false`. Check `!wall`, not `wall`.
+
+### Algorithm Differences
+
+| Algorithm | Frontier | Ordering | Randomized | Optimal |
+|-----------|----------|----------|------------|---------|
+| DFS | Slice (LIFO stack) | Removes from end | Yes | No |
+| BFS | Slice (FIFO queue) | Removes from front | No | Yes (shortest path) |
+| Dijkstra | PriorityQueueDijkstra | g(n) - cost from start | No | Yes |
+| GBFS | PriorityQueueGBFS | h(n) - Manhattan distance to goal | No | No |
+| A* | PriorityQueueAstar | f(n) = g(n) + h(n), h = Euclidean distance | No | Yes |
+
+DFS randomizes neighbor order, so multiple runs may produce different paths. All other algorithms use consistent ordering.
+
+### Water/Flooded Cells
+
+- Marked with `w` in maze files (see `flooded-mazes/`)
+- `Point.Water` boolean set during maze loading
+- A* adds `FloodedCost = 100` penalty in `Add()` when `node.State.Water` is true
+- Water state propagated from maze grid to neighbor nodes in A*'s `Neighbors()`
+- Rendered in blue in generated images
+
+### Priority Queues
+
+Three separate files implementing Go's `heap.Interface` (`Len`, `Less`, `Swap`, `Push`, `Pop`):
+- `priority-queue-dijkstra.go`: Orders by `CostToGoal` (g(n))
+- `priority-queue-gbfs.go`: Orders by `CostToGoal` (contains heuristic value h(n))
+- `priority-queue-astar.go`: Orders by `EstimatedCostToGoal` (f(n))
+
+### Image Generation (image.go)
+
+- `OutputImage()`: Static `image.png` with 60x60 pixel cells
+- `OutPutAnimatedImage()`: APNG `animation.png` from frames in `tmp/`
+- Colors: Black=walls, Dark Green=start, Red=goal, Green=solution, Yellow=explored, Blue=water, White=unvisited, Orange=current node
+- Informed search algorithms (Dijkstra, GBFS, A*) display distance metrics on cells
+
+### Maze File Format
+
+Files in `ai-search/mazes/` and `ai-search/flooded-mazes/`:
+- `A` = start, `B` = goal, `#` = wall, ` ` (space) = open path, `w` = water
+
+### Implementing a New Search Algorithm
+
+1. **Create priority queue** (if needed): `priority-queue-<name>.go` implementing `heap.Interface`
+2. **Create algorithm file** `<name>.go`:
+   - Algorithm struct with `Frontier` and `Game *Maze`
+   - Implement: `Add`, `Remove`, `ContainsState`, `Empty`, `Neighbors`, `Solve`
+   - Entry function: `solve<Name>(m *Maze)`
+3. **Update `main.go`**:
+   - Add constant to search type enum (see existing `DFS`, `BFS`, etc.)
+   - Add case to algorithm switch statement in `main()`
+4. **Update this CLAUDE.md**
+
+## Architecture: vacuum-1
+
+### Key Types
+
+- **Room**: Grid of Cells, dimensions, cleanable/cleaned counts, animate flag, optional `Cat *Cat` pointer
+- **Cell**: Type string ("clean"/"dirty"/"wall"/"furniture"/"bike"), Cleaned/Obstacle booleans, ObstacleName string
+- **Furniture**: JSON-mapped struct with X, Y, Width, Height, Name, Type fields. Name is used for obstacle tracking via `ObstacleName`.
+- **Robot**: Position, Path, Direction (float64), CleanRoom function pointer, ObstaclesEncountered map
+- **House**: Contains `Rooms []*Room`. Created via `NewHouse(configFile, animate)`.
+- **RoomConfig**: JSON structure with Width, Height, Furniture array. Single room JSON is one object; house JSON is an array of these.
+- **Cat**: Position, Active bool, StopTimer, Path, DirectionX/DirectionY. Created via `NewCat(room)`, moved via `MoveCat(cat, room)`.
+- **LogicalWorld**: Tracks Jack/Sarah/Johnny `PersonStatus` (IsHome, Room, DoorClosed), weekday flag, Objects map. Methods: `UpdateObjectFound()`, `UpdateDoorStatus()`, `DetermineCleaningPriority()`.
+- **RobotWithLogic**: Embeds `*Robot`, adds `World *LogicalWorld`. Has `ScanHouseWithLogic(house)` method that identifies rooms by furniture, scans for objects, triggers deduction rules, and returns room-name-to-index mapping.
+
+**Grid convention**: `grid[x][y]` where x is column and y is row (column-major). Display iterates rows (j) then columns (i).
+
+**Shared state**: The `directions` variable (N/E/S/W offsets) defined in `robot.go` is used by both robot movement and `astar.go` pathfinding.
+
+### Constants (world.go)
+
+- `cellSize = 10`: Room dimensions (cm) are divided by this to get grid dimensions (e.g., 300cm -> 30 cells)
+- `moveDelay = 50ms`: Animation delay between moves
+- `catStopProbability = 0.1`, `catStopDuration = 5`: Used by `MoveCat()` in cat.go
+
+### Pathfinding (astar.go)
+
+A* implementation for room navigation, separate from the ai-search module's A*. Uses a `PriorityQueue` of `PQItem` structs with `container/heap`. The `heuristic()` function uses Manhattan distance (unlike ai-search's A* which uses Euclidean distance). Called as `Astar(room, start, goal) []Point`.
+
+### Cleaning Algorithms
+
+Assigned to robots via function pointers. `setAlgorithm()` in main.go maps names to functions: "random"->`CleanRoomRandomWalk`, "slam"->`CleanRoomSlam`, "spiral"->`CleanSpiralPattern`, default->`CleanRoomSnake`.
+
+**Random Walk** (`random.go`): Random angle movement with stuck detection (5+ consecutive stuck -> A* fallback to nearest dirty cell). Every 20 moves, 30% chance of A* course correction. Final grid sweep for missed cells. Helper functions: `bresenhamLine()`, `moveAtAngleUntilObstacle()`, `findNearestDirtyCell()`, `abs()`.
+
+**SLAM** (`slam.go`): Frontier-based exploration. Internal `robotMap` (0=unknown, 1=free, 2=obstacle, 3=cleaned). Picks closest frontier point, pathfinds with A*, expands frontier. Periodic re-scan every 10 moves. Early exit at 95% coverage. Final sweep via `cleanRemainingCells()`.
+
+**Spiral** (`spiral.go`): Cleans from room center outward. `generateSpiralPattern()` creates expanding spiral (right->down->left->up). `findNearestCleanablePoint()` adjusts targets. `finalCleanup()` catches missed cells.
+
+**Snake** (`snake.go`): Boustrophedon (zigzag) pattern. Default algorithm. `generateSnakingPattern()` alternates row direction. Only algorithm that calls `MoveCat()`. Reuses `finalCleanup()` from spiral.go.
+
+### Execution Flow
+
+1. Parse flags -> 2a. If `-house`: `NewHouse()` / 2b. Otherwise: `NewRoom()` wrapped in single-room `House` -> 3. Optionally `NewCat(room)` if `-cat` -> 4a. If `-logic`: `NewRobotWithLogic()` -> `setAlgorithm()` -> `ScanHouseWithLogic()` -> print logical state and priority -> wait for user input -> clean rooms in priority order / 4b. Otherwise: for each room -> `NewRobot()` -> `setAlgorithm()` -> `robot.CleanRoom(room, robot)`
+
+### Cross-file Dependencies
+
+- `snake.go` reuses `finalCleanup()` defined in `spiral.go` and calls `MoveCat()` from `cat.go`
+- `directions` variable (N/E/S/W offsets) defined in `robot.go` is used by `astar.go`
+- `cat.go` uses `abs()` from `random.go` and constants from `world.go`
+- `robot.go`: `Clean()` calls `CheckAdjacentObstacles()` which uses `RecordObstacle()` to track furniture names
+
+### Known Bugs
+
+**Off-by-one errors in grid bounds**:
+- `addNeighborsToFrontier()` in slam.go: `newX <= len(robotMap)` should be `<`
+- `RecordObstacle()` in robot.go: `y <= room.Height` should be `y < room.Height`
+- `finalCleanup()` in spiral.go: uses `room.Width-1`/`room.Height-1` as upper loop bounds, skipping last column and row
+- `updateAllFrontiers()` in slam.go: same off-by-one with `Width-1`/`Height-1`
+
+**Obstacle polarity**: `updateAllFrontiers()` in slam.go checks `room.Grid[x][y].Obstacle` when it should check `!room.Grid[x][y].Obstacle` to find free cells for the frontier.
+
+**Out-of-bounds access**: `MoveCat()` in cat.go accesses `room.Grid[newX][newY]` outside the `room.IsValid()` guard block — will panic if position is invalid.
+
+**Incomplete cell checks**: `findNearestDirtyCell()` in random.go finds nearest cell by distance but never checks `Cleaned` or `Obstacle` status — returns any cell, even if already clean or an obstacle.
+
+**Typos**: `getCloesestFrontierPoint()` in slam.go (should be `getClosest`), `directiionX` in snake.go (double 'i').
+
+**Logic bugs in spiral.go**: `findNearestCleanablePoint()` loop uses `||` where `&&` is needed. `generateSpiralPattern()` breaks on first out-of-bounds point, potentially missing valid points in non-square rooms.
+
+**Logic branch missing `continue`**: In main.go, when `roomNameToIndex[roomName]` doesn't contain a priority room name, it prints "skipping" but doesn't `continue` — falls through to access `house.Rooms[0]` (zero value of missing map key).
+
+### Incomplete Features (TODO)
+
+- `-logic` flag: Scanning, priority determination, and room cleaning work end-to-end. Still needs: connect `RecordObstacle`/`CheckAdjacentObstacles` to `UpdateObjectFound` during cleaning, connect `UpdateDoorStatus` to door detection during cleaning.
+- Cat integration: Only snake calls `MoveCat()`. Random, slam, and spiral need cat movement added. No algorithm calls `IsAdjacentToCat()` for avoidance.
+- `Display()` switch in world.go has no case for `"bike"` cell type.
+- JSON `robot` field (dock position, start direction) and furniture `id` field not loaded by `RoomConfig`/`Furniture` structs.
+
+### Adding a New Cleaning Algorithm
+
+1. Create `<name>.go` with a function matching signature `func(room *Room, robot *Robot)`
+2. Add case to `setAlgorithm()` switch in `main.go`
+3. If cat support needed, call `MoveCat()` during the cleaning loop
+4. Update this CLAUDE.md
+
+### Room Configuration
+
+JSON files in `vacuum-1/`. Single-room files (`empty.json`, `room.json`) contain one `RoomConfig` object. Multi-room files (`house.json`) contain a JSON array of `RoomConfig` objects — use with `-house` flag.
+
+## Architecture: model-check
+
+Loan approval fairness verification module. Standard library only.
+
+### Core Types (model.go)
+
+- **LoanApprovalAI**: Weighted scoring model with factor weights (income, creditScore, loanAmount, debtRatio, employment) and `approvalThreshold`
+- **Applicant**: Financial/demographic profile — income (thousands), creditScore (normalized 0-1), loanAmount (thousands), debtToIncome (0-1), yearsEmployed, protectedClass boolean
+
+### Property System (property.go, risk-property.go)
+
+- **Property**: Interface with `Check(model *LoanApprovalAI, applicants []Applicant) (bool, []Applicant)` and `Name() string`
+- **FairnessProperty**: Implements `Property`, has `maxDisparity float64`. `Check()` counts approvals per group (protected vs non-protected), computes disparity, flags individually unfair decisions (denied despite strong profile: creditScore > 0.7, debtToIncome < 0.3, income > 60k), returns whether the model is fair and a list of unfair decisions.
+- **RiskProperty**: Implements `Property`, has `axHighRiskApprovalRate float64` (note: field name missing `m` prefix — should be `maxHighRiskApprovalRate`). `Check()` identifies high-risk applicants (creditScore < 0.5 and debtToIncome > 0.5), computes their approval rate, returns whether it's within the allowed threshold plus the list of risky approvals.
+
+### Implemented
+
+- **`ApproveLoan`** (model.go): Weighted scoring — computes `loanToIncomeRatio`, then `score = income*w1 + creditScore*w2 - loanToIncomeRatio*w3 - debtToIncome*w4 + yearsEmployed*w5`, approves if `score > approvalThreshold`
+- **`PrintModelParams`** (model.go): Displays model weights and threshold
+- **`FairnessProperty.Check()`** (property.go): Full implementation — approval rate disparity check plus individual unfair-decision detection
+- **`RiskProperty.Check()`** (risk-property.go): Full implementation — high-risk approval rate check
+- **CSV loading** (`load-csv.go`): `LoadApplicantsFromCSV` with fuzzy column matching (header substring matching, case-insensitive) and auto-normalization (income/loanAmount to thousands, creditScore from 300-850 to 0-1, debtToIncome from percentage to ratio)
+- **Parsing utilities** (`utils.go`): `parseFloat` (strips `$`, `,`, `%`) and `parseBool` (accepts true/yes/y/1/t/false/no/n/f/0)
+
+### Verification (verification.go)
+
+- **`VerifyModel`**: Takes model, property, and applicants. Calls `property.Check()`, prints pass/fail result with up to 3 counter-example details (income, credit score, debt ratio, protected class, decision).
+
+### Known Bugs
+
+- `risk-property.go`: Field name `axHighRiskApprovalRate` appears to be missing the `m` prefix (`maxHighRiskApprovalRate`)
+- `risk-property.go`: Variable `isHoighRisk` is a typo (should be `isHighRisk`)
+- `verification.go`: `Dept Ratio` should be `Debt Ratio` in format string
+- `verification.go`: `theere` should be `there` in comment
+- `main.go`: Comment says "Load applicant data from CSBV" — should be "CSV"
+
+## Architecture: battleships
+
+Classic Battleship game — human vs AI, interactive console. Standard library only. In progress: ship placement complete, both players' turns functional, AI targeting and attack execution implemented (hit/miss, hunt mode entry, sunk handling). `isShipSunk` is fully implemented; remaining gap is adjacency validation in human ship placement.
+
+### Core Types
+
+- **Board**: `[10][10]string` — 10x10 grid. Cells: `"."` (empty), `"O"` (ship), `"X"` (hit), `"~"` (miss)
+- **Position**: `row`, `col` int pair (0-9)
+- **Ship** (human.go): `ShipName`, `StartPosition`, `EndPosition`
+- **HumanPlayer** (human.go): `board Board`, `ships []Ship`, `opponent *AIPlayer`. Constructor: `NewHumanPlayer()` initializes the board via `newBoard()`.
+- **AIPlayer** (ai.go): `board Board`, `heatMap [10][10]int`, `hits []Position`, `shipsSunk int`, `huntMode bool`, `potentialShips []shipTracker` (named struct with `size`/`sunk`/`hits`/`shipPos` fields), `ships []Ship`, `opponent *HumanPlayer`. Constructor: `NewAIPlayer()` initializes the board via `newBoard()`, builds the heat map, and seeds potentialShips tracking from shipTypes.
+
+### Helpers (helpers.go)
+
+- `abs(x int) int`: Integer absolute value, used by heat map center-distance calculation
+- `checkWinCondition(board *Board) bool`: Returns true when no `ship` cells remain on the board (all ships sunk)
+- `isShipSunk(board *Board, row, col int, opponentShips []Ship) (bool, string)`: Locates the ship covering `(row, col)` by checking each opponent ship's `StartPosition`/`EndPosition` span (horizontal or vertical), counts `hit` cells along that span, and returns `(true, ShipName)` when the hit count equals the ship length, otherwise `(false, "")`. Called by both `HumanPlayer.TakeTurn` and `AIPlayer.TakeTurn` after a hit.
+
+### Ship Registry & Board Helpers (board.go)
+
+- `type shipSpec struct { name string; size int }`; `var shipTypes []shipSpec`: Carrier (5), Battleship (4), Cruiser (3), Submarine (3), Destroyer (2) — 5 ships, 17 total cells
+- `newBoard() *Board`: Returns a board with every cell set to `empty`. Used by both player constructors.
+- `shipCells(start Position, size int, horizontal bool) []Position`: Returns the positions a ship occupies from `start`, extending right (horizontal) or down (vertical). Does not validate bounds — callers check each returned position. Used by `HumanPlayer.PlaceShips` and both `AIPlayer.PlaceShips` paths.
+- `parseCoord(s string) (Position, error)`: Parses a coordinate like `"A0"` (column letter A-J + row number 0-9) into a Position, expecting trimmed/upper-cased input. Returns a descriptive error on the first validation failure. Used by `HumanPlayer.TakeTurn` and `HumanPlayer.PlaceShips`.
+
+### Constants (main.go)
+
+`boardSize = 10`, display symbols (`empty="."`, `ship="O"`, `hit="X"`, `miss="~"`, `hiddenShip="."` — same glyph as empty so AI ships are indistinguishable from empty cells in the player's view), `headerRow = "  A B C D E F G H I J"`, `headerCol = "0123456789"`
+
+### Game Loop (main.go)
+
+Creates `HumanPlayer` and `AIPlayer`, links opponents, prints welcome/legend, calls `ai.PlaceShips()` then `human.PlaceShips()`, then enters alternating-turn `gameOver` loop. Before each AI turn, the loop prints the AI's `heatMap` as a 10×10 grid for debugging, then calls `ai.TakeTurn(human.GetBoard())`. The pause-for-Enter prompt lives inside `AIPlayer.TakeTurn` itself, not in the loop. Both turns call `checkWinCondition`. Final message on game end.
+
+### AI Strategy Infrastructure
+
+Two-phase hunt architecture with probability-based targeting:
+- **Search phase**: `heatMap` initialized with checkerboard pattern + center bias via `initializeHeatMap()`. Constants: `baseProbability=1`, `checkerboardBonus=1`, `centerProximityBonus=2`, `maxCenterDistance=3`, `huntModeBoost=100`, `shipFitBonus=2`
+- **Kill phase**: `huntMode` flag and `potentialShips` tracking defined; switches to targeted mode after hit
+- **`updateHeatMap`**: Implemented — resets heat map, calculates base probabilities for untargeted cells, adds ship-fit bonuses (checks if unsunk ships can fit horizontally/vertically from each cell), calls `applyHuntModeBoosts()` when in hunt mode
+- **`applyHuntModeBoosts`**: Implemented — detects hit pattern (single, horizontal line, or vertical line), boosts adjacent cells accordingly. Single hits boost all 4 neighbors; aligned hits boost only the endpoints of the line.
+- **`TakeTurn`**: Implemented — calls `updateHeatMap`, finds highest probability cell(s), randomly selects among ties, falls back to random if no candidates. Resolves the attack: marks `hit`/`miss` on the opponent board, appends to `p.hits` and sets `huntMode = true` on a hit, calls `isShipSunk` and on a sunk ship increments `shipsSunk`, exits hunt mode, and clears `p.hits`. After printing the result, blocks on a "Press enter to continue..." prompt via `bufio.NewReader(os.Stdin)`. Returns the targeted `Position` and a `bool` indicating hit.
+
+### AI Ship Placement (ai.go)
+
+`PlaceShips()` is implemented — two-phase strategy: larger ships (size >= 4) placed near edges, smaller ships distributed randomly. Both the edge path and the random fallback expand the ship footprint with `shipCells`, then validate boundary, overlap, and adjacency (larger ships avoid diagonal/adjacent neighbors). Falls back to random valid placement after 100 failed attempts.
+
+### Board Display (board.go)
+
+`printBoards(playerBoard, opponentBoard *Board)`: Clears terminal, prints both boards side-by-side. Hides opponent's ships (shows `hiddenShip` instead of `ship`), reveals hits and misses. Player's own board shows all information.
+
+### Known Bugs
+
+- `ai.go`: Comment typos — `checkkerboard` (double 'k'), `likeley` (should be `likely`), `Sigificant` (should be `Significant`), `potenial` (should be `potential`)
+- `board.go`: Comment typos — `pacakage` (should be `package`), `opponewnt's` (should be `opponent's`), `shouild` (should be `should`)
+- `helpers.go`: `isShipSunk` writes to stdout (`fmt.Println` on the "No ship found" path) — a logic helper doing I/O. Harmless but surfaces during test runs; should return the result and let the caller report.
+
+### Human Player (human.go)
+
+`PlaceShips()` — prompts user with format "A0 H" (position + direction), validates direction (H/V), parses the position via `parseCoord`, expands the ship footprint with `shipCells`, checks boundary and overlap, marks board cells, stores Ship with start/end positions, and displays final placement. Not yet implemented: adjacency checking (ships can be placed touching each other).
+
+`TakeTurn(opponentBoard *Board) (Position, bool)` — prompts for target position (e.g., "A0"), parses it via `parseCoord`, checks for already-targeted cells, determines hit/miss, updates board, calls `isShipSunk` on hits. Returns the targeted position.
+
+`GetBoard() *Board` — returns pointer to player's board.
+
+### Not Yet Implemented
+
+- Adjacency validation in human ship placement
+
+## Architecture: blackjack
+
+Console blackjack vs. an AI card counter. Partially implemented.
+
+### Core Types
+
+- **Card** (`card.go`): `Suit` (Unicode glyph constant — `Hearts`, `Diamonds`, `Clubs`, `Spades`), `Value` (`"A"`, `"2"`–`"10"`, `"J"`, `"Q"`, `"K"`), `Score` int. `String()` renders as `value+suit` (e.g., `A♠`). Ace is hard-coded to score 11 in `NewDeck` — no soft/hard-ace handling yet.
+- **Deck** (`deck.go`): `[]Card`. `NewDeck()` builds a 52-card deck (suits × values, parallel `scores` slice). `Shuffle()` returns a Fisher-Yates-shuffled copy (does not mutate the receiver). `Draw()` is a pointer receiver that auto-reshuffles when empty, returns the top card, and slices it off the deck (`*d = (*d)[1:]`) so cards are consumed.
+- **CardCounter** (`card-counter.go`): Tracks hi-lo card counting state. Fields: `SeenCards map[string]int` (per-value counts), `RunningCount int`, `TrueCount float64`, `DecksRemaining float64`. Constant `DeckSize = 52`.
+- **Player** (`player.go`): `Name string`, `Hand []Card`, `Score int`, `IsAI bool`, `IsBust bool`. `NewPlayer(name string, isAI bool) Player` returns a value (not a pointer) with an empty hand and zeroed score/bust flags. Methods (pointer receivers): `CalculateScore() int` sums non-ace card scores then adds aces one-by-one as 11 when the running total stays ≤ 21, otherwise as 1 (handles soft/hard aces despite `NewDeck` hard-coding ace `Score: 11`); `AddCard(card Card, cardCounter *CardCounter)` appends the card to `Hand`, refreshes `Score` via `CalculateScore`, and forwards the card to `cardCounter.TrackCard` when the counter is non-nil; `DisplayHand(hideSecoindCard bool)` prints `Name's hand: <cards> (Score: N)` — when `hideSecoindCard` is true, every card after the first renders as `??` and the score prints as `?` (used to conceal the dealer's hole card); `handleHit(deck *Deck, cardCounter *CardCounter) bool` draws a card via `Deck.Draw()`, adds it with `AddCard`, prints the draw and refreshed hand, and returns `true` (setting `IsBust`) when the score exceeds 21 — otherwise sleeps 1s for AI players (to pace the display) and returns `false`; `PlayTurn(deck *Deck, cardCounter *CardCounter, dealerUpCard Card)` dispatches on `IsAI` — the AI branch delegates to `playAITurn`, the human branch to `playHumanTurn`; `playHumanTurn(deck *Deck, cardCounter *CardCounter)` loops prompting "(h)it, (s)tand or (q)uit", lower-casing the input and switching on the action constants (hit calls `handleHit` and returns on bust, stand/quit return, anything else reprints the prompt) — note `dealerUpCard` is currently unused and quit only returns from the turn rather than ending the game; `playAITurn(deck *Deck, cardCounter *CardCounter, dealerUpCard Card)` loops while not bust, asking `AdvancedAIDecision` (ai.go) for a hit/stand choice each iteration (standing ends the turn, hitting calls `handleHit` and breaks on bust, and a guard auto-stands once the hand exceeds 10 cards), then blocks on a "Press Enter to continue..." prompt via `bufio.NewReader(os.Stdin)`; `playDealerTurn(deck *Deck, cardCounter *CardCounter)` no-ops for non-dealers, otherwise reveals and tracks the dealer's hole card (`p.Hand[1]`) via `cardCounter.TrackCard`, hits via `handleHit` while `Score < 17`, and blocks on a "Press Enter to continue..." prompt; `DetermineResult(dealer Player) string` returns the outcome from the player's perspective — loss on own bust, win on dealer bust or higher score, push on equal score, otherwise loss. Action constants (`player.go`): `Hit = "h"`, `Stand = "s"`, `Quit = "q"`, `MinDealerStand = 17`.
+
+### Card Counter API (`card-counter.go`)
+
+- `NewCardCounter()`: Initializes counts (all values to 0), running/true counts to 0, decks remaining to 1.0.
+- `Reset()`: Restores the counter to a fresh-deck state.
+- `TrackCard(card Card)`: Increments per-value count, updates running count via hi-lo (low cards 2–6: `+1`; high cards 10/J/Q/K/A: `-1`; 7–9 unchanged), recomputes `DecksRemaining` (clamped to ≥ 0.1) and `TrueCount = RunningCount / DecksRemaining`.
+- `ChanceOfBusting(playerScore int) float64`: Walks every card value, treats face cards as 10 and Ace as 11, counts unseen cards (4 per value minus seen, clamped to ≥ 0), tallies which would push the player over 21, returns the bust ratio. Returns `1.0` when `playerScore >= 21`, `0.5` when no unseen cards remain.
+- `DealerChanceOfBusting(dealerUpCard Card) float64`: Looks up a base bust probability per dealer up-card, then adjusts by `TrueCount * 0.02`.
+
+### Helpers (`helpers.go`)
+
+- `clearScreen()`: On Windows uses `github.com/inancgumus/screen`; elsewhere writes the ANSI escape `\033[H\033[2J`.
+
+### Round Driver (`game.go`)
+
+`PlayeRound(deck *Deck, cardCounter *CardCounter)` (note: function name is misspelled — should be `PlayRound`) prints a round banner with cards remaining, then constructs three players via `NewPlayer`: `dealer` (not AI), `human` (not AI), `ai` (AI). It deals two cards each to human/AI/dealer via `Player.AddCard` (which also updates `cardCounter`), then prints the initial deal via `Player.DisplayHand` (dealer with hole card hidden, human and AI fully shown). It then calls `human.PlayTurn(deck, cardCounter, dealer.Hand[0])` (passing the dealer's up card) and, if the human hasn't busted, `ai.PlayTurn(deck, cardCounter, dealer.Hand[0])` followed by `dealer.playDealerTurn(deck, cardCounter)`. It then prints a results block (each player's final score), each player's outcome via `Player.DetermineResult(dealer)`, and card-counting stats via `displayCardCountingStats(cardCounter, deck)` (running count, true count, cards remaining, and the per-value seen-card distribution). Note: when the human busts, the AI and dealer turns are skipped but results/stats still print.
+
+`displayCardCountingStats(cardCounter *CardCounter, deck *Deck)` prints the final running count, true count, and cards remaining, then a "Card Distribution Seen:" section listing each value (`A`, `2`–`10`, `J`, `Q`, `K`) with its `SeenCards` count, breaking to a new line after the `6` for readability.
+
+### Game Loop (`main.go`)
+
+`main()` clears the screen, prints a welcome banner, calls `NewDeck().Shuffle()`, and creates a `CardCounter` via `NewCardCounter()`. The `for {}` loop reshuffles + resets the counter when `len(deck) < 10`, calls `PlayeRound(&deck, cardCounter)`, then prompts "Play another round? (y/n)" via `fmt.Scanln` (lower-cased) and breaks on `"n"` with a goodbye message. Any other input continues the loop.
+
+### AI Strategy (`ai.go`)
+
+`AdvancedAIDecision(player Player, dealerUpCard Card, cardCounter *CardCounter) string` returns `Hit` or `Stand` for the AI's turn. It always stands on 19+, computes `ChanceOfBusting`/`DealerChanceOfBusting`, prints an "AI thinking" line (score, true count, bust probabilities) and sleeps 500ms to pace the display, then applies card-counting-aware rules: stands on 17/18 (adjusted by `TrueCount` and dealer strength); handles soft hands (ace counted as 11) separately, standing on soft 18+ unless dealer is strong with a negative count; on 12–16 stands when bust risk is low and the dealer is likely to bust, or against a dealer 2–6 unless the count is very negative; otherwise hits. Defaults to `Stand`.
+
+### Known Bugs
+
+- `NewDeck` assigns Ace `Score: 11` unconditionally; soft/hard-ace logic isn't implemented.
+- `ai.go`: comment typo `16 or loweer` (should be `lower`).
+- `game.go`: function name `PlayeRound` is a typo (should be `PlayRound`); also has a stray `(` in the comment `Initial deal: two cards per PlayeRound(`.
+- `card-counter.go`: `pontsUntilBust` is a typo (should be `pointsUntilBust`); comments contain `caust` (should be `cause`), `somehowq` (should be `somehow`), `This  card` (double space).
+- `player.go`: `DisplayHand` parameter `hideSecoindCard` is a typo (should be `hideSecondCard`); comments contain `hidding` (should be `hiding`) and `insted` (should be `instead`).
+- `game.go`: `Intial Deal:` is a typo (should be `Initial Deal:`).
+
+## Architecture: LINEAR-REGRESSION-PYTHON
+
+Standalone Python exercise, independent of the Go workspace. In progress — data loading, preprocessing, model training, and evaluation implemented; results printing/visualization/prediction not yet.
+
+- `app.py`: Entry point. Imports `argparse`, `logging`, `os`, `sys`, `numpy`, `pandas`, `matplotlib.pyplot`, and scikit-learn (`LinearRegression`, `mean_squared_error`, `r2_score`, `train_test_split`, `StandardScaler`). Configures a module-level `logger` (INFO level, timestamped format) and a `CONFIG` dict with `"default_csv": "house_data.csv"`, `"test_size": 0.2`, `"random_state": 42`. Functions:
+  - `parse_arguments()`: Builds an `ArgumentParser` with a single `-f`/`--file` option (defaults to `CONFIG["default_csv"]`).
+  - `load_data(file_path)`: Exits (via `sys.exit(1)`) if the file is missing; reads the CSV with pandas; validates the required columns `square_footage` and `price_thousands` are present (exits if not); returns the DataFrame.
+  - `preprocess_data(df)`: Copies the frame, drops rows with missing values in the required columns (logs a warning), removes 3-sigma outliers per column (mean ± 3×std, logs the count), coerces both columns to numeric (`pd.to_numeric` with `errors="coerce"`), drops any resulting NaNs, and returns the processed frame.
+  - `train_model(X, y)`: Scales features with `StandardScaler`, fits a scikit-learn `LinearRegression`, and returns `(model, scaler)`.
+  - `evaluate_model(model, X, y, scaler)`: Scales the features with the passed scaler, predicts, and returns `(predictions, r2, rmse)` (R² via `r2_score`, RMSE via `sqrt(mean_squared_error)`).
+  - `main()`: Wires `parse_arguments` → `load_data` → `preprocess_data` → prepare `X`/`y` (reshapes `square_footage` to a 2D array) → `train_test_split` (using `CONFIG` test size/seed) → `train_model` → `evaluate_model` on both train and test sets (logging sample counts and R² scores). The remaining steps (print results, visualize, predict) are comment stubs. Guarded by `if __name__ == "__main__"`.
+- `requirements.txt`: Pins the full dependency tree — headline packages are `matplotlib`, `numpy`, `pandas`, `scikit-learn` (below the `#` separator); the rest are transitive pins.
+- `venv/`: A local virtualenv (Python 3.13), gitignored via `LINEAR-REGRESSION-PYTHON/venv/`.
+- `house_data.csv`: The default dataset — 500 rows with `square_footage,price_thousands` columns.
+
+## Dependencies
+
+**ai-search** (external):
+- `github.com/StephaneBunel/bresenham`: Grid line drawing
+- `github.com/kettek/apng`: Animated PNG generation
+- `golang.org/x/image/font`: Text rendering on images
+
+**vacuum-1**: Standard library only
+
+**model-check**: Standard library only
+
+**battleships**: Standard library only
+
+**blackjack** (external):
+- `github.com/inancgumus/screen`: Terminal clearing on Windows (non-Windows uses ANSI escapes directly)
+
+**LINEAR-REGRESSION-PYTHON** (external, Python): `matplotlib`, `numpy`, `pandas`, `scikit-learn` (plus transitive deps) — see `requirements.txt`
+
+## Git Notes
+
+- Git LFS tracks `.png` and `.psd` files (see `.gitattributes`)
+- `.gitignore` excludes `tmp/`, `ai-search/*.png` (generated output), and compiled binaries (`ai-search/ai-search`, `vacuum-1/vacuum-1`, `battleships/battleships`, `blackjack/blackjack`)
+- `.gitignore` also excludes `LINEAR-REGRESSION-PYTHON/venv/` and `__pycache__/` for the Python module
+- Main branch: `main`, active development on `staging`
+
+**Note**: When adding or changing any algorithm (search or cleaning), update the relevant CLAUDE.md sections to keep documentation in sync.

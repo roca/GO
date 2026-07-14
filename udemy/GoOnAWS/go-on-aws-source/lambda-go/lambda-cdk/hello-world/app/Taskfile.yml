@@ -1,0 +1,42 @@
+# https://taskfile.dev
+
+version: '3'
+
+vars:
+  GREETING: Hello, World!
+  version: 2.99.1
+  PROFILE: go-aws-sdk
+
+env:
+  AWS_DEFAULT_REGION: us-east-1
+  CDK_DEFAULT_REGION: us-east-1
+
+tasks:
+
+  build:
+    desc: build go
+    cmds:
+      - env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-s -w" -o ../dist/main main.go
+      - chmod +x ../dist/main
+      - cd ../dist && zip main.zip main
+    sources:
+      - ./*.go
+      - main/*.go
+      - Taskfile.yml
+    generates:
+      - ../dist/main
+    silent: true
+
+  fastdeploy:
+    desc: Deploy only lambda
+    deps: [build]
+    vars:
+      FN:      
+        sh: aws ssm get-parameter --name "simplefunction" --query "Parameter.Value" --output text --profile {{.PROFILE}} --region us-east-1
+    cmds:
+      - aws lambda update-function-code --function-name  {{.FN}} --zip-file fileb://../dist/main.zip --profile {{.PROFILE}} --region us-east-1
+
+  test:
+    desc: all go test
+    cmds:
+      - go test . 

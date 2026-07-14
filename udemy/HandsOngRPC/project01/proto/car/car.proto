@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+import "validate/validate.proto";
+
+option go_package = "project01/proto/car";
+
+message Car {
+  string car_id = 1 [
+    json_name = "car_id",
+    (validate.rules).string.uuid = true
+  ];
+
+  string brand = 2 [
+    (validate.rules).string = {
+	pattern: "(?i)^Toyota|Honda|Ford|BMW$"
+    }
+  ];
+  string model = 3 [
+    (validate.rules).string.max_len = 30
+  ];
+
+  uint32 price = 4 [
+    (validate.rules).uint32.gt = 0
+  ];
+
+  uint32 manufacture_year = 5 [
+    json_name = "manufacture_year",
+    (validate.rules).uint32.gte = 2020,
+    (validate.rules).uint32.lte = 2030
+  ];
+}
+

@@ -1,0 +1,22 @@
+
+= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+In MySQL Workbench:
+CREATE SCHEMA `byexample`;
+right-click / Set As Default Schema
+
+= = = = = = = = = = = = = = = = = = = = = = = = = = = = 
+CREATE TABLE person (
+	id SERIAL PRIMARY KEY,
+	name VARCHAR(255)
+);
+
+= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+INSERT INTO `byexample`.`person` (`id`, `name`) VALUES ('1', 'Ava');
+INSERT INTO `byexample`.`person` (`id`, `name`) VALUES ('2', 'John');
+INSERT INTO `byexample`.`person` (`id`, `name`) VALUES ('3', 'June');
+INSERT INTO `byexample`.`person` (`id`, `name`) VALUES ('4', 'Tim');
+
+= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+SELECT * FROM `byexample`.`person`;
+UPDATE `byexample`.`person` SET `name`='Jack' WHERE `id`='2';
+DELETE FROM `byexample`.`person` WHERE `id`='2';

@@ -1,0 +1,17 @@
+
+syntax = "proto3";
+
+package the.dummy;
+
+option go_package = "project01/proto/dummy";
+
+/*
+Job application
+*/
+
+message Application {
+  uint32 application_id = 1 [json_name = "application_id"];
+  string applicant_full_name = 2 [json_name = "applicant_full_name"];
+  string phone = 3;
+  string email = 4;
+}

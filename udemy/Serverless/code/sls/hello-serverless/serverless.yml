@@ -1,0 +1,74 @@
+service: hello-serverless
+
+plugins:
+  - serverless-offline
+
+frameworkVersion: '>=1.28.0 <2.0.0'
+
+provider:
+  name: aws
+  runtime: go1.x
+  region: us-east-1
+  stage: dev
+  memorySize: 256
+  timeout: 10
+
+package:
+  exclude:
+    - ./**
+  include:
+    - ./bin/**
+
+functions:
+  hello:
+    handler: bin/hello
+    memorySize: 128
+    timeout: 3
+    vpc:
+      securityGroupIds:
+        - sg-ae7fd7ca
+      subnetIds:
+        - subnet-2cb12f20
+        - subnet-2cb12f20
+        - subnet-7f57e426
+    events:
+      - http:
+          path: hello
+          method: get
+  world:
+    handler: bin/world
+    events:
+      - http:
+          path: world
+          method: get
+  add:
+    handler: bin/add
+    events:
+      - http:
+          path: math/add
+          method: post
+          cors: true
+  addBm:
+    handler: bin/add-bm
+    events:
+      - http:
+          path: math/add-bm
+          method: post
+          integration: lambda
+          request:
+            template:
+              application/json: > 
+                #set($inputRoot = $input.path('$'))
+                {
+                  "num1": $inputRoot.input.operand1,
+                  "num2": $inputRoot.input.operand2
+                }
+          response:
+            headers:
+              Access-Control-Allow-Origin: "'*'"
+              Content-Type: "'application/json'"
+            template: > 
+              #set($inputRoot = $input.path('$'))
+              {
+                "result": $inputRoot
+              }

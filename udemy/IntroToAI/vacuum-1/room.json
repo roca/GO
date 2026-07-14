@@ -1,0 +1,39 @@
+{
+  "width": 300,
+  "height": 300,
+  "robot": {
+    "diameter": 30,
+    "dockX": 150,
+    "dockY": 150,
+    "startDirection": 0
+  },
+  "furniture": [
+    {
+      "id": 1,
+      "x": 50,
+      "y": 50,
+      "width": 200,
+      "height": 40,
+      "name": "Couch",
+      "type": "furniture"
+    },
+    {
+      "id": 2,
+      "x": 80,
+      "y": 100,
+      "width": 140,
+      "height": 40,
+      "name": "Coffee Table",
+      "type": "furniture"
+    },
+    {
+      "id": 3,
+      "x": 10,
+      "y": 180,
+      "width": 20,
+      "height": 100,
+      "name": "Bicycle",
+      "type": "furniture"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+go 1.25.6
+
+use (
+	./cli_project
+	./example1
+	./example10
+	./example11
+	./example12
+	./example13
+	./example14
+	./example15
+	./example16
+	./example17
+	./example2
+	./example3
+	./example4
+	./example5
+	./example6
+	./example7
+	./example8
+	./example9
+	./genkit-intro
+	./go-agent
+	./lucidchart-mcp
+)

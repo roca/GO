@@ -1,0 +1,136 @@
+[
+  {
+    "width": 400,
+    "height": 300,
+    "furniture": [
+      {
+        "x": 50,
+        "y": 50,
+        "width": 100,
+        "height": 50,
+        "name": "stove",
+        "type": "furniture"
+      },
+      {
+        "x": 250,
+        "y": 50,
+        "width": 50,
+        "height": 50,
+        "name": "fridge",
+        "type": "furniture"
+      },
+      {
+        "x": 350,
+        "y": 50,
+        "width": 20,
+        "height": 40,
+        "name": "sink",
+        "type": "furniture"
+      },
+      {
+          "x": 50,
+          "y": 200,
+          "width": 50,
+          "height": 20,
+          "name": "bicycle",
+          "type": "furniture"
+      },
+      {
+          "x": 150,
+          "y": 200,
+          "width": 30,
+          "height": 20,
+          "name": "backpack",
+          "type": "furniture"
+      },
+      {
+          "x": 50,
+          "y": 200,
+          "width": 30,
+          "height": 20,
+          "name": "skateboard",
+          "type": "furniture"
+        }
+    ]
+  },
+  {
+    "width": 400,
+    "height": 300,
+    "furniture": [
+      {
+        "x": 100,
+        "y": 50,
+        "width": 150,
+        "height": 80,
+        "name": "sofa",
+        "type": "furniture"
+      },
+      {
+        "x": 300,
+        "y": 200,
+        "width": 70,
+        "height": 20,
+        "name": "tv",
+        "type": "furniture"
+      }
+    ]
+  },
+  {
+    "width": 300,
+    "height": 250,
+    "furniture": [
+      {
+        "x": 100,
+        "y": 50,
+        "width": 120,
+        "height": 80,
+        "name": "bed",
+        "type": "furniture"
+      }
+    ]
+  },
+  {
+    "width": 300,
+    "height": 250,
+    "furniture": [
+      {
+        "x": 100,
+        "y": 50,
+        "width": 120,
+        "height": 80,
+        "name": "bed",
+        "type": "furniture"
+      },
+      {
+        "x": 200,
+        "y": 200,
+        "width": 10,
+        "height": 10,
+        "name": "lamp",
+        "type": "furniture"
+      }
+    ]
+  },
+  {
+    "width": 300,
+    "height": 250,
+    "furniture": [
+      {
+        "x": 100,
+        "y": 50,
+        "width": 120,
+        "height": 80,
+        "name": "bed",
+        "type": "furniture"
+      },
+      {
+        "x": 50,
+        "y": 10,
+        "width": 50,
+        "height": 10,
+        "name": "johnny's door",
+        "type": "furniture"
+      }
+    ]
+  }
+]

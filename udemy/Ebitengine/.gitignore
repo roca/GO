@@ -1,0 +1,6 @@
+tmp
+.vscode
+dist
+go-asteroids/Asteroids.dmg
+go-asteroids/Asteroids.app
+go-asteroids/wasm/asteroids.wasm

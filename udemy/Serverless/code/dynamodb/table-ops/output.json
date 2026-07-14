@@ -1,0 +1,46 @@
+{
+	"TableDescription": {
+		"AttributeDefinitions": [
+			{
+				"AttributeName": "timestamp",
+				"AttributeType": "N"
+			},
+			{
+				"AttributeName": "user_id",
+				"AttributeType": "S"
+			}
+		],
+		"BillingModeSummary": null,
+		"CreationDateTime": "2019-09-06T05:08:24Z",
+		"GlobalSecondaryIndexes": null,
+		"ItemCount": 0,
+		"KeySchema": [
+			{
+				"AttributeName": "user_id",
+				"KeyType": "HASH"
+			},
+			{
+				"AttributeName": "timestamp",
+				"KeyType": "RANGE"
+			}
+		],
+		"LatestStreamArn": null,
+		"LatestStreamLabel": null,
+		"LocalSecondaryIndexes": null,
+		"ProvisionedThroughput": {
+			"LastDecreaseDateTime": null,
+			"LastIncreaseDateTime": null,
+			"NumberOfDecreasesToday": 0,
+			"ReadCapacityUnits": 1,
+			"WriteCapacityUnits": 1
+		},
+		"RestoreSummary": null,
+		"SSEDescription": null,
+		"StreamSpecification": null,
+		"TableArn": "arn:aws:dynamodb:us-east-1:132172135366:table/td_notes_sdk",
+		"TableId": "6246cd2b-9c42-47a0-91fe-b8797878ae3b",
+		"TableName": "td_notes_sdk",
+		"TableSizeBytes": 0,
+		"TableStatus": "CREATING"
+	}
+}

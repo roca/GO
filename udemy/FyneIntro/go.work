@@ -1,0 +1,8 @@
+go 1.24.5
+
+use (
+	./myapp
+	./project1
+	./project2
+	./project3
+)

@@ -1,0 +1,42 @@
+version: '3'
+
+tasks:
+  build_basic:
+    dir: './proto'
+    cmds:
+      - mkdir -p ./basic/protogen
+      - protoc --go_out=./basic/protogen --go_opt=paths=source_relative ./basic/*.proto
+      - go mod tidy
+  build_dummy:
+    dir: './proto'
+    cmds:
+      - mkdir -p ./dummy/protogen
+      - protoc --go_out=./dummy/protogen --go_opt=paths=source_relative ./dummy/*.proto
+      - go mod tidy
+  build_jobsearch:
+    dir: './proto'
+    cmds:
+      - mkdir -p ./jobsearch/protogen
+      - protoc --go_out=./jobsearch/protogen --go_opt=paths=source_relative ./jobsearch/*.proto
+      - go mod tidy
+  build_car:
+    dir: './proto'
+    cmds:
+      - mkdir -p ./car/protogen
+      - protoc --validate_out="lang=go:../generated" --go_out=./car/protogen --go_opt=paths=source_relative ./car/*.proto
+      - go mod tidy
+  build:
+    cmds:
+      - task build_basic
+      - task build_dummy
+      - task build_jobsearch
+      - task build_car
+  run:
+    dir: '.'
+    deps: [build]
+    cmds:
+      - go run main.go
+  execute:
+    dir: '.'
+    cmds:
+      - go run main.go

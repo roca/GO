@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cloud-native-go
+  namespace: cloud-native-go
+  labels:
+    name: cloud-native-go
+    env: test
+    language: go
+spec:
+  containers:
+    - name: cloud-native-go
+      image: rcampbell/cloud-native-go:1.0.2
+      imagePullPolicy: Always
+      resources:
+        limits:
+          memory: "128Mi"
+          cpu: "500m"
+      ports:
+        - containerPort: 9090
+          protocol: TCP

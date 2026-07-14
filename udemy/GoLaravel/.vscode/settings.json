@@ -1,0 +1,14 @@
+{
+	"cSpell.words": [
+		"celeritas",
+		"godotenv",
+		"joho",
+		"Logggers",
+		"tmpl",
+		"postgresstore",
+		"govalidator",
+		"urlsigner",
+		"goalone",
+	],
+	"go.testTags": "integration",
+}

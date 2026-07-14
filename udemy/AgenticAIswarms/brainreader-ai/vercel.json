@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/chalkboard.png",
+      "destination": "/public/chalkboard.png"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/api/index"
+    }
+  ]
+}

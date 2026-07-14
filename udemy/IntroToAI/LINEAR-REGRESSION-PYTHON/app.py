@@ -1,0 +1,198 @@
+"""
+Housing Price Linear Regression Analysis
+
+This script performs linear regression analysis on housing data,
+predicting prices based on square footage. It includes data validation,
+preprocessing, model training/testing, visualization, and the ability to
+predict the price of a new house given its square footage after training.
+
+What is Linear Regression?
+-------------------------
+Linear regression is a statistical method that attempts to find a linear relationship
+between input variables (features) and an output variable (target).
+
+In this case, we're trying to find the relationship between:
+- Input/Feature: Square footage of a house
+- Output/Target: Price of the house (in thousands of dollars)
+
+The goal is to find the line that best fits the data points, represented by the equation:
+    y = mx + b
+which in this case is:
+    Price = m × Square Footage + b
+where:
+- m is the slope (how much price increases when square footage increases by 1)
+- b is the intercept (the theoretical price of a house with 0 square footage)
+
+This "line of best fit" allows us to make predictions for new houses based on their square footage.
+"""
+
+import argparse
+import logging
+import os
+import sys
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+
+CONFIG = {
+    "default_csv": "house_data.csv",
+    "test_size": 0.2,  # 20% of data used for testing, 80% for training
+    "random_state": 42,  # Seed for random operations, ensures reproducibility
+}
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+)
+logger = logging.getLogger(__name__)
+
+
+def parse_arguments():
+    parser = argparse.ArgumentParser(
+        description="Linear regression analysis on housing data"
+    )
+    parser.add_argument(
+        "-f",
+        "--file",
+        type=str,
+        default=CONFIG["default_csv"],
+        help=f"Path to the CSV file containing housing data: {CONFIG['default_csv']}",
+    )
+    return parser.parse_args()
+
+
+def load_data(file_path):
+    if not os.path.isfile(file_path):
+        logger.error(f"File not found: {file_path}")
+        sys.exit(1)
+
+    try:
+        logger.info(f"Loading data from {file_path}")
+        df = pd.read_csv(file_path)
+
+        # validate for required columns
+        required_columns = ["square_footage", "price_thousands"]
+        for col in required_columns:
+            if col not in df.columns:
+                logger.error(f"Missing required column: {col}")
+                sys.exit(1)
+
+        return df
+
+    except Exception as e:
+        logger.error(f"Error loading data from {file_path}: {e}")
+        sys.exit(1)
+
+
+def preprocess_data(df):
+    logger.info("Preprocessing data")
+    processed_df = df.copy()
+
+    # handle missing values
+    if processed_df[["square_footage", "price_thousands"]].isna().any().any():
+        logger.warning("Missing values found. Dropping rows with missing values.")
+        processed_df = processed_df.dropna(subset=["square_footage", "price_thousands"])
+
+    # filter out outliers
+    for col in ["square_footage", "price_thousands"]:
+        mean = processed_df[col].mean()
+        std = processed_df[col].std()
+        lower_bound = mean - 3 * std
+        upper_bound = mean + 3 * std
+
+        outliers = (processed_df[col] < lower_bound) | (processed_df[col] > upper_bound)
+        if outliers.any():
+            logger.warning(
+                f"Outliers detected in {col}. Removing {outliers.sum()} outliers."
+            )
+            processed_df = processed_df[~outliers]
+
+    # ensure numeric data types for modeling
+    processed_df["square_footage"] = pd.to_numeric(
+        processed_df["square_footage"], errors="coerce"
+    )
+    processed_df["price_thousands"] = pd.to_numeric(
+        processed_df["price_thousands"], errors="coerce"
+    )
+
+    processed_df = processed_df.dropna(subset=["square_footage", "price_thousands"])
+
+    return processed_df
+
+
+def train_model(X, y):
+    logger.info("Training linear regression model")
+    # scale the features for better model performance
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(X)
+
+    # train the linear regression model
+    model = LinearRegression()
+    model.fit(X_scaled, y)
+
+    return model, scaler
+
+
+def evaluate_model(model, X, y, scaler):
+    # scale the features for evaluation
+    X_scaled = scaler.transform(X)
+
+    # make predictions
+    predictions = model.predict(X_scaled)
+
+    # calculate R-squared and RMSE
+    r2 = r2_score(y, predictions)
+    rmse = np.sqrt(mean_squared_error(y, predictions))
+
+    return predictions, r2, rmse
+
+
+def main():
+    # parsing command line arguments
+    args = parse_arguments()
+
+    # load and preprocess the data
+    df = load_data(args.file)
+    processed_df = preprocess_data(df)
+
+    # prepare data for modeling
+    X = processed_df["square_footage"].values.reshape(-1, 1)  # 2D array for sklearn
+    y = processed_df["price_thousands"].values
+
+    # split data into traning and testing sets
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=CONFIG["test_size"], random_state=CONFIG["random_state"]
+    )
+    logger.info(
+        f"Data split into training and testing sets: "
+        f"{len(X_train)} training samples, {len(X_test)} testing samples"
+    )
+
+    # train a model
+    model, scaler = train_model(X_train, y_train)
+    logger.info("Model training completed")
+
+    # evaluate the model on both training and testing sets
+    train_predictions, train_r2, train_rmse = evaluate_model(
+        model, X_train, y_train, scaler
+    )
+    test_predictions, test_r2, test_rmse = evaluate_model(model, X_test, y_test, scaler)
+
+    logger.info(
+        f"Model evaluation complete. R-squared (train): {train_r2:.4f}, R-squared (test): {test_r2:.4f}"
+    )
+
+    # print results
+
+    # create a visualization
+
+    # predict price for houses not in our dataset
+
+
+if __name__ == "__main__":
+    main()

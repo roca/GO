@@ -1,0 +1,7 @@
+go 1.19
+
+use (
+	./example01
+	./rgb_go_selenium
+	./user
+)

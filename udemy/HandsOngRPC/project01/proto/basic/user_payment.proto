@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+option go_package = "project01/proto/basic";
+
+message UserPayment {
+  uint32 user_payment_id  = 1 [json_name = "user_payment_id"];
+  uint32 amount = 2;
+  string promo_code = 3 [json_name = "promo_code"];
+}

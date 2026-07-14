@@ -1,0 +1,254 @@
+package main
+
+import (
+	"bytes"
+	"context"
+	"crypto/tls"
+	"io"
+	"mime/multipart"
+	"net/http"
+	"net/http/httptest"
+	"net/url"
+	"os"
+	"strings"
+	"testing"
+	"webapp/pkg/data"
+)
+
+func Test_application_handlers(t *testing.T) {
+	theTests := []struct {
+		name                    string
+		url                     string
+		expectedStatusCode      int
+		expectedURL             string
+		expectedFirstStatusCode int
+	}{
+		{"home", "/", http.StatusOK, "/", http.StatusOK},
+		{"404", "/notfound", http.StatusNotFound, "/notfound", http.StatusNotFound},
+		{"profile", "/user/profile", http.StatusOK, "/", http.StatusTemporaryRedirect},
+	}
+
+	routes := app.routes()
+
+	ts := httptest.NewTLSServer(routes)
+	defer ts.Close()
+
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+
+	client := &http.Client{
+		Transport: tr,
+		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			return http.ErrUseLastResponse
+		},
+	}
+
+	for _, e := range theTests {
+		t.Run(e.name, func(t *testing.T) {
+			resp, err := ts.Client().Get(ts.URL + e.url)
+			if err != nil {
+				t.Log(err)
+				t.Fatal(err)
+			}
+			if resp.StatusCode != e.expectedStatusCode {
+				t.Errorf("want %d; got %d", e.expectedStatusCode, resp.StatusCode)
+			}
+
+			if resp.Request.URL.Path != e.expectedURL {
+				t.Errorf("want final url %s; got %s", e.expectedURL, resp.Request.URL.Path)
+			}
+
+			resp2, _ := client.Get(ts.URL + e.url)
+			if resp2.StatusCode != e.expectedFirstStatusCode {
+				t.Errorf("want first status code %d; got %d", e.expectedFirstStatusCode, resp2.StatusCode)
+			}
+		})
+	}
+}
+
+func TestAppHome(t *testing.T) {
+	var tests = []struct {
+		name         string
+		putInSession string
+		expectedHTML string
+	}{
+		{"first visit", "", `<small>From Session:`},
+		{"second visit", "hello, world", `<small>From Session: hello, world`},
+	}
+
+	for _, e := range tests {
+		t.Run(e.name, func(t *testing.T) {
+			req, _ := http.NewRequest("GET", "/", nil)
+			req = addContextAndSessionToRequest(req, app)
+			_ = app.Session.Destroy(req.Context())
+
+			if e.putInSession != "" {
+				app.Session.Put(req.Context(), "test", e.putInSession)
+			}
+
+			rr := httptest.NewRecorder()
+
+			handler := http.HandlerFunc(app.Home)
+
+			handler.ServeHTTP(rr, req)
+
+			if rr.Code != http.StatusOK {
+				t.Errorf("TestAppHome returned wrong status code; expected %d but got %d", http.StatusOK, rr.Code)
+			}
+
+			body, _ := io.ReadAll(rr.Body)
+
+			if !strings.Contains(string(body), e.expectedHTML) {
+				t.Errorf("%s: did not find %s in response body", e.name, e.expectedHTML)
+			}
+		})
+	}
+}
+
+func TestApp_renderWithBadTemplate(t *testing.T) {
+	pathToTemplates = "./testdata/"
+
+	req, _ := http.NewRequest("GET", "/", nil)
+	req = addContextAndSessionToRequest(req, app)
+	rr := httptest.NewRecorder()
+
+	err := app.render(rr, req, "badtemplate.page.gohtml", &TemplateData{})
+
+	if err == nil {
+		t.Error("expected an error but did not get one")
+	}
+	pathToTemplates = "./../../templates/"
+}
+
+func getCtx(req *http.Request) context.Context {
+	ctx := context.WithValue(req.Context(), contextUserKey, "unknown")
+	return ctx
+}
+
+func addContextAndSessionToRequest(req *http.Request, app application) *http.Request {
+	req = req.WithContext(getCtx(req))
+	ctx, _ := app.Session.Load(req.Context(), req.Header.Get("X-Session"))
+
+	return req.WithContext(ctx)
+}
+
+func Test_app_Login(t *testing.T) {
+	var tests = []struct {
+		name               string
+		postedData         url.Values
+		expectedStatusCode int
+		expectedLocation   string
+	}{
+		{
+			name: "valid login",
+			postedData: url.Values{
+				"email":    {"admin@example.com"},
+				"password": {"secret"},
+			},
+			expectedStatusCode: http.StatusSeeOther,
+			expectedLocation:   "/user/profile",
+		},
+		{
+			name: "missing form data",
+			postedData: url.Values{
+				"email":    {""},
+				"password": {""},
+			},
+			expectedStatusCode: http.StatusSeeOther,
+			expectedLocation:   "/",
+		},
+		{
+			name: "bad credentials",
+			postedData: url.Values{
+				"email":    {"admin@example.com"},
+				"password": {"badPassword"},
+			},
+			expectedStatusCode: http.StatusSeeOther,
+			expectedLocation:   "/",
+		},
+		{
+			name: "user not found",
+			postedData: url.Values{
+				"email":    {"admin2@example.com"},
+				"password": {"secret"},
+			},
+			expectedStatusCode: http.StatusSeeOther,
+			expectedLocation:   "/",
+		},
+	}
+
+	for _, e := range tests {
+		t.Run(e.name, func(t *testing.T) {
+			req, _ := http.NewRequest("POST", "/login", strings.NewReader(e.postedData.Encode()))
+			req = addContextAndSessionToRequest(req, app)
+			req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+			rr := httptest.NewRecorder()
+			handler := http.HandlerFunc(app.Login)
+			handler.ServeHTTP(rr, req)
+
+			if rr.Code != e.expectedStatusCode {
+				t.Errorf("TestAppLogin returned wrong status code; expected %d but got %d", e.expectedStatusCode, rr.Code)
+			}
+
+			actualLocation, err := rr.Result().Location()
+			if err == nil {
+				if actualLocation.String() != e.expectedLocation {
+					t.Errorf("TestAppLogin returned wrong location; expected %s but got %s", e.expectedLocation, actualLocation.String())
+				}
+			} else {
+				t.Errorf("%s: TestAppLogin returned no location header", e.name)
+			}
+		})
+
+	}
+}
+
+func Test_app_UploadProfilePic(t *testing.T) {
+	uploadPath = "./testdata/uploads"
+	filePath := "./testdata/img.jpeg"
+
+	// specify a field name for the form
+	fieldName := "file"
+
+	// create a bytes.Buffer to act as the request body
+	body := &bytes.Buffer{}
+
+	// creat a new multipart writer
+	mw := multipart.NewWriter(body)
+
+	file, err := os.Open(filePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	w, err := mw.CreateFormFile(fieldName, filePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if _, err := io.Copy(w, file); err != nil {
+		t.Fatal(err)
+	}
+	mw.Close()
+
+	req, _ := http.NewRequest("POST", "/upload", body)
+	req = addContextAndSessionToRequest(req, app)
+	app.Session.Put(req.Context(), "user", data.User{ID: 1})
+	req.Header.Set("Content-Type", mw.FormDataContentType())
+
+	rr := httptest.NewRecorder()
+
+	handler := http.HandlerFunc(app.UploadProfilePic)
+
+	handler.ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusSeeOther {
+		t.Errorf("TestAppUploadProfilePic returned wrong status code; expected %d but got %d", http.StatusSeeOther, rr.Code)
+	}
+
+	// cleanup
+	os.RemoveAll("./testdata/uploads")
+	os.Mkdir("./testdata/uploads", 0777)
+
+}

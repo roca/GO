@@ -1,0 +1,50 @@
+# https://taskfile.dev
+
+version: '3'
+
+# begin deploy
+vars:
+  NAME: gosimple
+
+# end deploy
+
+tasks:
+# begin build
+  build:
+    desc: build go
+    cmds:
+      - mkdir -p dist
+      - env GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o ./dist/bootstrap main.go
+      - chmod +x ./dist/main
+      - cd ./dist && zip bootstrap.zip bootstrap
+# end build
+      sources:
+      - ./*.go
+      - main/*.go
+      - Taskfile.yml
+    generates:
+      - ../dist/main
+    silent: true
+
+# begin deploy
+  deploy:
+    desc: Deploy only Lambda function
+    deps: [build]
+    cmds:
+      - aws lambda update-function-code --function-name  gosimple --zip-file fileb://./dist/bootstrap.zip
+# end deploy
+#
+  deploy-ssm:
+    desc: Deploy only lambda
+    deps: [build]
+    vars:
+      FN:
+        sh: aws ssm get-parameter --name "simplefunction" --query "Parameter.Value" --output text
+    cmds:
+      - aws lambda update-function-code --function-name  {{.FN}} --zip-file fileb://./dist/main.zip
+
+  invoke:
+    desc: Call lambda
+    cmds:
+      - aws lambda invoke --function-name {{.NAME}} --payload fileb://testdata/event.json testdata/lambda.out
+      - cat testdata/lambda.out

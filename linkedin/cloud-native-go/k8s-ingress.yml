@@ -1,0 +1,15 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: cloud-native-go
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /api/books
+        pathType: Prefix
+        backend:
+          service:
+            name: cloud-native-go
+            port:
+              number: 80

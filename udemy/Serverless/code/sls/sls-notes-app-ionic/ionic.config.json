@@ -1,0 +1,7 @@
+{
+  "name": "sls-notes-app",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "ionic-angular"
+}

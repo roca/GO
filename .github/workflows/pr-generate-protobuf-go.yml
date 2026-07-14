@@ -1,0 +1,61 @@
+name: Pull Request Generate Protobuf Go
+
+on:
+  push:
+    branches:
+      - staging
+    paths:
+      - 'udemy/HandsOngRPC/proto/**.proto'
+jobs:
+  generate-protobuf-go:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: false
+          filter: blob:none
+          sparse-checkout: udemy/HandsOngRPC/proto
+          sparse-checkout-cone-mode: false
+      - name: Navigate to working directory
+        run: |
+          cd udemy/HandsOngRPC/proto
+          ls -lah
+      - name: Install Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.21
+      - name : Install protobuf
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y protobuf-compiler golang-goprotobuf-dev
+          go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+          go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+          go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@latest
+          go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@latest
+      - name: Install Task
+        run: |
+          curl -sL https://taskfile.dev/install.sh | sh
+          sudo mv bin/task /usr/local/bin/task
+      - name: Clean out old generated protogen folder
+        run: |
+          cd udemy/HandsOngRPC/proto
+          rm -fR  protogen
+          mkdir protogen
+          cd protogen
+          go mod init protogen
+          go mod edit -go=1.21.4
+          ls -lah
+      - name: Generate Protobuf Go
+        run: |
+          cd udemy/HandsOngRPC/proto
+          task build
+          ls -lah
+      - name: Commit changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "Generate Protobuf Go"
+          git push
