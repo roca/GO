@@ -188,6 +188,16 @@ def main():
     )
 
     # print results
+    print_results(
+        X_train,
+        y_train,
+        X_test,
+        y_test,
+        train_predictions,
+        test_predictions,
+        model,
+        scaler,
+    )
 
     # create a visualization
 
