@@ -62,7 +62,7 @@ func IsUnitQuat(q Quaternion, tol ...float64) bool {
 	if len(tol) != 0 {
 		tolerance = tol[0]
 	}
-	return math.Abs(q.Norm()-1.0) < (2.0 * tolerance)
+	return math.Abs(q.Norm()-1.0) < tolerance
 }
 
 // Add returns q + r.
@@ -149,8 +149,7 @@ func Dcm2Quat(r matrix.Matrix) (Quaternion, error) {
 
 // Quat2DCM converts a unit rotation quaternion to a DCM.
 func Quat2DCM(q Quaternion) (matrix.Matrix, error) {
-	const tol = 0.0001
-	if !IsUnitQuat(q, tol) {
+	if !IsUnitQuat(q) {
 		return matrix.Matrix{}, fmt.Errorf("quaternion: norm %f != 1.0", q.Norm())
 	}
 	q0, q1, q2, q3 := q.S, q.X, q.Y, q.Z
