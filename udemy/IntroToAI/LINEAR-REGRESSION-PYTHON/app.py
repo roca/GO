@@ -163,7 +163,7 @@ def print_results(
     scaler,
 ):
     slope = model.coef_[0] / scaler.scale_[0]
-    intercept = model.intercept_ - (model.coef_[0] * scaler.mean_[0] / model.scale_[0])
+    intercept = model.intercept_ - (model.coef_[0] * scaler.mean_[0] / scaler.scale_[0])
 
     r_squared_train = r2_score(y_train, train_predictions)
     r_squared_test = r2_score(y_test, test_predictions)
@@ -171,12 +171,12 @@ def print_results(
     rmse_test = np.sqrt(mean_squared_error(y_test, test_predictions))
 
     print(
-        "\nLinear Regression Formula: Price = {slope:.4f} * Square Footage + {intercept:.4f}"
+        f"\nLinear Regression Formula: Price = {slope:.4f} * Square Footage + {intercept:.4f}"
     )
-    print("R-squared (train): {r_squared_train:.4f}")
-    print("R-squared (test): {r_squared_test:.4f}")
-    print("RMSE (train): {rmse_train:.4f}")
-    print("RMSE (test): {rmse_test:.4f}")
+    print(f"R-squared (train): {r_squared_train:.4f}")
+    print(f"R-squared (test): {r_squared_test:.4f}")
+    print(f"RMSE (train): {rmse_train:.4f}")
+    print(f"RMSE (test): {rmse_test:.4f}")
 
     train_df = pd.DataFrame(
         {
