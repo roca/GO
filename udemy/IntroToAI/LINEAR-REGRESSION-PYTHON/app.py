@@ -152,6 +152,55 @@ def evaluate_model(model, X, y, scaler):
     return predictions, r2, rmse
 
 
+def print_results(
+    X_train,
+    y_train,
+    X_test,
+    y_test,
+    train_predictions,
+    test_predictions,
+    model,
+    scaler,
+):
+    slope = model.coef_[0] / scaler.scale_[0]
+    intercept = model.intercept_ - (model.coef_[0] * scaler.mean_[0] / model.scale_[0])
+
+    r_squared_train = r2_score(y_train, train_predictions)
+    r_squared_test = r2_score(y_test, test_predictions)
+    rmse_train = np.sqrt(mean_squared_error(y_train, train_predictions))
+    rmse_test = np.sqrt(mean_squared_error(y_test, test_predictions))
+
+    print(
+        "\nLinear Regression Formula: Price = {slope:.4f} * Square Footage + {intercept:.4f}"
+    )
+    print("R-squared (train): {r_squared_train:.4f}")
+    print("R-squared (test): {r_squared_test:.4f}")
+    print("RMSE (train): {rmse_train:.4f}")
+    print("RMSE (test): {rmse_test:.4f}")
+
+    train_df = pd.DataFrame(
+        {
+            "Square Footage": X_train.flatten(),
+            "Actual Price ($K)": y_train,
+            "Predicted Price ($K)": np.round(train_predictions, 2),
+        }
+    )
+
+    test_df = pd.DataFrame(
+        {
+            "Square Footage": X_test.flatten(),
+            "Actual Price ($K)": y_test,
+            "Predicted Price ($K)": np.round(test_predictions, 2),
+        }
+    )
+
+    print("\nTraining Prediction Sample (first 5 rows):")
+    print(train_df.head().to_string(index=False))
+
+    print("\nTesting Prediction Sample (first 5 rows):")
+    print(test_df.head().to_string(index=False))
+
+
 def main():
     # parsing command line arguments
     args = parse_arguments()
