@@ -43,6 +43,12 @@ CONFIG = {
     "default_csv": "house_data.csv",
     "test_size": 0.2,  # 20% of data used for testing, 80% for training
     "random_state": 42,  # Seed for random operations, ensures reproducibility
+    "figure_size": (10, 6),
+    "point_color": "blue",
+    "line_color": "red",
+    "grid_alpha": 0.3,
+    "output_image": "housing_regression.png",
+    "line_width": 2,
 }
 
 logging.basicConfig(
@@ -62,6 +68,11 @@ def parse_arguments():
         type=str,
         default=CONFIG["default_csv"],
         help=f"Path to the CSV file containing housing data: {CONFIG['default_csv']}",
+    )
+    parser.add_argument(
+        "--no_plot",
+        action="store_true",
+        help="Do not display the plot (still saves to file)",
     )
     return parser.parse_args()
 
@@ -201,6 +212,81 @@ def print_results(
     print(test_df.head().to_string(index=False))
 
 
+def create_visualization(
+    X_train,
+    y_train,
+    X_test,
+    y_test,
+    train_predictions,
+    test_predictions,
+    model,
+    scaler,
+    output_file,
+    show_plot=True,
+):
+    plt.figure(figsize=CONFIG["figure_size"])
+
+    # plot the training data
+    plt.scatter(
+        X_train,
+        y_train,
+        color=CONFIG["point_color"],
+        alpha=0.7,
+        label="Training data",
+    )
+    # plot the testing data
+    plt.scatter(X_test, y_test, color="green", alpha=0.7, label="Test data")
+
+    x_range = np.linspace(
+        min(X_train.min(), X_test.min()),
+        max(X_train.max(), X_test.max()),
+        100,  # 100 points for a smooth line
+    ).reshape(-1, 1)
+
+    # scale the range and predict corresponding y-values
+    x_range_scaled = scaler.transform(x_range)
+    y_range_pred = model.predict(x_range_scaled)
+
+    # plot the regression line
+    plt.plot(
+        x_range,
+        y_range_pred,
+        color=CONFIG["line_color"],
+        linewidth=CONFIG["line_width"],
+        label="Regression line",
+    )
+
+    # Add labels and title
+    plt.xlabel("Square Footage")
+    plt.ylabel("Price (thousands $)")
+    plt.title("Linear Regression: Housing Price vc Square Footage")
+    plt.legend()
+    plt.grid(True, alpha=CONFIG["grid_alpha"])
+
+    # calculate and display model parameters
+    slope = model.coef_[0] / scaler.scale_[0]
+    intercept = model.intercept_ - (model.coef_[0] * scaler.mean_[0] / scaler.scale_[0])
+    r_squared_train = r2_score(y_train, train_predictions)
+    r_squared_test = r2_score(y_test, test_predictions)
+
+    # format text to display on the plot
+    formula_text = f"Price = {slope:.4f} * Square Footage + {intercept:.4f}"
+    r2_train_text = f"R² (train) = {r_squared_train:.4f}"
+    r2_test_text = f"R² (test) = {r_squared_test:.4f}"
+
+    plt.figtext(0.15, 0.85, formula_text, fontsize=12)
+    plt.figtext(0.15, 0.82, r2_train_text, fontsize=12)
+    plt.figtext(0.15, 0.79, r2_test_text, fontsize=12)
+
+    plt.savefig(output_file)
+    logger.info(f"Plot saved as {output_file}")
+
+    if show_plot:
+        plt.show()
+
+    plt.close()
+
+
 def main():
     # parsing command line arguments
     args = parse_arguments()
@@ -249,6 +335,18 @@ def main():
     )
 
     # create a visualization
+    create_visualization(
+        X_train,
+        y_train,
+        X_test,
+        y_test,
+        train_predictions,
+        test_predictions,
+        model,
+        scaler,
+        CONFIG["output_image"],
+        not args.no_plot,
+    )
 
     # predict price for houses not in our dataset
 

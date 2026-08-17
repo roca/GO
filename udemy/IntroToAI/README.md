@@ -12,7 +12,7 @@ The repository uses Go workspaces (`go.work`) with five Go modules, plus one sta
 - `model-check/` - AI model fairness verification (functional — loads CSV, runs 3 model configs against fairness and risk properties)
 - `battleships/` - Battleship game: human vs AI (in progress — ship placement, both players' turns, AI targeting/attack execution, and ship-sunk detection functional; the only module with tests — a baseline suite over its pure logic)
 - `blackjack/` - Blackjack game with AI card counter (in progress — `Card`/`Deck`/`CardCounter`/`Player` types, hi-lo card-counting helpers, and `Player.CalculateScore`/`AddCard` (with soft/hard ace handling) implemented; `main.go` runs a round loop that reshuffles when the deck dips below 10 cards, calls `PlayeRound`, and prompts to play again (exits on "n"); `PlayeRound` deals two cards each to dealer/human/AI, runs the human turn, then (when the human hasn't busted) the AI turn driven by `AdvancedAIDecision` (card-counting hit/stand strategy in `ai.go`) followed by the dealer turn (`playDealerTurn`, hits below 17), then prints each player's result via `DetermineResult` and card-counting stats via `displayCardCountingStats`)
-- `LINEAR-REGRESSION-PYTHON/` - Python linear-regression exercise (in progress — `app.py` implements CLI arg parsing, CSV loading with required-column validation, preprocessing (missing-value drop, 3-sigma outlier removal, numeric coercion), model training (StandardScaler + scikit-learn `LinearRegression`), and model evaluation (R²/RMSE on train and test sets); `main()` wires arg parsing → load → preprocess → prepare X/y → train/test split → train → evaluate, with the print/visualization/prediction steps still comment stubs; not part of the Go workspace)
+- `LINEAR-REGRESSION-PYTHON/` - Python linear-regression exercise (in progress — `app.py` implements CLI arg parsing, CSV loading with required-column validation, preprocessing (missing-value drop, 3-sigma outlier removal, numeric coercion), model training (StandardScaler + scikit-learn `LinearRegression`), model evaluation (R²/RMSE on train and test sets), results printing (unscaled formula, R²/RMSE, sample prediction tables), and matplotlib visualization (train/test scatter + regression line saved to `housing_regression.png`); `main()` wires arg parsing → load → preprocess → prepare X/y → train/test split → train → evaluate → print → visualize, with only the new-house prediction step still a comment stub; not part of the Go workspace)
 
 **Requirements**: Go 1.25.6 or later (workspace declares 1.26.3 in `go.work`); Python 3.13 for `LINEAR-REGRESSION-PYTHON/`
 
@@ -86,9 +86,10 @@ source venv/bin/activate
 pip install -r requirements.txt
 python app.py                 # runs on house_data.csv by default
 python app.py -f other.csv    # override the input CSV (-f / --file)
+python app.py --no_plot       # skip the interactive plot window (still writes the PNG)
 ```
 
-Not part of the Go workspace — run independently. `main()` currently loads, preprocesses, splits, trains, and evaluates the model (R²/RMSE on train and test sets); results printing, visualization, and prediction steps are still comment stubs.
+Not part of the Go workspace — run independently. `main()` loads, preprocesses, splits, trains, evaluates (R²/RMSE on train and test sets), prints results, and writes/shows the regression plot; only the new-house prediction step is still a comment stub. Every run saves `housing_regression.png` (gitignored) and, unless `--no_plot` is passed, opens a blocking matplotlib window.
 
 ### Build Verification
 
@@ -440,18 +441,28 @@ Console blackjack vs. an AI card counter. Partially implemented.
 
 ## Architecture: LINEAR-REGRESSION-PYTHON
 
-Standalone Python exercise, independent of the Go workspace. In progress — data loading, preprocessing, model training, and evaluation implemented; results printing/visualization/prediction not yet.
+Standalone Python exercise, independent of the Go workspace. In progress — data loading, preprocessing, model training, evaluation, results printing, and visualization implemented; predicting prices for new (out-of-dataset) houses not yet.
 
-- `app.py`: Entry point. Imports `argparse`, `logging`, `os`, `sys`, `numpy`, `pandas`, `matplotlib.pyplot`, and scikit-learn (`LinearRegression`, `mean_squared_error`, `r2_score`, `train_test_split`, `StandardScaler`). Configures a module-level `logger` (INFO level, timestamped format) and a `CONFIG` dict with `"default_csv": "house_data.csv"`, `"test_size": 0.2`, `"random_state": 42`. Functions:
-  - `parse_arguments()`: Builds an `ArgumentParser` with a single `-f`/`--file` option (defaults to `CONFIG["default_csv"]`).
+- `app.py`: Entry point. Imports `argparse`, `logging`, `os`, `sys`, `numpy`, `pandas`, `matplotlib.pyplot`, and scikit-learn (`LinearRegression`, `mean_squared_error`, `r2_score`, `train_test_split`, `StandardScaler`). Configures a module-level `logger` (INFO level, timestamped format) and a `CONFIG` dict holding both modeling knobs (`"default_csv": "house_data.csv"`, `"test_size": 0.2`, `"random_state": 42`) and plot styling (`"figure_size": (10, 6)`, `"point_color": "blue"`, `"line_color": "red"`, `"grid_alpha": 0.3`, `"line_width": 2`, `"output_image": "housing_regression.png"`). Functions:
+  - `parse_arguments()`: Builds an `ArgumentParser` with `-f`/`--file` (defaults to `CONFIG["default_csv"]`) and `--no_plot` (`store_true` — suppresses `plt.show()` while still saving the PNG).
   - `load_data(file_path)`: Exits (via `sys.exit(1)`) if the file is missing; reads the CSV with pandas; validates the required columns `square_footage` and `price_thousands` are present (exits if not); returns the DataFrame.
   - `preprocess_data(df)`: Copies the frame, drops rows with missing values in the required columns (logs a warning), removes 3-sigma outliers per column (mean ± 3×std, logs the count), coerces both columns to numeric (`pd.to_numeric` with `errors="coerce"`), drops any resulting NaNs, and returns the processed frame.
   - `train_model(X, y)`: Scales features with `StandardScaler`, fits a scikit-learn `LinearRegression`, and returns `(model, scaler)`.
   - `evaluate_model(model, X, y, scaler)`: Scales the features with the passed scaler, predicts, and returns `(predictions, r2, rmse)` (R² via `r2_score`, RMSE via `sqrt(mean_squared_error)`).
-  - `main()`: Wires `parse_arguments` → `load_data` → `preprocess_data` → prepare `X`/`y` (reshapes `square_footage` to a 2D array) → `train_test_split` (using `CONFIG` test size/seed) → `train_model` → `evaluate_model` on both train and test sets (logging sample counts and R² scores). The remaining steps (print results, visualize, predict) are comment stubs. Guarded by `if __name__ == "__main__"`.
+  - `print_results(X_train, y_train, X_test, y_test, train_predictions, test_predictions, model, scaler)`: Un-scales the fitted coefficients back to original units (`slope = coef_[0] / scaler.scale_[0]`, `intercept = intercept_ - coef_[0] * scaler.mean_[0] / scaler.scale_[0]`), prints the `Price = m * Square Footage + b` formula plus R²/RMSE for both splits, then builds train/test DataFrames of square footage + actual vs. predicted price and prints the first 5 rows of each.
+  - `create_visualization(X_train, y_train, X_test, y_test, train_predictions, test_predictions, model, scaler, output_file, show_plot=True)`: Scatters training data (blue) and test data (green), builds a 100-point `np.linspace` over the combined X range, scales it through the same scaler and predicts to draw the regression line (red), labels/titles/legends the axes, overlays the un-scaled formula and both R² values via `plt.figtext`, saves to `output_file`, calls `plt.show()` only when `show_plot`, and always `plt.close()`s the figure.
+  - `main()`: Wires `parse_arguments` → `load_data` → `preprocess_data` → prepare `X`/`y` (reshapes `square_footage` to a 2D array) → `train_test_split` (using `CONFIG` test size/seed) → `train_model` → `evaluate_model` on both train and test sets (logging sample counts and R² scores) → `print_results` → `create_visualization` (passing `CONFIG["output_image"]` and `not args.no_plot`). Only the final "predict price for houses not in our dataset" step remains a comment stub. Guarded by `if __name__ == "__main__"`.
 - `requirements.txt`: Pins the full dependency tree — headline packages are `matplotlib`, `numpy`, `pandas`, `scikit-learn` (below the `#` separator); the rest are transitive pins.
 - `venv/`: A local virtualenv (Python 3.13), gitignored via `LINEAR-REGRESSION-PYTHON/venv/`.
 - `house_data.csv`: The default dataset — 500 rows with `square_footage,price_thousands` columns.
+- `housing_regression.png`: Generated plot output, overwritten on every run and gitignored.
+
+The un-scaling formula for slope/intercept is duplicated in both `print_results` and `create_visualization` — change both together.
+
+### Known Bugs
+
+- `app.py`: Plot title reads `Housing Price vc Square Footage` (should be `vs`).
+- `app.py`: `create_visualization` takes `train_predictions`/`test_predictions` only to recompute R² that `main()` already has from `evaluate_model`; `model`/`scaler` are likewise re-derived rather than passed as the formula values.
 
 ## Dependencies
 
@@ -475,7 +486,7 @@ Standalone Python exercise, independent of the Go workspace. In progress — dat
 
 - Git LFS tracks `.png` and `.psd` files (see `.gitattributes`)
 - `.gitignore` excludes `tmp/`, `ai-search/*.png` (generated output), and compiled binaries (`ai-search/ai-search`, `vacuum-1/vacuum-1`, `battleships/battleships`, `blackjack/blackjack`)
-- `.gitignore` also excludes `LINEAR-REGRESSION-PYTHON/venv/` and `__pycache__/` for the Python module
+- `.gitignore` also excludes `LINEAR-REGRESSION-PYTHON/venv/`, `LINEAR-REGRESSION-PYTHON/housing_regression.png` (generated plot), and `__pycache__/` for the Python module
 - Main branch: `main`, active development on `staging`
 
 **Note**: When adding or changing any algorithm (search or cleaning), update the relevant CLAUDE.md sections to keep documentation in sync.
