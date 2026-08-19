@@ -70,9 +70,15 @@ def parse_arguments():
         help=f"Path to the CSV file containing housing data: {CONFIG['default_csv']}",
     )
     parser.add_argument(
-        "--no_plot",
+        "--no-plot",
         action="store_true",
         help="Do not display the plot (still saves to file)",
+    )
+    parser.add_argument(
+        "-predict",
+        "--predict-sqft",
+        type=float,
+        help="Predict the price of a house given its square footage",
     )
     return parser.parse_args()
 
@@ -287,6 +293,14 @@ def create_visualization(
     plt.close()
 
 
+def predict_price(model, scaler, square_footage):
+    sqft_array = np.array([[square_footage]])
+    sqft_scaled = scaler.transform(sqft_array)
+    predicted_price = model.predict(sqft_scaled)
+
+    return predicted_price[0]
+
+
 def main():
     # parsing command line arguments
     args = parse_arguments()
@@ -349,6 +363,17 @@ def main():
     )
 
     # predict price for houses not in our dataset
+    if args.predict_sqft is not None:
+        sqft_to_predict = args.predict_sqft
+        logger.info(
+            f"Predicting price for a house with {sqft_to_predict} square footage"
+        )
+        predicted_price = predict_price(model, scaler, sqft_to_predict)
+
+        print(
+            f"\nPredicted price for a house with {sqft_to_predict} square footage: ${predicted_price:.2f} thousand"
+        )
+        print(f"This is equivalent to ${predicted_price * 1000:.2f} dollars")
 
 
 if __name__ == "__main__":
