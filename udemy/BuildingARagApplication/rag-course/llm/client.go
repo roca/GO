@@ -53,10 +53,42 @@ func (c *Client) ChatStream(ctx context.Context, messages []Message, onDelta fun
 		if len(chunk.Choices) == 0 {
 			continue
 		}
+
+		delta := chunk.Choices[0].Delta
+		if delta.Role != "" {
+			role = delta.Role
+		}
+
+		if delta.Content != "" {
+			content.WriteString(delta.Content)
+			if onDelta != nil {
+				onDelta(delta.Content)
+			}
+		}
 	}
 
+	if err := stream.Err(); err != nil {
+		return Message{}, err
+	}
+
+	return Message{
+		Role:    role,
+		Content: content.String(),
+	}, nil
 }
 
 func toSDKMessages(messages []Message) []openai.ChatCompletionMessageParamUnion {
+	out := make([]openai.ChatCompletionMessageParamUnion, 0, len(messages))
+	for _, m := range messages {
+		switch m.Role {
+		case "system":
+			out = append(out, openai.SystemMessage(m.Content))
+		case "assistant":
+			out = append(out, openai.AssistantMessage(m.Content))
+		default:
+			out = append(out, openai.UserMessage(m.Content))
+		}
+	}
 
+	return out
 }
