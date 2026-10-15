@@ -40,7 +40,7 @@ func IsOrthogonal(m matrix.Matrix, tol ...float64) bool {
 	if len(tol) != 0 {
 		tolerance = tol[0]
 	}
-	if math.Abs(m.Determinant()) > (1 + tolerance) {
+	if math.Abs(m.Determinant()-1.0) > tolerance {
 		return false
 	}
 	inv, err := m.Inverse()
