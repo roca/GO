@@ -38,6 +38,10 @@ func New(cfg config.Config) *Client {
 	}
 }
 
+func (c *Client) Model() string {
+	return c.cfg.Model
+}
+
 func (c *Client) ChatStream(ctx context.Context, messages []Message, onDelta func(string)) (Message, error) {
 	stream := c.sdk.Chat.Completions.NewStreaming(ctx, openai.ChatCompletionNewParams{
 		Model:    c.cfg.Model,

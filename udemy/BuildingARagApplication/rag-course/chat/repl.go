@@ -25,7 +25,7 @@ func RunREPL(ctx context.Context, client *llm.Client, opts Options) error {
 		return err
 	}
 
-	fmt.Println("Chat session started.  Type Q to quit.")
+	fmt.Printf("Chat session started (Model: %s).  Type Q to quit.\n", client.Model())
 
 	for {
 		fmt.Print("\n> ")
@@ -95,7 +95,7 @@ func startSpinner(label string) *spinner {
 		for {
 			select {
 			case <-s.stop:
-				fmt.Print("\r\033[2K]") // Clear the line
+				fmt.Print("\r\033[2K") // Clear the line
 				return
 			case <-t.C:
 				fmt.Printf("\r%s %s", frames[i%len(frames)], label)
