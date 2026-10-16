@@ -1,0 +1,25 @@
+services:
+  postgres:
+    # Official image: Postgres 18 with the pgvector extension preinstalled.
+    image: pgvector/pgvector:pg18
+    container_name: rag-course-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: rag
+      POSTGRES_PASSWORD: rag
+      POSTGRES_DB: rag
+    ports:
+      - "5432:5432"
+    volumes:
+      # Postgres 18+ stores data in a major-version subdirectory and
+      # expects the mount at /var/lib/postgresql (the parent), not at
+      # /var/lib/postgresql/data as in PG 17 and earlier.
+      - pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rag -d rag"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  pgdata:
