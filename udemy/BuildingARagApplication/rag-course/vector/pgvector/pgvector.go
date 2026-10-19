@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"rag-course/vector"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -20,7 +21,7 @@ type Store struct {
 	pool *pgxpool.Pool
 }
 
-func NewStore(ctx context.Context, opts Options) (*Store, error) {
+func New(ctx context.Context, opts Options) (*Store, error) {
 	if opts.DSN == "" {
 		return nil, errors.New("pgvector: DSN is required")
 	}
@@ -102,4 +103,47 @@ func firstLine(s string) string {
 		}
 	}
 	return s
+}
+
+func (s *Store) Upsert(ctx context.Context, docs []vector.Document) error {
+	if len(docs) == 0 {
+		return nil
+	}
+
+	tx, err := s.pool.Begin(ctx)
+	if err != nil {
+		return fmt.Errorf("pgvector: failed to begin transaction: %w", err)
+	}
+	defer tx.Rollback(ctx)
+
+	stmt := `INSERT INTO documents (id, content, metadata, embedding)
+	VALUES ($1, $2, $3, $4)
+	ON CONFLICT (id) DO UPDATE SET
+	content = EXCLUDED.content,
+	metadata = EXCLUDED.metadata,
+	embedding = EXCLUDED.embedding`
+
+	for _, doc := range docs {
+		_, err := tx.Exec(ctx, stmt, doc.ID, doc.Content, doc.Metadata, doc.Embedding)
+		if err != nil {
+			return fmt.Errorf("pgvector: failed to upsert document: %w", err)
+		}
+	}
+
+	return nil
+}
+
+func (s *Store) Query(ctx context.Context, embedding []float32, topK int) ([]vector.Result, error) {
+	return nil, nil
+}
+func (s *Store) Delete(ctx context.Context, ids []string) error {
+	return nil
+}
+
+func (s *Store) DeleteBySource(ctx context.Context, source string) error {
+	return nil
+}
+
+func (s *Store) Close() error {
+	return nil
 }
