@@ -2,6 +2,7 @@ package pgvector
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"rag-course/vector"
