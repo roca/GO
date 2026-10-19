@@ -9,6 +9,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 
+	"github.com/pgvector/pgvector-go"
 	pgxvec "github.com/pgvector/pgvector-go/pgx"
 )
 
@@ -116,7 +117,7 @@ func (s *Store) Upsert(ctx context.Context, docs []vector.Document) error {
 	}
 	defer tx.Rollback(ctx)
 
-	stmt := `INSERT INTO documents (id, content, metadata, embedding)
+	const stmt = `INSERT INTO documents (id, content, metadata, embedding)
 	VALUES ($1, $2, $3, $4)
 	ON CONFLICT (id) DO UPDATE SET
 	content = EXCLUDED.content,
@@ -124,13 +125,28 @@ func (s *Store) Upsert(ctx context.Context, docs []vector.Document) error {
 	embedding = EXCLUDED.embedding`
 
 	for _, doc := range docs {
-		_, err := tx.Exec(ctx, stmt, doc.ID, doc.Content, doc.Metadata, doc.Embedding)
+		meta, err := marshalMetadata(doc.Metadata)
 		if err != nil {
-			return fmt.Errorf("pgvector: failed to upsert document: %w", err)
+			return fmt.Errorf("pgvector: failed to marshal metadata for %s: %w", doc.ID, err)
+		}
+
+		_, err = tx.Exec(ctx, stmt, doc.ID, doc.Content, meta, pgvector.NewVector(doc.Embedding))
+		if err != nil {
+			return fmt.Errorf("pgvector: failed to upsert document %s: %w", doc.ID, err)
 		}
 	}
 
-	return nil
+	return tx.Commit(ctx)
+}
+
+func marshalMetadata(metadata map[string]string) ([]byte, error) {
+	// Implement the logic to marshal metadata to JSONB format
+	// For example, you can use json.Marshal(metadata)
+	if len(metadata) == 0 {
+		return []byte("{}"), nil
+	}
+
+	return json.Marshal(metadata)
 }
 
 func (s *Store) Query(ctx context.Context, embedding []float32, topK int) ([]vector.Result, error) {
