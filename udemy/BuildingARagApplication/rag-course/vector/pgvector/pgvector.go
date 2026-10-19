@@ -150,17 +150,82 @@ func marshalMetadata(metadata map[string]string) ([]byte, error) {
 	return json.Marshal(metadata)
 }
 
+func unmarshalMetadata(data []byte, dst *map[string]string) error {
+	// Implement the logic to unmarshal JSONB data to metadata map
+	// For example, you can use json.Unmarshal(data, &metadata)
+	if len(data) == 0 {
+		*dst = nil
+		return nil
+	}
+	return json.Unmarshal(data, dst)
+}
+
 func (s *Store) Query(ctx context.Context, embedding []float32, topK int) ([]vector.Result, error) {
-	return nil, nil
+	if topK <= 0 {
+		return nil, errors.New("pgvector: topK must be greater than 0")
+	}
+
+	const stmt = `SELECT id, content, metadata, embedding <=> $1 AS distance
+	FROM documents
+	ORDER BY embedding <=> $1
+	LIMIT $2`
+
+	rows, err := s.pool.Query(ctx, stmt, pgvector.NewVector(embedding), topK)
+	if err != nil {
+		return nil, fmt.Errorf("pgvector: failed to query documents: %w", err)
+	}
+	defer rows.Close()
+
+	var results []vector.Result
+	for rows.Next() {
+		var (
+			r        vector.Result
+			metaRaw  []byte
+			distance float64
+		)
+
+		if err := rows.Scan(&r.ID, &r.Content, &metaRaw, &distance); err != nil {
+			return nil, fmt.Errorf("pgvector: failed to scan row: %w", err)
+		}
+
+		if err := unmarshalMetadata(metaRaw, &r.Metadata); err != nil {
+			return nil, fmt.Errorf("pgvector: failed to unmarshal metadata for %s: %w", r.ID, err)
+		}
+
+		r.Score = float32(1 - distance) // Convert distance to similarity score
+		results = append(results, r)
+	}
+
+	return results, rows.Err()
 }
 func (s *Store) Delete(ctx context.Context, ids []string) error {
+	if len(ids) == 0 {
+		return nil
+	}
+
+	const stmt = `DELETE FROM documents WHERE id = ANY($1)`
+	_, err := s.pool.Exec(ctx, stmt, ids)
+	if err != nil {
+		return fmt.Errorf("pgvector: failed to delete documents: %w", err)
+	}
+
 	return nil
 }
 
 func (s *Store) DeleteBySource(ctx context.Context, source string) error {
+	if source == "" {
+		return errors.New("pgvector: source is required")
+	}
+
+	const stmt = `DELETE FROM documents WHERE metadata->>'source' = $1`
+	_, err := s.pool.Exec(ctx, stmt, source)
+	if err != nil {
+		return fmt.Errorf("pgvector: failed to delete documents by source: %w", err)
+	}
 	return nil
 }
 
 func (s *Store) Close() error {
+	s.pool.Close()
 	return nil
 }
