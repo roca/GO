@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"errors"
 	"log"
 	"os"
 	"rag-course/chat"
@@ -24,8 +25,6 @@ func Run(ctx context.Context, cfg config.Config) error {
 	if store != nil {
 		defer store.Close()
 		logger.Printf("vector store ready")
-	} else {
-		logger.Printf("vector store not ready")
 	}
 
 	return chat.RunREPL(ctx, client, chat.Options{
@@ -35,7 +34,7 @@ func Run(ctx context.Context, cfg config.Config) error {
 
 func openStore(ctx context.Context, cfg config.Config) (vector.Store, error) {
 	if cfg.DatabaseURL == "" {
-		return nil, nil
+		return nil, errors.New("Database connection string URL is blank")
 	}
 
 	s, err := pgvector.New(ctx, pgvector.Options{
