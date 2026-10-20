@@ -24,7 +24,10 @@ func Run(ctx context.Context, cfg config.Config) error {
 	if store != nil {
 		defer store.Close()
 		logger.Printf("vector store ready")
+	} else {
+		logger.Printf("vector store not ready")
 	}
+
 	return chat.RunREPL(ctx, client, chat.Options{
 		SystemPromptFile: cfg.SystemPromptFile,
 	})
