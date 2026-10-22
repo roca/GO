@@ -17,7 +17,7 @@ func (c *Client) Embed(ctx context.Context, texts []string) ([][]float32, error)
 	}
 
 	resp, err := c.sdk.Embeddings.New(ctx, openai.EmbeddingNewParams{
-		Model: c.cfg.Model,
+		Model: c.cfg.EmbeddingModel,
 		Input: openai.EmbeddingNewParamsInputUnion{OfArrayOfStrings: texts},
 	})
 	if err != nil {

@@ -53,7 +53,7 @@ func Watch(ctx context.Context, opts Options, embedder llm.Embedder, store vecto
 		}
 		dst := filepath.Join(opts.ProcessedDir, filepath.Base(path))
 		if err := os.Rename(path, dst); err != nil {
-			logger.Printf("move %s to processed %s: %v", path, dst, err)
+			logger.Printf("move %s to processed %s: %v", filepath.Base(path), dst, err)
 			return
 		}
 
