@@ -9,6 +9,8 @@ import (
 	"path/filepath"
 	"rag-course/llm"
 	"rag-course/vector"
+	"strings"
+	"sync"
 	"time"
 
 	"github.com/fsnotify/fsnotify"
@@ -57,4 +59,38 @@ func Watch(ctx context.Context, opts Options, embedder llm.Embedder, store vecto
 
 		logger.Printf("ingested %s", filepath.Base(path))
 	}
+
+	entries, err := os.ReadDir(opts.SourceDir)
+	if err != nil {
+		return fmt.Errorf("read source dir: %w", err)
+	}
+
+	for _, e := range entries {
+		if e.IsDir() || strings.HasPrefix(e.Name(), ".") {
+			continue
+		}
+		go handle(filepath.Join(opts.SourceDir, e.Name()))
+	}
+
+	var (
+		timersMu sync.Mutex
+		timers   = make(map[string]*time.Timer)
+	)
+
+	schedual := func(path string) {
+		timersMu.Lock()
+		defer timersMu.Unlock()
+		if t, ok := timers(path); ok {
+			t.Reset(debounceDelay)
+			return
+		}
+
+		timers[path] = time.AfterFunc(debounceDelay, func() {
+			timersMu.Lock()
+			delete(timers, path)
+			timersMu.Unlock()
+			handle(path)
+		})
+	}
+
 }
