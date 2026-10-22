@@ -41,7 +41,7 @@ func Watch(ctx context.Context, opts Options, embedder llm.Embedder, store vecto
 		return fmt.Errorf("watch source dir: %w", err)
 	}
 
-	processedDir, err := filepath.Abs(opts.ProcessedDir)
+	processedAbs, err := filepath.Abs(opts.ProcessedDir)
 	if err != nil {
 		return fmt.Errorf("resolve processed dir: %w", err)
 	}
@@ -80,7 +80,7 @@ func Watch(ctx context.Context, opts Options, embedder llm.Embedder, store vecto
 	schedual := func(path string) {
 		timersMu.Lock()
 		defer timersMu.Unlock()
-		if t, ok := timers(path); ok {
+		if t, ok := timers[path]; ok {
 			t.Reset(debounceDelay)
 			return
 		}
@@ -93,4 +93,45 @@ func Watch(ctx context.Context, opts Options, embedder llm.Embedder, store vecto
 		})
 	}
 
+	for {
+		select {
+		case <-ctx.Done():
+			return nil
+		case ev, ok := <-w.Events:
+			if !ok {
+				return nil
+			}
+			if ev.Op&(fsnotify.Create|fsnotify.Write) == 0 {
+				continue
+			}
+			if !shouldProcess(ev.Name, processedAbs) {
+				continue
+			}
+			schedual(ev.Name)
+		case err, ok := <-w.Errors:
+			if !ok {
+				return nil
+			}
+			logger.Printf("watcher error: %v", err)
+		}
+	}
+}
+
+func shouldProcess(path, processedAbs string) bool {
+	if strings.HasPrefix(filepath.Base(path), ".") {
+		return false
+	}
+	info, err := os.Stat(path)
+	if err != nil || info.IsDir() {
+		return false
+	}
+	abs, err := filepath.Abs(path)
+	if err != nil {
+		return false
+	}
+
+	if processedAbs != "" && strings.HasPrefix(abs, processedAbs+string(filepath.Separator)) {
+		return false
+	}
+	return true
 }
