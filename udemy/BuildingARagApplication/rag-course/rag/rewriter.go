@@ -2,6 +2,7 @@ package rag
 
 import (
 	"context"
+	"fmt"
 	"rag-course/llm"
 	"strings"
 )
@@ -15,7 +16,7 @@ const rewriteSystemPrompt = `You are a helpful assistant that rewrites the user'
 
 	If the latest user message already stands on its own with no references to prior turns, output it verbatim.
 
-	Output only ther query. No preamble, no quotes, no explanation.`
+	Output only the query. No preamble, no quotes, no explanation.`
 
 type Rewriter struct {
 	client *llm.Client
@@ -35,6 +36,18 @@ func (c *Rewriter) Rewrite(ctx context.Context, history []llm.Message) (string, 
 		{Role: "system", Content: rewriteSystemPrompt},
 		{Role: "user", Content: formatConversation(history)},
 	}
+
+	reply, err := c.client.ChatStream(ctx, msgs, nil)
+	if err != nil {
+		return "", fmt.Errorf("rewrite call: %w", err)
+	}
+	out := strings.TrimSpace(reply.Content)
+	out = strings.Trim(out, `"'`)
+	if out == "" {
+		return last, nil
+	}
+
+	return out, nil
 }
 
 func hasAssistantTurn(history []llm.Message) bool {

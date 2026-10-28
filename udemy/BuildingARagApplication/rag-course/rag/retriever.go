@@ -2,6 +2,7 @@ package rag
 
 import (
 	"context"
+	"fmt"
 	"rag-course/llm"
 	"rag-course/vector"
 )
@@ -35,13 +36,32 @@ func New(embedder llm.Embedder, store vector.Store, opts *Options) *Retriever {
 }
 
 func (r *Retriever) Retrieve(ctx context.Context, history []llm.Message) (string, error) {
-	// builde the query
+	// build the query
+	query := r.buildQuery(ctx, history)
+	if query == "" {
+		return "", nil
+	}
 
 	// get the vectors
+	vecs, err := r.embedder.Embed(ctx, []string{query})
+	if err != nil {
+		return "", fmt.Errorf("embedding query: %w", err)
+	}
+	if len(vecs) == 0 {
+		return "", nil
+	}
 
 	// get the hits
+	hits, err := r.store.Query(ctx, vecs[0], r.topK)
+	if err != nil {
+		return "", fmt.Errorf("vector query: %w", err)
+	}
+	if len(hits) == 0 {
+		return "", nil
+	}
 
 	// return the formatted context
+	return formatContext(hits), nil
 }
 
 func (r *Retriever) buildQuery(ctx context.Context, history []llm.Message) string {
