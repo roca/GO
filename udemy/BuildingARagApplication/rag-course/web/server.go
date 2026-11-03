@@ -3,6 +3,7 @@ package web
 import (
 	"context"
 	"embed"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"html/template"
@@ -71,8 +72,99 @@ func (s *Server) Routes() http.Handler {
 	r := chi.NewRouter()
 	r.Use(middleware.Recoverer)
 	r.Get("/chat", s.handleChatPage)
+	r.Post("/api/chat/stream", s.handleChatStream)
 
 	return r
+}
+
+type chatRequest struct {
+	Messages []llm.Message `json:"messages"`
+}
+
+func (s *Server) handleChatStream(w http.ResponseWriter, r *http.Request) {
+	flusher, ok := w.(http.Flusher)
+	if !ok {
+		http.Error(w, "Streaming not supported", http.StatusInternalServerError)
+		return
+	}
+
+	var req chatRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid JSON payload:", http.StatusBadRequest)
+		return
+	}
+
+	if len(req.Messages) == 0 {
+		http.Error(w, "No messages provided", http.StatusBadRequest)
+		return
+	}
+
+	if last := req.Messages[len(req.Messages)-1]; last.Role != "user" {
+		http.Error(w, "Last message must be from the user", http.StatusBadRequest)
+		return
+	}
+
+	history := req.Messages
+	if s.system != "" {
+		history = append([]llm.Message{{Role: "system", Content: s.system}}, history...)
+	}
+
+	turn := history
+	if s.retriever != nil {
+		ctxText, err := s.retriever.Retrieve(r.Context(), history)
+		if err != nil {
+			log.Printf("[web] retrieval error: %v", err)
+			return
+		} else {
+			turn = withInlineContext(history, ctxText)
+		}
+	}
+
+	w.Header().Set("Content-Type", "text/event-stream")
+	w.Header().Set("Cache-Control", "no-cache")
+	w.Header().Set("Connection", "keep-alive")
+	w.Header().Set("X-Accel-Buffering", "no")
+	flusher.Flush()
+
+	send := func(event, data string) {
+		if event != "" {
+			fmt.Fprintf(w, "event: %s\n", event)
+		}
+		fmt.Fprintf(w, "data: %s\n\n", data)
+		flusher.Flush()
+	}
+
+	_, err := s.client.ChatStream(r.Context(), turn, func(delta string) {
+		enc, _ := json.Marshal(delta)
+		send("delta", string(enc))
+	})
+	if err != nil {
+		enc, _ := json.Marshal(err.Error())
+		send("error", string(enc))
+		return
+	}
+
+	send("done", `""`)
+
+}
+
+func withInlineContext(history []llm.Message, contextText string) []llm.Message {
+	if len(history) == 0 || contextText == "" {
+		return history
+	}
+
+	last := history[len(history)-1]
+	if last.Role != "user" {
+		return history
+	}
+
+	out := make([]llm.Message, len(history))
+	copy(out, history)
+	out[len(out)-1] = llm.Message{
+		Role:    "user",
+		Content: contextText + "\n\n--- Question ---\n\n" + last.Content,
+	}
+	return out
 }
 
 func (s *Server) handleChatPage(w http.ResponseWriter, r *http.Request) {
