@@ -53,11 +53,11 @@ func processOne(
 		return fmt.Errorf("read: %w", err)
 	}
 
-	_, err = processContent(ctx, filepath.Base(path), raw, opts, embedder, store)
+	_, err = ProcessContent(ctx, filepath.Base(path), raw, opts, embedder, store)
 	return err
 }
 
-func processContent(
+func ProcessContent(
 	ctx context.Context,
 	source string,
 	content []byte,
@@ -132,6 +132,10 @@ func processContent(
 	}
 
 	return len(chunks), nil
+}
+
+func IsSupported(name string) bool {
+	return supportedFormat(name)
 }
 
 func supportedFormat(path string) bool {
