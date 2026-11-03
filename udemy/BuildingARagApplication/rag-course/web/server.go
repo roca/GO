@@ -24,7 +24,7 @@ var templateFS embed.FS
 
 type Options struct {
 	Addr             string
-	SystemPromptFIle string
+	SystemPromptFile string
 	Title            string
 	Store            vector.Store
 	ProcessedDir     string
@@ -62,7 +62,7 @@ func New(client, embedder *llm.Client, retriever *rag.Retriever, opts Options) (
 		processedDir: opts.ProcessedDir,
 		imagesDir:    opts.ImagesDir,
 		tpl:          tpl,
-		system:       readSystemPrompt(opts.SystemPromptFIle),
+		system:       readSystemPrompt(opts.SystemPromptFile),
 		title:        title,
 	}, nil
 }
