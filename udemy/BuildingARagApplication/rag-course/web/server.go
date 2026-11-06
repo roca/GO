@@ -125,7 +125,7 @@ func (s *Server) handleUploadImage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	file, header, err := r.FormFile("file")
+	file, header, err := r.FormFile("image")
 	if err != nil {
 		http.Error(w, "missing image field: "+err.Error(), http.StatusBadRequest)
 		return
