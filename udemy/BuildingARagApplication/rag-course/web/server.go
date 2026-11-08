@@ -91,7 +91,54 @@ func (s *Server) Routes() http.Handler {
 		r.Handle("/images/*", http.StripPrefix("/images", fs))
 	}
 
+	if s.client.HasVision() {
+		r.Post("/api/caption", s.handleCaption)
+	}
+
 	return r
+}
+
+type captionResponse struct {
+	Description string `json:"description"`
+}
+
+func (s *Server) handleCaption(w http.ResponseWriter, r *http.Request) {
+	r.Body = http.MaxBytesReader(w, r.Body, maxUploadBytes)
+	if err := r.ParseMultipartForm(maxUploadBytes); err != nil {
+		http.Error(w, "upload too large or malformed: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	file, header, err := r.FormFile("image")
+	if err != nil {
+		http.Error(w, "missing image field: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+	defer file.Close()
+
+	if !ingest.IsImage(filepath.Base(header.Filename)) {
+		http.Error(w, "unsupported image format (allowed: .png, .jpg, .jpeg, .webp, .gif)", http.StatusUnsupportedMediaType)
+		return
+	}
+
+	content, err := io.ReadAll(file)
+	if err != nil {
+		http.Error(w, "failed to read image: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	mime := header.Header.Get("Content-Type")
+	desc, err := s.client.DescribeImage(r.Context(), mime, content)
+	if err != nil {
+		log.Printf("[web] failed to describe image for %q: %v", header.Filename, err)
+		http.Error(w, "failed to describe image: "+err.Error(), http.StatusBadGateway)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(captionResponse{
+		Description: strings.TrimSpace(desc),
+	})
 }
 
 type uploadImageResponse struct {
@@ -342,8 +389,8 @@ func withInlineContext(history []llm.Message, contextText string) []llm.Message 
 func (s *Server) handleChatPage(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	if err := s.tpl.ExecuteTemplate(w, "chat.gohtml", map[string]any{
-		"Title": s.title,
-		//"CaptionEnabled": s.client.HasVision(),
+		"Title":          s.title,
+		"CaptionEnabled": s.client.HasVision(),
 	}); err != nil {
 
 		log.Printf("[web] template error: %v", err)
