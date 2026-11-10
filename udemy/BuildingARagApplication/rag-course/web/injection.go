@@ -1,7 +1,6 @@
 package web
 
 import (
-	"io"
 	"mime"
 	"net/http"
 	"regexp"
