@@ -58,14 +58,16 @@ func scanForInjection(s string) string {
 	return ""
 }
 
-func injectionDefense(next http.Handler) http.Handler {
+func InjectionDefense(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		mt, _, _ := mime.ParseMediaType(r.Header.Get("Content-Type"))
 		switch mt {
 		case "application/json":
-		// inspectJSON
+			// inspectJSON
+			inspectJSON(w, r, next)
 		case "multipart/form-data":
-		// inspectMultipart
+			// inspectMultipart
+			inspectMultipart(w, r, next)
 		default:
 			next.ServeHTTP(w, r)
 		}
