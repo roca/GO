@@ -1,8 +1,14 @@
 package web
 
 import (
+	"bytes"
+	"encoding/json"
+	"io"
+	"log"
 	"mime"
+	"mime/multipart"
 	"net/http"
+	"rag-course/ingest"
 	"regexp"
 )
 
@@ -68,4 +74,81 @@ func injectionDefense(next http.Handler) http.Handler {
 
 // TODO: must implement the following functions to inspect the request body for injection patterns
 func inspectJSON(w http.ResponseWriter, r *http.Request, next http.Handler) {
+	body, err := io.ReadAll(http.MaxBytesReader(w, r.Body, maxJSONBodyBytes))
+	if err != nil {
+		http.Error(w, "Request body too large", http.StatusRequestEntityTooLarge)
+		return
+	}
+
+	var req chatRequest
+	if jsonErr := json.Unmarshal(body, &req); jsonErr == nil {
+		for _, m := range req.Messages {
+			if m.Role != "user" {
+				continue
+			}
+			if hit := scanForInjection(m.Content); hit != "" {
+				log.Printf("[web-defense] blocked chat request: pattern=%q route=%s", hit, r.URL.Path)
+				http.Error(w, "request rejected by injection-defense filter", http.StatusBadRequest)
+				return
+			}
+		}
+	}
+
+	r.Body = io.NopCloser(bytes.NewReader(body))
+	next.ServeHTTP(w, r)
+}
+
+func inspectMultipart(w http.ResponseWriter, r *http.Request, next http.Handler) {
+	r.Body = http.MaxBytesReader(w, r.Body, maxMultipartBytes)
+	if err := r.ParseMultipartForm(maxMultipartBytes); err != nil {
+		next.ServeHTTP(w, r)
+		return
+	}
+
+	for name, vals := range r.MultipartForm.Value {
+		for _, v := range vals {
+			if hit := scanForInjection(v); hit != "" {
+				log.Printf("[web-defense] blocked chat request: pattern=%q field=%q route=%s", hit, name, r.URL.Path)
+				http.Error(w, "request rejected by injection-defense filter", http.StatusBadRequest)
+				return
+			}
+		}
+	}
+
+	for field, files := range r.MultipartForm.File {
+		for _, fh := range files {
+			if !ingest.IsSupported(fh.Filename) {
+				continue
+			}
+
+			hit, err := scanFilePart(fh)
+			if err != nil {
+				log.Printf("[web-defense] read upload %q: %v", fh.Filename, err)
+				http.Error(w, "uploaded document rejected by injection-defense filter", http.StatusBadRequest)
+				return
+			}
+			if hit != "" {
+				log.Printf("[web-defense] blocked upload: pattern=%q file=%q field=%q route=%s", hit, fh.Filename, field, r.URL.Path)
+				http.Error(w, "request rejected by injection-defense filter", http.StatusBadRequest)
+				return
+			}
+		}
+	}
+
+	next.ServeHTTP(w, r)
+}
+
+func scanFilePart(fh *multipart.FileHeader) (string, error) {
+	f, err := fh.Open()
+	if err != nil {
+		return "", err
+	}
+	defer f.Close()
+
+	buf, err := io.ReadAll(io.LimitReader(f, injectionScanBudget+1))
+	if err != nil {
+		return "", err
+	}
+
+	return scanForInjection(string(buf)), nil
 }
