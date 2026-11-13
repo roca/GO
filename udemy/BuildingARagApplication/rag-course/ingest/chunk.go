@@ -1,6 +1,9 @@
 package ingest
 
-import "strings"
+import (
+	"strings"
+	"unicode/utf8"
+)
 
 func chunk(text string, size, overlap int) []string {
 	text = strings.TrimSpace(text)
@@ -44,12 +47,27 @@ func chunk(text string, size, overlap int) []string {
 		case strings.LastIndex(window, " ") >= threshold:
 			end = start + strings.LastIndex(window, " ") + 1
 		}
+		end = nextRuneStart(text, end)
 		if part := strings.TrimSpace(text[start:end]); part != "" {
 			chunks = append(chunks, part)
 		}
-		start = end - overlap
+		next := end - overlap
+		if next <= start {
+			next = end
+		}
+		start = nextRuneStart(text, next)
 	}
 
 	return chunks
 
+}
+
+func nextRuneStart(s string, i int) int {
+	if i < 0 {
+		i = 0
+	}
+	for i < len(s) && !utf8.RuneStart(s[i]) {
+		i++
+	}
+	return i
 }

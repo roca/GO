@@ -10,6 +10,7 @@ require (
 	github.com/openai/openai-go/v3 v3.78.0
 	github.com/pgvector/pgvector-go v0.4.1
 	github.com/pgvector/pgvector-go/pgx v0.4.1
+	golang.org/x/text v0.42.0
 )
 
 require (
@@ -24,5 +25,4 @@ require (
 	github.com/x448/float16 v0.8.4 // indirect
 	golang.org/x/sync v0.23.0 // indirect
 	golang.org/x/sys v0.48.0 // indirect
-	golang.org/x/text v0.42.0 // indirect
 )

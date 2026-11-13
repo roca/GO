@@ -11,6 +11,9 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unicode/utf8"
+
+	"golang.org/x/text/encoding/charmap"
 )
 
 /*
@@ -88,7 +91,7 @@ func ProcessContent(
 		overlap = defaultChunkOverlap
 	}
 
-	text := strings.TrimSpace(string(content))
+	text := strings.TrimSpace(toValidUTF8(string(content)))
 	if text == "" {
 		return 0, errors.New("file is empty")
 	}
@@ -136,6 +139,30 @@ func ProcessContent(
 
 func IsSupported(name string) bool {
 	return supportedFormat(name)
+}
+
+// toValidUTF8 repairs text that is not valid UTF-8, which otherwise fails
+// PostgreSQL inserts with "invalid byte sequence for encoding UTF8".
+// Invalid bytes are decoded as Windows-1252, and a leading BOM is removed.
+func toValidUTF8(s string) string {
+	s = strings.TrimPrefix(s, "\ufeff")
+	if utf8.ValidString(s) {
+		return s
+	}
+
+	var b strings.Builder
+	b.Grow(len(s))
+	for i := 0; i < len(s); {
+		r, size := utf8.DecodeRuneInString(s[i:])
+		if r == utf8.RuneError && size == 1 {
+			b.WriteRune(charmap.Windows1252.DecodeByte(s[i]))
+			i++
+			continue
+		}
+		b.WriteString(s[i : i+size])
+		i += size
+	}
+	return b.String()
 }
 
 func supportedFormat(path string) bool {
