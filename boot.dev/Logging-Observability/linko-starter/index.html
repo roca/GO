@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Linko</title>
+    <style>
+      body {
+        font-family: "Courier New", monospace;
+        max-width: 600px;
+        margin: 40px auto;
+        padding: 0 20px;
+        min-height: calc(100vh - 80px);
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        background-color: #000;
+        color: #0f0;
+      }
+      header {
+        margin-bottom: 20px;
+      }
+      h1 {
+        margin-bottom: 4px;
+        text-transform: uppercase;
+        border-bottom: 2px solid #0f0;
+      }
+      p.tagline {
+        color: #0a0;
+        margin-top: 0;
+      }
+      input {
+        padding: 6px;
+        margin: 4px 0;
+        background-color: #111;
+        border: 1px solid #0f0;
+        color: #0f0;
+      }
+      button {
+        padding: 6px 16px;
+        margin: 4px 0;
+        cursor: pointer;
+        background-color: #0f0;
+        color: #000;
+        border: none;
+        font-weight: bold;
+      }
+      button:hover {
+        background-color: #0a0;
+      }
+      a {
+        color: #0f0;
+        text-decoration: underline;
+        font-weight: bold;
+      }
+      a:hover {
+        color: #fff;
+      }
+      section {
+        margin-bottom: 20px;
+      }
+      main { flex: 1; }
+      footer { margin-top: auto; padding: 12px 0; text-align: center; color: #0a0; font-size: 0.75rem; opacity: 0.7; }
+      footer a { color: inherit; font-weight: normal; }
+      #shorten-section {
+        display: none;
+      }
+      .error {
+        color: #f00;
+        margin-top: 8px;
+      }
+      #stats-box {
+        margin-bottom: 20px;
+        border: 1px solid #0f0;
+        padding: 10px;
+      }
+      #stats-box h3 {
+        margin: 0 0 10px 0;
+        color: #0f0;
+        text-transform: uppercase;
+        font-size: 1em;
+        border-bottom: 1px solid #0a0;
+        padding-bottom: 5px;
+      }
+      #stats {
+        color: #0a0;
+        font-size: 0.9em;
+      }
+      #urls {
+        margin-top: 24px;
+        border: 1px solid #0f0;
+        padding: 10px;
+      }
+      #urls table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+      #urls th,
+      #urls td {
+        text-align: left;
+        padding: 4px 8px;
+        border-bottom: 1px solid #0a0;
+      }
+      #urls th {
+        color: #0f0;
+        text-transform: uppercase;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Linko</h1>
+      <p class="tagline">A tiny URL shortener.</p>
+      <div id="stats-box" style="display: none">
+        <h3>Stats since last restart</h3>
+        <div id="stats"></div>
+        <button onclick="loadStats()">Refresh Stats</button>
+      </div>
+    </header>
+
+    <main>
+      <section id="login-section">
+        <form onsubmit="login(event)">
+          <input type="text" id="username" placeholder="Username" />
+          <input type="password" id="password" placeholder="Password" />
+          <button type="submit">Login</button>
+        </form>
+        <span id="login-error" class="error"></span>
+      </section>
+
+      <section id="logged-in-section" style="display: none">
+        <p>
+          Logged in as <strong id="display-user"></strong>.
+          <button onclick="logout()">Logout</button>
+        </p>
+      </section>
+
+      <section id="shorten-section">
+        <form onsubmit="shorten(event)">
+          <input
+            type="text"
+            id="url"
+            placeholder="https://example.com/long/url"
+            size="40"
+          />
+          <button type="submit">Shorten</button>
+        </form>
+        <div id="shorten-error" class="error"></div>
+      </section>
+
+      <section id="urls" style="display: none">
+        <h2>Shortened URLs</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Short Code</th>
+              <th>Long URL</th>
+            </tr>
+          </thead>
+          <tbody id="url-list"></tbody>
+        </table>
+      </section>
+    </main>
+        <footer>Made in a <a href="https://www.boot.dev" target="_blank" rel="noopener noreferrer">Boot.dev</a> course</footer>
+
+    <script>
+      let authHeader = null;
+
+      async function loadStats() {
+        if (!authHeader) return;
+        try {
+          const resp = await fetch("/api/stats", {
+            headers: { Authorization: authHeader },
+          });
+          if (resp.status === 401) return;
+          const data = await resp.json();
+          document.getElementById("stats").textContent =
+            `${data.redirects} redirects served, ${data.bytes_saved} bytes saved`;
+        } catch (err) {
+          document.getElementById("stats").textContent = "";
+        }
+      }
+
+      async function loadURLs() {
+        if (!authHeader) return;
+        try {
+          const resp = await fetch("/api/urls", {
+            headers: { Authorization: authHeader },
+          });
+          if (resp.status === 401) return;
+
+          const data = await resp.json();
+          const tbody = document.getElementById("url-list");
+          tbody.innerHTML = "";
+          data.forEach((entry) => {
+            const tr = document.createElement("tr");
+            const shortURL = `${window.location.origin}/${entry.short_code}`;
+            tr.innerHTML =
+              `<td><a href="${shortURL}" target="_blank">${entry.short_code}</a></td>` +
+              `<td><a href="${entry.long_url}" target="_blank">${entry.long_url}</a></td>`;
+            tbody.appendChild(tr);
+          });
+          document.getElementById("urls").style.display = "block";
+        } catch (err) {
+          console.error("Failed to load URLs:", err);
+        }
+      }
+
+      async function login(e) {
+        e.preventDefault();
+
+        const user = document.getElementById("username").value;
+        const pass = document.getElementById("password").value;
+        const tempAuthHeader = "Basic " + btoa(user + ":" + pass);
+
+        try {
+          const resp = await fetch("/api/login", {
+            method: "POST",
+            headers: { Authorization: tempAuthHeader },
+          });
+
+          if (!resp.ok) {
+            const text = await resp.text();
+            throw new Error(text);
+          }
+
+          authHeader = tempAuthHeader;
+          document.getElementById("login-section").style.display = "none";
+          document.getElementById("logged-in-section").style.display = "block";
+          document.getElementById("shorten-section").style.display = "block";
+          document.getElementById("stats-box").style.display = "block";
+          document.getElementById("display-user").textContent = user;
+          document.getElementById("login-error").textContent = "";
+
+          loadURLs();
+        } catch (err) {
+          document.getElementById("login-error").textContent = err.message;
+        }
+      }
+
+      function logout() {
+        authHeader = null;
+
+        document.getElementById("login-section").style.display = "block";
+        document.getElementById("logged-in-section").style.display = "none";
+        document.getElementById("shorten-section").style.display = "none";
+        document.getElementById("urls").style.display = "none";
+        document.getElementById("stats-box").style.display = "none";
+        document.getElementById("url-list").innerHTML = "";
+        document.getElementById("stats").textContent = "";
+        document.getElementById("shorten-error").textContent = "";
+        document.getElementById("username").value = "";
+        document.getElementById("password").value = "";
+      }
+
+      async function shorten(e) {
+        e.preventDefault();
+
+        const url = document.getElementById("url").value;
+        if (!url) return;
+
+        const body = new URLSearchParams({ url: url });
+
+        try {
+          const resp = await fetch("/api/shorten", {
+            method: "POST",
+            headers: { Authorization: authHeader },
+            body: body,
+          });
+
+          if (!resp.ok) {
+            const text = await resp.text();
+            throw new Error(text);
+          }
+
+          const code = await resp.text();
+          const shortURL = `${window.location.origin}/${code}`;
+          const tbody = document.getElementById("url-list");
+          const tr = document.createElement("tr");
+          tr.innerHTML =
+            `<td><a href="${shortURL}" target="_blank">${code}</a></td>` +
+            `<td><a href="${url}" target="_blank">${url}</a></td>`;
+
+          if (tbody.firstChild) {
+            tbody.insertBefore(tr, tbody.firstChild);
+          } else {
+            tbody.appendChild(tr);
+          }
+
+          document.getElementById("urls").style.display = "block";
+          document.getElementById("url").value = "";
+          document.getElementById("shorten-error").textContent = "";
+        } catch (err) {
+          document.getElementById("shorten-error").textContent = err.message;
+        }
+      }
+    </script>
+  </body>
+</html>
