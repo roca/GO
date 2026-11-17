@@ -36,12 +36,12 @@ func run(ctx context.Context, cancel context.CancelFunc, httpPort int, dataDir s
 	go func() {
 		serverErr = s.start()
 	}()
-	log.Printf("Linko is running on http://localhost:%d", httpPort)
 
 	<-ctx.Done()
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
+	log.Println("Linko is shutting down")
 	if err := s.shutdown(shutdownCtx); err != nil {
 		fmt.Fprintf(os.Stderr, "failed to shutdown server: %v\n", err)
 		return 1
